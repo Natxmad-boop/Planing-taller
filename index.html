@@ -96,6 +96,7 @@
         /* Estilo para cuando la privacidad está activa en el logo */
         .brand-pro-btn {
             cursor: pointer;
+            user-select: none;
             transition: opacity 0.2s;
         }
         .brand-pro-btn:hover {
@@ -383,7 +384,7 @@
             } else {
                 proLabel.classList.remove('privacy-active');
             }
-            renderOrders(); // Refresca las tarjetas para aplicar el cambio visual
+            renderOrders(); // Refresca las tarjetas para aplicar el cambio visual instantáneo
         }
 
         window.setDefaultDates = function() {
