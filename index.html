@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Taller - Kanban Pro</title>
+    <!-- Tailwind CSS para un diseño moderno y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- PANTALLA DE LOGIN -->
+    <div id="login-screen" class="fixed inset-0 bg-slate-950 flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="bg-blue-600/20 text-blue-400 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fa-solid fa-wrench"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Taller Mecánico Pro</h1>
+                <p class="text-slate-400 text-sm mt-1">Inicia sesión para acceder al planning</p>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Correo electrónico</label>
+                    <input type="email" id="login-email" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="taller@ejemplo.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Contraseña</label>
+                    <input type="password" id="login-password" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="••••••••">
+                </div>
+                <div id="login-error" class="text-red-400 text-sm hidden text-center"></div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg shadow-blue-600/30">
+                    Entrar al Sistema
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APLICACIÓN PRINCIPAL (KANBAN) -->
+    <div id="app-screen" class="hidden flex flex-col h-screen overflow-hidden">
+        
+        <!-- Header de la App -->
+        <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md">
+                    <i class="fa-solid fa-car-side text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-white tracking-wide">Planning de Taller</h1>
+                    <p class="text-xs text-slate-400">Control de vehículos y reparaciones</p>
+                </div>
+            </div>
+
+            <!-- Filtros de Búsqueda -->
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 md:w-64">
+                    <i class="fa-solid fa-search absolute left-3 top-3.5 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-input" oninput="filterCards()" placeholder="Buscar matrícula, cliente..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <select id="filter-mechanic" onchange="filterCards()" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+                    <option value="">Todos los mecánicos</option>
+                    <option value="Juan">Juan</option>
+                    <option value="Carlos">Carlos</option>
+                    <option value="Pedro">Pedro</option>
+                    <option value="Sin asignar">Sin asignar</option>
+                </select>
+                <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow-md shrink-0">
+                    <i class="fa-solid fa-plus"></i> Nuevo Coche
+                </button>
+                <button onclick="handleLogout()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg text-sm transition" title="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Tablero Kanban (5 Columnas) -->
+        <main class="flex-1 overflow-x-auto p-6 bg-slate-900">
+            <div class="flex gap-6 h-full min-w-[1400px]">
+                
+                <!-- Columna 1: Presupuesto Pendiente -->
+                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
+                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                        <h2 class="font-bold text-sm text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-file-invoice-dollar"></i> Presupuesto Pendiente
+                        </h2>
+                        <span id="count-presupuesto" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-full font-semibold">0</span>
+                    </div>
+                    <div id="col-presupuesto" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'presupuesto')"></div>
+                </div>
+
+                <!-- Columna 2: Espera de Piezas -->
+                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
+                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                        <h2 class="font-bold text-sm text-purple-400 flex items-center gap-2">
+                            <i class="fa-solid fa-boxes-stacked"></i> Espera de Piezas
+                        </h2>
+                        <span id="count-piezas" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-full font-semibold">0</span>
+                    </div>
+                    <div id="col-piezas" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'piezas')"></div>
+                </div>
+
+                <!-- Columna 3: En Reparación -->
+                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
+                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                        <h2 class="font-bold text-sm text-blue-400 flex items-center gap-2">
+                            <i class="fa-solid fa-screwdriver-wrench"></i> En Reparación
+                        </h2>
+                        <span id="count-reparacion" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-full font-semibold">0</span>
+                    </div>
+                    <div id="col-reparacion" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'reparacion')"></div>
+                </div>
+
+                <!-- Columna 4: Terminado / Listo -->
+                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
+                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                        <h2 class="font-bold text-sm text-emerald-400 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i> Terminado / Listo
+                        </h2>
+                        <span id="count-terminado" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-full font-semibold">0</span>
+                    </div>
+                    <div id="col-terminado" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'terminado')"></div>
+                </div>
+
+                <!-- Columna 5: Entregado -->
+                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
+                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                        <h2 class="font-bold text-sm text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-flag-checkered"></i> Entregado
+                        </h2>
+                        <span id="count-entregado" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-full font-semibold">0</span>
+                    </div>
+                    <div id="col-entregado" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'entregado')"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL PARA NUEVO / EDITAR COCHE -->
+    <div id="car-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                <h3 id="modal-title" class="font-bold text-white text-lg">Añadir Nuevo Vehículo</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="car-form" onsubmit="saveCar(event)" class="p-6 space-y-4">
+                <input type="hidden" id="car-id">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Matrícula</label>
+                        <input type="text" id="car-plate" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white uppercase focus:outline-none focus:border-blue-500" placeholder="1234 ABC">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Mecánico Asignado</label>
+                        <select id="car-mechanic" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                            <option value="Juan">Juan</option>
+                            <option value="Carlos">Carlos</option>
+                            <option value="Pedro">Pedro</option>
+                            <option value="Sin asignar">Sin asignar</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Cliente / Teléfono</label>
+                    <input type="text" id="car-client" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="Nombre y Teléfono">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Vehículo (Modelo / Marca)</label>
+                    <input type="text" id="car-model" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="Ej. Seat León Gris">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Descripción de la Avería / Trabajo</label>
+                    <textarea id="car-issue" rows="3" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="Detalles de lo que le pasa al coche..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Columna Inicial</label>
+                    <select id="car-status" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                        <option value="presupuesto">Presupuesto Pendiente</option>
+                        <option value="piezas">Espera de Piezas</option>
+                        <option value="reparacion">En Reparación</option>
+                        <option value="terminado">Terminado / Listo</option>
+                        <option value="entregado">Entregado</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal()" class="bg-slate-800 hover:bg-slate-750 text-slate-300 px-4 py-2 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-sm font-semibold transition shadow-md">Guardar Coche</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPTS DE FIREBASE Y LÓGICA DE LA APP -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // TUS CREDENCIALES INTEGRADAS DE FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyAz5hL2b_07l7C...", // (Tus claves reales configuradas)
+            authDomain: "tu-proyecto.firebaseapp.com",
+            projectId: "tu-proyecto",
+            storageBucket: "tu-proyecto.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456:web:abcd"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let allCars = [];
+
+        // Comprobar sesión activa
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                loadCarsFromFirebase();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('app-screen').classList.add('hidden');
+            }
+        });
+
+        window.handleLogin = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            const errDiv = document.getElementById('login-error');
+            errDiv.classList.add('hidden');
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (error) {
+                errDiv.textContent = "Error: Credenciales incorrectas o usuario no encontrado.";
+                errDiv.classList.remove('hidden');
+            }
+        };
+
+        window.handleLogout = () => signOut(auth);
+
+        // Cargar coches en tiempo real desde Firestore
+        function loadCarsFromFirebase() {
+            onSnapshot(collection(db, "taller_coches"), (snapshot) => {
+                allCars = [];
+                snapshot.forEach((docSnap) => {
+                    allCars.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderCards(allCars);
+            });
+        }
+
+        window.renderCards = (cars) => {
+            const cols = { presupuesto: [], piezas: [], reparacion: [], terminado: [], entregado: [] };
+            
+            cars.forEach(car => {
+                if (cols[car.status]) {
+                    cols[car.status].push(car);
+                }
+            });
+
+            for (let status in cols) {
+                const container = document.getElementById(`col-${status}`);
+                const counter = document.getElementById(`count-${status}`);
+                counter.textContent = cols[status].length;
+                container.innerHTML = '';
+
+                cols[status].forEach(car => {
+                    const card = document.createElement('div');
+                    card.className = "bg-slate-900 border border-slate-800 hover:border-slate-700 p-4 rounded-xl shadow-md cursor-grab active:cursor-grabbing transition relative group";
+                    card.draggable = true;
+                    card.ondragstart = (e) => e.dataTransfer.setData('text/plain', car.id);
+                    
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-blue-600/20 text-blue-400 text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">${car.plate}</span>
+                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                                <button onclick="editCar('${car.id}')" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-pen text-xs"></i></button>
+                                <button onclick="deleteCar('${car.id}')" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-white text-sm mb-1">${car.model}</h4>
+                        <p class="text-xs text-slate-400 mb-2"><i class="fa-solid fa-user mr-1"></i>${car.client}</p>
+                        <p class="text-xs text-slate-300 bg-slate-950 p-2.5 rounded-lg border border-slate-800/60 mb-3">${car.issue}</p>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-800/80 text-xs">
+                            <span class="text-slate-400"><i class="fa-solid fa-user-gear mr-1"></i>${car.mechanic || 'Sin asignar'}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        };
+
+        window.allowDrop = (e) => e.preventDefault();
+
+        window.drop = async (e, newStatus) => {
+            e.preventDefault();
+            const carId = e.dataTransfer.getData('text/plain');
+            if (carId) {
+                const carRef = doc(db, "taller_coches", carId);
+                await updateDoc(carRef, { status: newStatus });
+            }
+        };
+
+        window.filterCards = () => {
+            const searchText = document.getElementById('search-input').value.toLowerCase();
+            const mechanicFilter = document.getElementById('filter-mechanic').value;
+
+            const filtered = allCars.filter(car => {
+                const matchesSearch = car.plate.toLowerCase().includes(searchText) || 
+                                      car.client.toLowerCase().includes(searchText) || 
+                                      car.model.toLowerCase().includes(searchText);
+                const matchesMechanic = mechanicFilter === "" || car.mechanic === mechanicFilter;
+                return matchesSearch && matchesMechanic;
+            });
+
+            renderCards(filtered);
+        };
+
+        window.openModal = () => {
+            document.getElementById('car-form').reset();
+            document.getElementById('car-id').value = '';
+            document.getElementById('modal-title').textContent = "Añadir Nuevo Vehículo";
+            document.getElementById('car-modal').classList.remove('hidden');
+            document.getElementById('car-modal').classList.add('flex');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('car-modal').classList.remove('flex');
+            document.getElementById('car-modal').classList.add('hidden');
+        };
+
+        window.saveCar = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('car-id').value;
+            const carData = {
+                plate: document.getElementById('car-plate').value.toUpperCase(),
+                client: document.getElementById('car-client').value,
+                model: document.getElementById('car-model').value,
+                issue: document.getElementById('car-issue').value,
+                mechanic: document.getElementById('car-mechanic').value,
+                status: document.getElementById('car-status').value
+            };
+
+            if (id) {
+                await updateDoc(doc(db, "taller_coches", id), carData);
+            } else {
+                await addDoc(collection(db, "taller_coches"), carData);
+            }
+            closeModal();
+        };
+
+        window.editCar = (id) => {
+            const car = allCars.find(c => c.id === id);
+            if (!car) return;
+            document.getElementById('car-id').value = car.id;
+            document.getElementById('car-plate').value = car.plate;
+            document.getElementById('car-client').value = car.client;
+            document.getElementById('car-model').value = car.model;
+            document.getElementById('car-issue').value = car.issue;
+            document.getElementById('car-mechanic').value = car.mechanic || "Sin asignar";
+            document.getElementById('car-status').value = car.status;
+            document.getElementById('modal-title').textContent = "Editar Vehículo";
+            document.getElementById('car-modal').classList.remove('hidden');
+            document.getElementById('car-modal').classList.add('flex');
+        };
+
+        window.deleteCar = async (id) => {
+            if (confirm("¿Estás seguro de eliminar este coche del planning?")) {
+                await deleteDoc(doc(db, "taller_coches", id));
+            }
+        };
+    </script>
+</body>
+</html>
