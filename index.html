@@ -254,7 +254,7 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Estado Específico del Taller</label>
+                                <label class="form-label small text-secondary fw-bold">Estado Específico</label>
                                 <select id="car-substatus" class="form-select">
                                     <option value="">Ninguno / Normal</option>
                                     <option value="Paragolpes fuera">Paragolpes fuera</option>
@@ -294,7 +294,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
                 <div class="modal-header border-bottom border-light">
-                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-edit me-2 text-primary"></i> Gestionar Ficha Completa</h5>
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-edit me-2 text-primary"></i> Gestionar Ficha y Datos Completos</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="detail-modal-body"></div>
@@ -593,7 +593,7 @@
             document.getElementById('count-terminados').innerText = counts.terminados;
         }
 
-        // Modal Completo e Interactivo de la Ficha
+        // Modal Completo para Editar Matrícula, Fechas, Operario, Estado y Notas
         window.openDetailModal = function(id) {
             const order = orders.find(o => o.id === id);
             if (!order) return;
@@ -614,13 +614,25 @@
 
             const modalBody = document.getElementById('detail-modal-body');
             modalBody.innerHTML = `
-                <div class="mb-4">
-                    <h4 class="fw-bold text-primary mb-1"><i class="fas fa-car me-2"></i> ${order.plate.toUpperCase()} - ${order.model}</h4>
-                    <span class="badge bg-secondary">${order.status.toUpperCase()}</span>
-                    ${order.urgent ? '<span class="badge bg-danger ms-1">URGENTE</span>' : ''}
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-secondary">${order.status.toUpperCase()}</span>
+                        ${order.urgent ? '<span class="badge bg-danger ms-1">URGENTE</span>' : ''}
+                    </div>
                 </div>
                 
                 <form onsubmit="saveOrderEdits(event, '${order.id}')">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Matrícula:</label>
+                            <input type="text" id="edit-modal-plate" class="form-control text-uppercase" value="${order.plate || ''}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Modelo del Coche:</label>
+                            <input type="text" id="edit-modal-model" class="form-control" value="${order.model || ''}" required>
+                        </div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-secondary">Fecha de Entrada:</label>
@@ -648,7 +660,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold text-secondary">Notas / Observaciones Integradas:</label>
+                        <label class="form-label small fw-bold text-secondary">Notas / Observaciones:</label>
                         <textarea id="edit-modal-notes" class="form-control" rows="4">${order.notes || ''}</textarea>
                     </div>
 
@@ -665,6 +677,8 @@
 
         window.saveOrderEdits = async function(e, id) {
             e.preventDefault();
+            const newPlate = document.getElementById('edit-modal-plate').value.trim();
+            const newModel = document.getElementById('edit-modal-model').value.trim();
             const newDateIn = document.getElementById('edit-modal-datein').value;
             const newDateOut = document.getElementById('edit-modal-dateout').value;
             const newOperator = document.getElementById('edit-modal-operator').value;
@@ -674,6 +688,8 @@
             try {
                 const orderRef = doc(db, "orders", id);
                 await updateDoc(orderRef, {
+                    plate: newPlate,
+                    model: newModel,
                     dateIn: newDateIn,
                     dateOut: newDateOut,
                     operator: newOperator,
