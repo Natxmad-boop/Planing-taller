@@ -3,56 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Taller - Planning Pro</title>
+    <title>Planning de Taller Pro - Sincronizado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #0f172a;
-            --secondary-color: #3b82f6;
-            --bg-color: #0b0f19;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
+            --primary-dark: #0b0f19;
+            --secondary-dark: #1e293b;
+            --border-color: #334155;
+            --accent-blue: #3b82f6;
         }
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--primary-dark);
+            color: #f8fafc;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .navbar {
-            background-color: var(--primary-color);
-            border-bottom: 1px solid #334155;
+            background-color: #0f172a;
+            border-bottom: 1px solid var(--border-color);
         }
-        .card-board {
-            background-color: var(--card-bg);
-            border: 1px solid #334155;
+        .kanban-col {
+            background-color: var(--secondary-dark);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+            min-height: 70vh;
         }
         .task-card {
             background-color: #0f172a;
-            border: 1px solid #334155;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            transition: transform 0.2s;
+            transition: all 0.2s ease;
         }
         .task-card:hover {
+            border-color: var(--accent-blue);
             transform: translateY(-2px);
         }
         .form-control, .form-select {
             background-color: #0f172a;
-            border-color: #334155;
-            color: white;
+            border-color: var(--border-color);
+            color: #f8fafc;
         }
         .form-control:focus, .form-select:focus {
             background-color: #0f172a;
-            color: white;
-            border-color: var(--secondary-color);
+            color: #f8fafc;
+            border-color: var(--accent-blue);
             box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
         }
         .modal-content {
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid #334155;
+            background-color: var(--secondary-dark);
+            color: #f8fafc;
+            border: 1px solid var(--border-color);
         }
         .btn-close {
             filter: invert(1) grayscale(100%) brightness(200%);
@@ -63,16 +63,16 @@
 
     <!-- Pantalla de Login -->
     <div id="login-screen" class="container mt-5" style="max-width: 420px;">
-        <div class="card card-board mt-5 p-4">
+        <div class="card kanban-col mt-5 p-4 shadow-lg">
             <div class="card-body">
                 <div class="text-center mb-4">
-                    <i class="fas fa-tools mb-2" style="font-size: 2.5rem; color: var(--secondary-color);"></i>
-                    <h3 class="fw-bold">Taller Mecánico Pro</h3>
-                    <p class="text-muted small">Inicia sesión para acceder al planning</p>
+                    <i class="fas fa-tools mb-2" style="font-size: 2.5rem; color: var(--accent-blue);"></i>
+                    <h3 class="fw-bold">Taller Mecánico</h3>
+                    <p class="text-muted small">Planning sincronizado en la nube</p>
                 </div>
                 
-                <div class="alert alert-secondary py-2 small mb-4" role="alert" style="background-color: #0f172a; border-color: #334155; color: #94a3b8;">
-                    <i class="fas fa-info-circle me-1 text-info"></i> <strong>Acceso:</strong><br>
+                <div class="alert alert-secondary py-2 small mb-4" role="alert" style="background-color: #0f172a; border-color: var(--border-color); color: #94a3b8;">
+                    <i class="fas fa-info-circle me-1 text-info"></i> <strong>Acceso por defecto:</strong><br>
                     Correo: <code>taller@taller.com</code><br>
                     Contraseña: <code>taller123</code>
                 </div>
@@ -92,53 +92,66 @@
         </div>
     </div>
 
-    <!-- Pantalla Principal (Tablero Kanban) -->
+    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-4" style="display: none;">
         <nav class="navbar navbar-dark px-4 rounded mb-4 shadow-sm">
-            <span class="navbar-brand mb-0 h1 fw-bold"><i class="fas fa-car me-2 text-info"></i> Planning Taller - Sincronizado</span>
+            <span class="navbar-brand mb-0 h1 fw-bold"><i class="fas fa-car me-2 text-info"></i> Taller Mecánico - En Directo</span>
             <div class="d-flex align-items-center">
-                <span class="text-muted me-3 small"><i class="fas fa-user-circle me-1"></i> taller@taller.com</span>
+                <span class="text-muted me-3 small d-none d-md-inline"><i class="fas fa-user-circle me-1"></i> taller@taller.com</span>
                 <button class="btn btn-outline-light btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-1"></i> Salir</button>
             </div>
         </nav>
 
-        <div class="row mb-4">
-            <div class="col-md-12 text-end">
-                <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#newOrderModal">
+        <!-- Barra de acciones y filtros -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-muted"><i class="fas fa-search"></i></span>
+                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por cliente, matrícula o vehículo..." oninput="renderOrders()">
+                </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-primary fw-bold px-4" data-bs-toggle="modal" data-bs-target="#newOrderModal">
                     <i class="fas fa-plus me-1"></i> Nueva Orden / Vehículo
                 </button>
             </div>
         </div>
 
-        <!-- Columnas del Tablero -->
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <div class="card card-board h-100 border-top border-warning border-4">
-                    <div class="card-body">
-                        <h5 class="card-title text-warning fw-bold"><i class="fas fa-clock me-2"></i> Pendientes</h5>
-                        <hr style="border-color: #334155;">
-                        <div id="list-pending" class="d-flex flex-column gap-3"></div>
+        <!-- Tablero Kanban de 3 Columnas -->
+        <div class="row g-4">
+            <!-- Pendientes -->
+            <div class="col-md-4">
+                <div class="kanban-col p-3 border-top border-warning border-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-warning fw-bold m-0"><i class="fas fa-clock me-2"></i> Pendientes</h5>
+                        <span id="count-pending" class="badge bg-warning text-dark rounded-pill">0</span>
                     </div>
+                    <hr style="border-color: var(--border-color);">
+                    <div id="list-pending" class="d-flex flex-column gap-3"></div>
                 </div>
             </div>
 
-            <div class="col-md-4 mb-3">
-                <div class="card card-board h-100 border-top border-primary border-4">
-                    <div class="card-body">
-                        <h5 class="card-title text-primary fw-bold"><i class="fas fa-wrench me-2"></i> En Proceso</h5>
-                        <hr style="border-color: #334155;">
-                        <div id="list-progress" class="d-flex flex-column gap-3"></div>
+            <!-- En Proceso -->
+            <div class="col-md-4">
+                <div class="kanban-col p-3 border-top border-primary border-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-primary fw-bold m-0"><i class="fas fa-wrench me-2"></i> En Proceso</h5>
+                        <span id="count-progress" class="badge bg-primary rounded-pill">0</span>
                     </div>
+                    <hr style="border-color: var(--border-color);">
+                    <div id="list-progress" class="d-flex flex-column gap-3"></div>
                 </div>
             </div>
 
-            <div class="col-md-4 mb-3">
-                <div class="card card-board h-100 border-top border-success border-4">
-                    <div class="card-body">
-                        <h5 class="card-title text-success fw-bold"><i class="fas fa-check-circle me-2"></i> Finalizados</h5>
-                        <hr style="border-color: #334155;">
-                        <div id="list-finished" class="d-flex flex-column gap-3"></div>
+            <!-- Finalizados -->
+            <div class="col-md-4">
+                <div class="kanban-col p-3 border-top border-success border-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-success fw-bold m-0"><i class="fas fa-check-circle me-2"></i> Finalizados</h5>
+                        <span id="count-finished" class="badge bg-success rounded-pill">0</span>
                     </div>
+                    <hr style="border-color: var(--border-color);">
+                    <div id="list-finished" class="d-flex flex-column gap-3"></div>
                 </div>
             </div>
         </div>
@@ -164,7 +177,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label small text-muted fw-bold">Descripción de la Avería / Trabajo</label>
-                            <textarea id="car-issue" class="form-control" rows="3" required placeholder="Cambio de aceite y revisión"></textarea>
+                            <textarea id="car-issue" class="form-control" rows="3" required placeholder="Cambio de aceite, revisión frenos..."></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small text-muted fw-bold">Estado Inicial</label>
@@ -174,7 +187,7 @@
                                 <option value="finished">Finalizado</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold">Guardar Orden en la Nube</button>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Orden en la Nube</button>
                     </form>
                 </div>
             </div>
@@ -184,13 +197,14 @@
     <!-- Scripts Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Lógica de Firebase Sincronizada -->
+    <!-- Conexión Firebase y Lógica Completa -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Tus claves exactas de Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyAqzUFL_4PBhpIND_CFIg8...", // (Tus claves reales configuradas)
+            apiKey: "AIzaSyAqzUFL_4PBhpIND_CFIg8...", 
             authDomain: "planning-taller-23a87.firebaseapp.com",
             projectId: "planning-taller-23a87",
             storageBucket: "planning-taller-23a87.appspot.com",
@@ -233,7 +247,8 @@
             });
         }
 
-        function renderOrders() {
+        window.renderOrders = function() {
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
             const pendingContainer = document.getElementById('list-pending');
             const progressContainer = document.getElementById('list-progress');
             const finishedContainer = document.getElementById('list-finished');
@@ -242,17 +257,31 @@
             progressContainer.innerHTML = '';
             finishedContainer.innerHTML = '';
 
-            orders.forEach(order => {
+            let countP = 0, countPr = 0, countF = 0;
+
+            const filteredOrders = orders.filter(order => {
+                const client = (order.client || '').toLowerCase();
+                const car = (order.car || '').toLowerCase();
+                const issue = (order.issue || '').toLowerCase();
+                return client.includes(searchVal) || car.includes(searchVal) || issue.includes(searchVal);
+            });
+
+            filteredOrders.forEach(order => {
+                if (order.status === 'pending') countP++;
+                if (order.status === 'progress') countPr++;
+                if (order.status === 'finished') countF++;
+
                 const cardHtml = `
                     <div class="task-card p-3 shadow-sm">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <h6 class="fw-bold mb-1 text-info">${order.car}</h6>
-                            <button class="btn btn-sm text-danger p-0" onclick="deleteOrder('${order.id}')" title="Eliminar"><i class="fas fa-trash"></i></button>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="fw-bold mb-0 text-info"><i class="fas fa-car me-1"></i> ${order.car}</h6>
+                            <button class="btn btn-sm text-danger p-0" onclick="deleteOrder('${order.id}')" title="Eliminar orden"><i class="fas fa-trash"></i></button>
                         </div>
                         <p class="small text-muted mb-1"><strong>Cliente:</strong> ${order.client}</p>
-                        <p class="small mb-2">${order.issue}</p>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <select class="form-select form-select-sm w-auto" onchange="updateStatus('${order.id}', this.value)">
+                        <p class="small mb-2 text-light">${order.issue}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary">
+                            <span class="small text-muted"><i class="far fa-clock me-1"></i> ${new Date(order.createdAt || Date.now()).toLocaleDateString()}</span>
+                            <select class="form-select form-select-sm w-auto bg-dark text-light border-secondary" onchange="updateStatus('${order.id}', this.value)">
                                 <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendiente</option>
                                 <option value="progress" ${order.status === 'progress' ? 'selected' : ''}>En Proceso</option>
                                 <option value="finished" ${order.status === 'finished' ? 'selected' : ''}>Finalizado</option>
@@ -269,6 +298,10 @@
                     finishedContainer.innerHTML += cardHtml;
                 }
             });
+
+            document.getElementById('count-pending').innerText = countP;
+            document.getElementById('count-progress').innerText = countPr;
+            document.getElementById('count-finished').innerText = countF;
         }
 
         window.handleAddOrder = async function(e) {
@@ -301,7 +334,7 @@
         }
 
         window.deleteOrder = async function(id) {
-            if (confirm('¿Estás seguro de eliminar esta orden?')) {
+            if (confirm('¿Estás seguro de eliminar esta orden del taller?')) {
                 try {
                     await deleteDoc(doc(db, "orders", id));
                 } catch (error) {
