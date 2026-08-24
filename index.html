@@ -73,6 +73,25 @@
         .privacy-active {
             color: #2563eb !important;
         }
+        .history-timeline {
+            border-left: 2px solid #cbd5e1;
+            padding-left: 1rem;
+            margin-left: 0.5rem;
+        }
+        .history-item {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        .history-item::before {
+            content: '';
+            position: absolute;
+            left: -1.35rem;
+            top: 0.25rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #2563eb;
+        }
     </style>
 </head>
 <body>
@@ -268,11 +287,11 @@
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-dark">Gestionar Ficha y Trazabilidad</h5>
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-history me-2 text-primary"></i> Trazabilidad y Ficha del Vehículo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="detail-modal-body"></div>
+                <div class="modal-body p-4" id="detail-modal-body"></div>
             </div>
         </div>
     </div>
@@ -474,13 +493,39 @@
         window.openDetailModal = (id) => {
             const order = orders.find(o => o.id === id);
             if (!order) return;
-            let historyHtml = '<p class="text-muted small">Sin historial previo.</p>';
-            if (order.history) {
-                historyHtml = `<ul class="small ps-3 mb-0">${order.history.map(h => `<li><strong>${h.status.toUpperCase()}</strong> - ${h.operator} (${h.date})</li>`).join('')}</ul>`;
+
+            let historyHtml = '<p class="text-muted small fst-italic">No hay registros de movimientos todavía.</p>';
+            if (order.history && order.history.length > 0) {
+                historyHtml = `<div class="history-timeline">`;
+                order.history.forEach(h => {
+                    historyHtml += `
+                        <div class="history-item">
+                            <div class="fw-bold text-primary text-uppercase small">${h.status}</div>
+                            <div class="text-dark small"><i class="fas fa-user-tie me-1 text-secondary"></i> Operario: <strong>${h.operator}</strong></div>
+                            <div class="text-muted" style="font-size: 0.75rem;"><i class="far fa-clock me-1"></i> ${h.date}</div>
+                        </div>
+                    `;
+                });
+                historyHtml += `</div>`;
             }
+
             document.getElementById('detail-modal-body').innerHTML = `
-                <h6 class="fw-bold text-secondary small">Historial de Operarios</h6>
-                ${historyHtml}
+                <div class="mb-4">
+                    <h6 class="text-uppercase text-secondary fw-bold small mb-2">Información del Vehículo</h6>
+                    <div class="p-3 bg-light rounded border">
+                        <div class="row">
+                            <div class="col-md-6 mb-2"><strong>Matrícula:</strong> ${order.plate.toUpperCase()}</div>
+                            <div class="col-md-6 mb-2"><strong>Modelo:</strong> ${order.model}</div>
+                            <div class="col-md-6 mb-2"><strong>Entrada:</strong> ${order.dateIn || '-'}</div>
+                            <div class="col-md-6 mb-2"><strong>Salida Prevista:</strong> ${order.dateOut || '-'}</div>
+                            <div class="col-12"><strong>Notas:</strong> ${order.notes || 'Sin notas'}</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h6 class="text-uppercase text-secondary fw-bold small mb-3">Historial y Trazabilidad (Orden cronológico)</h6>
+                    ${historyHtml}
+                </div>
             `;
             new bootstrap.Modal(document.getElementById('detailModal')).show();
         }
