@@ -374,7 +374,7 @@
         let orders = [];
         let operators = [];
         let pendingMoveData = null;
-        let privacyModeActive = true; // Por defecto arranca con las matrículas protegidas (ocultas)
+        let privacyModeActive = true; // Arranca por defecto en modo oculto por seguridad (LOPD)
 
         window.togglePrivacyMode = function() {
             privacyModeActive = !privacyModeActive;
@@ -599,7 +599,7 @@
                 const cardClass = isUrgent ? 'urgent' : (isOverdue ? 'overdue' : '');
                 const dateOutDisplay = isOverdue ? `<span class="text-danger fw-bold"><i class="fas fa-clock me-1"></i> ${order.dateOut} (¡Retrasado!)</span>` : (order.dateOut || '-');
 
-                // Lógica de Privacidad para la Matrícula
+                // Lógica de Privacidad para la Matrícula (arranca protegida por defecto)
                 let displayPlate = order.plate.toUpperCase();
                 if (privacyModeActive && displayPlate.length > 4) {
                     displayPlate = "**** " + displayPlate.slice(-4);
