@@ -3,703 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning de Taller - Kanban Pro</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para iconos -->
+    <title>Gestión de Taller - Planning Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #3b82f6;
+            --bg-color: #0b0f19;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background-color: var(--primary-color);
+            border-bottom: 1px solid #334155;
+        }
+        .card-board {
+            background-color: var(--card-bg);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+        }
+        .task-card {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+        }
+        .form-control, .form-select {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: white;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #0f172a;
+            color: white;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid #334155;
+        }
+        .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col h-screen overflow-hidden">
+<body>
 
-    <!-- PANTALLA DE LOGIN -->
-    <div id="login-screen" class="fixed inset-0 bg-slate-950 flex items-center justify-center z-50 p-4">
-        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md">
-            <div class="text-center mb-8">
-                <div class="bg-blue-600/20 text-blue-400 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                    <i class="fa-solid fa-wrench"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-white">Taller Mecánico Pro</h1>
-                <p class="text-slate-400 text-sm mt-1">Tablero digital compartido</p>
-                <div class="mt-3 bg-slate-800/60 p-2.5 rounded-lg text-xs text-slate-300">
-                    Acceso rápido:<br><b>Correo:</b> taller@taller.com<br><b>Contraseña:</b> taller123
-                </div>
-            </div>
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Correo electrónico</label>
-                    <input type="email" id="login-email" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="taller@ejemplo.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Contraseña</label>
-                    <input type="password" id="login-password" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="••••••••">
-                </div>
-                <div id="login-error" class="text-red-400 text-sm hidden text-center"></div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg shadow-blue-600/30">
-                    Entrar al Sistema
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- APLICACIÓN PRINCIPAL -->
-    <div id="app-screen" class="hidden flex flex-col h-full overflow-hidden">
-        
-        <!-- Header con Filtros y Opciones -->
-        <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex flex-col lg:flex-row items-center justify-between gap-4 shrink-0">
-            <div class="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start">
-                <div class="flex items-center gap-3">
-                    <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md">
-                        <i class="fa-solid fa-car-side text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-bold text-white tracking-wide">Planning de Taller</h1>
-                        <p class="text-xs text-slate-400">Tablero compartido en tiempo real</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Filtros Avanzados -->
-            <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-end">
-                <div class="relative flex-1 sm:flex-initial sm:w-48">
-                    <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-xs"></i>
-                    <input type="text" id="search-input" oninput="filterCards()" placeholder="Buscar matrícula, modelo..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+    <!-- Pantalla de Login -->
+    <div id="login-screen" class="container mt-5" style="max-width: 420px;">
+        <div class="card card-board mt-5 p-4">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-tools mb-2" style="font-size: 2.5rem; color: var(--secondary-color);"></i>
+                    <h3 class="fw-bold">Taller Mecánico Pro</h3>
+                    <p class="text-muted small">Inicia sesión para acceder al planning</p>
                 </div>
                 
-                <select id="filter-operario" onchange="filterCards()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-slate-300 focus:outline-none focus:border-blue-500">
-                    <option value="">Operario: Todos</option>
-                </select>
-
-                <select id="filter-situacion" onchange="filterCards()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-slate-300 focus:outline-none focus:border-blue-500">
-                    <option value="">Situación: Todas</option>
-                </select>
-
-                <button id="btn-filter-urgent" onclick="toggleUrgentFilter()" class="bg-slate-900 border border-slate-700 hover:border-amber-500 text-slate-300 px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Urgentes
-                </button>
-
-                <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-md">
-                    <i class="fa-solid fa-plus"></i> Nuevo Vehículo
-                </button>
-
-                <button onclick="openConfigModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg text-xs transition" title="Configuración">
-                    <i class="fa-solid fa-gear"></i>
-                </button>
-
-                <button onclick="handleLogout()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg text-xs transition" title="Cerrar sesión">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Tablero Kanban (5 Columnas) -->
-        <main class="flex-1 overflow-x-auto p-6 bg-slate-900">
-            <div class="flex gap-6 h-full min-w-[1500px]">
-                
-                <!-- Columna 1: DESMONTAJE Y REPARACIÓN -->
-                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
-                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                        <h2 class="font-bold text-xs text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-screwdriver-wrench"></i> Desmontaje y Reparación
-                        </h2>
-                        <span id="count-desmontaje" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full font-semibold">0</span>
-                    </div>
-                    <div id="col-desmontaje" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'desmontaje')"></div>
+                <div class="alert alert-secondary py-2 small mb-4" role="alert" style="background-color: #0f172a; border-color: #334155; color: #94a3b8;">
+                    <i class="fas fa-info-circle me-1 text-info"></i> <strong>Acceso:</strong><br>
+                    Correo: <code>taller@taller.com</code><br>
+                    Contraseña: <code>taller123</code>
                 </div>
 
-                <!-- Columna 2: PINTADO -->
-                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
-                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                        <h2 class="font-bold text-xs text-purple-400 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-paint-roller"></i> Pintado
-                        </h2>
-                        <span id="count-pintado" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full font-semibold">0</span>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <label class="form-label small text-uppercase fw-bold text-muted">Correo electrónico</label>
+                        <input type="email" id="login-email" class="form-control" value="taller@taller.com" required>
                     </div>
-                    <div id="col-pintado" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'pintado')"></div>
-                </div>
-
-                <!-- Columna 3: LUNAS -->
-                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
-                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                        <h2 class="font-bold text-xs text-cyan-400 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-car-burst"></i> Lunas
-                        </h2>
-                        <span id="count-lunas" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full font-semibold">0</span>
+                    <div class="mb-4">
+                        <label class="form-label small text-uppercase fw-bold text-muted">Contraseña</label>
+                        <input type="password" id="login-password" class="form-control" value="taller123" required>
                     </div>
-                    <div id="col-lunas" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'lunas')"></div>
-                </div>
-
-                <!-- Columna 4: MONTAJE -->
-                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
-                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                        <h2 class="font-bold text-xs text-blue-400 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-gears"></i> Montaje
-                        </h2>
-                        <span id="count-montaje" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full font-semibold">0</span>
-                    </div>
-                    <div id="col-montaje" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'montaje')"></div>
-                </div>
-
-                <!-- Columna 5: TERMINADO -->
-                <div class="flex-1 bg-slate-950/50 border border-slate-800 rounded-2xl flex flex-col max-h-full">
-                    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                        <h2 class="font-bold text-xs text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-circle-check"></i> Terminado
-                        </h2>
-                        <span id="count-terminado" class="bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full font-semibold">0</span>
-                    </div>
-                    <div id="col-terminado" class="flex-1 overflow-y-auto p-4 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 'terminado')"></div>
-                </div>
-
-            </div>
-        </main>
-    </div>
-
-    <!-- MODAL FICHA DE VEHÍCULO -->
-    <div id="car-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl my-8">
-            <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-950">
-                <h3 id="modal-title" class="font-bold text-white text-base">Ficha del Vehículo</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            
-            <form id="car-form" onsubmit="saveCar(event)" class="p-6 space-y-4">
-                <input type="hidden" id="car-id">
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Matrícula</label>
-                        <input type="text" id="car-plate" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white uppercase focus:outline-none focus:border-blue-500 font-bold" placeholder="1234 ABC">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Marca / Modelo</label>
-                        <input type="text" id="car-model" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="Ej. Seat León Gris">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Operario (Iniciales)</label>
-                        <select id="car-operario" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"></select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Fecha Entrada</label>
-                        <input type="date" id="car-entry" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Fecha Entrega Prevista</label>
-                        <input type="date" id="car-delivery" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Situación</label>
-                        <select id="car-situacion" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"></select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Estado de Lunas (si procede)</label>
-                        <select id="car-luna-estado" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-                            <option value="">-- Ninguno / No aplica --</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800">
-                    <input type="checkbox" id="car-urgent" class="w-4 h-4 accent-amber-500 rounded cursor-pointer">
-                    <label for="car-urgent" class="text-xs font-bold text-amber-400 uppercase cursor-pointer flex items-center gap-1.5">
-                        <i class="fa-solid fa-triangle-exclamation"><b>Marcar como URGENTE</b></i>
-                    </label>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Observaciones / Notas</label>
-                    <textarea id="car-notes" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500" placeholder="Anotaciones, recambios pendientes..."></textarea>
-                </div>
-
-                <!-- Historial del vehículo -->
-                <div id="history-container" class="hidden">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Historial de cambios</label>
-                    <div id="car-history-list" class="bg-slate-950 border border-slate-800 rounded-lg p-3 max-h-28 overflow-y-auto text-[11px] text-slate-400 space-y-1"></div>
-                </div>
-
-                <div class="flex justify-between items-center pt-3 border-t border-slate-800">
-                    <button type="button" id="btn-delete-car" onclick="deleteCurrentCar()" class="bg-rose-900/40 hover:bg-rose-900/60 text-rose-300 px-3 py-2 rounded-lg text-xs font-semibold transition hidden">Eliminar Ficha</button>
-                    <div class="flex gap-2 ml-auto">
-                        <button type="button" onclick="closeModal()" class="bg-slate-800 hover:bg-slate-750 text-slate-300 px-4 py-2 rounded-lg text-xs font-semibold transition">Cancelar</button>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-xs font-semibold transition shadow-md">Guardar</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL DE CONFIGURACIÓN (Operarios, Situaciones, Lunas) -->
-    <div id="config-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl my-8">
-            <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-950">
-                <h3 class="font-bold text-white text-base">Panel de Configuración</h3>
-                <button onclick="closeConfigModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            
-            <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
-                
-                <!-- Sección Operarios -->
-                <div>
-                    <div class="flex justify-between items-center mb-2">
-                        <h4 class="text-xs font-bold text-blue-400 uppercase">Operarios (Iniciales)</h4>
-                        <button onclick="addOperarioConfig()" class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded text-xs font-semibold">+ Añadir</button>
-                    </div>
-                    <div id="config-operarios-list" class="space-y-2"></div>
-                </div>
-
-                <!-- Sección Situaciones -->
-                <div class="border-t border-slate-800 pt-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <h4 class="text-xs font-bold text-amber-400 uppercase">Situaciones del vehículo</h4>
-                        <button onclick="addSituacionConfig()" class="bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded text-xs font-semibold">+ Añadir</button>
-                    </div>
-                    <div id="config-situaciones-list" class="space-y-2"></div>
-                </div>
-
-                <!-- Sección Estados de Lunas -->
-                <div class="border-t border-slate-800 pt-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <h4 class="text-xs font-bold text-cyan-400 uppercase">Estados de Lunas</h4>
-                        <button onclick="addLunaConfig()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-2.5 py-1 rounded text-xs font-semibold">+ Añadir</button>
-                    </div>
-                    <div id="config-lunas-list" class="space-y-2"></div>
-                </div>
-
-            </div>
-            
-            <div class="px-6 py-4 bg-slate-950 border-t border-slate-800 flex justify-end">
-                <button onclick="saveConfigChanges()" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-xs font-semibold transition">Guardar y Cerrar</button>
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Entrar al Sistema</button>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPTS FIREBASE Y LÓGICA -->
+    <!-- Pantalla Principal (Tablero Kanban) -->
+    <div id="app-screen" class="container-fluid py-4 px-4" style="display: none;">
+        <nav class="navbar navbar-dark px-4 rounded mb-4 shadow-sm">
+            <span class="navbar-brand mb-0 h1 fw-bold"><i class="fas fa-car me-2 text-info"></i> Planning Taller - Sincronizado</span>
+            <div class="d-flex align-items-center">
+                <span class="text-muted me-3 small"><i class="fas fa-user-circle me-1"></i> taller@taller.com</span>
+                <button class="btn btn-outline-light btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-1"></i> Salir</button>
+            </div>
+        </nav>
+
+        <div class="row mb-4">
+            <div class="col-md-12 text-end">
+                <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#newOrderModal">
+                    <i class="fas fa-plus me-1"></i> Nueva Orden / Vehículo
+                </button>
+            </div>
+        </div>
+
+        <!-- Columnas del Tablero -->
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card card-board h-100 border-top border-warning border-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning fw-bold"><i class="fas fa-clock me-2"></i> Pendientes</h5>
+                        <hr style="border-color: #334155;">
+                        <div id="list-pending" class="d-flex flex-column gap-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card card-board h-100 border-top border-primary border-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary fw-bold"><i class="fas fa-wrench me-2"></i> En Proceso</h5>
+                        <hr style="border-color: #334155;">
+                        <div id="list-progress" class="d-flex flex-column gap-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card card-board h-100 border-top border-success border-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-success fw-bold"><i class="fas fa-check-circle me-2"></i> Finalizados</h5>
+                        <hr style="border-color: #334155;">
+                        <div id="list-finished" class="d-flex flex-column gap-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Orden -->
+    <div class="modal fade" id="newOrderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title fw-bold">Registrar Nuevo Vehículo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="order-form" onsubmit="handleAddOrder(event)">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">Cliente</label>
+                            <input type="text" id="client-name" class="form-control" required placeholder="Ej. Juan Pérez">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">Vehículo (Modelo / Matrícula)</label>
+                            <input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León - 4523XYZ">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">Descripción de la Avería / Trabajo</label>
+                            <textarea id="car-issue" class="form-control" rows="3" required placeholder="Cambio de aceite y revisión"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">Estado Inicial</label>
+                            <select id="car-status" class="form-select">
+                                <option value="pending">Pendiente</option>
+                                <option value="progress">En Proceso</option>
+                                <option value="finished">Finalizado</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">Guardar Orden en la Nube</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Lógica de Firebase Sincronizada -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAz5hL2b_07l7C...",
-            authDomain: "tu-proyecto.firebaseapp.com",
-            projectId: "tu-proyecto",
-            storageBucket: "tu-proyecto.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456:web:abcd"
+            apiKey: "AIzaSyAqzUFL_4PBhpIND_CFIg8...", // (Tus claves reales configuradas)
+            authDomain: "planning-taller-23a87.firebaseapp.com",
+            projectId: "planning-taller-23a87",
+            storageBucket: "planning-taller-23a87.appspot.com",
+            messagingSenderId: "1094366720962",
+            appId: "1:1094366720962:web:860ecb...",
+            measurementId: "G-8B760E9RBP"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let allCars = [];
-        let urgentFilterActive = false;
+        let orders = [];
 
-        // Datos por defecto si no existen en la nube
-        let configData = {
-            operarios: [
-                { id: "op1", initials: "DC", active: true },
-                { id: "op2", initials: "RG", active: true },
-                { id: "op3", initials: "AE", active: true },
-                { id: "op4", initials: "RB", active: true },
-                { id: "op5", initials: "AM", active: true },
-                { id: "op6", initials: "PO", active: true },
-                { id: "op7", initials: "AS", active: true }
-            ],
-            situaciones: [
-                "SIN INCIDENCIAS", "ESPERANDO RECAMBIO", "ESPERANDO PIEZA", 
-                "PARAGOLPES FUERA", "REPARANDO FARO", "ESPERANDO PERITAJE", 
-                "ESPERANDO AUTORIZACIÓN", "ESPERANDO MATERIAL", "TRABAJO EXTRA", 
-                "INCIDENCIA", "PARADO"
-            ],
-            lunas: ["LUNA", "LUNA ACABADA", "PENDIENTE DE LUNA"]
-        };
-
-        const currentUserInitials = "AM"; // Por defecto el usuario activo
-
-        if (localStorage.getItem("taller_auth") === "true") {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-screen').classList.remove('hidden');
-            initApp();
-        }
-
-        window.handleLogin = (e) => {
+        window.handleLogin = function(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const pass = document.getElementById('login-password').value.trim();
-            const errDiv = document.getElementById('login-error');
-            errDiv.classList.add('hidden');
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
 
-            if (email === "taller@taller.com" && pass === "taller123") {
-                localStorage.setItem("taller_auth", "true");
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('app-screen').classList.remove('hidden');
-                initApp();
+            if (email === 'taller@taller.com' && pass === 'taller123') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'block';
+                initRealtimeSync();
             } else {
-                errDiv.textContent = "Correo o contraseña incorrectos. Usa: taller@taller.com / taller123";
-                errDiv.classList.remove('hidden');
+                alert('Credenciales incorrectas. Use taller@taller.com / taller123');
             }
-        };
-
-        window.handleLogout = () => {
-            localStorage.removeItem("taller_auth");
-            location.reload();
-        };
-
-        function initApp() {
-            loadConfigFromFirebase();
-            loadCarsFromFirebase();
         }
 
-        function loadConfigFromFirebase() {
-            onSnapshot(doc(db, "taller_config", "settings"), (docSnap) => {
-                if (docSnap.exists()) {
-                    configData = docSnap.data();
-                } else {
-                    setDoc(doc(db, "taller_config", "settings"), configData);
-                }
-                updateSelectors();
-            });
+        window.handleLogout = function() {
+            document.getElementById('app-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
         }
 
-        function loadCarsFromFirebase() {
-            onSnapshot(collection(db, "taller_coches"), (snapshot) => {
-                allCars = [];
+        function initRealtimeSync() {
+            onSnapshot(collection(db, "orders"), (snapshot) => {
+                orders = [];
                 snapshot.forEach((docSnap) => {
-                    allCars.push({ id: docSnap.id, ...docSnap.data() });
+                    orders.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                filterCards();
+                renderOrders();
             });
         }
 
-        function updateSelectors() {
-            // Operarios (solo activos en selects generales y modal)
-            const opSelects = [document.getElementById('car-operario'), document.getElementById('filter-operario')];
-            opSelects.forEach((select, idx) => {
-                if(!select) return;
-                const currentVal = select.value;
-                select.innerHTML = idx === 1 ? '<option value="">Operario: Todos</option>' : '<option value="">-- Seleccionar --</option>';
-                configData.operarios.forEach(op => {
-                    if(op.active || idx === 1) {
-                        select.innerHTML += `<option value="${op.initials}">${op.initials}${!op.active ? ' (Inactivo)' : ''}</option>`;
-                    }
-                });
-                select.value = currentVal;
-            });
+        function renderOrders() {
+            const pendingContainer = document.getElementById('list-pending');
+            const progressContainer = document.getElementById('list-progress');
+            const finishedContainer = document.getElementById('list-finished');
 
-            // Situaciones
-            const sitSelects = [document.getElementById('car-situacion'), document.getElementById('filter-situacion')];
-            sitSelects.forEach((select, idx) => {
-                if(!select) return;
-                const currentVal = select.value;
-                select.innerHTML = idx === 1 ? '<option value="">Situación: Todas</option>' : '';
-                configData.situaciones.forEach(sit => {
-                    select.innerHTML += `<option value="${sit}">${sit}</option>`;
-                });
-                select.value = currentVal;
-            });
+            pendingContainer.innerHTML = '';
+            progressContainer.innerHTML = '';
+            finishedContainer.innerHTML = '';
 
-            // Lunas
-            const lunaSelect = document.getElementById('car-luna-estado');
-            if(lunaSelect) {
-                const currentVal = lunaSelect.value;
-                lunaSelect.innerHTML = '<option value="">-- Ninguno / No aplica --</option>';
-                configData.lunas.forEach(luna => {
-                    lunaSelect.innerHTML += `<option value="${luna}">${luna}</option>`;
-                });
-                lunaSelect.value = currentVal;
-            }
-        }
+            orders.forEach(order => {
+                const cardHtml = `
+                    <div class="task-card p-3 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h6 class="fw-bold mb-1 text-info">${order.car}</h6>
+                            <button class="btn btn-sm text-danger p-0" onclick="deleteOrder('${order.id}')" title="Eliminar"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <p class="small text-muted mb-1"><strong>Cliente:</strong> ${order.client}</p>
+                        <p class="small mb-2">${order.issue}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <select class="form-select form-select-sm w-auto" onchange="updateStatus('${order.id}', this.value)">
+                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+                                <option value="progress" ${order.status === 'progress' ? 'selected' : ''}>En Proceso</option>
+                                <option value="finished" ${order.status === 'finished' ? 'selected' : ''}>Finalizado</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
 
-        window.renderCards = (cars) => {
-            const cols = { desmontaje: [], pintado: [], lunas: [], montaje: [], terminado: [] };
-            
-            cars.forEach(car => {
-                const colKey = car.status || 'desmontaje';
-                if (cols[colKey]) {
-                    cols[colKey].push(car);
-                } else {
-                    cols.desmontaje.push(car);
+                if (order.status === 'pending') {
+                    pendingContainer.innerHTML += cardHtml;
+                } else if (order.status === 'progress') {
+                    progressContainer.innerHTML += cardHtml;
+                } else if (order.status === 'finished') {
+                    finishedContainer.innerHTML += cardHtml;
                 }
             });
-
-            for (let status in cols) {
-                const container = document.getElementById(`col-${status}`);
-                const counter = document.getElementById(`count-${status}`);
-                if(counter) counter.textContent = cols[status].length;
-                if(container) {
-                    container.innerHTML = '';
-                    cols[status].forEach(car => {
-                        const card = document.createElement('div');
-                        card.className = `bg-slate-900 border ${car.urgent ? 'border-amber-500 shadow-amber-500/10' : 'border-slate-800'} hover:border-slate-700 p-3.5 rounded-xl shadow-md cursor-grab active:cursor-grabbing transition relative group`;
-                        card.draggable = true;
-                        card.ondragstart = (e) => e.dataTransfer.setData('text/plain', car.id);
-                        card.onclick = () => editCar(car.id);
-
-                        // Cálculo de fecha de entrega
-                        const deliveryBadge = getDeliveryBadge(car.deliveryDate);
-
-                        card.innerHTML = `
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="bg-blue-600/20 text-blue-400 text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider">${car.plate}</span>
-                                <div class="flex items-center gap-1.5">
-                                    ${car.urgent ? '<span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-500/30 flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> URGENTE</span>' : ''}
-                                </div>
-                            </div>
-                            <h4 class="font-bold text-white text-xs mb-1.5">${car.model}</h4>
-                            
-                            <div class="flex flex-wrap gap-1 mb-2">
-                                <span class="bg-slate-950 text-slate-300 text-[10px] px-2 py-0.5 rounded border border-slate-800">${car.situacion || 'Sin situación'}</span>
-                                ${car.lunaEstado ? `<span class="bg-cyan-950/60 text-cyan-300 text-[10px] px-2 py-0.5 rounded border border-cyan-800/40">${car.lunaEstado}</span>` : ''}
-                            </div>
-
-                            ${car.notes ? `<p class="text-[11px] text-slate-400 bg-slate-950/50 p-2 rounded border border-slate-800/50 mb-2 truncate">💬 ${car.notes}</p>` : ''}
-
-                            <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-[11px]">
-                                <span class="text-slate-300 font-semibold bg-slate-800 px-1.5 py-0.5 rounded"><i class="fa-solid fa-user-gear mr-1"></i>${car.operario || '??'}</span>
-                                <span class="${deliveryBadge.classes}">${deliveryBadge.text}</span>
-                            </div>
-                        `;
-                        container.appendChild(card);
-                    });
-                }
-            }
-        };
-
-        function getDeliveryBadge(dateStr) {
-            if(!dateStr) return { text: '-', classes: 'text-slate-400' };
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const delivery = new Date(dateStr);
-            delivery.setHours(0,0,0,0);
-
-            const diffDays = Math.round((delivery - today) / (1000 * 60 * 60 * 24));
-
-            if(diffDays < 0) return { text: `Atrasado (${dateStr})`, classes: 'text-rose-400 font-bold' };
-            if(diffDays === 0) return { text: 'Entrega HOY', classes: 'text-amber-400 font-bold' };
-            if(diffDays === 1) return { text: 'Entrega MAÑANA', classes: 'text-blue-400 font-semibold' };
-            if(diffDays <= 3) return { text: `Entrega en ${diffDays} días`, classes: 'text-cyan-400' };
-            return { text: `Entrega: ${dateStr}`, classes: 'text-slate-400' };
         }
 
-        window.allowDrop = (e) => e.preventDefault();
-
-        window.drop = async (e, newStatus) => {
+        window.handleAddOrder = async function(e) {
             e.preventDefault();
-            const carId = e.dataTransfer.getData('text/plain');
-            if (carId) {
-                const car = allCars.find(c => c.id === carId);
-                if(car && car.status !== newStatus) {
-                    const statusNames = { desmontaje: "Desmontaje y Reparación", pintado: "Pintado", lunas: "Lunas", montaje: "Montaje", terminado: "Terminado" };
-                    const historyEntry = `${new Date().toLocaleDateString()} - ${statusNames[car.status] || car.status} → ${statusNames[newStatus]} (Operario: ${car.operario})`;
-                    const newHistory = [historyEntry, ...(car.history || [])];
-
-                    const carRef = doc(db, "taller_coches", carId);
-                    await updateDoc(carRef, { status: newStatus, history: newHistory });
-                }
-            }
-        };
-
-        window.toggleUrgentFilter = () => {
-            urgentFilterActive = !urgentFilterActive;
-            const btn = document.getElementById('btn-filter-urgent');
-            if(urgentFilterActive) {
-                btn.classList.add('bg-amber-600/20', 'border-amber-500', 'text-amber-300');
-            } else {
-                btn.classList.remove('bg-amber-600/20', 'border-amber-500', 'text-amber-300');
-            }
-            filterCards();
-        };
-
-        window.filterCards = () => {
-            const searchText = document.getElementById('search-input').value.toLowerCase();
-            const operarioFilter = document.getElementById('filter-operario').value;
-            const situacionFilter = document.getElementById('filter-situacion').value;
-
-            const filtered = allCars.filter(car => {
-                const matchesSearch = car.plate.toLowerCase().includes(searchText) || car.model.toLowerCase().includes(searchText);
-                const matchesOperario = operarioFilter === "" || car.operario === operarioFilter;
-                const matchesSituacion = situacionFilter === "" || car.situacion === situacionFilter;
-                const matchesUrgent = !urgentFilterActive || car.urgent === true;
-                return matchesSearch && matchesOperario && matchesSituacion && matchesUrgent;
-            });
-
-            renderCards(filtered);
-        };
-
-        window.openModal = () => {
-            document.getElementById('car-form').reset();
-            document.getElementById('car-id').value = '';
-            document.getElementById('modal-title').textContent = "Nuevo Vehículo";
-            document.getElementById('btn-delete-car').classList.add('hidden');
-            document.getElementById('history-container').classList.add('hidden');
-            
-            // Fechas por defecto hoy
-            const todayStr = new Date().toISOString().split('T')[0];
-            document.getElementById('car-entry').value = todayStr;
-            document.getElementById('car-delivery').value = todayStr;
-
-            document.getElementById('car-modal').classList.remove('hidden');
-            document.getElementById('car-modal').classList.add('flex');
-        };
-
-        window.closeModal = () => {
-            document.getElementById('car-modal').classList.remove('flex');
-            document.getElementById('car-modal').classList.add('hidden');
-        };
-
-        window.saveCar = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('car-id').value;
-            
-            const carData = {
-                plate: document.getElementById('car-plate').value.toUpperCase(),
-                model: document.getElementById('car-model').value,
-                operario: document.getElementById('car-operario').value,
-                entryDate: document.getElementById('car-entry').value,
-                deliveryDate: document.getElementById('car-delivery').value,
-                situacion: document.getElementById('car-situacion').value,
-                lunaEstado: document.getElementById('car-luna-estado').value,
-                urgent: document.getElementById('car-urgent').checked,
-                notes: document.getElementById('car-notes').value
-            };
-
-            if (id) {
-                const existing = allCars.find(c => c.id === id);
-                carData.status = existing.status || 'desmontaje';
-                carData.history = existing.history || [];
-                
-                // Si cambió de operario, registrar en historial
-                if(existing.operario !== carData.operario) {
-                    carData.history = [`${new Date().toLocaleDateString()} - Cambio de operario: ${existing.operario} → ${carData.operario}`, ...carData.history];
-                }
-
-                await updateDoc(doc(db, "taller_coches", id), carData);
-            } else {
-                carData.status = 'desmontaje';
-                carData.history = [`${new Date().toLocaleDateString()} - Ficha creada (Operario: ${carData.operario})`];
-                await addDoc(collection(db, "taller_coches"), carData);
-            }
-            closeModal();
-        };
-
-        window.editCar = (id) => {
-            const car = allCars.find(c => c.id === id);
-            if (!car) return;
-            document.getElementById('car-id').value = car.id;
-            document.getElementById('car-plate').value = car.plate;
-            document.getElementById('car-model').value = car.model;
-            document.getElementById('car-operario').value = car.operario || "";
-            document.getElementById('car-entry').value = car.entryDate || '';
-            document.getElementById('car-delivery').value = car.deliveryDate || '';
-            document.getElementById('car-situacion').value = car.situacion || "";
-            document.getElementById('car-luna-estado').value = car.lunaEstado || "";
-            document.getElementById('car-urgent').checked = car.urgent || false;
-            document.getElementById('car-notes').value = car.notes || '';
-            
-            // Historial
-            const historyList = document.getElementById('car-history-list');
-            historyList.innerHTML = '';
-            if(car.history && car.history.length > 0) {
-                car.history.forEach(h => {
-                    historyList.innerHTML += `<div>• ${h}</div>`;
+            try {
+                await addDoc(collection(db, "orders"), {
+                    client: document.getElementById('client-name').value,
+                    car: document.getElementById('car-model').value,
+                    issue: document.getElementById('car-issue').value,
+                    status: document.getElementById('car-status').value,
+                    createdAt: Date.now()
                 });
-                document.getElementById('history-container').classList.remove('hidden');
-            } else {
-                document.getElementById('history-container').classList.add('hidden');
+
+                document.getElementById('order-form').reset();
+                const modalEl = document.getElementById('newOrderModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+            } catch (error) {
+                alert("Error al guardar la orden: " + error.message);
             }
-
-            document.getElementById('modal-title').textContent = "Editar Ficha de Vehículo";
-            document.getElementById('btn-delete-car').classList.remove('hidden');
-            document.getElementById('car-modal').classList.remove('hidden');
-            document.getElementById('car-modal').classList.add('flex');
-        };
-
-        window.deleteCurrentCar = async () => {
-            const id = document.getElementById('car-id').value;
-            if (id && confirm("¿Estás seguro de eliminar este vehículo del planning?")) {
-                await deleteDoc(doc(db, "taller_coches", id));
-                closeModal();
-            }
-        };
-
-        // GESTIÓN DE CONFIGURACIÓN
-        window.openConfigModal = () => {
-            renderConfigLists();
-            document.getElementById('config-modal').classList.remove('hidden');
-            document.getElementById('config-modal').classList.add('flex');
-        };
-
-        window.closeConfigModal = () => {
-            document.getElementById('config-modal').classList.remove('flex');
-            document.getElementById('config-modal').classList.add('hidden');
-        };
-
-        function renderConfigLists() {
-            // Operarios
-            const opContainer = document.getElementById('config-operarios-list');
-            opContainer.innerHTML = '';
-            configData.operarios.forEach((op, index) => {
-                opContainer.innerHTML += `
-                    <div class="flex items-center gap-2 bg-slate-950 p-2 rounded border border-slate-800">
-                        <input type="text" value="${op.initials}" onchange="updateOpInitials(${index}, this.value)" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white text-xs w-20 text-center font-bold uppercase" maxlength="3">
-                        <label class="text-xs text-slate-300 flex items-center gap-1.5 cursor-pointer ml-auto">
-                            <input type="checkbox" ${op.active ? 'checked' : ''} onchange="toggleOpActive(${index})" class="accent-blue-500"> Activo
-                        </label>
-                        <button onclick="removeOperario(${index})" class="text-rose-400 hover:text-rose-300 px-2 py-1 text-xs"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-            });
-
-            // Situaciones
-            const sitContainer = document.getElementById('config-situaciones-list');
-            sitContainer.innerHTML = '';
-            configData.situaciones.forEach((sit, index) => {
-                sitContainer.innerHTML += `
-                    <div class="flex items-center gap-2 bg-slate-950 p-2 rounded border border-slate-800">
-                        <input type="text" value="${sit}" onchange="updateSituacion(${index}, this.value)" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white text-xs flex-1 uppercase">
-                        <button onclick="removeSituacion(${index})" class="text-rose-400 hover:text-rose-300 px-2 py-1 text-xs"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-            });
-
-            // Lunas
-            const lunaContainer = document.getElementById('config-lunas-list');
-            lunaContainer.innerHTML = '';
-            configData.lunas.forEach((luna, index) => {
-                lunaContainer.innerHTML += `
-                    <div class="flex items-center gap-2 bg-slate-950 p-2 rounded border border-slate-800">
-                        <input type="text" value="${luna}" onchange="updateLuna(${index}, this.value)" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white text-xs flex-1 uppercase">
-                        <button onclick="removeLuna(${index})" class="text-rose-400 hover:text-rose-300 px-2 py-1 text-xs"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-            });
         }
 
-        window.addOperarioConfig = () => {
-            configData.operarios.push({ id: "op_" + Date.now(), initials: "XX", active: true });
-            renderConfigLists();
-        };
-        window.updateOpInitials = (index, val) => { configData.operarios[index].initials = val.toUpperCase(); };
-        window.toggleOpActive = (index) => { configData.operarios[index].active = !configData.operarios[index].active; };
-        window.removeOperario = (index) => { configData.operarios.splice(index, 1); renderConfigLists(); };
+        window.updateStatus = async function(id, newStatus) {
+            try {
+                const orderRef = doc(db, "orders", id);
+                await updateDoc(orderRef, { status: newStatus });
+            } catch (error) {
+                alert("Error al actualizar: " + error.message);
+            }
+        }
 
-        window.addSituacionConfig = () => { configData.situaciones.push("NUEVA SITUACIÓN"); renderConfigLists(); };
-        window.updateSituacion = (index, val) => { configData.situaciones[index] = val.toUpperCase(); };
-        window.removeSituacion = (index) => { configData.situaciones.splice(index, 1); renderConfigLists(); };
-
-        window.addLunaConfig = () => { configData.lunas.push("NUEVO ESTADO LUNA"); renderConfigLists(); };
-        window.updateLuna = (index, val) => { configData.lunas[index] = val.toUpperCase(); };
-        window.removeLuna = (index) => { configData.lunas.splice(index, 1); renderConfigLists(); };
-
-        window.saveConfigChanges = async () => {
-            await setDoc(doc(db, "taller_config", "settings"), configData);
-            closeConfigModal();
-            updateSelectors();
-        };
+        window.deleteOrder = async function(id) {
+            if (confirm('¿Estás seguro de eliminar esta orden?')) {
+                try {
+                    await deleteDoc(doc(db, "orders", id));
+                } catch (error) {
+                    alert("Error al eliminar: " + error.message);
+                }
+            }
+        }
     </script>
 </body>
 </html>
