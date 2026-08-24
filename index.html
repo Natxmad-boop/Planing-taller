@@ -24,9 +24,6 @@
             border-bottom: 1px solid var(--border-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .navbar-brand, .nav-link, #user-display {
-            color: var(--text-main) !important;
-        }
         .kanban-container {
             display: flex;
             gap: 1rem;
@@ -67,40 +64,11 @@
             border-color: #dc2626 !important;
             background-color: #fef2f2 !important;
         }
-        .task-card:hover {
-            border-color: var(--accent-blue);
-            transform: translateY(-2px);
-        }
-        .form-control, .form-select {
-            background-color: #ffffff;
-            border-color: var(--border-color);
-            color: var(--text-main);
-        }
-        .form-control:focus, .form-select:focus {
-            background-color: #ffffff;
-            color: var(--text-main);
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
-        }
-        .modal-content {
-            background-color: #ffffff;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
         .login-card {
             background-color: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        /* Estilo para cuando la privacidad está activa en el logo */
-        .brand-pro-btn {
-            cursor: pointer;
-            user-select: none;
-            transition: opacity 0.2s;
-        }
-        .brand-pro-btn:hover {
-            opacity: 0.8;
         }
         .privacy-active {
             color: #2563eb !important;
@@ -137,24 +105,22 @@
     <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
-            <!-- La P de Pro actúa como interruptor secreto de privacidad de matrículas -->
-            <span class="navbar-brand mb-0 h1 fw-bold brand-pro-btn" onclick="togglePrivacyMode()" title="Haz clic para ocultar/mostrar matrículas (Protección LOPD)">
-                <i class="fas fa-car me-2 text-primary" id="privacy-icon"></i> Planning Taller <span id="pro-label" class="privacy-active">Pro</span>
+            <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
+                <i class="fas fa-car me-2 text-primary"></i> Planning Taller <span id="pro-label" class="privacy-active">Pro</span>
             </span>
             <div class="ms-auto d-flex align-items-center">
                 <span id="sync-status" class="badge bg-warning text-dark me-3"><i class="fas fa-sync fa-spin me-1"></i> Conectando...</span>
                 <span id="user-display" class="text-secondary me-3 small d-none d-md-inline"><i class="fas fa-user-circle me-1"></i> Usuario</span>
-                <button class="btn btn-outline-primary btn-sm me-2 fw-bold" data-bs-toggle="modal" data-bs-target="#operatorsModal"><i class="fas fa-users-cog me-1"></i> Gestionar Operarios</button>
+                <button class="btn btn-outline-primary btn-sm me-2 fw-bold" data-bs-toggle="modal" data-bs-target="#operatorsModal"><i class="fas fa-users-cog me-1"></i> Operarios</button>
                 <button class="btn btn-outline-secondary btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-1"></i> Salir</button>
             </div>
         </nav>
 
-        <!-- Barra de búsqueda y botón nuevo -->
         <div class="row mb-4 align-items-center">
             <div class="col-md-7 mb-2 mb-md-0">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado, operario o notas..." oninput="renderOrders()">
+                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado, operario..." oninput="renderOrders()">
                 </div>
             </div>
             <div class="col-md-5 text-md-end">
@@ -166,87 +132,73 @@
 
         <!-- Tablero Kanban -->
         <div class="kanban-container">
-            <!-- 1. Lunas -->
             <div class="kanban-col p-3 border-top border-secondary border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
                     <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
                 </div>
-                <hr style="border-color: var(--border-color);">
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <!-- 2. Reparación -->
             <div class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-warning"></i> Reparación</h6>
                     <span id="count-reparacion" class="badge bg-warning text-dark rounded-pill">0</span>
                 </div>
-                <hr style="border-color: var(--border-color);">
                 <div id="list-reparacion" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')"></div>
             </div>
 
-            <!-- 3. Pintado -->
             <div class="kanban-col p-3 border-top border-info border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-info"></i> Pintado</h6>
                     <span id="count-pintado" class="badge bg-info text-dark rounded-pill">0</span>
                 </div>
-                <hr style="border-color: var(--border-color);">
                 <div id="list-pintado" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintado')"></div>
             </div>
 
-            <!-- 4. Montaje -->
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-tools me-1 text-primary"></i> Montaje</h6>
                     <span id="count-montaje" class="badge bg-primary rounded-pill">0</span>
                 </div>
-                <hr style="border-color: var(--border-color);">
                 <div id="list-montaje" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'montaje')"></div>
             </div>
 
-            <!-- 5. Terminados -->
             <div class="kanban-col p-3 border-top border-success border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
                     <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
                 </div>
-                <hr style="border-color: var(--border-color);">
                 <div id="list-terminados" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados')"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Gestión de Operarios -->
+    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
-                <div class="modal-header border-bottom border-light">
-                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-users-cog me-2 text-primary"></i> Administrar Operarios</h5>
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark">Administrar Operarios</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form onsubmit="handleAddOperator(event)" class="mb-4">
-                        <label class="form-label small text-secondary fw-bold">Añadir Nuevo Operario</label>
                         <div class="input-group">
-                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. Juan, Pedro, J.M.">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Nombre del operario">
                             <button type="submit" class="btn btn-primary fw-bold">Añadir</button>
                         </div>
                     </form>
-                    <hr style="border-color: var(--border-color);">
-                    <h6 class="fw-bold text-secondary small text-uppercase mb-3">Listado de Operarios Actuales:</h6>
                     <div id="operators-list" class="d-flex flex-column gap-2" style="max-height: 250px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Nueva Orden -->
     <div class="modal fade" id="newOrderModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
-                <div class="modal-header border-bottom border-light">
+                <div class="modal-header">
                     <h5 class="modal-title fw-bold text-dark">Registrar Nuevo Vehículo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -258,41 +210,38 @@
                                 <input type="text" id="car-plate" class="form-control text-uppercase" required placeholder="Ej. 4523XYZ">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Modelo del Coche</label>
+                                <label class="form-label small text-secondary fw-bold">Modelo</label>
                                 <input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Fecha de Entrada</label>
+                                <label class="form-label small text-secondary fw-bold">Entrada</label>
                                 <input type="date" id="date-in" class="form-control" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Fecha de Salida (Prevista)</label>
+                                <label class="form-label small text-secondary fw-bold">Salida Prevista</label>
                                 <input type="date" id="date-out" class="form-control" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Operario Asignado</label>
+                                <label class="form-label small text-secondary fw-bold">Operario</label>
                                 <select id="operator-select" class="form-select" required>
-                                    <option value="">Selecciona operario...</option>
+                                    <option value="">Selecciona...</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Estado Específico</label>
+                                <label class="form-label small text-secondary fw-bold">Subestado</label>
                                 <select id="car-substatus" class="form-select">
                                     <option value="">Ninguno / Normal</option>
                                     <option value="Paragolpes fuera">Paragolpes fuera</option>
-                                    <option value="Pendiente de recambios">Pendiente de recambios</option>
-                                    <option value="Reparando faro">Reparando faro</option>
-                                    <option value="Esperando luna">Esperando luna</option>
-                                    <option value="Luna aquí">Luna aquí</option>
+                                    <option value="Pendiente recambios">Pendiente recambios</option>
                                 </select>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small text-secondary fw-bold">Apartado Inicial (Fase Kanban)</label>
+                            <label class="form-label small text-secondary fw-bold">Fase Inicial</label>
                             <select id="car-status" class="form-select">
                                 <option value="lunas">1. Lunas</option>
                                 <option value="reparacion">2. Reparación</option>
@@ -302,26 +251,25 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small text-secondary fw-bold">Notas / Observaciones</label>
-                            <textarea id="car-notes" class="form-control" rows="2" placeholder="Detalles adicionales..."></textarea>
+                            <label class="form-label small text-secondary fw-bold">Notas</label>
+                            <textarea id="car-notes" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="car-urgent">
-                            <label class="form-check-label text-danger fw-bold" for="car-urgent"><i class="fas fa-bell me-1"></i> Marcar como Urgente (Alarma)</label>
+                            <label class="form-check-label text-danger fw-bold" for="car-urgent">Urgente</label>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">Guardar Orden en la Nube</button>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Orden</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Detalle y Edición Total de la Ficha -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
-                <div class="modal-header border-bottom border-light">
-                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-edit me-2 text-primary"></i> Gestionar Ficha y Datos Completos</h5>
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark">Gestionar Ficha y Trazabilidad</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="detail-modal-body"></div>
@@ -329,17 +277,16 @@
         </div>
     </div>
 
-    <!-- Modal Selección Forzosa de Operario al Mover de Columna -->
     <div class="modal fade" id="operatorPromptModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-sm">
             <div class="modal-content shadow">
-                <div class="modal-header border-bottom border-light">
-                    <h6 class="modal-title fw-bold text-dark"><i class="fas fa-user-check me-2 text-primary"></i> Asignar Operario</h6>
+                <div class="modal-header">
+                    <h6 class="modal-title fw-bold text-dark">Asignar Operario</h6>
                 </div>
                 <div class="modal-body">
-                    <p class="small text-muted">Al mover de columna, selecciona el operario encargado o déjalo libre:</p>
+                    <p class="small text-muted">Selecciona el operario para este cambio:</p>
                     <select id="prompt-operator-select" class="form-select mb-3">
-                        <option value="">Sin asignar (Libre)</option>
+                        <option value="">Sin asignar</option>
                     </select>
                     <div class="d-flex gap-2">
                         <button class="btn btn-secondary btn-sm w-50" onclick="cancelPendingMove()">Cancelar</button>
@@ -350,10 +297,7 @@
         </div>
     </div>
 
-    <!-- Scripts Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Conexión Firebase y Lógica -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -374,84 +318,44 @@
         let orders = [];
         let operators = [];
         let pendingMoveData = null;
-        let privacyModeActive = true; // Arranca por defecto en modo oculto por seguridad (LOPD)
+        let privacyModeActive = true;
 
-        window.togglePrivacyMode = function() {
-            privacyModeActive = !privacyModeActive;
-            const proLabel = document.getElementById('pro-label');
-            if (privacyModeActive) {
-                proLabel.classList.add('privacy-active');
-            } else {
-                proLabel.classList.remove('privacy-active');
-            }
-            renderOrders(); // Refresca las tarjetas para aplicar el cambio visual instantáneo
-        }
-
-        window.setDefaultDates = function() {
+        window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
+        window.setDefaultDates = () => {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date-in').value = today;
             document.getElementById('date-out').value = today;
         }
 
-        window.handleLogin = function(e) {
+        window.handleLogin = (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value.trim();
-
-            const validUsers = {
-                "taller@taller.com": "taller123",
-                "jefe@taller.com": "jefe123"
-            };
-
-            if (validUsers[email] && validUsers[email] === pass) {
+            if ((email === "taller@taller.com" && pass === "taller123") || (email === "jefe@taller.com" && pass === "jefe123")) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-screen').style.display = 'block';
                 document.getElementById('user-display').innerHTML = `<i class="fas fa-user-circle me-1"></i> ${email}`;
                 initRealtimeSync();
-            } else {
-                alert('Correo o contraseña incorrectos.');
-            }
+            } else { alert('Correo o contraseña incorrectos.'); }
         }
 
-        window.handleLogout = function() {
-            // Ocultar pantalla de la aplicación y mostrar login
+        window.handleLogout = () => {
             document.getElementById('app-screen').style.display = 'none';
             document.getElementById('login-screen').style.display = 'block';
-            
-            // BORRAR Y LIMPIAR CAMPOS DE CREDENCIALES POR SEGURIDAD
-            document.getElementById('login-email').value = '';
-            document.getElementById('login-password').value = '';
-            document.getElementById('user-display').innerHTML = '';
-            
-            // Forzar reinicio del formulario por si el navegador intenta rellenar por autocompletado
-            document.getElementById('login-form').reset();
         }
 
         function initRealtimeSync() {
-            const syncStatusBadge = document.getElementById('sync-status');
-            
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 orders = [];
-                snapshot.forEach((docSnap) => {
-                    orders.push({ id: docSnap.id, ...docSnap.data() });
-                });
+                snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
                 renderOrders();
-                syncStatusBadge.className = "badge bg-success text-white me-3";
-                syncStatusBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado';
-            }, (error) => {
-                console.error("Error órdenes:", error);
-                syncStatusBadge.className = "badge bg-danger text-white me-3";
-                syncStatusBadge.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Error de Red';
+                document.getElementById('sync-status').className = "badge bg-success text-white me-3";
+                document.getElementById('sync-status').innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado';
             });
-
             onSnapshot(collection(db, "operators"), (snapshot) => {
                 operators = [];
-                snapshot.forEach((docSnap) => {
-                    operators.push({ id: docSnap.id, ...docSnap.data() });
-                });
+                snapshot.forEach(docSnap => operators.push({ id: docSnap.id, ...docSnap.data() }));
                 renderOperatorsUI();
-            }, (error) => {
-                console.error("Error operarios:", error);
             });
         }
 
@@ -459,111 +363,68 @@
             const listContainer = document.getElementById('operators-list');
             const selectContainer = document.getElementById('operator-select');
             const promptSelectContainer = document.getElementById('prompt-operator-select');
-            
             listContainer.innerHTML = '';
             selectContainer.innerHTML = '<option value="">Selecciona operario...</option>';
             promptSelectContainer.innerHTML = '<option value="">Sin asignar (Libre)</option>';
 
-            if (operators.length === 0) {
-                listContainer.innerHTML = '<p class="text-muted small text-center my-2">No hay operarios creados.</p>';
-            }
-
             operators.forEach(op => {
-                listContainer.innerHTML += `
-                    <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border border-secondary">
-                        <span class="fw-bold text-dark"><i class="fas fa-user me-2 text-primary"></i> ${op.name}</span>
-                        <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
+                listContainer.innerHTML += `<div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border"><span>${op.name}</span><button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button></div>`;
                 selectContainer.innerHTML += `<option value="${op.name}">${op.name}</option>`;
                 promptSelectContainer.innerHTML += `<option value="${op.name}">${op.name}</option>`;
             });
         }
 
-        window.handleAddOperator = async function(e) {
+        window.handleAddOperator = async (e) => {
             e.preventDefault();
             const nameInput = document.getElementById('new-operator-name');
-            const name = nameInput.value.trim();
-            if (!name) return;
-
-            try {
-                await addDoc(collection(db, "operators"), { name });
-                nameInput.value = '';
-            } catch (error) {
-                alert("Error: " + error.message);
-            }
+            if (!nameInput.value.trim()) return;
+            await addDoc(collection(db, "operators"), { name: nameInput.value.trim() });
+            nameInput.value = '';
         }
 
-        window.deleteOperator = async function(id) {
-            if (confirm('¿Eliminar este operario?')) {
-                try {
-                    await deleteDoc(doc(db, "operators", id));
-                } catch (error) {
-                    alert("Error: " + error.message);
-                }
-            }
-        }
+        window.deleteOperator = async (id) => { if (confirm('¿Eliminar operario?')) await deleteDoc(doc(db, "operators", id)); }
 
-        // Drag and Drop
-        window.allowDrop = function(ev) {
-            ev.preventDefault();
-            ev.currentTarget.classList.add('drag-over');
-        }
-
-        window.removeDropStyle = function(ev) {
-            ev.currentTarget.classList.remove('drag-over');
-        }
-
-        window.drag = function(ev, id) {
-            ev.dataTransfer.setData("text/plain", id);
-        }
-
-        window.dropOrder = function(ev, targetStatus) {
+        window.allowDrop = (ev) => { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
+        window.removeDropStyle = (ev) => { ev.currentTarget.classList.remove('drag-over'); }
+        window.drag = (ev, id) => { ev.dataTransfer.setData("text/plain", id); }
+        window.dropOrder = (ev, targetStatus) => {
             ev.preventDefault();
             ev.currentTarget.classList.remove('drag-over');
             const orderId = ev.dataTransfer.getData("text/plain");
-            if (orderId) {
-                initiateStatusChange(orderId, targetStatus);
-            }
+            if (orderId) initiateStatusChange(orderId, targetStatus);
         }
 
-        window.initiateStatusChange = function(orderId, newStatus) {
+        window.initiateStatusChange = (orderId, newStatus) => {
             const order = orders.find(o => o.id === orderId);
-            if (!order) return;
-            if (order.status === newStatus) return;
-
+            if (!order || order.status === newStatus) return;
             pendingMoveData = { orderId, newStatus };
             document.getElementById('prompt-operator-select').value = order.operator || "";
-            const promptModal = new bootstrap.Modal(document.getElementById('operatorPromptModal'));
-            promptModal.show();
+            new bootstrap.Modal(document.getElementById('operatorPromptModal')).show();
         }
 
-        window.confirmPendingMove = async function() {
+        window.confirmPendingMove = async () => {
             if (!pendingMoveData) return;
             const chosenOperator = document.getElementById('prompt-operator-select').value;
             const { orderId, newStatus } = pendingMoveData;
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
 
-            try {
-                const orderRef = doc(db, "orders", orderId);
-                await updateDoc(orderRef, { status: newStatus, operator: chosenOperator });
-                bootstrap.Modal.getInstance(document.getElementById('operatorPromptModal')).hide();
-                pendingMoveData = null;
-            } catch (error) {
-                alert("Error: " + error.message);
-            }
-        }
+            const historyEntry = { status: newStatus, operator: chosenOperator || "Sin asignar", date: new Date().toLocaleString() };
+            const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
 
-        window.cancelPendingMove = function() {
+            await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: chosenOperator, history: updatedHistory });
+            bootstrap.Modal.getInstance(document.getElementById('operatorPromptModal')).hide();
             pendingMoveData = null;
-            const modalEl = document.getElementById('operatorPromptModal');
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            if (modal) modal.hide();
         }
 
-        window.renderOrders = function() {
+        window.cancelPendingMove = () => {
+            pendingMoveData = null;
+            bootstrap.Modal.getInstance(document.getElementById('operatorPromptModal')).hide();
+        }
+
+        window.renderOrders = () => {
             const searchVal = document.getElementById('search-input').value.toLowerCase();
             const todayStr = new Date().toISOString().split('T')[0];
-            
             const containers = {
                 lunas: document.getElementById('list-lunas'),
                 reparacion: document.getElementById('list-reparacion'),
@@ -571,244 +432,80 @@
                 montaje: document.getElementById('list-montaje'),
                 terminados: document.getElementById('list-terminados')
             };
-
             Object.values(containers).forEach(c => c.innerHTML = '');
             let counts = { lunas: 0, reparacion: 0, pintado: 0, montaje: 0, terminados: 0 };
 
-            const filteredOrders = orders.filter(order => {
-                const plate = (order.plate || '').toLowerCase();
-                const model = (order.model || '').toLowerCase();
-                const notes = (order.notes || '').toLowerCase();
-                const substatus = (order.substatus || '').toLowerCase();
-                const operator = (order.operator || '').toLowerCase();
-                return plate.includes(searchVal) || model.includes(searchVal) || notes.includes(searchVal) || substatus.includes(searchVal) || operator.includes(searchVal);
-            });
-
-            filteredOrders.forEach(order => {
+            orders.filter(order => {
+                return (order.plate || '').toLowerCase().includes(searchVal) || (order.model || '').toLowerCase().includes(searchVal) || (order.operator || '').toLowerCase().includes(searchVal);
+            }).forEach(order => {
                 let status = order.status || 'lunas';
                 if (counts[status] !== undefined) counts[status]++;
-
-                const isUrgent = order.urgent ? 'urgent' : '';
-                const urgentBadge = order.urgent ? '<span class="badge bg-danger ms-1"><i class="fas fa-exclamation-triangle"></i> URGENTE</span>' : '';
-
-                let isOverdue = false;
-                if (order.dateOut && order.dateOut < todayStr && status !== 'terminados') {
-                    isOverdue = true;
-                }
-
-                const cardClass = isUrgent ? 'urgent' : (isOverdue ? 'overdue' : '');
-                const dateOutDisplay = isOverdue ? `<span class="text-danger fw-bold"><i class="fas fa-clock me-1"></i> ${order.dateOut} (¡Retrasado!)</span>` : (order.dateOut || '-');
-
-                // Lógica de Privacidad para la Matrícula (arranca protegida por defecto)
+                
                 let displayPlate = order.plate.toUpperCase();
-                if (privacyModeActive && displayPlate.length > 4) {
-                    displayPlate = "**** " + displayPlate.slice(-4);
-                }
+                if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
 
-                let substatusBadge = '';
-                if (order.substatus) {
-                    substatusBadge = `<div class="mt-1"><strong>Estado:</strong> <span class="badge bg-primary">${order.substatus}</span></div>`;
-                }
+                let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
+                let cardClass = order.urgent ? 'urgent' : (isOverdue ? 'overdue' : '');
 
-                const notesPreview = order.notes ? `<div class="text-truncate small text-muted mt-1"><i class="fas fa-comment-alt me-1"></i> ${order.notes}</div>` : '<div class="small text-muted fst-italic mt-1">Sin notas adicionales</div>';
-
-                const cardHtml = `
+                containers[status].innerHTML += `
                     <div class="task-card p-3 ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold mb-0 text-dark"><i class="fas fa-car me-1 text-primary"></i> ${displayPlate} - ${order.model} ${urgentBadge}</h6>
-                            <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')" title="Eliminar orden"><i class="fas fa-trash"></i></button>
+                            <h6 class="fw-bold mb-0 text-dark">${displayPlate} - ${order.model}</h6>
+                            <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
                         </div>
                         <div class="small text-secondary mb-1">
-                            <div><strong>Entrada:</strong> ${order.dateIn || '-'} | <strong>Salida:</strong> ${dateOutDisplay}</div>
-                            <div><strong>Operario:</strong> <span class="badge bg-white border text-dark">${order.operator || 'No asignado'}</span></div>
-                            ${substatusBadge}
+                            <div><strong>Operario:</strong> ${order.operator || 'No asignado'}</div>
+                            <div><strong>Salida:</strong> ${order.dateOut || '-'}</div>
                         </div>
-                        ${notesPreview}
-                        
-                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top" onclick="event.stopPropagation()">
-                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="toggleUrgent('${order.id}', ${!order.urgent})" title="Cambiar urgencia"><i class="fas fa-bell"></i></button>
-                            <select class="form-select form-select-sm w-auto" onchange="initiateStatusChange('${order.id}', this.value)">
-                                <option value="lunas" ${status === 'lunas' ? 'selected' : ''}>1. Lunas</option>
-                                <option value="reparacion" ${status === 'reparacion' ? 'selected' : ''}>2. Reparación</option>
-                                <option value="pintado" ${status === 'pintado' ? 'selected' : ''}>3. Pintado</option>
-                                <option value="montaje" ${status === 'montaje' ? 'selected' : ''}>4. Montaje</option>
-                                <option value="terminados" ${status === 'terminados' ? 'selected' : ''}>5. Terminados</option>
-                            </select>
-                        </div>
+                        <select class="form-select form-select-sm mt-2" onclick="event.stopPropagation()" onchange="initiateStatusChange('${order.id}', this.value)">
+                            <option value="lunas" ${status === 'lunas' ? 'selected' : ''}>1. Lunas</option>
+                            <option value="reparacion" ${status === 'reparacion' ? 'selected' : ''}>2. Reparación</option>
+                            <option value="pintado" ${status === 'pintado' ? 'selected' : ''}>3. Pintado</option>
+                            <option value="montaje" ${status === 'montaje' ? 'selected' : ''}>4. Montaje</option>
+                            <option value="terminados" ${status === 'terminados' ? 'selected' : ''}>5. Terminados</option>
+                        </select>
                     </div>
                 `;
-
-                if (containers[status]) {
-                    containers[status].innerHTML += cardHtml;
-                }
             });
 
-            document.getElementById('count-lunas').innerText = counts.lunas;
-            document.getElementById('count-reparacion').innerText = counts.reparacion;
-            document.getElementById('count-pintado').innerText = counts.pintado;
-            document.getElementById('count-montaje').innerText = counts.montaje;
-            document.getElementById('count-terminados').innerText = counts.terminados;
+            Object.keys(counts).forEach(k => { document.getElementById(`count-${k}`).innerText = counts[k]; });
         }
 
-        window.openDetailModal = function(id) {
+        window.openDetailModal = (id) => {
             const order = orders.find(o => o.id === id);
             if (!order) return;
-
-            let operatorOptions = `<option value="">-- Sin asignar (Libre) --</option>`;
-            operators.forEach(op => {
-                const selected = order.operator === op.name ? 'selected' : '';
-                operatorOptions += `<option value="${op.name}" ${selected}>${op.name}</option>`;
-            });
-
-            const substatusList = ["", "Paragolpes fuera", "Pendiente de recambios", "Reparando faro", "Esperando luna", "Luna aquí"];
-            let substatusOptions = "";
-            substatusList.forEach(st => {
-                const val = st === "" ? "Ninguno / Normal" : st;
-                const sel = (order.substatus || "") === st ? "selected" : "";
-                substatusOptions += `<option value="${st}" ${sel}>${val}</option>`;
-            });
-
-            const modalBody = document.getElementById('detail-modal-body');
-            modalBody.innerHTML = `
-                <div class="mb-4 d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="badge bg-secondary">${order.status.toUpperCase()}</span>
-                        ${order.urgent ? '<span class="badge bg-danger ms-1">URGENTE</span>' : ''}
-                    </div>
-                </div>
-                
-                <form onsubmit="saveOrderEdits(event, '${order.id}')">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-secondary">Matrícula:</label>
-                            <input type="text" id="edit-modal-plate" class="form-control text-uppercase" value="${order.plate || ''}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-secondary">Modelo del Coche:</label>
-                            <input type="text" id="edit-modal-model" class="form-control" value="${order.model || ''}" required>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-secondary">Fecha de Entrada:</label>
-                            <input type="date" id="edit-modal-datein" class="form-control" value="${order.dateIn || ''}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-secondary">Fecha de Salida (Prevista):</label>
-                            <input type="date" id="edit-modal-dateout" class="form-control" value="${order.dateOut || ''}" required>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-secondary">Operario Asignado:</label>
-                            <select id="edit-modal-operator" class="form-select">
-                                ${operatorOptions}
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-secondary">Estado Específico del Taller:</label>
-                            <select id="edit-modal-substatus" class="form-select">
-                                ${substatusOptions}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-secondary">Notas / Observaciones:</label>
-                        <textarea id="edit-modal-notes" class="form-control" rows="4">${order.notes || ''}</textarea>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearOperatorFromModal('${order.id}')"><i class="fas fa-user-times me-1"></i> Quitar Operario</button>
-                        <button type="submit" class="btn btn-primary fw-bold px-4"><i class="fas fa-save me-1"></i> Guardar Todos los Cambios</button>
-                    </div>
-                </form>
+            let historyHtml = '<p class="text-muted small">Sin historial previo.</p>';
+            if (order.history) {
+                historyHtml = `<ul class="small ps-3 mb-0">${order.history.map(h => `<li><strong>${h.status.toUpperCase()}</strong> - ${h.operator} (${h.date})</li>`).join('')}</ul>`;
+            }
+            document.getElementById('detail-modal-body').innerHTML = `
+                <h6 class="fw-bold text-secondary small">Historial de Operarios</h6>
+                ${historyHtml}
             `;
-
-            const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
-            detailModal.show();
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
         }
 
-        window.saveOrderEdits = async function(e, id) {
+        window.handleAddOrder = async (e) => {
             e.preventDefault();
-            const newPlate = document.getElementById('edit-modal-plate').value.trim();
-            const newModel = document.getElementById('edit-modal-model').value.trim();
-            const newDateIn = document.getElementById('edit-modal-datein').value;
-            const newDateOut = document.getElementById('edit-modal-dateout').value;
-            const newOperator = document.getElementById('edit-modal-operator').value;
-            const newSubstatus = document.getElementById('edit-modal-substatus').value;
-            const newNotes = document.getElementById('edit-modal-notes').value;
-
-            try {
-                const orderRef = doc(db, "orders", id);
-                await updateDoc(orderRef, {
-                    plate: newPlate,
-                    model: newModel,
-                    dateIn: newDateIn,
-                    dateOut: newDateOut,
-                    operator: newOperator,
-                    substatus: newSubstatus,
-                    notes: newNotes
-                });
-                bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
-            } catch (error) {
-                alert("Error al actualizar: " + error.message);
-            }
+            const initialStatus = document.getElementById('car-status').value;
+            const initialOperator = document.getElementById('operator-select').value;
+            await addDoc(collection(db, "orders"), {
+                plate: document.getElementById('car-plate').value,
+                model: document.getElementById('car-model').value,
+                dateIn: document.getElementById('date-in').value,
+                dateOut: document.getElementById('date-out').value,
+                operator: initialOperator,
+                substatus: document.getElementById('car-substatus').value,
+                status: initialStatus,
+                notes: document.getElementById('car-notes').value,
+                urgent: document.getElementById('car-urgent').checked,
+                history: [{ status: initialStatus, operator: initialOperator || "Sin asignar", date: new Date().toLocaleString() }]
+            });
+            document.getElementById('order-form').reset();
+            bootstrap.Modal.getInstance(document.getElementById('newOrderModal')).hide();
         }
 
-        window.clearOperatorFromModal = async function(id) {
-            try {
-                const orderRef = doc(db, "orders", id);
-                await updateDoc(orderRef, { operator: "" });
-                bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
-            } catch (error) {
-                alert("Error: " + error.message);
-            }
-        }
-
-        window.handleAddOrder = async function(e) {
-            e.preventDefault();
-            try {
-                await addDoc(collection(db, "orders"), {
-                    plate: document.getElementById('car-plate').value,
-                    model: document.getElementById('car-model').value,
-                    dateIn: document.getElementById('date-in').value,
-                    dateOut: document.getElementById('date-out').value,
-                    operator: document.getElementById('operator-select').value,
-                    substatus: document.getElementById('car-substatus').value,
-                    status: document.getElementById('car-status').value,
-                    notes: document.getElementById('car-notes').value,
-                    urgent: document.getElementById('car-urgent').checked,
-                    createdAt: Date.now()
-                });
-
-                document.getElementById('order-form').reset();
-                bootstrap.Modal.getInstance(document.getElementById('newOrderModal')).hide();
-            } catch (error) {
-                alert("Error al guardar: " + error.message);
-            }
-        }
-
-        window.toggleUrgent = async function(id, currentUrgentState) {
-            try {
-                const orderRef = doc(db, "orders", id);
-                await updateDoc(orderRef, { urgent: currentUrgentState });
-            } catch (error) {
-                alert("Error al cambiar urgencia: " + error.message);
-            }
-        }
-
-        window.deleteOrder = async function(id) {
-            if (confirm('¿Estás seguro de eliminar esta orden del taller?')) {
-                try {
-                    await deleteDoc(doc(db, "orders", id));
-                } catch (error) {
-                    alert("Error al eliminar: " + error.message);
-                }
-            }
-        }
+        window.deleteOrder = async (id) => { if (confirm('¿Eliminar orden?')) await deleteDoc(doc(db, "orders", id)); }
     </script>
 </body>
 </html>
