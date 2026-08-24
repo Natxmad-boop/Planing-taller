@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning de Taller Pro - Sincronizado</title>
+    <title>Planning de Taller Pro - Definitivo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -22,17 +22,29 @@
             background-color: #0f172a;
             border-bottom: 1px solid var(--border-color);
         }
+        .kanban-container {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
         .kanban-col {
             background-color: var(--secondary-dark);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            min-height: 70vh;
+            min-width: 290px;
+            flex: 1;
+            min-height: 75vh;
         }
         .task-card {
             background-color: #0f172a;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             transition: all 0.2s ease;
+        }
+        .task-card.urgent {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
         }
         .task-card:hover {
             border-color: var(--accent-blue);
@@ -68,13 +80,13 @@
                 <div class="text-center mb-4">
                     <i class="fas fa-tools mb-2" style="font-size: 2.5rem; color: var(--accent-blue);"></i>
                     <h3 class="fw-bold">Taller Mecánico</h3>
-                    <p class="text-muted small">Planning sincronizado en la nube</p>
+                    <p class="text-muted small">Acceso Exclusivo Jefe y Tú</p>
                 </div>
                 
                 <div class="alert alert-secondary py-2 small mb-4" role="alert" style="background-color: #0f172a; border-color: var(--border-color); color: #94a3b8;">
-                    <i class="fas fa-info-circle me-1 text-info"></i> <strong>Acceso por defecto:</strong><br>
-                    Correo: <code>taller@taller.com</code><br>
-                    Contraseña: <code>taller123</code>
+                    <i class="fas fa-info-circle me-1 text-info"></i> <strong>Cuentas autorizadas:</strong><br>
+                    • Tú: <code>taller@taller.com</code> / <code>taller123</code><br>
+                    • Jefe: <code>jefe@taller.com</code> / <code>jefe123</code>
                 </div>
 
                 <form id="login-form" onsubmit="handleLogin(event)">
@@ -93,65 +105,104 @@
     </div>
 
     <!-- Pantalla Principal del Taller -->
-    <div id="app-screen" class="container-fluid py-4 px-4" style="display: none;">
+    <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-dark px-4 rounded mb-4 shadow-sm">
-            <span class="navbar-brand mb-0 h1 fw-bold"><i class="fas fa-car me-2 text-info"></i> Taller Mecánico - En Directo</span>
+            <span class="navbar-brand mb-0 h1 fw-bold"><i class="fas fa-car me-2 text-info"></i> Planning Taller Pro</span>
             <div class="d-flex align-items-center">
-                <span class="text-muted me-3 small d-none d-md-inline"><i class="fas fa-user-circle me-1"></i> taller@taller.com</span>
+                <span id="user-display" class="text-muted me-3 small d-none d-md-inline"><i class="fas fa-user-circle me-1"></i> Usuario</span>
+                <button class="btn btn-outline-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#operatorsModal"><i class="fas fa-users-cog me-1"></i> Gestionar Operarios</button>
                 <button class="btn btn-outline-light btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-1"></i> Salir</button>
             </div>
         </nav>
 
-        <!-- Barra de acciones y filtros -->
+        <!-- Barra de acciones y buscador potente por matrícula y operario -->
         <div class="row mb-4 align-items-center">
-            <div class="col-md-6 mb-2 mb-md-0">
+            <div class="col-md-7 mb-2 mb-md-0">
                 <div class="input-group">
                     <span class="input-group-text bg-dark border-secondary text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por cliente, matrícula o vehículo..." oninput="renderOrders()">
+                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, operario o notas..." oninput="renderOrders()">
                 </div>
             </div>
-            <div class="col-md-6 text-md-end">
+            <div class="col-md-5 text-md-end">
                 <button class="btn btn-primary fw-bold px-4" data-bs-toggle="modal" data-bs-target="#newOrderModal">
                     <i class="fas fa-plus me-1"></i> Nueva Orden / Vehículo
                 </button>
             </div>
         </div>
 
-        <!-- Tablero Kanban de 3 Columnas -->
-        <div class="row g-4">
-            <!-- Pendientes -->
-            <div class="col-md-4">
-                <div class="kanban-col p-3 border-top border-warning border-4 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="text-warning fw-bold m-0"><i class="fas fa-clock me-2"></i> Pendientes</h5>
-                        <span id="count-pending" class="badge bg-warning text-dark rounded-pill">0</span>
-                    </div>
-                    <hr style="border-color: var(--border-color);">
-                    <div id="list-pending" class="d-flex flex-column gap-3"></div>
+        <!-- Tablero Kanban de 5 Columnas -->
+        <div class="kanban-container">
+            <!-- 1. Reparación -->
+            <div class="kanban-col p-3 border-top border-warning border-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-warning fw-bold m-0"><i class="fas fa-wrench me-1"></i> Reparación</h6>
+                    <span id="count-reparacion" class="badge bg-warning text-dark rounded-pill">0</span>
                 </div>
+                <hr style="border-color: var(--border-color);">
+                <div id="list-reparacion" class="d-flex flex-column gap-3"></div>
             </div>
 
-            <!-- En Proceso -->
-            <div class="col-md-4">
-                <div class="kanban-col p-3 border-top border-primary border-4 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="text-primary fw-bold m-0"><i class="fas fa-wrench me-2"></i> En Proceso</h5>
-                        <span id="count-progress" class="badge bg-primary rounded-pill">0</span>
-                    </div>
-                    <hr style="border-color: var(--border-color);">
-                    <div id="list-progress" class="d-flex flex-column gap-3"></div>
+            <!-- 2. Pintado -->
+            <div class="kanban-col p-3 border-top border-info border-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-info fw-bold m-0"><i class="fas fa-paint-brush me-1"></i> Pintado</h6>
+                    <span id="count-pintado" class="badge bg-info text-dark rounded-pill">0</span>
                 </div>
+                <hr style="border-color: var(--border-color);">
+                <div id="list-pintado" class="d-flex flex-column gap-3"></div>
             </div>
 
-            <!-- Finalizados -->
-            <div class="col-md-4">
-                <div class="kanban-col p-3 border-top border-success border-4 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="text-success fw-bold m-0"><i class="fas fa-check-circle me-2"></i> Finalizados</h5>
-                        <span id="count-finished" class="badge bg-success rounded-pill">0</span>
-                    </div>
+            <!-- 3. Montaje -->
+            <div class="kanban-col p-3 border-top border-primary border-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-primary fw-bold m-0"><i class="fas fa-tools me-1"></i> Montaje</h6>
+                    <span id="count-montaje" class="badge bg-primary rounded-pill">0</span>
+                </div>
+                <hr style="border-color: var(--border-color);">
+                <div id="list-montaje" class="d-flex flex-column gap-3"></div>
+            </div>
+
+            <!-- 4. Lunas -->
+            <div class="kanban-col p-3 border-top border-secondary border-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-light fw-bold m-0"><i class="fas fa-car-crash me-1"></i> Lunas</h6>
+                    <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
+                </div>
+                <hr style="border-color: var(--border-color);">
+                <div id="list-lunas" class="d-flex flex-column gap-3"></div>
+            </div>
+
+            <!-- 5. Terminados -->
+            <div class="kanban-col p-3 border-top border-success border-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-success fw-bold m-0"><i class="fas fa-check-circle me-1"></i> Terminados</h6>
+                    <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
+                </div>
+                <hr style="border-color: var(--border-color);">
+                <div id="list-terminados" class="d-flex flex-column gap-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gestión de Operarios -->
+    <div class="modal fade" id="operatorsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-users-cog me-2 text-warning"></i> Administrar Operarios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="handleAddOperator(event)" class="mb-4">
+                        <label class="form-label small text-muted fw-bold">Añadir Nuevo Operario (Nombre o Iniciales)</label>
+                        <div class="input-group">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. Juan, Pedro, J.M.">
+                            <button type="submit" class="btn btn-warning fw-bold text-dark">Añadir</button>
+                        </div>
+                    </form>
                     <hr style="border-color: var(--border-color);">
-                    <div id="list-finished" class="d-flex flex-column gap-3"></div>
+                    <h6 class="fw-bold text-muted small text-uppercase mb-3">Listado de Operarios Actuales:</h6>
+                    <div id="operators-list" class="d-flex flex-column gap-2" style="max-height: 250px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
@@ -167,25 +218,62 @@
                 </div>
                 <div class="modal-body">
                     <form id="order-form" onsubmit="handleAddOrder(event)">
-                        <div class="mb-3">
-                            <label class="form-label small text-muted fw-bold">Cliente</label>
-                            <input type="text" id="client-name" class="form-control" required placeholder="Ej. Juan Pérez">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Matrícula</label>
+                                <input type="text" id="car-plate" class="form-control text-uppercase" required placeholder="Ej. 4523XYZ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Modelo del Coche</label>
+                                <input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Fecha de Entrada</label>
+                                <input type="date" id="date-in" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Fecha de Salida (Prevista)</label>
+                                <input type="date" id="date-out" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Operario Asignado</label>
+                                <select id="operator-select" class="form-select" required>
+                                    <option value="">Selecciona operario...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Opción / Estado Específico</label>
+                                <select id="car-option" class="form-select">
+                                    <option value="Golpe taller">Golpe taller</option>
+                                    <option value="Paragolpes fuera">Paragolpes fuera</option>
+                                    <option value="Faro reparando fuera">Faro reparando fuera</option>
+                                    <option value="Pendientes del material">Pendientes del material</option>
+                                    <option value="Lunas pendiente">Lunas pendiente</option>
+                                    <option value="Pendientes de recambio">Pendientes de recambio</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small text-muted fw-bold">Vehículo (Modelo / Matrícula)</label>
-                            <input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León - 4523XYZ">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small text-muted fw-bold">Descripción de la Avería / Trabajo</label>
-                            <textarea id="car-issue" class="form-control" rows="3" required placeholder="Cambio de aceite, revisión frenos..."></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small text-muted fw-bold">Estado Inicial</label>
+                            <label class="form-label small text-muted fw-bold">Apartado Inicial (Fase)</label>
                             <select id="car-status" class="form-select">
-                                <option value="pending">Pendiente</option>
-                                <option value="progress">En Proceso</option>
-                                <option value="finished">Finalizado</option>
+                                <option value="reparacion">1. Reparación</option>
+                                <option value="pintado">2. Pintado</option>
+                                <option value="montaje">3. Montaje</option>
+                                <option value="lunas">4. Lunas</option>
+                                <option value="terminados">5. Terminados</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">Notas / Observaciones</label>
+                            <textarea id="car-notes" class="form-control" rows="2" placeholder="Detalles adicionales..."></textarea>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="car-urgent">
+                            <label class="form-check-label text-danger fw-bold" for="car-urgent"><i class="fas fa-bell me-1"></i> Marcar como Urgente (Alarma)</label>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Orden en la Nube</button>
                     </form>
@@ -197,12 +285,11 @@
     <!-- Scripts Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Conexión Firebase y Lógica Completa -->
+    <!-- Conexión Firebase y Lógica -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Tus claves exactas de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAqzUFL_4PBhpIND_CFIg8...", 
             authDomain: "planning-taller-23a87.firebaseapp.com",
@@ -217,18 +304,25 @@
         const db = getFirestore(app);
 
         let orders = [];
+        let operators = [];
 
         window.handleLogin = function(e) {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value.trim();
 
-            if (email === 'taller@taller.com' && pass === 'taller123') {
+            const validUsers = {
+                "taller@taller.com": "taller123",
+                "jefe@taller.com": "jefe123"
+            };
+
+            if (validUsers[email] && validUsers[email] === pass) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-screen').style.display = 'block';
+                document.getElementById('user-display').innerHTML = `<i class="fas fa-user-circle me-1"></i> ${email}`;
                 initRealtimeSync();
             } else {
-                alert('Credenciales incorrectas. Use taller@taller.com / taller123');
+                alert('Correo o contraseña incorrectos.');
             }
         }
 
@@ -245,73 +339,144 @@
                 });
                 renderOrders();
             });
+
+            onSnapshot(collection(db, "operators"), (snapshot) => {
+                operators = [];
+                snapshot.forEach((docSnap) => {
+                    operators.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderOperatorsUI();
+            });
+        }
+
+        function renderOperatorsUI() {
+            const listContainer = document.getElementById('operators-list');
+            const selectContainer = document.getElementById('operator-select');
+            
+            listContainer.innerHTML = '';
+            selectContainer.innerHTML = '<option value="">Selecciona operario...</option>';
+
+            if (operators.length === 0) {
+                listContainer.innerHTML = '<p class="text-muted small text-center my-2">No hay operarios creados.</p>';
+            }
+
+            operators.forEach(op => {
+                listContainer.innerHTML += `
+                    <div class="d-flex justify-content-between align-items-center bg-dark p-2 rounded border border-secondary">
+                        <span class="fw-bold text-light"><i class="fas fa-user me-2 text-info"></i> ${op.name}</span>
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')" title="Eliminar operario"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                selectContainer.innerHTML += `<option value="${op.name}">${op.name}</option>`;
+            });
+        }
+
+        window.handleAddOperator = async function(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('new-operator-name');
+            const name = nameInput.value.trim();
+            if (!name) return;
+
+            try {
+                await addDoc(collection(db, "operators"), { name });
+                nameInput.value = '';
+            } catch (error) {
+                alert("Error al guardar operario: " + error.message);
+            }
+        }
+
+        window.deleteOperator = async function(id) {
+            if (confirm('¿Estás seguro de eliminar este operario?')) {
+                try {
+                    await deleteDoc(doc(db, "operators", id));
+                } catch (error) {
+                    alert("Error al eliminar operario: " + error.message);
+                }
+            }
         }
 
         window.renderOrders = function() {
             const searchVal = document.getElementById('search-input').value.toLowerCase();
-            const pendingContainer = document.getElementById('list-pending');
-            const progressContainer = document.getElementById('list-progress');
-            const finishedContainer = document.getElementById('list-finished');
+            
+            const containers = {
+                reparacion: document.getElementById('list-reparacion'),
+                pintado: document.getElementById('list-pintado'),
+                montaje: document.getElementById('list-montaje'),
+                lunas: document.getElementById('list-lunas'),
+                terminados: document.getElementById('list-terminados')
+            };
 
-            pendingContainer.innerHTML = '';
-            progressContainer.innerHTML = '';
-            finishedContainer.innerHTML = '';
+            Object.values(containers).forEach(c => c.innerHTML = '');
 
-            let countP = 0, countPr = 0, countF = 0;
+            let counts = { reparacion: 0, pintado: 0, montaje: 0, lunas: 0, terminados: 0 };
 
             const filteredOrders = orders.filter(order => {
-                const client = (order.client || '').toLowerCase();
-                const car = (order.car || '').toLowerCase();
-                const issue = (order.issue || '').toLowerCase();
-                return client.includes(searchVal) || car.includes(searchVal) || issue.includes(searchVal);
+                const plate = (order.plate || '').toLowerCase();
+                const model = (order.model || '').toLowerCase();
+                const notes = (order.notes || '').toLowerCase();
+                const option = (order.option || '').toLowerCase();
+                const operator = (order.operator || '').toLowerCase();
+                return plate.includes(searchVal) || model.includes(searchVal) || notes.includes(searchVal) || option.includes(searchVal) || operator.includes(searchVal);
             });
 
             filteredOrders.forEach(order => {
-                if (order.status === 'pending') countP++;
-                if (order.status === 'progress') countPr++;
-                if (order.status === 'finished') countF++;
+                let status = order.status || 'reparacion';
+                if (counts[status] !== undefined) counts[status]++;
+
+                const isUrgent = order.urgent ? 'urgent' : '';
+                const urgentBadge = order.urgent ? '<span class="badge bg-danger ms-1"><i class="fas fa-exclamation-triangle"></i> URGENTE</span>' : '';
 
                 const cardHtml = `
-                    <div class="task-card p-3 shadow-sm">
+                    <div class="task-card p-3 shadow-sm ${isUrgent}">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold mb-0 text-info"><i class="fas fa-car me-1"></i> ${order.car}</h6>
+                            <h6 class="fw-bold mb-0 text-info"><i class="fas fa-car me-1"></i> ${order.plate.toUpperCase()} - ${order.model} ${urgentBadge}</h6>
                             <button class="btn btn-sm text-danger p-0" onclick="deleteOrder('${order.id}')" title="Eliminar orden"><i class="fas fa-trash"></i></button>
                         </div>
-                        <p class="small text-muted mb-1"><strong>Cliente:</strong> ${order.client}</p>
-                        <p class="small mb-2 text-light">${order.issue}</p>
+                        <div class="small text-muted mb-1">
+                            <div><strong>Entrada:</strong> ${order.dateIn || '-'} | <strong>Salida:</strong> ${order.dateOut || '-'}</div>
+                            <div><strong>Operario:</strong> <span class="badge bg-dark border border-secondary text-light">${order.operator || 'No asignado'}</span></div>
+                            <div><strong>Opción:</strong> <span class="text-warning">${order.option || 'Golpe taller'}</span></div>
+                        </div>
+                        ${order.notes ? `<p class="small mb-2 text-light bg-dark p-2 rounded border border-secondary"><strong>Notas:</strong> ${order.notes}</p>` : ''}
+                        
                         <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary">
-                            <span class="small text-muted"><i class="far fa-clock me-1"></i> ${new Date(order.createdAt || Date.now()).toLocaleDateString()}</span>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="toggleUrgent('${order.id}', ${!order.urgent})" title="Cambiar urgencia"><i class="fas fa-bell"></i></button>
                             <select class="form-select form-select-sm w-auto bg-dark text-light border-secondary" onchange="updateStatus('${order.id}', this.value)">
-                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendiente</option>
-                                <option value="progress" ${order.status === 'progress' ? 'selected' : ''}>En Proceso</option>
-                                <option value="finished" ${order.status === 'finished' ? 'selected' : ''}>Finalizado</option>
+                                <option value="reparacion" ${status === 'reparacion' ? 'selected' : ''}>1. Reparación</option>
+                                <option value="pintado" ${status === 'pintado' ? 'selected' : ''}>2. Pintado</option>
+                                <option value="montaje" ${status === 'montaje' ? 'selected' : ''}>3. Montaje</option>
+                                <option value="lunas" ${status === 'lunas' ? 'selected' : ''}>4. Lunas</option>
+                                <option value="terminados" ${status === 'terminados' ? 'selected' : ''}>5. Terminados</option>
                             </select>
                         </div>
                     </div>
                 `;
 
-                if (order.status === 'pending') {
-                    pendingContainer.innerHTML += cardHtml;
-                } else if (order.status === 'progress') {
-                    progressContainer.innerHTML += cardHtml;
-                } else if (order.status === 'finished') {
-                    finishedContainer.innerHTML += cardHtml;
+                if (containers[status]) {
+                    containers[status].innerHTML += cardHtml;
                 }
             });
 
-            document.getElementById('count-pending').innerText = countP;
-            document.getElementById('count-progress').innerText = countPr;
-            document.getElementById('count-finished').innerText = countF;
+            document.getElementById('count-reparacion').innerText = counts.reparacion;
+            document.getElementById('count-pintado').innerText = counts.pintado;
+            document.getElementById('count-montaje').innerText = counts.montaje;
+            document.getElementById('count-lunas').innerText = counts.lunas;
+            document.getElementById('count-terminados').innerText = counts.terminados;
         }
 
         window.handleAddOrder = async function(e) {
             e.preventDefault();
             try {
                 await addDoc(collection(db, "orders"), {
-                    client: document.getElementById('client-name').value,
-                    car: document.getElementById('car-model').value,
-                    issue: document.getElementById('car-issue').value,
+                    plate: document.getElementById('car-plate').value,
+                    model: document.getElementById('car-model').value,
+                    dateIn: document.getElementById('date-in').value,
+                    dateOut: document.getElementById('date-out').value,
+                    operator: document.getElementById('operator-select').value,
+                    option: document.getElementById('car-option').value,
                     status: document.getElementById('car-status').value,
+                    notes: document.getElementById('car-notes').value,
+                    urgent: document.getElementById('car-urgent').checked,
                     createdAt: Date.now()
                 });
 
@@ -329,7 +494,16 @@
                 const orderRef = doc(db, "orders", id);
                 await updateDoc(orderRef, { status: newStatus });
             } catch (error) {
-                alert("Error al actualizar: " + error.message);
+                alert("Error al actualizar estado: " + error.message);
+            }
+        }
+
+        window.toggleUrgent = async function(id, currentUrgentState) {
+            try {
+                const orderRef = doc(db, "orders", id);
+                await updateDoc(orderRef, { urgent: currentUrgentState });
+            } catch (error) {
+                alert("Error al cambiar urgencia: " + error.message);
             }
         }
 
