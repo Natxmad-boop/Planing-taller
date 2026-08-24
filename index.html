@@ -255,7 +255,11 @@
                                 <select id="car-substatus" class="form-select">
                                     <option value="">Ninguno / Normal</option>
                                     <option value="Paragolpes fuera">Paragolpes fuera</option>
-                                    <option value="Pendiente recambios">Pendiente recambios</option>
+                                    <option value="Faro reparándose">Faro reparándose</option>
+                                    <option value="Pendiente de recambios">Pendiente de recambios</option>
+                                    <option value="Luna aquí">Luna aquí</option>
+                                    <option value="Luna pendiente">Luna pendiente</option>
+                                    <option value="Golpe taller">Golpe taller</option>
                                 </select>
                             </div>
                         </div>
@@ -284,11 +288,12 @@
         </div>
     </div>
 
+    <!-- Modal de Ficha, Edición y Trazabilidad -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
                 <div class="modal-header bg-light">
-                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-history me-2 text-primary"></i> Trazabilidad y Ficha del Vehículo</h5>
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-edit me-2 text-primary"></i> Ficha, Edición y Trazabilidad</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4" id="detail-modal-body"></div>
@@ -465,6 +470,9 @@
 
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
                 let cardClass = order.urgent ? 'urgent' : (isOverdue ? 'overdue' : '');
+                let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
+
+                let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
 
                 containers[status].innerHTML += `
                     <div class="task-card p-3 ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
@@ -472,9 +480,10 @@
                             <h6 class="fw-bold mb-0 text-dark">${displayPlate} - ${order.model}</h6>
                             <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
                         </div>
+                        ${substatusBadge}
                         <div class="small text-secondary mb-1">
                             <div><strong>Operario:</strong> ${order.operator || 'No asignado'}</div>
-                            <div><strong>Salida:</strong> ${order.dateOut || '-'}</div>
+                            <div style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'} ${isOverdue ? '(Vencido)' : ''}</div>
                         </div>
                         <select class="form-select form-select-sm mt-2" onclick="event.stopPropagation()" onchange="initiateStatusChange('${order.id}', this.value)">
                             <option value="lunas" ${status === 'lunas' ? 'selected' : ''}>1. Lunas</option>
@@ -510,24 +519,74 @@
             }
 
             document.getElementById('detail-modal-body').innerHTML = `
-                <div class="mb-4">
-                    <h6 class="text-uppercase text-secondary fw-bold small mb-2">Información del Vehículo</h6>
-                    <div class="p-3 bg-light rounded border">
-                        <div class="row">
-                            <div class="col-md-6 mb-2"><strong>Matrícula:</strong> ${order.plate.toUpperCase()}</div>
-                            <div class="col-md-6 mb-2"><strong>Modelo:</strong> ${order.model}</div>
-                            <div class="col-md-6 mb-2"><strong>Entrada:</strong> ${order.dateIn || '-'}</div>
-                            <div class="col-md-6 mb-2"><strong>Salida Prevista:</strong> ${order.dateOut || '-'}</div>
-                            <div class="col-12"><strong>Notas:</strong> ${order.notes || 'Sin notas'}</div>
+                <form onsubmit="handleUpdateOrder(event, '${order.id}')">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-bold">Matrícula</label>
+                            <input type="text" id="edit-plate" class="form-control text-uppercase" value="${order.plate}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-bold">Modelo</label>
+                            <input type="text" id="edit-model" class="form-control" value="${order.model}" required>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <h6 class="text-uppercase text-secondary fw-bold small mb-3">Historial y Trazabilidad (Orden cronológico)</h6>
-                    ${historyHtml}
-                </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-bold">Fecha Entrada</label>
+                            <input type="date" id="edit-date-in" class="form-control" value="${order.dateIn || ''}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-bold">Fecha Salida Prevista</label>
+                            <input type="date" id="edit-date-out" class="form-control" value="${order.dateOut || ''}" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-bold">Subestado</label>
+                            <select id="edit-substatus" class="form-select">
+                                <option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option>
+                                <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
+                                <option value="Faro reparándose" ${order.substatus === 'Faro reparándose' ? 'selected' : ''}>Faro reparándose</option>
+                                <option value="Pendiente de recambios" ${order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente de recambios</option>
+                                <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
+                                <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
+                                <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center pt-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="edit-urgent" ${order.urgent ? 'checked' : ''}>
+                                <label class="form-check-label text-danger fw-bold" for="edit-urgent">Urgente</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary fw-bold">Notas</label>
+                        <textarea id="edit-notes" class="form-control" rows="2">${order.notes || ''}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 fw-bold py-2 mb-4"><i class="fas fa-save me-1"></i> Guardar Cambios de la Ficha</button>
+                </form>
+
+                <hr class="mb-4">
+                
+                <h6 class="text-uppercase text-secondary fw-bold small mb-3">Historial y Trazabilidad (Orden cronológico)</h6>
+                ${historyHtml}
             `;
             new bootstrap.Modal(document.getElementById('detailModal')).show();
+        }
+
+        window.handleUpdateOrder = async (e, id) => {
+            e.preventDefault();
+            await updateDoc(doc(db, "orders", id), {
+                plate: document.getElementById('edit-plate').value.trim(),
+                model: document.getElementById('edit-model').value.trim(),
+                dateIn: document.getElementById('edit-date-in').value,
+                dateOut: document.getElementById('edit-date-out').value,
+                substatus: document.getElementById('edit-substatus').value,
+                notes: document.getElementById('edit-notes').value,
+                urgent: document.getElementById('edit-urgent').checked
+            });
+            bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
         }
 
         window.handleAddOrder = async (e) => {
@@ -535,8 +594,8 @@
             const initialStatus = document.getElementById('car-status').value;
             const initialOperator = document.getElementById('operator-select').value;
             await addDoc(collection(db, "orders"), {
-                plate: document.getElementById('car-plate').value,
-                model: document.getElementById('car-model').value,
+                plate: document.getElementById('car-plate').value.trim(),
+                model: document.getElementById('car-model').value.trim(),
                 dateIn: document.getElementById('date-in').value,
                 dateOut: document.getElementById('date-out').value,
                 operator: initialOperator,
