@@ -367,7 +367,6 @@
             document.getElementById('date-out').value = today;
         }
 
-        // Función auxiliar para obtener la clase CSS según el prefijo del operario
         function getOperatorBadgeClass(opName) {
             if (!opName) return 'badge-none';
             const upper = opName.toUpperCase();
@@ -390,7 +389,6 @@
         }
 
         window.handleLogout = () => {
-            // Limpia los inputs de inicio de sesión para que no se queden guardados
             document.getElementById('login-email').value = '';
             document.getElementById('login-password').value = '';
             document.getElementById('app-screen').style.display = 'none';
@@ -509,7 +507,6 @@
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
 
-                // Aplicar estilo de color diferenciado al operario en la tarjeta
                 let opBadgeClass = getOperatorBadgeClass(order.operator);
                 let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted">No asignado</span>';
 
@@ -547,12 +544,23 @@
                 historyHtml = `<div class="history-timeline">`;
                 order.history.forEach((h, index) => {
                     let hOpBadge = getOperatorBadgeClass(h.operator);
+                    
+                    // Creamos las opciones del desplegable para este registro del historial
+                    let optionsHtml = `<option value="Sin asignar" ${!h.operator || h.operator === 'Sin asignar' ? 'selected' : ''}>Sin asignar</option>`;
+                    operators.forEach(op => {
+                        let selected = h.operator === op.name ? 'selected' : '';
+                        optionsHtml += `<option value="${op.name}" ${selected}>${op.name}</option>`;
+                    });
+
                     historyHtml += `
                         <div class="history-item d-flex justify-content-between align-items-start">
                             <div>
                                 <div class="fw-bold text-primary text-uppercase small">${h.status}</div>
                                 <div class="text-dark small d-flex align-items-center gap-1 my-1">
-                                    <i class="fas fa-user-tie text-secondary"></i> Operario: <span class="badge ${hOpBadge} px-2 py-0">${h.operator}</span>
+                                    <i class="fas fa-user-tie text-secondary"></i> Operario: 
+                                    <select class="form-select form-select-sm d-inline-block w-auto py-0 px-2 text-dark ${hOpBadge}" style="font-size: 0.8rem; height: 26px;" onchange="updateHistoryOperator('${order.id}', ${index}, this.value)">
+                                        ${optionsHtml}
+                                    </select>
                                 </div>
                                 <div class="text-muted" style="font-size: 0.75rem;"><i class="far fa-clock me-1"></i> ${h.date}</div>
                             </div>
@@ -618,6 +626,23 @@
                 ${historyHtml}
             `;
             new bootstrap.Modal(document.getElementById('detailModal')).show();
+        }
+
+        window.updateHistoryOperator = async (orderId, historyIndex, newOperator) => {
+            const order = orders.find(o => o.id === orderId);
+            if (!order || !order.history || !order.history[historyIndex]) return;
+
+            // Actualizamos el operario en ese punto del historial
+            order.history[historyIndex].operator = newOperator;
+
+            // Opcional pero útil: si el historial modificado es el último (el actual), actualizamos también el operario principal de la orden
+            let updatePayload = { history: order.history };
+            if (historyIndex === order.history.length - 1) {
+                updatePayload.operator = newOperator === 'Sin asignar' ? '' : newOperator;
+            }
+
+            await updateDoc(doc(db, "orders", orderId), updatePayload);
+            openDetailModal(orderId); // Refresca el modal para mantenerlo abierto y actualizado
         }
 
         window.deleteHistoryItem = async (orderId, index) => {
