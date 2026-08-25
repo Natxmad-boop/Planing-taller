@@ -126,7 +126,6 @@
 </head>
 <body>
 
-    <!-- Pantalla de Login -->
     <div id="login-screen" class="container mt-5" style="max-width: 420px;">
         <div class="login-card mt-5 p-4">
             <div class="card-body">
@@ -151,7 +150,6 @@
         </div>
     </div>
 
-    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
             <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
@@ -171,14 +169,12 @@
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
                     <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado..." oninput="renderOrders()">
                     
-                    <!-- Desplegable Inteligente Personalizado -->
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary bg-white border-secondary text-secondary fw-semibold dropdown-toggle rounded-0 rounded-end" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-left: 0;">
                             <span id="smart-filter-label">🔍 Filtrar...</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow" id="smart-filter-dropdown" style="max-height: 350px; overflow-y: auto; min-width: 280px;">
-                            <!-- Se rellena dinámicamente -->
-                        </ul>
+                            </ul>
                     </div>
                 </div>
             </div>
@@ -189,7 +185,6 @@
             </div>
         </div>
 
-        <!-- Tablero Kanban -->
         <div class="kanban-container">
             <div class="kanban-col p-3 border-top border-secondary border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -233,7 +228,6 @@
         </div>
     </div>
 
-    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
@@ -329,7 +323,6 @@
         </div>
     </div>
 
-    <!-- Modal de Ficha, Edición y Trazabilidad -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -615,7 +608,8 @@
             Object.values(containers).forEach(c => c.innerHTML = '');
             let counts = { lunas: 0, reparacion: 0, pintado: 0, montaje: 0, terminados: 0 };
 
-            orders.filter(order => {
+            // Filtrar y ordenar las órdenes de manera ascendente por su fecha de salida (dateOut) en cada columna de forma independiente
+            let filteredOrders = orders.filter(order => {
                 let status = order.status || 'lunas';
                 let op = (order.operator || '').toLowerCase();
                 let sub = (order.substatus || '').toLowerCase();
@@ -639,11 +633,12 @@
                        op.includes(filterVal) || 
                        sub.includes(filterVal);
             }).sort((a, b) => {
-                // Ordenar por fecha de salida ascendente (más cercanas o vacías primero)
                 let dateA = a.dateOut || '9999-12-31';
                 let dateB = b.dateOut || '9999-12-31';
                 return dateA.localeCompare(dateB);
-            }).forEach(order => {
+            });
+
+            filteredOrders.forEach(order => {
                 let status = order.status || 'lunas';
                 if (counts[status] !== undefined) counts[status]++;
                 
@@ -656,7 +651,6 @@
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
 
-                // Mensaje / Banner URGENTE parpadeante
                 let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner" style="letter-spacing: 0.5px;"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
 
                 let opBadgeClass = getOperatorBadgeClass(order.operator);
