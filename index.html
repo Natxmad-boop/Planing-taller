@@ -246,8 +246,8 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label small text-secondary fw-bold">Operario</label>
-                                <select id="operator-select" class="form-select" required>
-                                    <option value="">Selecciona...</option>
+                                <select id="operator-select" class="form-select">
+                                    <option value="">Sin asignar (Libre)</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -308,9 +308,9 @@
                     <h6 class="modal-title fw-bold text-dark">Asignar Operario</h6>
                 </div>
                 <div class="modal-body">
-                    <p class="small text-muted">Selecciona el operario para este cambio:</p>
+                    <p class="small text-muted">Selecciona un operario o déjalo libre:</p>
                     <select id="prompt-operator-select" class="form-select mb-3">
-                        <option value="">Sin asignar</option>
+                        <option value="">Sin asignar (Libre)</option>
                     </select>
                     <div class="d-flex gap-2">
                         <button class="btn btn-secondary btn-sm w-50" onclick="cancelPendingMove()">Cancelar</button>
@@ -388,7 +388,7 @@
             const selectContainer = document.getElementById('operator-select');
             const promptSelectContainer = document.getElementById('prompt-operator-select');
             listContainer.innerHTML = '';
-            selectContainer.innerHTML = '<option value="">Selecciona operario...</option>';
+            selectContainer.innerHTML = '<option value="">Sin asignar (Libre)</option>';
             promptSelectContainer.innerHTML = '<option value="">Sin asignar (Libre)</option>';
 
             operators.forEach(op => {
@@ -428,7 +428,7 @@
 
         window.confirmPendingMove = async () => {
             if (!pendingMoveData) return;
-            const chosenOperator = document.getElementById('prompt-operator-select').value;
+            const chosenOperator = document.getElementById('prompt-operator-select').value; // Puede estar vacío ("") para dejarlo sin asignar
             const { orderId, newStatus } = pendingMoveData;
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
@@ -506,12 +506,15 @@
             let historyHtml = '<p class="text-muted small fst-italic">No hay registros de movimientos todavía.</p>';
             if (order.history && order.history.length > 0) {
                 historyHtml = `<div class="history-timeline">`;
-                order.history.forEach(h => {
+                order.history.forEach((h, index) => {
                     historyHtml += `
-                        <div class="history-item">
-                            <div class="fw-bold text-primary text-uppercase small">${h.status}</div>
-                            <div class="text-dark small"><i class="fas fa-user-tie me-1 text-secondary"></i> Operario: <strong>${h.operator}</strong></div>
-                            <div class="text-muted" style="font-size: 0.75rem;"><i class="far fa-clock me-1"></i> ${h.date}</div>
+                        <div class="history-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-bold text-primary text-uppercase small">${h.status}</div>
+                                <div class="text-dark small"><i class="fas fa-user-tie me-1 text-secondary"></i> Operario: <strong>${h.operator}</strong></div>
+                                <div class="text-muted" style="font-size: 0.75rem;"><i class="far fa-clock me-1"></i> ${h.date}</div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="deleteHistoryItem('${order.id}', ${index})" title="Eliminar este fichaje"><i class="fas fa-times"></i></button>
                         </div>
                     `;
                 });
@@ -573,6 +576,16 @@
                 ${historyHtml}
             `;
             new bootstrap.Modal(document.getElementById('detailModal')).show();
+        }
+
+        window.deleteHistoryItem = async (orderId, index) => {
+            const order = orders.find(o => o.id === orderId);
+            if (!order || !order.history) return;
+            if (confirm('¿Eliminar este registro del historial?')) {
+                order.history.splice(index, 1);
+                await updateDoc(doc(db, "orders", orderId), { history: order.history });
+                openDetailModal(orderId);
+            }
         }
 
         window.handleUpdateOrder = async (e, id) => {
