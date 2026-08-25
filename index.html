@@ -369,10 +369,43 @@
             if (!opName) return 'badge-none';
             const upper = opName.toUpperCase();
             if (upper.startsWith('CH')) return 'badge-ch';
-            if (upper.startsWith('PUN')) return 'badge-pun';
+            if (upper.startsWith('PIN') || upper.startsWith('PUN')) return 'badge-pun';
             return 'badge-none';
         }
         window.getOperatorBadgeClass = getOperatorBadgeClass;
+
+        function buildGroupedOperatorOptions(selectedVal = "") {
+            let chOps = [];
+            let pinOps = [];
+            operators.forEach(op => {
+                const upper = (op.name || '').toUpperCase();
+                if (upper.startsWith('CH')) chOps.push(op.name);
+                else if (upper.startsWith('PIN') || upper.startsWith('PUN')) pinOps.push(op.name);
+                else chOps.push(op.name);
+            });
+
+            let html = `<option value="">Sin asignar (Libre)</option>`;
+            
+            if (chOps.length > 0) {
+                html += `<optgroup label="--- Chapa (CH) ---">`;
+                chOps.forEach(name => {
+                    let sel = (selectedVal === name) ? 'selected' : '';
+                    html += `<option value="${name}" ${sel}>${name}</option>`;
+                });
+                html += `</optgroup>`;
+            }
+
+            if (pinOps.length > 0) {
+                html += `<optgroup label="--- Pintura (PIN/PUN) ---">`;
+                pinOps.forEach(name => {
+                    let sel = (selectedVal === name) ? 'selected' : '';
+                    html += `<option value="${name}" ${sel}>${name}</option>`;
+                });
+                html += `</optgroup>`;
+            }
+
+            return html;
+        }
 
         window.handleLogin = (e) => {
             e.preventDefault();
@@ -413,8 +446,9 @@
             const selectContainer = document.getElementById('operator-select');
             const promptSelectContainer = document.getElementById('prompt-operator-select');
             listContainer.innerHTML = '';
-            selectContainer.innerHTML = '<option value="">Sin asignar (Libre)</option>';
-            promptSelectContainer.innerHTML = '<option value="">Sin asignar (Libre)</option>';
+
+            let currentSelectedOp = selectContainer.value;
+            let currentPromptOp = promptSelectContainer.value;
 
             operators.forEach(op => {
                 let badgeClass = getOperatorBadgeClass(op.name);
@@ -424,9 +458,10 @@
                         <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
-                selectContainer.innerHTML += `<option value="${op.name}">${op.name}</option>`;
-                promptSelectContainer.innerHTML += `<option value="${op.name}">${op.name}</option>`;
             });
+
+            selectContainer.innerHTML = buildGroupedOperatorOptions(currentSelectedOp);
+            promptSelectContainer.innerHTML = buildGroupedOperatorOptions(currentPromptOp);
 
             updateSmartFilterDropdown();
         }
@@ -435,17 +470,33 @@
             const filterSelect = document.getElementById('smart-filter-select');
             if (!filterSelect) return;
             
-            filterSelect.innerHTML = `
+            let chOps = [];
+            let pinOps = [];
+            operators.forEach(op => {
+                const upper = (op.name || '').toUpperCase();
+                if (upper.startsWith('CH')) chOps.push(op.name);
+                else if (upper.startsWith('PIN') || upper.startsWith('PUN')) pinOps.push(op.name);
+                else chOps.push(op.name);
+            });
+
+            let html = `
                 <option value="">🔍 Filtrar por operario, subestado o fase...</option>
                 <optgroup label="--- Operarios ---">
                     <option value="op:Sin asignar">Sin asignar</option>
             `;
             
-            operators.forEach(op => {
-                filterSelect.innerHTML += `<option value="op:${op.name}">${op.name}</option>`;
-            });
+            if (chOps.length > 0) {
+                html += `<optgroup label="  • Chapa (CH)">`;
+                chOps.forEach(name => { html += `<option value="op:${name}">  ${name}</option>`; });
+                html += `</optgroup>`;
+            }
+            if (pinOps.length > 0) {
+                html += `<optgroup label="  • Pintura (PIN/PUN)">`;
+                pinOps.forEach(name => { html += `<option value="op:${name}">  ${name}</option>`; });
+                html += `</optgroup>`;
+            }
 
-            filterSelect.innerHTML += `
+            html += `
                 </optgroup>
                 <optgroup label="--- Subestados ---">
                     <option value="sub:Paragolpes fuera">Paragolpes fuera</option>
@@ -464,6 +515,7 @@
                     <option value="phase:terminados">5. Terminados</option>
                 </optgroup>
             `;
+            filterSelect.innerHTML = html;
         }
 
         window.handleSmartFilterSelect = (val) => {
@@ -552,7 +604,6 @@
                     return status === targetPhase;
                 }
 
-                // Búsqueda normal por texto
                 return (order.plate || '').toLowerCase().includes(filterVal) || 
                        (order.model || '').toLowerCase().includes(filterVal) || 
                        op.includes(filterVal) || 
@@ -607,12 +658,7 @@
                 historyHtml = `<div class="history-timeline">`;
                 order.history.forEach((h, index) => {
                     let hOpBadge = getOperatorBadgeClass(h.operator);
-                    
-                    let optionsHtml = `<option value="Sin asignar" ${!h.operator || h.operator === 'Sin asignar' ? 'selected' : ''}>Sin asignar</option>`;
-                    operators.forEach(op => {
-                        let selected = h.operator === op.name ? 'selected' : '';
-                        optionsHtml += `<option value="${op.name}" ${selected}>${op.name}</option>`;
-                    });
+                    let historySelectOptions = buildGroupedOperatorOptions(h.operator || "Sin asignar");
 
                     historyHtml += `
                         <div class="history-item d-flex justify-content-between align-items-start">
@@ -621,7 +667,7 @@
                                 <div class="text-dark small d-flex align-items-center gap-1 my-1">
                                     <i class="fas fa-user-tie text-secondary"></i> Operario: 
                                     <select class="form-select form-select-sm d-inline-block w-auto py-0 px-2 text-dark ${hOpBadge}" style="font-size: 0.8rem; height: 26px;" onchange="updateHistoryOperator('${order.id}', ${index}, this.value)">
-                                        ${optionsHtml}
+                                        ${historySelectOptions}
                                     </select>
                                 </div>
                                 <div class="text-muted" style="font-size: 0.75rem;"><i class="far fa-clock me-1"></i> ${h.date}</div>
