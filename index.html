@@ -62,13 +62,17 @@
             background-color: #fff1f2 !important;
             border: 2px solid #e11d48 !important;
             box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important;
-            animation: pulse-urgent 2s infinite;
         }
 
-        @keyframes pulse-urgent {
-            0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4); }
-            70% { box-shadow: 0 0 0 8px rgba(225, 29, 72, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+        /* Animación de Parpadeo para la etiqueta URGENTE */
+        @keyframes blink-animation {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .urgent-banner {
+            animation: blink-animation 1s infinite;
         }
 
         .task-card.overdue {
@@ -634,6 +638,11 @@
                        (order.model || '').toLowerCase().includes(filterVal) || 
                        op.includes(filterVal) || 
                        sub.includes(filterVal);
+            }).sort((a, b) => {
+                // Ordenar por fecha de salida ascendente (más cercanas o vacías primero)
+                let dateA = a.dateOut || '9999-12-31';
+                let dateB = b.dateOut || '9999-12-31';
+                return dateA.localeCompare(dateB);
             }).forEach(order => {
                 let status = order.status || 'lunas';
                 if (counts[status] !== undefined) counts[status]++;
@@ -647,8 +656,8 @@
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
 
-                // Etiqueta visual extra para URGENTE
-                let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase" style="letter-spacing: 0.5px;"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
+                // Mensaje / Banner URGENTE parpadeante
+                let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner" style="letter-spacing: 0.5px;"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
 
                 let opBadgeClass = getOperatorBadgeClass(order.operator);
                 let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted">No asignado</span>';
