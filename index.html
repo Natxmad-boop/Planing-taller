@@ -218,7 +218,7 @@
                 <div class="modal-body">
                     <form onsubmit="handleAddOperator(event)" class="mb-4">
                         <div class="input-group">
-                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. CH/ Juan o PUN/ Pedro">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. CH/ Juan o PIN/ Pedro">
                             <button type="submit" class="btn btn-primary fw-bold">Añadir</button>
                         </div>
                     </form>
@@ -486,13 +486,13 @@
             `;
             
             if (chOps.length > 0) {
-                html += `<optgroup label="  • Chapa (CH)">`;
-                chOps.forEach(name => { html += `<option value="op:${name}">  ${name}</option>`; });
+                html += `<optgroup label="--- Chapa (CH) ---">`;
+                chOps.forEach(name => { html += `<option value="op:${name}">${name}</option>`; });
                 html += `</optgroup>`;
             }
             if (pinOps.length > 0) {
-                html += `<optgroup label="  • Pintura (PIN/PUN)">`;
-                pinOps.forEach(name => { html += `<option value="op:${name}">  ${name}</option>`; });
+                html += `<optgroup label="--- Pintura (PIN/PUN) ---">`;
+                pinOps.forEach(name => { html += `<option value="op:${name}">${name}</option>`; });
                 html += `</optgroup>`;
             }
 
