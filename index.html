@@ -64,7 +64,6 @@
             border-color: #dc2626 !important;
             background-color: #fef2f2 !important;
         }
-        /* Estilos visuales para los operarios según prefijo */
         .badge-ch {
             background-color: #dbeafe;
             color: #1e40af;
@@ -112,7 +111,6 @@
 </head>
 <body>
 
-    <!-- Pantalla de Login -->
     <div id="login-screen" class="container mt-5" style="max-width: 420px;">
         <div class="login-card mt-5 p-4">
             <div class="card-body">
@@ -137,7 +135,6 @@
         </div>
     </div>
 
-    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
             <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
@@ -165,7 +162,6 @@
             </div>
         </div>
 
-        <!-- Tablero Kanban -->
         <div class="kanban-container">
             <div class="kanban-col p-3 border-top border-secondary border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -209,7 +205,6 @@
         </div>
     </div>
 
-    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
@@ -276,6 +271,7 @@
                                     <option value="Luna aquí">Luna aquí</option>
                                     <option value="Luna pendiente">Luna pendiente</option>
                                     <option value="Golpe taller">Golpe taller</option>
+                                    <option value="Llanta reparándose fuera">Llanta reparándose fuera</option>
                                 </select>
                             </div>
                         </div>
@@ -304,7 +300,6 @@
         </div>
     </div>
 
-    <!-- Modal de Ficha, Edición y Trazabilidad -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -545,7 +540,6 @@
                 order.history.forEach((h, index) => {
                     let hOpBadge = getOperatorBadgeClass(h.operator);
                     
-                    // Creamos las opciones del desplegable para este registro del historial
                     let optionsHtml = `<option value="Sin asignar" ${!h.operator || h.operator === 'Sin asignar' ? 'selected' : ''}>Sin asignar</option>`;
                     operators.forEach(op => {
                         let selected = h.operator === op.name ? 'selected' : '';
@@ -604,6 +598,7 @@
                                 <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
                                 <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
                                 <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
+                                <option value="Llanta reparándose fuera" ${order.substatus === 'Llanta reparándose fuera' ? 'selected' : ''}>Llanta reparándose fuera</option>
                             </select>
                         </div>
                         <div class="col-md-6 d-flex align-items-center pt-3">
@@ -632,17 +627,15 @@
             const order = orders.find(o => o.id === orderId);
             if (!order || !order.history || !order.history[historyIndex]) return;
 
-            // Actualizamos el operario en ese punto del historial
             order.history[historyIndex].operator = newOperator;
 
-            // Opcional pero útil: si el historial modificado es el último (el actual), actualizamos también el operario principal de la orden
             let updatePayload = { history: order.history };
             if (historyIndex === order.history.length - 1) {
                 updatePayload.operator = newOperator === 'Sin asignar' ? '' : newOperator;
             }
 
             await updateDoc(doc(db, "orders", orderId), updatePayload);
-            openDetailModal(orderId); // Refresca el modal para mantenerlo abierto y actualizado
+            openDetailModal(orderId);
         }
 
         window.deleteHistoryItem = async (orderId, index) => {
