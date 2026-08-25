@@ -64,6 +64,22 @@
             border-color: #dc2626 !important;
             background-color: #fef2f2 !important;
         }
+        /* Estilos visuales para los operarios según prefijo */
+        .badge-ch {
+            background-color: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        .badge-pun {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+        .badge-none {
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+        }
         .login-card {
             background-color: #ffffff;
             border: 1px solid var(--border-color);
@@ -204,7 +220,7 @@
                 <div class="modal-body">
                     <form onsubmit="handleAddOperator(event)" class="mb-4">
                         <div class="input-group">
-                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Nombre del operario">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. CH/ Juan o PUN/ Pedro">
                             <button type="submit" class="btn btn-primary fw-bold">Añadir</button>
                         </div>
                     </form>
@@ -351,6 +367,16 @@
             document.getElementById('date-out').value = today;
         }
 
+        // Función auxiliar para obtener la clase CSS según el prefijo del operario
+        function getOperatorBadgeClass(opName) {
+            if (!opName) return 'badge-none';
+            const upper = opName.toUpperCase();
+            if (upper.startsWith('CH')) return 'badge-ch';
+            if (upper.startsWith('PUN')) return 'badge-pun';
+            return 'badge-none';
+        }
+        window.getOperatorBadgeClass = getOperatorBadgeClass;
+
         window.handleLogin = (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -364,6 +390,9 @@
         }
 
         window.handleLogout = () => {
+            // Limpia los inputs de inicio de sesión para que no se queden guardados
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
             document.getElementById('app-screen').style.display = 'none';
             document.getElementById('login-screen').style.display = 'block';
         }
@@ -392,7 +421,13 @@
             promptSelectContainer.innerHTML = '<option value="">Sin asignar (Libre)</option>';
 
             operators.forEach(op => {
-                listContainer.innerHTML += `<div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border"><span>${op.name}</span><button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button></div>`;
+                let badgeClass = getOperatorBadgeClass(op.name);
+                listContainer.innerHTML += `
+                    <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border">
+                        <span class="badge ${badgeClass} px-2 py-1">${op.name}</span>
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
                 selectContainer.innerHTML += `<option value="${op.name}">${op.name}</option>`;
                 promptSelectContainer.innerHTML += `<option value="${op.name}">${op.name}</option>`;
             });
@@ -428,7 +463,7 @@
 
         window.confirmPendingMove = async () => {
             if (!pendingMoveData) return;
-            const chosenOperator = document.getElementById('prompt-operator-select').value; // Puede estar vacío ("") para dejarlo sin asignar
+            const chosenOperator = document.getElementById('prompt-operator-select').value;
             const { orderId, newStatus } = pendingMoveData;
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
@@ -474,6 +509,10 @@
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
 
+                // Aplicar estilo de color diferenciado al operario en la tarjeta
+                let opBadgeClass = getOperatorBadgeClass(order.operator);
+                let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted">No asignado</span>';
+
                 containers[status].innerHTML += `
                     <div class="task-card p-3 ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
                         <div class="d-flex justify-content-between align-items-start mb-2">
@@ -481,9 +520,9 @@
                             <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
                         </div>
                         ${substatusBadge}
-                        <div class="small text-secondary mb-1">
-                            <div><strong>Operario:</strong> ${order.operator || 'No asignado'}</div>
-                            <div style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'} ${isOverdue ? '(Vencido)' : ''}</div>
+                        <div class="small text-secondary mb-2">
+                            <div class="d-flex align-items-center gap-1"><strong>Operario:</strong> ${operatorDisplay}</div>
+                            <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'} ${isOverdue ? '(Vencido)' : ''}</div>
                         </div>
                         <select class="form-select form-select-sm mt-2" onclick="event.stopPropagation()" onchange="initiateStatusChange('${order.id}', this.value)">
                             <option value="lunas" ${status === 'lunas' ? 'selected' : ''}>1. Lunas</option>
@@ -507,11 +546,14 @@
             if (order.history && order.history.length > 0) {
                 historyHtml = `<div class="history-timeline">`;
                 order.history.forEach((h, index) => {
+                    let hOpBadge = getOperatorBadgeClass(h.operator);
                     historyHtml += `
                         <div class="history-item d-flex justify-content-between align-items-start">
                             <div>
                                 <div class="fw-bold text-primary text-uppercase small">${h.status}</div>
-                                <div class="text-dark small"><i class="fas fa-user-tie me-1 text-secondary"></i> Operario: <strong>${h.operator}</strong></div>
+                                <div class="text-dark small d-flex align-items-center gap-1 my-1">
+                                    <i class="fas fa-user-tie text-secondary"></i> Operario: <span class="badge ${hOpBadge} px-2 py-0">${h.operator}</span>
+                                </div>
                                 <div class="text-muted" style="font-size: 0.75rem;"><i class="far fa-clock me-1"></i> ${h.date}</div>
                             </div>
                             <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="deleteHistoryItem('${order.id}', ${index})" title="Eliminar este fichaje"><i class="fas fa-times"></i></button>
