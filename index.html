@@ -152,7 +152,10 @@
             <div class="col-md-7 mb-2 mb-md-0">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado, operario..." oninput="renderOrders()">
+                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado..." oninput="renderOrders()">
+                    <select id="smart-filter-select" class="form-select border-secondary text-secondary fw-semibold" style="max-width: 260px;" onchange="handleSmartFilterSelect(this.value)">
+                        <option value="">🔍 Filtrar por operario, subestado o fase...</option>
+                    </select>
                 </div>
             </div>
             <div class="col-md-5 text-md-end">
@@ -424,6 +427,49 @@
                 selectContainer.innerHTML += `<option value="${op.name}">${op.name}</option>`;
                 promptSelectContainer.innerHTML += `<option value="${op.name}">${op.name}</option>`;
             });
+
+            updateSmartFilterDropdown();
+        }
+
+        function updateSmartFilterDropdown() {
+            const filterSelect = document.getElementById('smart-filter-select');
+            if (!filterSelect) return;
+            
+            filterSelect.innerHTML = `
+                <option value="">🔍 Filtrar por operario, subestado o fase...</option>
+                <optgroup label="--- Operarios ---">
+                    <option value="op:Sin asignar">Sin asignar</option>
+            `;
+            
+            operators.forEach(op => {
+                filterSelect.innerHTML += `<option value="op:${op.name}">${op.name}</option>`;
+            });
+
+            filterSelect.innerHTML += `
+                </optgroup>
+                <optgroup label="--- Subestados ---">
+                    <option value="sub:Paragolpes fuera">Paragolpes fuera</option>
+                    <option value="sub:Faro reparándose">Faro reparándose</option>
+                    <option value="sub:Pendiente de recambios">Pendiente de recambios</option>
+                    <option value="sub:Luna aquí">Luna aquí</option>
+                    <option value="sub:Luna pendiente">Luna pendiente</option>
+                    <option value="sub:Golpe taller">Golpe taller</option>
+                    <option value="sub:Llanta reparándose fuera">Llanta reparándose fuera</option>
+                </optgroup>
+                <optgroup label="--- Fases Iniciales ---">
+                    <option value="phase:lunas">1. Lunas</option>
+                    <option value="phase:reparacion">2. Reparación</option>
+                    <option value="phase:pintado">3. Pintado</option>
+                    <option value="phase:montaje">4. Montaje</option>
+                    <option value="phase:terminados">5. Terminados</option>
+                </optgroup>
+            `;
+        }
+
+        window.handleSmartFilterSelect = (val) => {
+            const searchInput = document.getElementById('search-input');
+            searchInput.value = val;
+            renderOrders();
         }
 
         window.handleAddOperator = async (e) => {
@@ -475,7 +521,7 @@
         }
 
         window.renderOrders = () => {
-            const searchVal = document.getElementById('search-input').value.toLowerCase();
+            const filterVal = document.getElementById('search-input').value.toLowerCase().trim();
             const todayStr = new Date().toISOString().split('T')[0];
             const containers = {
                 lunas: document.getElementById('list-lunas'),
@@ -488,7 +534,29 @@
             let counts = { lunas: 0, reparacion: 0, pintado: 0, montaje: 0, terminados: 0 };
 
             orders.filter(order => {
-                return (order.plate || '').toLowerCase().includes(searchVal) || (order.model || '').toLowerCase().includes(searchVal) || (order.operator || '').toLowerCase().includes(searchVal);
+                let status = order.status || 'lunas';
+                let op = (order.operator || '').toLowerCase();
+                let sub = (order.substatus || '').toLowerCase();
+
+                if (filterVal.startsWith('op:')) {
+                    let targetOp = filterVal.replace('op:', '').trim();
+                    if (targetOp === 'sin asignar') return !order.operator;
+                    return op === targetOp;
+                }
+                if (filterVal.startsWith('sub:')) {
+                    let targetSub = filterVal.replace('sub:', '').trim();
+                    return sub === targetSub;
+                }
+                if (filterVal.startsWith('phase:')) {
+                    let targetPhase = filterVal.replace('phase:', '').trim();
+                    return status === targetPhase;
+                }
+
+                // Búsqueda normal por texto
+                return (order.plate || '').toLowerCase().includes(filterVal) || 
+                       (order.model || '').toLowerCase().includes(filterVal) || 
+                       op.includes(filterVal) || 
+                       sub.includes(filterVal);
             }).forEach(order => {
                 let status = order.status || 'lunas';
                 if (counts[status] !== undefined) counts[status]++;
