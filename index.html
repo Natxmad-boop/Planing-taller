@@ -111,6 +111,7 @@
 </head>
 <body>
 
+    <!-- Pantalla de Login -->
     <div id="login-screen" class="container mt-5" style="max-width: 420px;">
         <div class="login-card mt-5 p-4">
             <div class="card-body">
@@ -135,6 +136,7 @@
         </div>
     </div>
 
+    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
             <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
@@ -153,9 +155,16 @@
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
                     <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado..." oninput="renderOrders()">
-                    <select id="smart-filter-select" class="form-select border-secondary text-secondary fw-semibold" style="max-width: 260px;" onchange="handleSmartFilterSelect(this.value)">
-                        <option value="">🔍 Filtrar por operario, subestado o fase...</option>
-                    </select>
+                    
+                    <!-- Desplegable Inteligente Personalizado -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary bg-white border-secondary text-secondary fw-semibold dropdown-toggle rounded-0 rounded-end" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-left: 0;">
+                            <span id="smart-filter-label">🔍 Filtrar...</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" id="smart-filter-dropdown" style="max-height: 350px; overflow-y: auto; min-width: 280px;">
+                            <!-- Se rellena dinámicamente -->
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="col-md-5 text-md-end">
@@ -165,6 +174,7 @@
             </div>
         </div>
 
+        <!-- Tablero Kanban -->
         <div class="kanban-container">
             <div class="kanban-col p-3 border-top border-secondary border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -208,6 +218,7 @@
         </div>
     </div>
 
+    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
@@ -303,6 +314,7 @@
         </div>
     </div>
 
+    <!-- Modal de Ficha, Edición y Trazabilidad -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -467,8 +479,8 @@
         }
 
         function updateSmartFilterDropdown() {
-            const filterSelect = document.getElementById('smart-filter-select');
-            if (!filterSelect) return;
+            const dropdownMenu = document.getElementById('smart-filter-dropdown');
+            if (!dropdownMenu) return;
             
             let chOps = [];
             let pinOps = [];
@@ -480,47 +492,50 @@
             });
 
             let html = `
-                <option value="">🔍 Filtrar por operario, subestado o fase...</option>
-                <optgroup label="--- Operarios ---">
-                    <option value="op:Sin asignar">Sin asignar</option>
+                <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('op:Sin asignar', 'Sin asignar')">Sin asignar</a></li>
             `;
             
             if (chOps.length > 0) {
-                html += `<optgroup label="--- Chapa (CH) ---">`;
-                chOps.forEach(name => { html += `<option value="op:${name}">${name}</option>`; });
-                html += `</optgroup>`;
+                html += `<li><h6 class="dropdown-header text-primary fw-bold ps-4">--- Chapa (CH) ---</h6></li>`;
+                chOps.forEach(name => {
+                    html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${name}', '${name}')"><span class="badge badge-ch px-2 py-1">${name}</span></a></li>`;
+                });
             }
             if (pinOps.length > 0) {
-                html += `<optgroup label="--- Pintura (PIN/PUN) ---">`;
-                pinOps.forEach(name => { html += `<option value="op:${name}">${name}</option>`; });
-                html += `</optgroup>`;
+                html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintura (PIN/PUN) ---</h6></li>`;
+                pinOps.forEach(name => {
+                    html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${name}', '${name}')"><span class="badge badge-pun px-2 py-1">${name}</span></a></li>`;
+                });
             }
 
             html += `
-                </optgroup>
-                <optgroup label="--- Subestados ---">
-                    <option value="sub:Paragolpes fuera">Paragolpes fuera</option>
-                    <option value="sub:Faro reparándose">Faro reparándose</option>
-                    <option value="sub:Pendiente de recambios">Pendiente de recambios</option>
-                    <option value="sub:Luna aquí">Luna aquí</option>
-                    <option value="sub:Luna pendiente">Luna pendiente</option>
-                    <option value="sub:Golpe taller">Golpe taller</option>
-                    <option value="sub:Llanta reparándose fuera">Llanta reparándose fuera</option>
-                </optgroup>
-                <optgroup label="--- Fases Iniciales ---">
-                    <option value="phase:lunas">1. Lunas</option>
-                    <option value="phase:reparacion">2. Reparación</option>
-                    <option value="phase:pintado">3. Pintado</option>
-                    <option value="phase:montaje">4. Montaje</option>
-                    <option value="phase:terminados">5. Terminados</option>
-                </optgroup>
+                <li><hr class="dropdown-divider"></li>
+                <li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')">Paragolpes fuera</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro reparándose', 'Faro reparándose')">Faro reparándose</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente de recambios', 'Pendiente de recambios')">Pendiente de recambios</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')">Luna aquí</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')">Luna pendiente</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')">Golpe taller</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Llanta reparándose fuera', 'Llanta reparándose fuera')">Llanta reparándose fuera</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><h6 class="dropdown-header text-dark fw-bold">--- Fases Iniciales ---</h6></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('phase:lunas', '1. Lunas')">1. Lunas</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('phase:reparacion', '2. Reparación')">2. Reparación</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('phase:pintado', '3. Pintado')">3. Pintado</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('phase:montaje', '4. Montaje')">4. Montaje</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('phase:terminados', '5. Terminados')">5. Terminados</a></li>
             `;
-            filterSelect.innerHTML = html;
+            dropdownMenu.innerHTML = html;
         }
 
-        window.handleSmartFilterSelect = (val) => {
+        window.handleSmartFilterSelect = (val, labelText) => {
             const searchInput = document.getElementById('search-input');
             searchInput.value = val;
+            document.getElementById('smart-filter-label').innerText = labelText;
             renderOrders();
         }
 
