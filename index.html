@@ -126,7 +126,6 @@
 </head>
 <body>
 
-    <!-- Pantalla de Login -->
     <div id="login-screen" class="container mt-5" style="max-width: 420px;">
         <div class="login-card mt-5 p-4">
             <div class="card-body">
@@ -151,7 +150,6 @@
         </div>
     </div>
 
-    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
             <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
@@ -171,19 +169,16 @@
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
                     <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado..." oninput="renderOrders()">
                     
-                    <!-- Desplegable Inteligente Personalizado -->
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary bg-white border-secondary text-secondary fw-semibold dropdown-toggle rounded-0 rounded-end" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-left: 0;">
                             <span id="smart-filter-label">🔍 Filtrar...</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow" id="smart-filter-dropdown" style="max-height: 350px; overflow-y: auto; min-width: 280px;">
-                            <!-- Se rellena dinámicamente -->
-                        </ul>
+                            </ul>
                     </div>
                 </div>
             </div>
             
-            <!-- Botones de Filtro Rápido -->
             <div class="col-md-5 text-md-end d-flex gap-2 justify-content-md-end align-items-center flex-wrap">
                 <div class="btn-group shadow-sm" role="group" aria-label="Filtros rápidos">
                     <button type="button" class="btn btn-outline-danger btn-sm fw-bold bg-white" onclick="setQuickFilter('urgent')">
@@ -202,7 +197,6 @@
             </div>
         </div>
 
-        <!-- Tablero Kanban -->
         <div class="kanban-container">
             <div class="kanban-col p-3 border-top border-secondary border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -246,7 +240,6 @@
         </div>
     </div>
 
-    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
@@ -342,7 +335,6 @@
         </div>
     </div>
 
-    <!-- Modal de Ficha, Edición y Trazabilidad -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -479,13 +471,26 @@
                 orders = [];
                 snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
                 renderOrders();
-                document.getElementById('sync-status').className = "badge bg-success text-white me-3";
-                document.getElementById('sync-status').innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado';
+                const syncEl = document.getElementById('sync-status');
+                if (syncEl) {
+                    syncEl.className = "badge bg-success text-white me-3";
+                    syncEl.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado';
+                }
+            }, (error) => {
+                console.error("Error en sincronización de órdenes:", error);
+                const syncEl = document.getElementById('sync-status');
+                if (syncEl) {
+                    syncEl.className = "badge bg-danger text-white me-3";
+                    syncEl.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> Error de red';
+                }
             });
+
             onSnapshot(collection(db, "operators"), (snapshot) => {
                 operators = [];
                 snapshot.forEach(docSnap => operators.push({ id: docSnap.id, ...docSnap.data() }));
                 renderOperatorsUI();
+            }, (error) => {
+                console.error("Error en sincronización de operarios:", error);
             });
         }
 
@@ -493,6 +498,8 @@
             const listContainer = document.getElementById('operators-list');
             const selectContainer = document.getElementById('operator-select');
             const promptSelectContainer = document.getElementById('prompt-operator-select');
+            if (!listContainer || !selectContainer || !promptSelectContainer) return;
+
             listContainer.innerHTML = '';
 
             let currentSelectedOp = selectContainer.value;
@@ -571,20 +578,34 @@
         window.handleSmartFilterSelect = (val, labelText) => {
             activeQuickFilter = 'all';
             const searchInput = document.getElementById('search-input');
-            searchInput.value = val;
-            document.getElementById('smart-filter-label').innerText = labelText;
+            if (searchInput) searchInput.value = val;
+            const labelEl = document.getElementById('smart-filter-label');
+            if (labelEl) labelEl.innerText = labelText;
             renderOrders();
         }
 
         window.handleAddOperator = async (e) => {
             e.preventDefault();
             const nameInput = document.getElementById('new-operator-name');
-            if (!nameInput.value.trim()) return;
-            await addDoc(collection(db, "operators"), { name: nameInput.value.trim() });
-            nameInput.value = '';
+            if (!nameInput || !nameInput.value.trim()) return;
+            try {
+                await addDoc(collection(db, "operators"), { name: nameInput.value.trim() });
+                nameInput.value = '';
+            } catch (err) {
+                console.error("Error al añadir operario:", err);
+                alert("No se pudo añadir el operario por un error de red.");
+            }
         }
 
-        window.deleteOperator = async (id) => { if (confirm('¿Eliminar operario?')) await deleteDoc(doc(db, "operators", id)); }
+        window.deleteOperator = async (id) => { 
+            if (confirm('¿Eliminar operario?')) {
+                try {
+                    await deleteDoc(doc(db, "operators", id));
+                } catch (err) {
+                    console.error("Error al eliminar operario:", err);
+                }
+            } 
+        }
 
         window.allowDrop = (ev) => { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
         window.removeDropStyle = (ev) => { ev.currentTarget.classList.remove('drag-over'); }
@@ -600,8 +621,15 @@
             const order = orders.find(o => o.id === orderId);
             if (!order || order.status === newStatus) return;
             pendingMoveData = { orderId, newStatus };
-            document.getElementById('prompt-operator-select').value = order.operator || "";
-            new bootstrap.Modal(document.getElementById('operatorPromptModal')).show();
+            const promptSel = document.getElementById('prompt-operator-select');
+            if (promptSel) promptSel.value = order.operator || "";
+            
+            const modalEl = document.getElementById('operatorPromptModal');
+            if (modalEl) {
+                let modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (!modalInstance) modalInstance = new bootstrap.Modal(modalEl);
+                modalInstance.show();
+            }
         }
 
         window.confirmPendingMove = async () => {
@@ -614,18 +642,32 @@
             const historyEntry = { status: newStatus, operator: chosenOperator || "Sin asignar", date: new Date().toLocaleString() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
 
-            await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: chosenOperator, history: updatedHistory });
-            bootstrap.Modal.getInstance(document.getElementById('operatorPromptModal')).hide();
+            try {
+                await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: chosenOperator, history: updatedHistory });
+            } catch (err) {
+                console.error("Error al mover la orden:", err);
+            }
+
+            const modalEl = document.getElementById('operatorPromptModal');
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+            }
             pendingMoveData = null;
         }
 
         window.cancelPendingMove = () => {
             pendingMoveData = null;
-            bootstrap.Modal.getInstance(document.getElementById('operatorPromptModal')).hide();
+            const modalEl = document.getElementById('operatorPromptModal');
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+            }
         }
 
         window.renderOrders = () => {
-            const filterVal = document.getElementById('search-input').value.toLowerCase().trim();
+            const searchInput = document.getElementById('search-input');
+            const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
             const containers = {
                 lunas: document.getElementById('list-lunas'),
@@ -634,7 +676,10 @@
                 montaje: document.getElementById('list-montaje'),
                 terminados: document.getElementById('list-terminados')
             };
-            Object.values(containers).forEach(c => c.innerHTML = '');
+            
+            if (!containers.lunas) return;
+
+            Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
             let counts = { lunas: 0, reparacion: 0, pintado: 0, montaje: 0, terminados: 0 };
 
             let filteredOrders = orders.filter(order => {
@@ -643,7 +688,6 @@
                 let sub = (order.substatus || '').toLowerCase();
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
 
-                // Filtro rápido superior
                 if (activeQuickFilter === 'urgent') {
                     if (!order.urgent) return false;
                 } else if (activeQuickFilter === 'overdue') {
@@ -678,7 +722,7 @@
                 let status = order.status || 'lunas';
                 if (counts[status] !== undefined) counts[status]++;
                 
-                let displayPlate = order.plate.toUpperCase();
+                let displayPlate = (order.plate || '').toUpperCase();
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
 
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
@@ -686,36 +730,40 @@
                 let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
-
                 let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner" style="letter-spacing: 0.5px;"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
 
                 let opBadgeClass = getOperatorBadgeClass(order.operator);
                 let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted">No asignado</span>';
 
-                containers[status].innerHTML += `
-                    <div class="task-card p-3 ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
-                        ${urgentBanner}
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="fw-bold mb-0 text-dark">${displayPlate} - ${order.model}</h6>
-                            <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
+                if (containers[status]) {
+                    containers[status].innerHTML += `
+                        <div class="task-card p-3 ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
+                            ${urgentBanner}
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="fw-bold mb-0 text-dark">${displayPlate} - ${order.model}</h6>
+                                <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                            ${substatusBadge}
+                            <div class="small text-secondary mb-2">
+                                <div class="d-flex align-items-center gap-1"><strong>Operario:</strong> ${operatorDisplay}</div>
+                                <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'} ${isOverdue ? '(Vencido)' : ''}</div>
+                            </div>
+                            <select class="form-select form-select-sm mt-2" onclick="event.stopPropagation()" onchange="initiateStatusChange('${order.id}', this.value)">
+                                <option value="lunas" ${status === 'lunas' ? 'selected' : ''}>1. Lunas</option>
+                                <option value="reparacion" ${status === 'reparacion' ? 'selected' : ''}>2. Reparación</option>
+                                <option value="pintado" ${status === 'pintado' ? 'selected' : ''}>3. Pintado</option>
+                                <option value="montaje" ${status === 'montaje' ? 'selected' : ''}>4. Montaje</option>
+                                <option value="terminados" ${status === 'terminados' ? 'selected' : ''}>5. Terminados</option>
+                            </select>
                         </div>
-                        ${substatusBadge}
-                        <div class="small text-secondary mb-2">
-                            <div class="d-flex align-items-center gap-1"><strong>Operario:</strong> ${operatorDisplay}</div>
-                            <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'} ${isOverdue ? '(Vencido)' : ''}</div>
-                        </div>
-                        <select class="form-select form-select-sm mt-2" onclick="event.stopPropagation()" onchange="initiateStatusChange('${order.id}', this.value)">
-                            <option value="lunas" ${status === 'lunas' ? 'selected' : ''}>1. Lunas</option>
-                            <option value="reparacion" ${status === 'reparacion' ? 'selected' : ''}>2. Reparación</option>
-                            <option value="pintado" ${status === 'pintado' ? 'selected' : ''}>3. Pintado</option>
-                            <option value="montaje" ${status === 'montaje' ? 'selected' : ''}>4. Montaje</option>
-                            <option value="terminados" ${status === 'terminados' ? 'selected' : ''}>5. Terminados</option>
-                        </select>
-                    </div>
-                `;
+                    `;
+                }
             });
 
-            Object.keys(counts).forEach(k => { document.getElementById(`count-${k}`).innerText = counts[k]; });
+            Object.keys(counts).forEach(k => { 
+                const badgeEl = document.getElementById(`count-${k}`);
+                if (badgeEl) badgeEl.innerText = counts[k]; 
+            });
         }
 
         window.openDetailModal = (id) => {
@@ -748,62 +796,71 @@
                 historyHtml += `</div>`;
             }
 
-            document.getElementById('detail-modal-body').innerHTML = `
-                <form onsubmit="handleUpdateOrder(event, '${order.id}')">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label small text-secondary fw-bold">Matrícula</label>
-                            <input type="text" id="edit-plate" class="form-control text-uppercase" value="${order.plate || ''}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small text-secondary fw-bold">Modelo</label>
-                            <input type="text" id="edit-model" class="form-control" value="${order.model || ''}" required>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label small text-secondary fw-bold">Fecha Entrada</label>
-                            <input type="date" id="edit-date-in" class="form-control" value="${order.dateIn || ''}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small text-secondary fw-bold">Fecha Salida Prevista</label>
-                            <input type="date" id="edit-date-out" class="form-control" value="${order.dateOut || ''}" required>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label small text-secondary fw-bold">Subestado</label>
-                            <select id="edit-substatus" class="form-select">
-                                <option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option>
-                                <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
-                                <option value="Faro reparándose" ${order.substatus === 'Faro reparándose' ? 'selected' : ''}>Faro reparándose</option>
-                                <option value="Pendiente de recambios" ${order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente de recambios</option>
-                                <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
-                                <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
-                                <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
-                                <option value="Llanta reparándose fuera" ${order.substatus === 'Llanta reparándose fuera' ? 'selected' : ''}>Llanta reparándose fuera</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 d-flex align-items-center pt-3">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="edit-urgent" ${order.urgent ? 'checked' : ''}>
-                                <label class="form-check-label text-danger fw-bold" for="edit-urgent">Urgente</label>
+            const modalBody = document.getElementById('detail-modal-body');
+            if (modalBody) {
+                modalBody.innerHTML = `
+                    <form onsubmit="handleUpdateOrder(event, '${order.id}')">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Matrícula</label>
+                                <input type="text" id="edit-plate" class="form-control text-uppercase" value="${order.plate || ''}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Modelo</label>
+                                <input type="text" id="edit-model" class="form-control" value="${order.model || ''}" required>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small text-secondary fw-bold">Notas</label>
-                        <textarea id="edit-notes" class="form-control" rows="2">${order.notes || ''}</textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success w-100 fw-bold py-2 mb-4"><i class="fas fa-save me-1"></i> Guardar Cambios de la Ficha</button>
-                </form>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Fecha Entrada</label>
+                                <input type="date" id="edit-date-in" class="form-control" value="${order.dateIn || ''}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Fecha Salida Prevista</label>
+                                <input type="date" id="edit-date-out" class="form-control" value="${order.dateOut || ''}" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Subestado</label>
+                                <select id="edit-substatus" class="form-select">
+                                    <option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option>
+                                    <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
+                                    <option value="Faro reparándose" ${order.substatus === 'Faro reparándose' ? 'selected' : ''}>Faro reparándose</option>
+                                    <option value="Pendiente de recambios" ${order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente de recambios</option>
+                                    <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
+                                    <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
+                                    <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
+                                    <option value="Llanta reparándose fuera" ${order.substatus === 'Llanta reparándose fuera' ? 'selected' : ''}>Llanta reparándose fuera</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center pt-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="edit-urgent" ${order.urgent ? 'checked' : ''}>
+                                    <label class="form-check-label text-danger fw-bold" for="edit-urgent">Urgente</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary fw-bold">Notas</label>
+                            <textarea id="edit-notes" class="form-control" rows="2">${order.notes || ''}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-bold py-2 mb-4"><i class="fas fa-save me-1"></i> Guardar Cambios de la Ficha</button>
+                    </form>
 
-                <hr class="mb-4">
-                
-                <h6 class="text-uppercase text-secondary fw-bold small mb-3">Historial y Trazabilidad (Orden cronológico)</h6>
-                ${historyHtml}
-            `;
-            new bootstrap.Modal(document.getElementById('detailModal')).show();
+                    <hr class="mb-4">
+                    
+                    <h6 class="text-uppercase text-secondary fw-bold small mb-3">Historial y Trazabilidad (Orden cronológico)</h6>
+                    ${historyHtml}
+                `;
+            }
+
+            const detailModalEl = document.getElementById('detailModal');
+            if (detailModalEl) {
+                let modalInstance = bootstrap.Modal.getInstance(detailModalEl);
+                if (!modalInstance) modalInstance = new bootstrap.Modal(detailModalEl);
+                modalInstance.show();
+            }
         }
 
         window.updateHistoryOperator = async (orderId, historyIndex, newOperator) => {
@@ -817,8 +874,12 @@
                 updatePayload.operator = newOperator === 'Sin asignar' ? '' : newOperator;
             }
 
-            await updateDoc(doc(db, "orders", orderId), updatePayload);
-            openDetailModal(orderId);
+            try {
+                await updateDoc(doc(db, "orders", orderId), updatePayload);
+                openDetailModal(orderId);
+            } catch (err) {
+                console.error("Error al actualizar operario en historial:", err);
+            }
         }
 
         window.deleteHistoryItem = async (orderId, index) => {
@@ -826,46 +887,75 @@
             if (!order || !order.history) return;
             if (confirm('¿Eliminar este registro del historial?')) {
                 order.history.splice(index, 1);
-                await updateDoc(doc(db, "orders", orderId), { history: order.history });
-                openDetailModal(orderId);
+                try {
+                    await updateDoc(doc(db, "orders", orderId), { history: order.history });
+                    openDetailModal(orderId);
+                } catch (err) {
+                    console.error("Error al eliminar item del historial:", err);
+                }
             }
         }
 
         window.handleUpdateOrder = async (e, id) => {
             e.preventDefault();
-            await updateDoc(doc(db, "orders", id), {
-                plate: document.getElementById('edit-plate').value.trim(),
-                model: document.getElementById('edit-model').value.trim(),
-                dateIn: document.getElementById('edit-date-in').value,
-                dateOut: document.getElementById('edit-date-out').value,
-                substatus: document.getElementById('edit-substatus').value,
-                notes: document.getElementById('edit-notes').value,
-                urgent: document.getElementById('edit-urgent').checked
-            });
-            bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
+            try {
+                await updateDoc(doc(db, "orders", id), {
+                    plate: document.getElementById('edit-plate').value.trim(),
+                    model: document.getElementById('edit-model').value.trim(),
+                    dateIn: document.getElementById('edit-date-in').value,
+                    dateOut: document.getElementById('edit-date-out').value,
+                    substatus: document.getElementById('edit-substatus').value,
+                    notes: document.getElementById('edit-notes').value,
+                    urgent: document.getElementById('edit-urgent').checked
+                });
+                const modalEl = document.getElementById('detailModal');
+                if (modalEl) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) modalInstance.hide();
+                }
+            } catch (err) {
+                console.error("Error al actualizar orden:", err);
+            }
         }
 
         window.handleAddOrder = async (e) => {
             e.preventDefault();
             const initialStatus = document.getElementById('car-status').value;
             const initialOperator = document.getElementById('operator-select').value;
-            await addDoc(collection(db, "orders"), {
-                plate: document.getElementById('car-plate').value.trim(),
-                model: document.getElementById('car-model').value.trim(),
-                dateIn: document.getElementById('date-in').value,
-                dateOut: document.getElementById('date-out').value,
-                operator: initialOperator,
-                substatus: document.getElementById('car-substatus').value,
-                status: initialStatus,
-                notes: document.getElementById('car-notes').value,
-                urgent: document.getElementById('car-urgent').checked,
-                history: [{ status: initialStatus, operator: initialOperator || "Sin asignar", date: new Date().toLocaleString() }]
-            });
-            document.getElementById('order-form').reset();
-            bootstrap.Modal.getInstance(document.getElementById('newOrderModal')).hide();
+            try {
+                await addDoc(collection(db, "orders"), {
+                    plate: document.getElementById('car-plate').value.trim(),
+                    model: document.getElementById('car-model').value.trim(),
+                    dateIn: document.getElementById('date-in').value,
+                    dateOut: document.getElementById('date-out').value,
+                    operator: initialOperator,
+                    substatus: document.getElementById('car-substatus').value,
+                    status: initialStatus,
+                    notes: document.getElementById('car-notes').value,
+                    urgent: document.getElementById('car-urgent').checked,
+                    history: [{ status: initialStatus, operator: initialOperator || "Sin asignar", date: new Date().toLocaleString() }]
+                });
+                document.getElementById('order-form').reset();
+                const modalEl = document.getElementById('newOrderModal');
+                if (modalEl) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) modalInstance.hide();
+                }
+            } catch (err) {
+                console.error("Error al añadir orden:", err);
+                alert("No se pudo guardar la orden. Comprueba tu conexión.");
+            }
         }
 
-        window.deleteOrder = async (id) => { if (confirm('¿Eliminar orden?')) await deleteDoc(doc(db, "orders", id)); }
+        window.deleteOrder = async (id) => { 
+            if (confirm('¿Eliminar orden?')) {
+                try {
+                    await deleteDoc(doc(db, "orders", id));
+                } catch (err) {
+                    console.error("Error al eliminar orden:", err);
+                }
+            } 
+        }
     </script>
 </body>
 </html>
