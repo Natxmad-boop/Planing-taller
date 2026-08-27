@@ -444,8 +444,8 @@
         let operators = [];
         let privacyModeActive = true;
         let activeQuickFilter = 'all';
-        let showLunasCol = false;       // Inicialmente oculto como en tu captura
-        let showTerminadosCol = false;  // Inicialmente oculto como en tu captura
+        let showLunasCol = false;       
+        let showTerminadosCol = false;  
 
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
         window.setDefaultDates = () => {
@@ -540,9 +540,17 @@
         }
 
         function initRealtimeSync() {
-            onSnapshot(collection(db, "orders"), (snapshot) => {
+            onSnapshot(collection(db, "orders"), async (snapshot) => {
                 orders = [];
-                snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
+                for (const docSnap of snapshot.docs) {
+                    let data = docSnap.data();
+                    // MIGRACIÓN AUTOMÁTICA: Si el coche tenía el estado antiguo "pintado", lo pasamos a "pintor1"
+                    if (data.status === 'pintado' || data.status === 'pintura') {
+                        data.status = 'pintor1';
+                        await updateDoc(doc(db, "orders", docSnap.id), { status: 'pintor1' });
+                    }
+                    orders.push({ id: docSnap.id, ...data });
+                }
                 renderOrders();
                 const syncEl = document.getElementById('sync-status');
                 if (syncEl) {
@@ -672,7 +680,6 @@
             if (!order) return;
 
             let newOperator = order.operator || "";
-            // Si lo tiran a un subcarril de pintor específico, intentamos actualizar el operario automáticamente si corresponde
             if (targetStatus.startsWith('pintor')) {
                 const indexNum = parseInt(targetStatus.replace('pintor', '')) - 1;
                 let pinOps = operators.filter(op => {
