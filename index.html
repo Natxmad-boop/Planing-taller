@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning de Taller Pro - Vista Ampliada</title>
+    <title>Planning de Taller Pro - Vista Equilibrada</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -34,8 +34,8 @@
             background-color: #e2e8f0;
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            min-width: 310px;
-            flex: 1;
+            min-width: 320px;
+            flex: 1; /* Distribución equitativa por defecto */
             min-height: 75vh;
             transition: all 0.3s ease;
         }
@@ -73,7 +73,7 @@
         .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
         .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
 
-        /* Contenedor multicomluna agrupado a pantalla completa */
+        /* Contenedor multicomcolumna agrupado a pantalla completa de chapistas */
         .chapa-four-columns-container {
             display: flex;
             gap: 0.75rem;
@@ -111,17 +111,17 @@
         /* Contenedor dividido para los Pintores por Iniciales */
         .pintura-split-container {
             display: flex;
-            gap: 0.4rem;
+            gap: 0.5rem;
             min-height: 60vh;
             overflow-x: auto;
         }
         .pintor-subcol {
             flex: 1;
-            min-width: 140px;
+            min-width: 150px; /* Ancho optimizado para evitar compresión excesiva */
             background-color: #fffbeb;
             border: 1px dashed #fcd34d;
             border-radius: 8px;
-            padding: 6px;
+            padding: 8px;
             min-height: 55vh;
             transition: background-color 0.2s;
         }
@@ -282,7 +282,7 @@
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
         </div>
 
-        <!-- Tablero Kanban Adaptado -->
+        <!-- Tablero Kanban Equilibrado (50/50 en vista normal) -->
         <div class="kanban-container" id="main-kanban-container">
             <!-- Columna Opcional: Lunas -->
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
@@ -293,8 +293,8 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <!-- Columna Principal: Chapista (Dinámica: vista estándar o 4 columnas divididas a pantalla completa) -->
-            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas" style="min-width: 440px; flex: 2;">
+            <!-- Columna Principal: Chapista -->
+            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
                     <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
@@ -304,8 +304,8 @@
                 </div>
             </div>
 
-            <!-- Columna Principal: Pintura por Iniciales Dinámicas -->
-            <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="min-width: 580px;">
+            <!-- Columna Principal: Pintores por Iniciales (Equilibrada 1:1 con Chapistas) -->
+            <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Iniciales)</span></h6>
                     <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
@@ -477,7 +477,7 @@
         let activeQuickFilter = 'all';
         let showLunasCol = false;
         let showTerminadosCol = false;
-        let chapistasFullscreenMode = false; // Estado de pantalla completa para chapistas
+        let chapistasFullscreenMode = false;
 
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
         window.setDefaultDates = () => {
@@ -514,7 +514,7 @@
         }
 
         window.toggleColumnVisibility = (colName) => {
-            if (chapistasFullscreenMode) return; // En pantalla completa de chapistas estas columnas están ocultas
+            if (chapistasFullscreenMode) return;
             if (colName === 'lunas') {
                 showLunasCol = !showLunasCol;
                 const wrapper = document.getElementById('col-lunas-wrapper');
@@ -785,6 +785,7 @@
             const chapaWrapper = document.getElementById('chapa-dynamic-wrapper');
             const chapistasColWidth = document.getElementById('kanban-col-chapistas');
             const chapistasSubtitle = document.getElementById('chapistas-subtitle');
+            const pintoresCol = document.getElementById('col-pintores-wrapper');
 
             let containers = {};
             let chOpsList = getChapistasList();
@@ -792,6 +793,7 @@
             if (chapistasFullscreenMode) {
                 if (chapistasColWidth) chapistasColWidth.style.minWidth = '100%';
                 if (chapistasSubtitle) chapistasSubtitle.innerText = `(Pantalla Completa - 4 Columnas Divididas)`;
+                if (pintoresCol) pintoresCol.style.display = 'none';
                 
                 let htmlColumns = `<div class="chapa-four-columns-container">`;
                 
@@ -832,7 +834,16 @@
                 });
 
             } else {
-                if (chapistasColWidth) chapistasColWidth.style.minWidth = '440px';
+                // VISTA NORMAL: Equilibrada 50/50 entre Chapistas y Pintores
+                if (chapistasColWidth) {
+                    chapistasColWidth.style.minWidth = '350px';
+                    chapistasColWidth.style.flex = '1';
+                }
+                if (pintoresCol) {
+                    pintoresCol.style.display = 'block';
+                    pintoresCol.style.minWidth = '380px';
+                    pintoresCol.style.flex = '1';
+                }
                 if (chapistasSubtitle) chapistasSubtitle.innerText = '(Reparación y Montaje)';
 
                 chapaWrapper.innerHTML = `
@@ -1140,7 +1151,7 @@
                     if (modalInstance) modalInstance.hide();
                 }
             } catch (err) { console.error(err); }
-            window.renderOrders(); // Forzar actualización visual si se requiere
+            window.renderOrders();
         }
 
         window.deleteOrder = async (id) => { 
