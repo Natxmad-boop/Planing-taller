@@ -72,24 +72,38 @@
         .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
         .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
 
-        /* Contenedor dinámico multicolumna para Chapistas (Modo Filtrado) */
+        /* Contenedor multicomluna agrupado: 4 columnas de chapistas, cada una dividida en 2 */
         .chapa-four-columns-container {
             display: flex;
-            gap: 0.4rem;
+            gap: 0.5rem;
             min-height: 60vh;
             overflow-x: auto;
         }
-        .chapa-subcol-item {
+        .chapista-group-col {
             flex: 1;
-            min-width: 140px;
+            min-width: 240px;
             background-color: #f8fafc;
-            border: 1px dashed #94a3b8;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
-            padding: 6px;
-            min-height: 55vh;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chapista-group-inner {
+            display: flex;
+            gap: 4px;
+            flex: 1;
+        }
+        .chapista-sub-box {
+            flex: 1;
+            background-color: #ffffff;
+            border: 1px dashed #94a3b8;
+            border-radius: 6px;
+            padding: 4px;
+            min-height: 50vh;
             transition: background-color 0.2s;
         }
-        .chapa-subcol-item.drag-over { background-color: #e2e8f0 !important; }
+        .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
 
         /* Contenedor dividido para los Pintores por Iniciales */
         .pintura-split-container {
@@ -271,7 +285,7 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <!-- Columna Principal: Chapista (Dinámica: vista estándar o múltiples columnas si filtra por chapistas) -->
+            <!-- Columna Principal: Chapista (Dinámica: vista estándar o 4 columnas divididas) -->
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas" style="min-width: 440px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
@@ -540,7 +554,7 @@
 
         function buildGroupedOperatorOptions(selectedVal = "") {
             let chOps = getChapistasList().map(o => o.name);
-            let pinOps =getPintoresList().map(o => o.name);
+            let pinOps = getPintoresList().map(o => o.name);
 
             let html = `<option value="">Sin asignar (Libre)</option>`;
             if (chOps.length > 0) {
@@ -645,7 +659,7 @@
             let html = `
                 <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item fw-bold text-primary" href="#" onclick="handleSmartFilterSelect('chapistas', '🛠️ Chapistas (Multicolumna)')">🛠️ Filtrar: Chapistas (Multicolumna)</a></li>
+                <li><a class="dropdown-item fw-bold text-primary" href="#" onclick="handleSmartFilterSelect('chapistas', '🛠️ Chapistas (4 Columnas)')">🛠️ Filtrar: Chapistas (4 Columnas)</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('op:Sin asignar', 'Sin asignar')">Sin asignar</a></li>
@@ -709,7 +723,6 @@
                 newOperator = getPintorName(indexNum);
             } else if (targetStatus.startsWith('chapa_sub')) {
                 const subIndex = parseInt(targetStatus.replace('chapa_sub', ''));
-                // Cada chapista ocupa 2 columnas: la par/impar define si es reparación (impar) o montaje (par)
                 const chapistaIdx = Math.floor((subIndex - 1) / 2);
                 newOperator = getChapistaName(chapistaIdx);
                 targetStatus = (subIndex % 2 !== 0) ? 'reparacion' : 'montaje';
@@ -741,9 +754,9 @@
             let chOpsList = getChapistasList();
 
             if (isChapistasFilter) {
-                let dynamicMinWidth = Math.max(580, chOpsList.length * 140);
+                let dynamicMinWidth = Math.max(600, chOpsList.length * 160);
                 if (chapistasColWidth) chapistasColWidth.style.minWidth = `${dynamicMinWidth}px`;
-                if (chapistasSubtitle) chapistasSubtitle.innerText = `(${chOpsList.length} Chapistas - 2 Subcolumnas c/u)`;
+                if (chapistasSubtitle) chapistasSubtitle.innerText = `(Chapistas - 4 Columnas divididas)`;
                 
                 let htmlColumns = `<div class="chapa-four-columns-container">`;
                 
@@ -751,13 +764,18 @@
                     let sub1Id = `chapa_sub${(index * 2) + 1}`;
                     let sub2Id = `chapa_sub${(index * 2) + 2}`;
                     htmlColumns += `
-                        <div class="chapa-subcol-item" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub1Id}')">
-                            <div class="text-center fw-bold text-primary small mb-1 border-bottom pb-1 text-truncate" title="${op.name} - Rep.">${op.name} <br><span class="text-muted" style="font-size:0.7rem;">Reparación</span></div>
-                            <div id="list-${sub1Id}" class="d-flex flex-column gap-2"></div>
-                        </div>
-                        <div class="chapa-subcol-item" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub2Id}')">
-                            <div class="text-center fw-bold text-success small mb-1 border-bottom pb-1 text-truncate" title="${op.name} - Mont.">${op.name} <br><span class="text-muted" style="font-size:0.7rem;">Montaje</span></div>
-                            <div id="list-${sub2Id}" class="d-flex flex-column gap-2"></div>
+                        <div class="chapista-group-col">
+                            <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" title="${op.name}">${op.name}</div>
+                            <div class="chapista-group-inner">
+                                <div class="chapista-sub-box" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub1Id}')">
+                                    <div class="text-center fw-bold text-primary" style="font-size:0.7rem; margin-bottom:4px;">Rep.</div>
+                                    <div id="list-${sub1Id}" class="d-flex flex-column gap-2"></div>
+                                </div>
+                                <div class="chapista-sub-box" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub2Id}')">
+                                    <div class="text-center fw-bold text-success" style="font-size:0.7rem; margin-bottom:4px;">Mont.</div>
+                                    <div id="list-${sub2Id}" class="d-flex flex-column gap-2"></div>
+                                </div>
+                            </div>
                         </div>
                     `;
                 });
@@ -871,7 +889,7 @@
                 let targetContainerKey = status;
                 if (isChapistasFilter) {
                     let assignedChapistaIdx = chOpsList.findIndex(opObj => opObj.name.toLowerCase() === opLower);
-                    if (assignedChapistaIdx === -1) assignedChapistaIdx = 0; // Por defecto al primero si no coincide exacto
+                    if (assignedChapistaIdx === -1) assignedChapistaIdx = 0;
 
                     if (status === 'reparacion') {
                         targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 1}`;
