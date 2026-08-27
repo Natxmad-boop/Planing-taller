@@ -62,17 +62,17 @@
             transition: background-color 0.2s;
         }
         .subcol-reparacion {
-            background-color: #eff6ff; /* Azul muy claro para Reparación */
+            background-color: #eff6ff;
             border: 1px dashed #93c5fd;
         }
         .subcol-montaje {
-            background-color: #f0fdf4; /* Verde muy claro para Montaje */
+            background-color: #f0fdf4;
             border: 1px dashed #86efac;
         }
         .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
         .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
 
-        /* Contenedor dividido para los Pintores */
+        /* Contenedor dividido para los Pintores por Iniciales */
         .pintura-split-container {
             display: flex;
             gap: 0.4rem;
@@ -82,7 +82,7 @@
         .pintor-subcol {
             flex: 1;
             min-width: 140px;
-            background-color: #fffbeb; /* Amarillo muy suave */
+            background-color: #fffbeb;
             border: 1px dashed #fcd34d;
             border-radius: 8px;
             padding: 6px;
@@ -210,7 +210,6 @@
             </div>
             
             <div class="col-md-6 text-md-end d-flex gap-2 justify-content-md-end align-items-center flex-wrap">
-                <!-- Botones para minimizar/mostrar columnas auxiliares -->
                 <div class="btn-group shadow-sm" role="group">
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-lunas-btn" onclick="toggleColumnVisibility('lunas')">
                         <i class="fas fa-eye me-1" id="icon-lunas"></i> Mostrar Lunas
@@ -244,7 +243,7 @@
 
         <!-- Tablero Kanban Adaptado -->
         <div class="kanban-container">
-            <!-- Columna Opcional: Lunas (Oculta por defecto según tu captura) -->
+            <!-- Columna Opcional: Lunas -->
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
@@ -253,19 +252,17 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <!-- Columna Principal: Chapista (Dividida en 2: Reparación y Montaje) -->
+            <!-- Columna Principal: Chapista -->
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="min-width: 440px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal">(Reparación y Montaje)</span></h6>
                     <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
                 </div>
                 <div class="chapa-split-container">
-                    <!-- Subcolumna Izquierda: Reparación -->
                     <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')">
                         <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1"><i class="fas fa-hammer me-1"></i> Reparación</div>
                         <div id="list-reparacion" class="d-flex flex-column gap-2"></div>
                     </div>
-                    <!-- Subcolumna Derecha: Montaje -->
                     <div class="chapa-subcol subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'montaje')">
                         <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1"><i class="fas fa-tools me-1"></i> Montaje</div>
                         <div id="list-montaje" class="d-flex flex-column gap-2"></div>
@@ -273,33 +270,33 @@
                 </div>
             </div>
 
-            <!-- Columna Principal: Pintura (Dividida en 4 subcolumnas por operario) -->
+            <!-- Columna Principal: Pintura por Iniciales -->
             <div class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="min-width: 580px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(4 Operarios)</span></h6>
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Iniciales)</span></h6>
                     <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
                 </div>
                 <div class="pintura-split-container">
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor1')">
-                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor1">Pintor 1</div>
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor1">PIN 1</div>
                         <div id="list-pintor1" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor2')">
-                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor2">Pintor 2</div>
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor2">PIN 2</div>
                         <div id="list-pintor2" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor3')">
-                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor3">Pintor 3</div>
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor3">PIN 3</div>
                         <div id="list-pintor3" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor4')">
-                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor4">Pintor 4</div>
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor4">PIN 4</div>
                         <div id="list-pintor4" class="d-flex flex-column gap-2"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Columna Opcional: Terminados (Oculta por defecto según tu captura) -->
+            <!-- Columna Opcional: Terminados -->
             <div id="col-terminados-wrapper" class="kanban-col p-3 border-top border-success border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
@@ -321,7 +318,7 @@
                 <div class="modal-body">
                     <form onsubmit="handleAddOperator(event)" class="mb-4">
                         <div class="input-group">
-                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. PIN/ Pedro o Juan">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. J.P o A.G">
                             <button type="submit" class="btn btn-primary fw-bold">Añadir</button>
                         </div>
                     </form>
@@ -387,10 +384,10 @@
                                 <option value="lunas">1. Lunas</option>
                                 <option value="reparacion">2. Reparación (Chapa izq.)</option>
                                 <option value="montaje">3. Montaje (Chapa der.)</option>
-                                <option value="pintor1">4. Pintor 1</option>
-                                <option value="pintor2">4. Pintor 2</option>
-                                <option value="pintor3">4. Pintor 3</option>
-                                <option value="pintor4">4. Pintor 4</option>
+                                <option value="pintor1">4. Pintor 1 (Inicial 1)</option>
+                                <option value="pintor2">4. Pintor 2 (Inicial 2)</option>
+                                <option value="pintor3">4. Pintor 3 (Inicial 3)</option>
+                                <option value="pintor4">4. Pintor 4 (Inicial 4)</option>
                                 <option value="terminados">5. Terminados</option>
                             </select>
                         </div>
@@ -444,8 +441,8 @@
         let operators = [];
         let privacyModeActive = true;
         let activeQuickFilter = 'all';
-        let showLunasCol = false;       
-        let showTerminadosCol = false;  
+        let showLunasCol = false;
+        let showTerminadosCol = false;
 
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
         window.setDefaultDates = () => {
@@ -540,17 +537,9 @@
         }
 
         function initRealtimeSync() {
-            onSnapshot(collection(db, "orders"), async (snapshot) => {
+            onSnapshot(collection(db, "orders"), (snapshot) => {
                 orders = [];
-                for (const docSnap of snapshot.docs) {
-                    let data = docSnap.data();
-                    // MIGRACIÓN AUTOMÁTICA: Si el coche tenía el estado antiguo "pintado", lo pasamos a "pintor1"
-                    if (data.status === 'pintado' || data.status === 'pintura') {
-                        data.status = 'pintor1';
-                        await updateDoc(doc(db, "orders", docSnap.id), { status: 'pintor1' });
-                    }
-                    orders.push({ id: docSnap.id, ...data });
-                }
+                snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
                 renderOrders();
                 const syncEl = document.getElementById('sync-status');
                 if (syncEl) {
@@ -599,9 +588,9 @@
                 const labelEl = document.getElementById(`label-pintor${i}`);
                 if (labelEl) {
                     if (pinOps[i - 1]) {
-                        labelEl.innerText = pinOps[i - 1].name;
+                        labelEl.innerText = pinOps[i - 1].name; // Muestra las iniciales registradas (ej. JP, AG, etc.)
                     } else {
-                        labelEl.innerText = `Pintor ${i} (Libre)`;
+                        labelEl.innerText = `PIN ${i}`;
                     }
                 }
             }
@@ -633,7 +622,7 @@
                 });
             }
             if (pinOps.length > 0) {
-                html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintura (PIN/PUN) ---</h6></li>`;
+                html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores (Iniciales) ---</h6></li>`;
                 pinOps.forEach(name => {
                     html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${name}', '${name}')"><span class="badge badge-pun px-2 py-1">${name}</span></a></li>`;
                 });
