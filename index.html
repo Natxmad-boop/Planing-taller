@@ -191,6 +191,7 @@
 </head>
 <body>
 
+    <!-- Pantalla de Login -->
     <div id="login-screen" class="container mt-5" style="max-width: 420px;">
         <div class="login-card mt-5 p-4">
             <div class="card-body">
@@ -215,6 +216,7 @@
         </div>
     </div>
 
+    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
             <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
@@ -269,6 +271,7 @@
             </div>
         </div>
 
+        <!-- Leyenda Visual Integrada -->
         <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3">
             <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
             <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span></div>
@@ -279,6 +282,7 @@
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
         </div>
 
+        <!-- Tablero Kanban Equilibrado -->
         <div class="kanban-container" id="main-kanban-container">
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -331,6 +335,7 @@
         </div>
     </div>
 
+    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
@@ -429,6 +434,7 @@
         </div>
     </div>
 
+    <!-- Modal de Ficha, Edición y Trazabilidad -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -881,7 +887,6 @@
                     if (targetOp.toLowerCase() === 'sin asignar') {
                         return orderOp === "";
                     }
-                    // Si se busca un operario específico, exigimos que el vehículo tenga operario y coincida exactamente
                     if (orderOp === "") return false;
                     return orderOp.toLowerCase() === targetOp.toLowerCase();
                 }
@@ -927,7 +932,13 @@
                 let targetContainerKey = status;
                 if (chapistasFullscreenMode) {
                     let assignedChapistaIdx = chOpsList.findIndex(opObj => opObj.name.toLowerCase() === opLower);
-                    if (assignedChapistaIdx === -1) assignedChapistaIdx = 0;
+                    
+                    // --- CORRECCIÓN APLICADA ---
+                    // Si el vehículo no tiene operario o no coincide con un chapista válido en esta vista, se omite.
+                    if (assignedChapistaIdx === -1) {
+                        return; 
+                    }
+                    // ---------------------------
 
                     if (status === 'reparacion') {
                         targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 1}`;
