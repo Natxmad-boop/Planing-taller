@@ -191,7 +191,6 @@
 </head>
 <body>
 
-    <!-- Pantalla de Login -->
     <div id="login-screen" class="container mt-5" style="max-width: 420px;">
         <div class="login-card mt-5 p-4">
             <div class="card-body">
@@ -216,7 +215,6 @@
         </div>
     </div>
 
-    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
             <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
@@ -271,7 +269,6 @@
             </div>
         </div>
 
-        <!-- Leyenda Visual Integrada -->
         <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3">
             <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
             <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span></div>
@@ -282,7 +279,6 @@
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
         </div>
 
-        <!-- Tablero Kanban Equilibrado -->
         <div class="kanban-container" id="main-kanban-container">
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -335,7 +331,6 @@
         </div>
     </div>
 
-    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
@@ -434,7 +429,6 @@
         </div>
     </div>
 
-    <!-- Modal de Ficha, Edición y Trazabilidad -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -866,7 +860,7 @@
 
             let filteredOrders = orders.filter(order => {
                 let status = order.status || 'reparacion';
-                let op = (order.operator || '').toLowerCase();
+                let orderOp = (order.operator || '').trim();
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
 
                 if (activeQuickFilter === 'urgent') {
@@ -874,28 +868,28 @@
                 } else if (activeQuickFilter === 'overdue') {
                     if (!isOverdue) return false;
                 } else if (activeQuickFilter === 'unassigned') {
-                    if (order.operator && order.operator.trim() !== "") return false;
+                    if (orderOp !== "") return false;
                 }
 
                 if (chapistasFullscreenMode) {
-                    return status === 'reparacion' || status === 'montaje';
+                    if (status !== 'reparacion' && status !== 'montaje') return false;
                 }
 
-                // --- FILTRO DE OPERARIO / CHAPISTA CORREGIDO ---
+                // --- FILTRO ESTRICTO DE OPERARIO / CHAPISTA ---
                 if (filterVal.startsWith('op:')) {
                     let targetOp = filterVal.replace('op:', '').trim();
-                    if (targetOp === 'sin asignar') {
-                        return !order.operator || order.operator.trim() === "";
+                    if (targetOp.toLowerCase() === 'sin asignar') {
+                        return orderOp === "";
                     }
-                    // Si se busca un operario específico, exigimos que tenga operario y que coincida
-                    if (!order.operator || order.operator.trim() === "") return false;
-                    return op === targetOp.toLowerCase();
+                    // Si se busca un operario específico, exigimos que el vehículo tenga operario y coincida exactamente
+                    if (orderOp === "") return false;
+                    return orderOp.toLowerCase() === targetOp.toLowerCase();
                 }
                 // ----------------------------------------------
 
                 return (order.plate || '').toLowerCase().includes(filterVal) || 
                        (order.model || '').toLowerCase().includes(filterVal) || 
-                       op.includes(filterVal) || 
+                       orderOp.toLowerCase().includes(filterVal) || 
                        (order.substatus || '').toLowerCase().includes(filterVal);
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
 
