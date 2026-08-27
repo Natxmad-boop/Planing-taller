@@ -155,7 +155,6 @@
 </head>
 <body>
 
-    <!-- Pantalla de Login -->
     <div id="login-screen" class="container mt-5" style="max-width: 420px;">
         <div class="login-card mt-5 p-4">
             <div class="card-body">
@@ -180,7 +179,6 @@
         </div>
     </div>
 
-    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
             <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
@@ -198,7 +196,7 @@
             <div class="col-md-6 mb-2 mb-md-0">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado..." oninput="renderOrders()">
+                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado, chapistas..." oninput="renderOrders()">
                     
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary bg-white border-secondary text-secondary fw-semibold dropdown-toggle rounded-0 rounded-end" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-left: 0;">
@@ -230,7 +228,6 @@
             </div>
         </div>
 
-        <!-- Leyenda Visual Integrada -->
         <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3">
             <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
             <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span></div>
@@ -241,9 +238,7 @@
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
         </div>
 
-        <!-- Tablero Kanban Adaptado -->
         <div class="kanban-container">
-            <!-- Columna Opcional: Lunas -->
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
@@ -252,7 +247,6 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <!-- Columna Principal: Chapista -->
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="min-width: 440px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal">(Reparación y Montaje)</span></h6>
@@ -270,7 +264,6 @@
                 </div>
             </div>
 
-            <!-- Columna Principal: Pintura por Iniciales Dinámicas -->
             <div class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="min-width: 580px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Iniciales)</span></h6>
@@ -296,7 +289,6 @@
                 </div>
             </div>
 
-            <!-- Columna Opcional: Terminados -->
             <div id="col-terminados-wrapper" class="kanban-col p-3 border-top border-success border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
@@ -307,7 +299,6 @@
         </div>
     </div>
 
-    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
@@ -406,7 +397,6 @@
         </div>
     </div>
 
-    <!-- Modal de Ficha, Edición y Trazabilidad -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -628,6 +618,8 @@
             let html = `
                 <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
                 <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item fw-bold text-primary" href="#" onclick="handleSmartFilterSelect('chapistas', '🛠️ Chapistas (Reparación y Montaje)')">🛠️ Filtrar: Chapistas (Ambos)</a></li>
+                <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('op:Sin asignar', 'Sin asignar')">Sin asignar</a></li>
             `;
@@ -733,6 +725,11 @@
                     if (!isOverdue) return false;
                 }
 
+                // Mejora añadida: Filtrado agrupado para "chapistas" (Reparación y Montaje)
+                if (filterVal === 'chapistas') {
+                    return status === 'reparacion' || status === 'montaje';
+                }
+
                 if (filterVal.startsWith('op:')) {
                     let targetOp = filterVal.replace('op:', '').trim();
                     if (targetOp === 'sin asignar') return !order.operator;
@@ -747,9 +744,12 @@
 
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
-                if (status === 'lunas') counts.lunas++;
-                else if (status === 'reparacion' || status === 'montaje') {
+                if (status === 'lunas') {
+                    counts.lunas++;
+                } else if (status === 'reparacion' || status === 'montaje') {
                     counts.chapaTotal++;
+                    if (status === 'reparacion') counts.reparacion++;
+                    if (status === 'montaje') counts.montaje++;
                 } else if (status.startsWith('pintor')) {
                     counts.pintado++;
                 } else if (status === 'terminados') {
@@ -987,3 +987,4 @@
         }
     </script>
 </body>
+</html>
