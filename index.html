@@ -48,16 +48,16 @@
             border: 2px dashed #2563eb;
         }
 
-        /* Estilo para dividir al chapista individual en dos mitades: Reparación y Montaje */
+        /* Estilo para dividir al chapista en dos mitades: Reparación y Montaje */
         .chapa-split-container {
             display: flex;
-            gap: 0.4rem;
+            gap: 0.5rem;
             min-height: 60vh;
         }
         .chapa-subcol {
             flex: 1;
             border-radius: 8px;
-            padding: 6px;
+            padding: 8px;
             min-height: 55vh;
             transition: background-color 0.2s;
         }
@@ -252,8 +252,23 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <!-- Contenedor Dinámico para Columnas de Chapistas (1 por cada chapista CH) -->
-            <div id="chapistas-dynamic-container" class="d-flex gap-3 flex-nowrap"></div>
+            <!-- Columna Principal: Chapista -->
+            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="min-width: 440px;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal">(Reparación y Montaje)</span></h6>
+                    <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
+                </div>
+                <div class="chapa-split-container">
+                    <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')">
+                        <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1"><i class="fas fa-hammer me-1"></i> Reparación</div>
+                        <div id="list-reparacion" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="chapa-subcol subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'montaje')">
+                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1"><i class="fas fa-tools me-1"></i> Montaje</div>
+                        <div id="list-montaje" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Columna Principal: Pintura por Iniciales Dinámicas -->
             <div class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="min-width: 580px;">
@@ -261,7 +276,24 @@
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Iniciales)</span></h6>
                     <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
                 </div>
-                <div class="pintura-split-container" id="pintores-container"></div>
+                <div class="pintura-split-container">
+                    <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor1')">
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor1">PIN 1</div>
+                        <div id="list-pintor1" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor2')">
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor2">PIN 2</div>
+                        <div id="list-pintor2" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor3')">
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor3">PIN 3</div>
+                        <div id="list-pintor3" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor4')">
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor4">PIN 4</div>
+                        <div id="list-pintor4" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Columna Opcional: Terminados -->
@@ -286,7 +318,7 @@
                 <div class="modal-body">
                     <form onsubmit="handleAddOperator(event)" class="mb-4">
                         <div class="input-group">
-                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. CH/RG o PIN/PO">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. J.P o PIN/PO">
                             <button type="submit" class="btn btn-primary fw-bold">Añadir</button>
                         </div>
                     </form>
@@ -350,8 +382,12 @@
                             <label class="form-label small text-secondary fw-bold">Fase Inicial</label>
                             <select id="car-status" class="form-select">
                                 <option value="lunas">1. Lunas</option>
-                                <option value="reparacion">2. Reparación (Genérico)</option>
-                                <option value="montaje">3. Montaje (Genérico)</option>
+                                <option value="reparacion">2. Reparación (Chapa izq.)</option>
+                                <option value="montaje">3. Montaje (Chapa der.)</option>
+                                <option value="pintor1" id="opt-pintor1">4. Pintor 1</option>
+                                <option value="pintor2" id="opt-pintor2">4. Pintor 2</option>
+                                <option value="pintor3" id="opt-pintor3">4. Pintor 3</option>
+                                <option value="pintor4" id="opt-pintor4">4. Pintor 4</option>
                                 <option value="terminados">5. Terminados</option>
                             </select>
                         </div>
@@ -451,56 +487,26 @@
         }
         window.getOperatorBadgeClass = getOperatorBadgeClass;
 
-        function getChapaOps() {
-            return operators.filter(op => {
-                const upper = (op.name || '').toUpperCase();
-                return upper.startsWith('CH');
-            });
-        }
-
-        function getPintorOps() {
-            return operators.filter(op => {
+        function getPintorName(index) {
+            let pinOps = operators.filter(op => {
                 const upper = (op.name || '').toUpperCase();
                 return upper.startsWith('PIN') || upper.startsWith('PUN');
             });
+            if (pinOps[index]) return pinOps[index].name;
+            return `Pintor ${index + 1}`;
         }
 
-        function buildStatusSelectOptions(currentStatus, currentOperator) {
-            let chOps = getChapaOps();
-            let pinOps = getPintorOps();
-
-            let html = `
+        function buildStatusSelectOptions(currentStatus) {
+            return `
                 <option value="lunas" ${currentStatus === 'lunas' ? 'selected' : ''}>1. Lunas</option>
+                <option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación (Chapa)</option>
+                <option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje (Chapa)</option>
+                <option value="pintor1" ${currentStatus === 'pintor1' ? 'selected' : ''}>4. ${getPintorName(0)}</option>
+                <option value="pintor2" ${currentStatus === 'pintor2' ? 'selected' : ''}>4. ${getPintorName(1)}</option>
+                <option value="pintor3" ${currentStatus === 'pintor3' ? 'selected' : ''}>4. ${getPintorName(2)}</option>
+                <option value="pintor4" ${currentStatus === 'pintor4' ? 'selected' : ''}>4. ${getPintorName(3)}</option>
+                <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>5. Terminados</option>
             `;
-
-            if (chOps.length > 0) {
-                chOps.forEach(op => {
-                    let name = op.name;
-                    let selRep = (currentStatus === `chapa_rep_${name}` && currentOperator === name) ? 'selected' : '';
-                    let selMon = (currentStatus === `chapa_mon_${name}` && currentOperator === name) ? 'selected' : '';
-                    html += `<option value="chapa_rep_${name}" ${selRep}>Chapa [${name}] - Reparación</option>`;
-                    html += `<option value="chapa_mon_${name}" ${selMon}>Chapa [${name}] - Montaje</option>`;
-                });
-            } else {
-                html += `
-                    <option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación (Genérico)</option>
-                    <option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje (Genérico)</option>
-                `;
-            }
-
-            if (pinOps.length > 0) {
-                pinOps.forEach((op, idx) => {
-                    let sel = (currentStatus === `pintor${idx+1}` || currentOperator === op.name) ? 'selected' : '';
-                    html += `<option value="pintor${idx+1}" ${sel}>Pintor: ${op.name}</option>`;
-                });
-            } else {
-                for (let i = 1; i <= 4; i++) {
-                    html += `<option value="pintor${i}" ${currentStatus === `pintor${i}` ? 'selected' : ''}>Pintor ${i}</option>`;
-                }
-            }
-
-            html += `<option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>Terminados</option>`;
-            return html;
         }
 
         function buildGroupedOperatorOptions(selectedVal = "") {
@@ -556,7 +562,6 @@
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 orders = [];
                 snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
-                renderDynamicLayout();
                 renderOrders();
                 const syncEl = document.getElementById('sync-status');
                 if (syncEl) {
@@ -569,79 +574,7 @@
                 operators = [];
                 snapshot.forEach(docSnap => operators.push({ id: docSnap.id, ...docSnap.data() }));
                 renderOperatorsUI();
-                renderDynamicLayout();
-                renderOrders();
             }, (error) => { console.error("Error sincronización operarios:", error); });
-        }
-
-        function renderDynamicLayout() {
-            // 1. Renderizar Columnas de Chapistas dinámicamente según operarios CH
-            const chContainer = document.getElementById('chapistas-dynamic-container');
-            if (chContainer) {
-                let chOps = getChapaOps();
-                let html = '';
-                if (chOps.length === 0) {
-                    // Si no hay operarios CH definidos, mostramos una columna genérica de chapa dividida
-                    html = `
-                        <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="min-width: 440px;">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal">(Sin operarios CH creados)</span></h6>
-                                <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
-                            </div>
-                            <div class="chapa-split-container">
-                                <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')">
-                                    <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1"><i class="fas fa-hammer me-1"></i> Reparación</div>
-                                    <div id="list-reparacion" class="d-flex flex-column gap-2"></div>
-                                </div>
-                                <div class="chapa-subcol subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'montaje')">
-                                    <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1"><i class="fas fa-tools me-1"></i> Montaje</div>
-                                    <div id="list-montaje" class="d-flex flex-column gap-2"></div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    chOps.forEach(op => {
-                        let name = op.name;
-                        html += `
-                            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="min-width: 380px;">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6 class="text-dark fw-bold m-0 text-truncate"><i class="fas fa-wrench me-1 text-primary"></i> <span class="badge badge-ch px-2 py-1">${name}</span></h6>
-                                    <span id="count-ch-${name}" class="badge bg-primary rounded-pill">0</span>
-                                </div>
-                                <div class="chapa-split-container">
-                                    <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapa_rep_${name}')">
-                                        <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1"><i class="fas fa-hammer me-1"></i> Rep.</div>
-                                        <div id="list-chapa_rep_${name}" class="d-flex flex-column gap-2"></div>
-                                    </div>
-                                    <div class="chapa-subcol subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapa_mon_${name}')">
-                                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1"><i class="fas fa-tools me-1"></i> Mont.</div>
-                                        <div id="list-chapa_mon_${name}" class="d-flex flex-column gap-2"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-                chContainer.innerHTML = html;
-            }
-
-            // 2. Renderizar Pintores (manteniendo su estructura original tal y como pediste)
-            const pintorContainer = document.getElementById('pintores-container');
-            if (pintorContainer) {
-                let pinOps = getPintorOps();
-                let html = '';
-                for (let i = 1; i <= 4; i++) {
-                    let pName = pinOps[i-1] ? pinOps[i-1].name : `PIN ${i}`;
-                    html += `
-                        <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor${i}')">
-                            <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor${i}">${pName}</div>
-                            <div id="list-pintor${i}" class="d-flex flex-column gap-2"></div>
-                        </div>
-                    `;
-                }
-                pintorContainer.innerHTML = html;
-            }
         }
 
         function renderOperatorsUI() {
@@ -664,14 +597,33 @@
 
             selectContainer.innerHTML = buildGroupedOperatorOptions(currentSelectedOp);
             updateSmartFilterDropdown();
+            updatePintorLabelsAndSelects();
+            renderOrders();
+        }
+
+        function updatePintorLabelsAndSelects() {
+            for (let i = 1; i <= 4; i++) {
+                const labelEl = document.getElementById(`label-pintor${i}`);
+                const optEl = document.getElementById(`opt-pintor${i}`);
+                let pName = getPintorName(i - 1);
+                
+                if (labelEl) labelEl.innerText = pName;
+                if (optEl) optEl.innerText = `4. ${pName}`;
+            }
         }
 
         function updateSmartFilterDropdown() {
             const dropdownMenu = document.getElementById('smart-filter-dropdown');
             if (!dropdownMenu) return;
             
-            let chOps = getChapaOps();
-            let pinOps = getPintorOps();
+            let chOps = [];
+            let pinOps = [];
+            operators.forEach(op => {
+                const upper = (op.name || '').toUpperCase();
+                if (upper.startsWith('CH')) chOps.push(op.name);
+                else if (upper.startsWith('PIN') || upper.startsWith('PUN')) pinOps.push(op.name);
+                else chOps.push(op.name);
+            });
 
             let html = `
                 <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
@@ -681,14 +633,14 @@
             `;
             if (chOps.length > 0) {
                 html += `<li><h6 class="dropdown-header text-primary fw-bold ps-4">--- Chapa (CH) ---</h6></li>`;
-                chOps.forEach(op => {
-                    html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-ch px-2 py-1">${op.name}</span></a></li>`;
+                chOps.forEach(name => {
+                    html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${name}', '${name}')"><span class="badge badge-ch px-2 py-1">${name}</span></a></li>`;
                 });
             }
             if (pinOps.length > 0) {
-                html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores (PIN/PUN) ---</h6></li>`;
-                pinOps.forEach(op => {
-                    html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-pun px-2 py-1">${op.name}</span></a></li>`;
+                html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores (Iniciales) ---</h6></li>`;
+                pinOps.forEach(name => {
+                    html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${name}', '${name}')"><span class="badge badge-pun px-2 py-1">${name}</span></a></li>`;
                 });
             }
             dropdownMenu.innerHTML = html;
@@ -733,13 +685,9 @@
             if (!order) return;
 
             let newOperator = order.operator || "";
-            if (targetStatus.startsWith('chapa_rep_') || targetStatus.startsWith('chapa_mon_')) {
-                let parts = targetStatus.split('_');
-                newOperator = parts.slice(2).join('_'); // Extrae el nombre del chapista
-            } else if (targetStatus.startsWith('pintor')) {
+            if (targetStatus.startsWith('pintor')) {
                 const indexNum = parseInt(targetStatus.replace('pintor', '')) - 1;
-                let pinOps = getPintorOps();
-                if (pinOps[indexNum]) newOperator = pinOps[indexNum].name;
+                newOperator = getPintorName(indexNum);
             }
 
             const historyEntry = { status: targetStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
@@ -759,8 +707,7 @@
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
             
-            // Recolectar dinámicamente todos los contenedores posibles
-            let containers = {
+            const containers = {
                 lunas: document.getElementById('list-lunas'),
                 reparacion: document.getElementById('list-reparacion'),
                 montaje: document.getElementById('list-montaje'),
@@ -770,18 +717,10 @@
                 pintor4: document.getElementById('list-pintor4'),
                 terminados: document.getElementById('list-terminados')
             };
-
-            let chOps = getChapaOps();
-            chOps.forEach(op => {
-                containers[`chapa_rep_${op.name}`] = document.getElementById(`list-chapa_rep_${op.name}`);
-                containers[`chapa_mon_${op.name}`] = document.getElementById(`list-chapa_mon_${op.name}`);
-            });
             
+            if (!containers.reparacion) return;
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
-            
-            let counts = { lunas: 0, chapaTotal: 0, pintado: 0, terminados: 0 };
-            let chCountsPerOp = {};
-            chOps.forEach(op => chCountsPerOp[op.name] = 0);
+            let counts = { lunas: 0, reparacion: 0, montaje: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
 
             let filteredOrders = orders.filter(order => {
                 let status = order.status || 'reparacion';
@@ -797,7 +736,7 @@
                 if (filterVal.startsWith('op:')) {
                     let targetOp = filterVal.replace('op:', '').trim();
                     if (targetOp === 'sin asignar') return !order.operator;
-                    return op === targetOp.toLowerCase();
+                    return op === targetOp;
                 }
 
                 return (order.plate || '').toLowerCase().includes(filterVal) || 
@@ -809,13 +748,7 @@
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
                 if (status === 'lunas') counts.lunas++;
-                else if (status.startsWith('chapa_rep_') || status.startsWith('chapa_mon_')) {
-                    counts.chapaTotal++;
-                    let opName = order.operator;
-                    if (opName && chCountsPerOp[opName] !== undefined) {
-                        chCountsPerOp[opName]++;
-                    }
-                } else if (status === 'reparacion' || status === 'montaje') {
+                else if (status === 'reparacion' || status === 'montaje') {
                     counts.chapaTotal++;
                 } else if (status.startsWith('pintor')) {
                     counts.pintado++;
@@ -836,7 +769,7 @@
                 let opBadgeClass = getOperatorBadgeClass(order.operator);
                 let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted small">No asignado</span>';
 
-                let statusSelectOptions = buildStatusSelectOptions(status, order.operator);
+                let statusSelectOptions = buildStatusSelectOptions(status);
 
                 if (containers[status]) {
                     containers[status].innerHTML += `
@@ -859,31 +792,20 @@
                 }
             });
 
-            // Actualizar contadores en interfaz
             if (document.getElementById('count-lunas')) document.getElementById('count-lunas').innerText = counts.lunas;
+            if (document.getElementById('count-chapa')) document.getElementById('count-chapa').innerText = counts.chapaTotal;
             if (document.getElementById('count-pintado')) document.getElementById('count-pintado').innerText = counts.pintado;
             if (document.getElementById('count-terminados')) document.getElementById('count-terminados').innerText = counts.terminados;
-
-            chOps.forEach(op => {
-                let badgeEl = document.getElementById(`count-ch-${op.name}`);
-                if (badgeEl) badgeEl.innerText = chCountsPerOp[op.name] || 0;
-            });
         }
 
         window.changeOrderStatusDirect = async (orderId, newStatus) => {
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
             let newOperator = order.operator || "";
-
-            if (newStatus.startsWith('chapa_rep_') || newStatus.startsWith('chapa_mon_')) {
-                let parts = newStatus.split('_');
-                newOperator = parts.slice(2).join('_');
-            } else if (newStatus.startsWith('pintor')) {
+            if (newStatus.startsWith('pintor')) {
                 const indexNum = parseInt(newStatus.replace('pintor', '')) - 1;
-                let pinOps = getPintorOps();
-                if (pinOps[indexNum]) newOperator = pinOps[indexNum].name;
+                newOperator = getPintorName(indexNum);
             }
-
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
             try {
@@ -1065,4 +987,3 @@
         }
     </script>
 </body>
-</html>
