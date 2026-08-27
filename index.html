@@ -48,29 +48,36 @@
             border: 2px dashed #2563eb;
         }
 
-        /* Estilo para dividir al chapista en dos mitades: Reparación y Montaje */
-        .chapa-split-container {
+        /* Contenedor principal de Chapistas con 4 columnas, y cada una dividida internamente en 2 */
+        .chapa-main-grid {
             display: flex;
             gap: 0.5rem;
-            min-height: 60vh;
+            overflow-x: auto;
+        }
+        .chapista-main-col {
+            flex: 1;
+            min-width: 220px;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 6px;
+            min-height: 58vh;
+        }
+        .chapa-double-split {
+            display: flex;
+            gap: 0.3rem;
         }
         .chapa-subcol {
             flex: 1;
-            border-radius: 8px;
-            padding: 8px;
-            min-height: 55vh;
-            transition: background-color 0.2s;
-        }
-        .subcol-reparacion {
+            min-width: 95px;
             background-color: #eff6ff;
             border: 1px dashed #93c5fd;
+            border-radius: 6px;
+            padding: 4px;
+            min-height: 50vh;
+            transition: background-color 0.2s;
         }
-        .subcol-montaje {
-            background-color: #f0fdf4;
-            border: 1px dashed #86efac;
-        }
-        .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
-        .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
+        .chapa-subcol.drag-over { background-color: #dbeafe !important; }
 
         /* Contenedor dividido para los Pintores por Iniciales */
         .pintura-split-container {
@@ -235,8 +242,8 @@
             <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
             <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span></div>
             <div class="d-flex align-items-center gap-1"><span class="badge badge-pun px-2 py-1">PIN / Pintura</span></div>
-            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #eff6ff; color:#1e40af; border:1px solid #93c5fd;">Mitad Izq: Reparación</span></div>
-            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #f0fdf4; color:#166534; border:1px solid #86efac;">Mitad Der: Montaje</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #eff6ff; color:#1e40af; border:1px solid #93c5fd;">Chapistas (4 Columnas x 2 Subdivisiones)</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #fffbeb; color:#92400e; border:1px solid #fcd34d;">Pintores (Por Iniciales)</span></div>
             <div class="vr mx-2"></div>
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
         </div>
@@ -252,20 +259,68 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <!-- Columna Principal: Chapista -->
-            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="min-width: 440px;">
+            <!-- Columna Principal: 4 Chapistas, cada uno con 2 subsecciones -->
+            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="min-width: 980px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal">(Reparación y Montaje)</span></h6>
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal">(4 Operarios x 2 Divisiones)</span></h6>
                     <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
                 </div>
-                <div class="chapa-split-container">
-                    <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')">
-                        <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1"><i class="fas fa-hammer me-1"></i> Reparación</div>
-                        <div id="list-reparacion" class="d-flex flex-column gap-2"></div>
+                <div class="chapa-main-grid">
+                    <!-- Chapista 1 (Dividido en 2) -->
+                    <div class="chapista-main-col">
+                        <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1 text-truncate" id="label-chapista1">CH 1</div>
+                        <div class="chapa-double-split">
+                            <div class="chapa-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapista1_a')">
+                                <div class="text-center text-muted fw-semibold mb-1" style="font-size: 0.7rem;">A</div>
+                                <div id="list-chapista1_a" class="d-flex flex-column gap-2"></div>
+                            </div>
+                            <div class="chapa-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapista1_b')">
+                                <div class="text-center text-muted fw-semibold mb-1" style="font-size: 0.7rem;">B</div>
+                                <div id="list-chapista1_b" class="d-flex flex-column gap-2"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="chapa-subcol subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'montaje')">
-                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1"><i class="fas fa-tools me-1"></i> Montaje</div>
-                        <div id="list-montaje" class="d-flex flex-column gap-2"></div>
+                    <!-- Chapista 2 (Dividido en 2) -->
+                    <div class="chapista-main-col">
+                        <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1 text-truncate" id="label-chapista2">CH 2</div>
+                        <div class="chapa-double-split">
+                            <div class="chapa-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapista2_a')">
+                                <div class="text-center text-muted fw-semibold mb-1" style="font-size: 0.7rem;">A</div>
+                                <div id="list-chapista2_a" class="d-flex flex-column gap-2"></div>
+                            </div>
+                            <div class="chapa-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapista2_b')">
+                                <div class="text-center text-muted fw-semibold mb-1" style="font-size: 0.7rem;">B</div>
+                                <div id="list-chapista2_b" class="d-flex flex-column gap-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Chapista 3 (Dividido en 2) -->
+                    <div class="chapista-main-col">
+                        <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1 text-truncate" id="label-chapista3">CH 3</div>
+                        <div class="chapa-double-split">
+                            <div class="chapa-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapista3_a')">
+                                <div class="text-center text-muted fw-semibold mb-1" style="font-size: 0.7rem;">A</div>
+                                <div id="list-chapista3_a" class="d-flex flex-column gap-2"></div>
+                            </div>
+                            <div class="chapa-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapista3_b')">
+                                <div class="text-center text-muted fw-semibold mb-1" style="font-size: 0.7rem;">B</div>
+                                <div id="list-chapista3_b" class="d-flex flex-column gap-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Chapista 4 (Dividido en 2) -->
+                    <div class="chapista-main-col">
+                        <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1 text-truncate" id="label-chapista4">CH 4</div>
+                        <div class="chapa-double-split">
+                            <div class="chapa-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapista4_a')">
+                                <div class="text-center text-muted fw-semibold mb-1" style="font-size: 0.7rem;">A</div>
+                                <div id="list-chapista4_a" class="d-flex flex-column gap-2"></div>
+                            </div>
+                            <div class="chapa-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapista4_b')">
+                                <div class="text-center text-muted fw-semibold mb-1" style="font-size: 0.7rem;">B</div>
+                                <div id="list-chapista4_b" class="d-flex flex-column gap-2"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -318,7 +373,7 @@
                 <div class="modal-body">
                     <form onsubmit="handleAddOperator(event)" class="mb-4">
                         <div class="input-group">
-                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. J.P o PIN/PO">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. J.P o CH/RG o PIN/PO">
                             <button type="submit" class="btn btn-primary fw-bold">Añadir</button>
                         </div>
                     </form>
@@ -382,13 +437,19 @@
                             <label class="form-label small text-secondary fw-bold">Fase Inicial</label>
                             <select id="car-status" class="form-select">
                                 <option value="lunas">1. Lunas</option>
-                                <option value="reparacion">2. Reparación (Chapa izq.)</option>
-                                <option value="montaje">3. Montaje (Chapa der.)</option>
-                                <option value="pintor1" id="opt-pintor1">4. Pintor 1</option>
-                                <option value="pintor2" id="opt-pintor2">4. Pintor 2</option>
-                                <option value="pintor3" id="opt-pintor3">4. Pintor 3</option>
-                                <option value="pintor4" id="opt-pintor4">4. Pintor 4</option>
-                                <option value="terminados">5. Terminados</option>
+                                <option value="chapista1_a" id="opt-chapista1_a">2. Chapista 1 (A)</option>
+                                <option value="chapista1_b" id="opt-chapista1_b">2. Chapista 1 (B)</option>
+                                <option value="chapista2_a" id="opt-chapista2_a">2. Chapista 2 (A)</option>
+                                <option value="chapista2_b" id="opt-chapista2_b">2. Chapista 2 (B)</option>
+                                <option value="chapista3_a" id="opt-chapista3_a">2. Chapista 3 (A)</option>
+                                <option value="chapista3_b" id="opt-chapista3_b">2. Chapista 3 (B)</option>
+                                <option value="chapista4_a" id="opt-chapista4_a">2. Chapista 4 (A)</option>
+                                <option value="chapista4_b" id="opt-chapista4_b">2. Chapista 4 (B)</option>
+                                <option value="pintor1" id="opt-pintor1">3. Pintor 1</option>
+                                <option value="pintor2" id="opt-pintor2">3. Pintor 2</option>
+                                <option value="pintor3" id="opt-pintor3">3. Pintor 3</option>
+                                <option value="pintor4" id="opt-pintor4">3. Pintor 4</option>
+                                <option value="terminados">4. Terminados</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -487,6 +548,15 @@
         }
         window.getOperatorBadgeClass = getOperatorBadgeClass;
 
+        function getChapistaName(index) {
+            let chOps = operators.filter(op => {
+                const upper = (op.name || '').toUpperCase();
+                return upper.startsWith('CH');
+            });
+            if (chOps[index]) return chOps[index].name;
+            return `Chapista ${index + 1}`;
+        }
+
         function getPintorName(index) {
             let pinOps = operators.filter(op => {
                 const upper = (op.name || '').toUpperCase();
@@ -499,13 +569,19 @@
         function buildStatusSelectOptions(currentStatus) {
             return `
                 <option value="lunas" ${currentStatus === 'lunas' ? 'selected' : ''}>1. Lunas</option>
-                <option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación (Chapa)</option>
-                <option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje (Chapa)</option>
-                <option value="pintor1" ${currentStatus === 'pintor1' ? 'selected' : ''}>4. ${getPintorName(0)}</option>
-                <option value="pintor2" ${currentStatus === 'pintor2' ? 'selected' : ''}>4. ${getPintorName(1)}</option>
-                <option value="pintor3" ${currentStatus === 'pintor3' ? 'selected' : ''}>4. ${getPintorName(2)}</option>
-                <option value="pintor4" ${currentStatus === 'pintor4' ? 'selected' : ''}>4. ${getPintorName(3)}</option>
-                <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>5. Terminados</option>
+                <option value="chapista1_a" ${currentStatus === 'chapista1_a' ? 'selected' : ''}>2. ${getChapistaName(0)} (A)</option>
+                <option value="chapista1_b" ${currentStatus === 'chapista1_b' ? 'selected' : ''}>2. ${getChapistaName(0)} (B)</option>
+                <option value="chapista2_a" ${currentStatus === 'chapista2_a' ? 'selected' : ''}>2. ${getChapistaName(1)} (A)</option>
+                <option value="chapista2_b" ${currentStatus === 'chapista2_b' ? 'selected' : ''}>2. ${getChapistaName(1)} (B)</option>
+                <option value="chapista3_a" ${currentStatus === 'chapista3_a' ? 'selected' : ''}>2. ${getChapistaName(2)} (A)</option>
+                <option value="chapista3_b" ${currentStatus === 'chapista3_b' ? 'selected' : ''}>2. ${getChapistaName(2)} (B)</option>
+                <option value="chapista4_a" ${currentStatus === 'chapista4_a' ? 'selected' : ''}>2. ${getChapistaName(3)} (A)</option>
+                <option value="chapista4_b" ${currentStatus === 'chapista4_b' ? 'selected' : ''}>2. ${getChapistaName(3)} (B)</option>
+                <option value="pintor1" ${currentStatus === 'pintor1' ? 'selected' : ''}>3. ${getPintorName(0)}</option>
+                <option value="pintor2" ${currentStatus === 'pintor2' ? 'selected' : ''}>3. ${getPintorName(1)}</option>
+                <option value="pintor3" ${currentStatus === 'pintor3' ? 'selected' : ''}>3. ${getPintorName(2)}</option>
+                <option value="pintor4" ${currentStatus === 'pintor4' ? 'selected' : ''}>3. ${getPintorName(3)}</option>
+                <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>4. Terminados</option>
             `;
         }
 
@@ -597,18 +673,26 @@
 
             selectContainer.innerHTML = buildGroupedOperatorOptions(currentSelectedOp);
             updateSmartFilterDropdown();
-            updatePintorLabelsAndSelects();
+            updateLabelsAndSelects();
             renderOrders();
         }
 
-        function updatePintorLabelsAndSelects() {
+        function updateLabelsAndSelects() {
             for (let i = 1; i <= 4; i++) {
-                const labelEl = document.getElementById(`label-pintor${i}`);
-                const optEl = document.getElementById(`opt-pintor${i}`);
+                const labelCh = document.getElementById(`label-chapista${i}`);
+                let cName = getChapistaName(i - 1);
+                if (labelCh) labelCh.innerText = cName;
+
+                const optA = document.getElementById(`opt-chapista${i}_a`);
+                const optB = document.getElementById(`opt-chapista${i}_b`);
+                if (optA) optA.innerText = `2. ${cName} (A)`;
+                if (optB) optB.innerText = `2. ${cName} (B)`;
+
+                const labelPin = document.getElementById(`label-pintor${i}`);
+                const optPin = document.getElementById(`opt-pintor${i}`);
                 let pName = getPintorName(i - 1);
-                
-                if (labelEl) labelEl.innerText = pName;
-                if (optEl) optEl.innerText = `4. ${pName}`;
+                if (labelPin) labelPin.innerText = pName;
+                if (optPin) optPin.innerText = `3. ${pName}`;
             }
         }
 
@@ -685,7 +769,11 @@
             if (!order) return;
 
             let newOperator = order.operator || "";
-            if (targetStatus.startsWith('pintor')) {
+            if (targetStatus.startsWith('chapista')) {
+                const parts = targetStatus.replace('chapista', '').split('_');
+                const indexNum = parseInt(parts[0]) - 1;
+                newOperator = getChapistaName(indexNum);
+            } else if (targetStatus.startsWith('pintor')) {
                 const indexNum = parseInt(targetStatus.replace('pintor', '')) - 1;
                 newOperator = getPintorName(indexNum);
             }
@@ -709,8 +797,14 @@
             
             const containers = {
                 lunas: document.getElementById('list-lunas'),
-                reparacion: document.getElementById('list-reparacion'),
-                montaje: document.getElementById('list-montaje'),
+                chapista1_a: document.getElementById('list-chapista1_a'),
+                chapista1_b: document.getElementById('list-chapista1_b'),
+                chapista2_a: document.getElementById('list-chapista2_a'),
+                chapista2_b: document.getElementById('list-chapista2_b'),
+                chapista3_a: document.getElementById('list-chapista3_a'),
+                chapista3_b: document.getElementById('list-chapista3_b'),
+                chapista4_a: document.getElementById('list-chapista4_a'),
+                chapista4_b: document.getElementById('list-chapista4_b'),
                 pintor1: document.getElementById('list-pintor1'),
                 pintor2: document.getElementById('list-pintor2'),
                 pintor3: document.getElementById('list-pintor3'),
@@ -718,12 +812,12 @@
                 terminados: document.getElementById('list-terminados')
             };
             
-            if (!containers.reparacion) return;
+            if (!containers.chapista1_a) return;
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
-            let counts = { lunas: 0, reparacion: 0, montaje: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
+            let counts = { lunas: 0, chapaTotal: 0, pintado: 0, terminados: 0 };
 
             let filteredOrders = orders.filter(order => {
-                let status = order.status || 'reparacion';
+                let status = order.status || 'chapista1_a';
                 let op = (order.operator || '').toLowerCase();
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
 
@@ -746,9 +840,9 @@
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
 
             filteredOrders.forEach(order => {
-                let status = order.status || 'reparacion';
+                let status = order.status || 'chapista1_a';
                 if (status === 'lunas') counts.lunas++;
-                else if (status === 'reparacion' || status === 'montaje') {
+                else if (status.startsWith('chapista')) {
                     counts.chapaTotal++;
                 } else if (status.startsWith('pintor')) {
                     counts.pintado++;
@@ -802,7 +896,11 @@
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
             let newOperator = order.operator || "";
-            if (newStatus.startsWith('pintor')) {
+            if (newStatus.startsWith('chapista')) {
+                const parts = newStatus.replace('chapista', '').split('_');
+                const indexNum = parseInt(parts[0]) - 1;
+                newOperator = getChapistaName(indexNum);
+            } else if (newStatus.startsWith('pintor')) {
                 const indexNum = parseInt(newStatus.replace('pintor', '')) - 1;
                 newOperator = getPintorName(indexNum);
             }
