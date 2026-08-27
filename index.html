@@ -881,7 +881,6 @@
                     if (status !== 'reparacion' && status !== 'montaje') return false;
                 }
 
-                // --- FILTRO ESTRICTO DE OPERARIO / CHAPISTA ---
                 if (filterVal.startsWith('op:')) {
                     let targetOp = filterVal.replace('op:', '').trim();
                     if (targetOp.toLowerCase() === 'sin asignar') {
@@ -890,7 +889,6 @@
                     if (orderOp === "") return false;
                     return orderOp.toLowerCase() === targetOp.toLowerCase();
                 }
-                // ----------------------------------------------
 
                 return (order.plate || '').toLowerCase().includes(filterVal) || 
                        (order.model || '').toLowerCase().includes(filterVal) || 
@@ -933,12 +931,9 @@
                 if (chapistasFullscreenMode) {
                     let assignedChapistaIdx = chOpsList.findIndex(opObj => opObj.name.toLowerCase() === opLower);
                     
-                    // --- CORRECCIÓN APLICADA ---
-                    // Si el vehículo no tiene operario o no coincide con un chapista válido en esta vista, se omite.
                     if (assignedChapistaIdx === -1) {
                         return; 
                     }
-                    // ---------------------------
 
                     if (status === 'reparacion') {
                         targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 1}`;
@@ -1019,6 +1014,9 @@
                 historyHtml += `</div>`;
             }
 
+            let editOperatorOptions = buildGroupedOperatorOptions(order.operator || "");
+            let editStatusOptions = buildStatusSelectOptions(order.status || "reparacion");
+
             const modalBody = document.getElementById('detail-modal-body');
             if (modalBody) {
                 modalBody.innerHTML = `
@@ -1041,6 +1039,20 @@
                             <div class="col-md-6">
                                 <label class="form-label small text-secondary fw-bold">Fecha Salida Prevista</label>
                                 <input type="date" id="edit-date-out" class="form-control" value="${order.dateOut || ''}" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Operario Asignado</label>
+                                <select id="edit-operator" class="form-select">
+                                    ${editOperatorOptions}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Fase / Estado</label>
+                                <select id="edit-status" class="form-select">
+                                    ${editStatusOptions}
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -1112,15 +1124,34 @@
 
         window.handleUpdateOrder = async (e, id) => {
             e.preventDefault();
+            const order = orders.find(o => o.id === id);
+            if (!order) return;
+
+            const newStatus = document.getElementById('edit-status').value;
+            const newOperator = document.getElementById('edit-operator').value;
+
+            let updatedHistory = order.history ? [...order.history] : [];
+            // Si cambió el estado o el operario, añadimos un registro automático al historial
+            if (newStatus !== order.status || newOperator !== (order.operator || "")) {
+                updatedHistory.push({
+                    status: newStatus,
+                    operator: newOperator || "Sin asignar",
+                    date: new Date().toLocaleString()
+                });
+            }
+
             try {
                 await updateDoc(doc(db, "orders", id), {
                     plate: document.getElementById('edit-plate').value.trim(),
                     model: document.getElementById('edit-model').value.trim(),
                     dateIn: document.getElementById('edit-date-in').value,
                     dateOut: document.getElementById('edit-date-out').value,
+                    operator: newOperator,
+                    status: newStatus,
                     substatus: document.getElementById('edit-substatus').value,
                     notes: document.getElementById('edit-notes').value,
-                    urgent: document.getElementById('edit-urgent').checked
+                    urgent: document.getElementById('edit-urgent').checked,
+                    history: updatedHistory
                 });
                 const modalEl = document.getElementById('detailModal');
                 if (modalEl) {
