@@ -3,1238 +3,988 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club de Pickleball | Gestión Deportiva</title>
+    <title>Planning de Taller Pro - Vista Mixta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0f172a;           
-            --primary-light: #1e293b;     
-            --primary-accent: #00c897;    
-            --btn-hover: #00a87f;        
-            --bg: #f8fafc;                
+            --bg-light: #f1f5f9;
             --card-bg: #ffffff;
-            --text: #0f172a;
-            --text-light: #475569;
-            --border-card: #e2e8f0;
-            --success: #10b981;           
-            --success-bg: #d1fae5;
-            --danger: #ef4444;            
-            --danger-bg: #fee2e2;
-            --warning: #f59e0b;           
-            --warning-bg: #fffbeb;
-            --radius: 16px;               
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --border-color: #cbd5e1;
+            --text-main: #1e293b;
+            --accent-blue: #2563eb;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: var(--font-family);
-        }
-
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding-bottom: 130px;
-            -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* Sistema de Toasts (Alertas flotantes modernas) */
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .kanban-container {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 90%;
-            max-width: 400px;
-            pointer-events: none;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
         }
-        .toast {
-            background: var(--primary);
-            color: #fff;
-            padding: 14px 18px;
+        .kanban-col {
+            background-color: #e2e8f0;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            font-size: 0.95rem;
-            font-weight: 600;
+            min-width: 310px;
+            flex: 1;
+            min-height: 75vh;
+        }
+        .kanban-dropzone {
+            min-height: 60vh;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        .kanban-dropzone.drag-over {
+            background-color: rgba(37, 99, 235, 0.15) !important;
+            border: 2px dashed #2563eb;
+        }
+
+        /* Estilo para dividir al chapista en dos mitades: Reparación y Montaje */
+        .chapa-split-container {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            pointer-events: auto;
-            animation: fadeInDown 0.3s ease, fadeOutUp 0.3s ease 2.7s forwards;
-            border-left: 5px solid var(--primary-accent);
+            gap: 0.5rem;
+            min-height: 60vh;
         }
-        .toast.success { border-left-color: var(--success); }
-        .toast.error { border-left-color: var(--danger); }
-        .toast.warning { border-left-color: var(--warning); }
+        .chapa-subcol {
+            flex: 1;
+            border-radius: 8px;
+            padding: 8px;
+            min-height: 55vh;
+            transition: background-color 0.2s;
+        }
+        .subcol-reparacion {
+            background-color: #eff6ff;
+            border: 1px dashed #93c5fd;
+        }
+        .subcol-montaje {
+            background-color: #f0fdf4;
+            border: 1px dashed #86efac;
+        }
+        .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
+        .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
 
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeOutUp {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-15px); }
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            padding: 28px 20px 22px 20px;
-            border-bottom: 5px solid var(--primary-accent);
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
-        }
-
-        .header-top {
+        /* Contenedor dividido para los Pintores por Iniciales */
+        .pintura-split-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
+            gap: 0.4rem;
+            min-height: 60vh;
+            overflow-x: auto;
+        }
+        .pintor-subcol {
+            flex: 1;
+            min-width: 140px;
+            background-color: #fffbeb;
+            border: 1px dashed #fcd34d;
+            border-radius: 8px;
+            padding: 6px;
+            min-height: 55vh;
+            transition: background-color 0.2s;
+        }
+        .pintor-subcol.drag-over { background-color: #fef3c7 !important; }
+
+        .task-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-bottom: 0.75rem;
+        }
+        
+        .task-card.urgent {
+            background-color: #fff1f2 !important;
+            border: 2px solid #e11d48 !important;
+            box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important;
         }
 
-        header h1 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
+        @keyframes blink-animation {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
         }
+        .urgent-banner { animation: blink-animation 1s infinite; }
+        .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
 
-        header p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-            font-weight: 600;
-            letter-spacing: 0.3px;
+        .badge-ch { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .badge-pun { background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .badge-none { background-color: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+        
+        .login-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-
-        .sync-status {
-            font-size: 0.75rem;
-            color: #ffffff;
-            background: rgba(0, 200, 151, 0.2);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            border: 1px solid var(--primary-accent);
-            letter-spacing: 0.5px;
+        .privacy-active { color: #2563eb !important; }
+        .history-timeline {
+            border-left: 2px solid #cbd5e1;
+            padding-left: 1rem;
+            margin-left: 0.5rem;
         }
-
-        .container {
-            max-width: 640px;
-            margin: 0 auto;
-            padding: 24px 16px;
-        }
-
-        h2 {
-            font-size: 1.45rem;
-            color: var(--primary);
-            margin-bottom: 20px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-left: 5px solid var(--primary-accent);
-            padding-left: 12px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 22px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
-            border: 1px solid var(--border-card);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card::before {
+        .history-item { position: relative; margin-bottom: 1rem; }
+        .history-item::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 6px;
-            background-color: var(--primary-accent);
+            left: -1.35rem;
+            top: 0.25rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #2563eb;
         }
-
-        .card:hover {
-            box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.08);
-        }
-
-        .card h3 {
-            color: var(--primary);
-            margin-bottom: 12px;
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-        }
-
-        .card p {
-            font-size: 1rem;
-            color: var(--text-light);
-            margin-bottom: 12px;
-            line-height: 1.6;
-        }
-
-        button {
-            background-color: var(--primary-accent);
-            color: var(--primary);
-            border: none;
-            padding: 16px 20px;
-            border-radius: 12px;
-            font-size: 1.05rem;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 14px;
-            width: 100%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            box-shadow: 0 4px 12px rgba(0, 200, 151, 0.25);
-        }
-
-        button:hover {
-            background-color: var(--btn-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 200, 151, 0.35);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button.danger {
-            background-color: var(--danger);
-            color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
-        }
-        button.danger:hover { 
-            background-color: #b91c1c; 
-            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
-        }
-
-        button.warning {
-            background-color: var(--warning);
-            color: var(--primary);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
-        }
-        button.warning:hover { 
-            background-color: #d97706; 
-            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
-        }
-
-        button.success {
-            background-color: var(--success);
-            color: white;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-        }
-        button.success:hover { 
-            background-color: #059669; 
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
-        }
-
-        button.btn-volver {
-            background-color: var(--primary);
-            color: #ffffff;
-            border: 2px solid var(--primary-accent);
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
-        }
-        button.btn-volver:hover {
-            background-color: var(--primary-light);
-            border-color: #ffffff;
-            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.3);
-        }
-
-        input, select {
-            width: 100%;
-            padding: 16px 18px;
-            margin-top: 8px;
-            margin-bottom: 16px;
-            border: 2px solid var(--border-card);
-            border-radius: 12px;
-            font-size: 1.05rem;
-            background: #fff;
-            color: var(--text);
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary-accent);
-            box-shadow: 0 0 0 4px rgba(0, 200, 151, 0.15);
-        }
-
-        .terms-container {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-top: 12px;
-            margin-bottom: 18px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: var(--text-light);
-        }
-        .terms-container input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            margin-top: 2px;
-            accent-color: var(--primary-accent);
-            cursor: pointer;
-        }
-
-        nav {
-            position: fixed;
-            bottom: 16px;
-            left: 16px;
-            right: 16px;
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--primary);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-            border-radius: 16px;
-            border: 2px solid var(--primary-accent);
-            z-index: 1000;
-        }
-
-        nav button {
-            background: none;
-            color: #a3b3c6;
-            border: none;
-            font-size: 0.8rem;
-            margin: 0;
-            padding: 10px 4px;
-            font-weight: 700;
-            width: 25%;
-            box-shadow: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
+        .legend-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
             border-radius: 10px;
-            transition: all 0.3s ease;
-            position: relative;
-            text-transform: none;
-            letter-spacing: normal;
-        }
-
-        nav button span.icon {
-            font-size: 1.6rem;
-            transition: transform 0.3s;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -4px;
-            right: 14px;
-            background-color: var(--danger);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 800;
-            padding: 3px 7px;
-            border-radius: 10px;
-            border: 2px solid var(--primary);
-            display: none;
-        }
-
-        nav button.active {
-            color: var(--primary);
-            background-color: var(--primary-accent);
-            font-weight: 800;
-            box-shadow: 0 4px 12px rgba(0, 200, 151, 0.3);
-        }
-
-        nav button.active span.icon {
-            transform: scale(1.15);
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .badge {
-            display: inline-block;
-            background: var(--success-bg);
-            color: var(--success);
-            padding: 6px 14px;
-            border-radius: 20px;
+            padding: 10px 15px;
             font-size: 0.85rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-
-        label {
-            font-size: 0.9rem;
-            font-weight: 800;
-            color: var(--primary-light);
-            display: block;
-            margin-top: 6px;
-            letter-spacing: 0.3px;
-        }
-        
-        #seccion-home .card.success-card {
-            background: linear-gradient(135deg, var(--success-bg), #ecfdf5);
-            border: 2px solid #a7f3d0;
-            position: relative;
-        }
-        #seccion-home .card.success-card::before {
-            background-color: var(--success);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
     </style>
 </head>
 <body>
 
-    <div id="toast-container"></div>
-
-    <header>
-        <div class="header-top">
-            <h1>🏓 PICKLEBALL CLUB</h1>
-            <span class="sync-status" id="estado-sync">CONECTANDO...</span>
-        </div>
-        <p>Tu club. Tus clases. Tu juego.</p>
-    </header>
-
-    <div class="container">
-
-        <div id="seccion-home" class="section active">
-            <h2>👋 BIENVENIDO</h2>
-            <p style="margin-bottom: 25px; color: var(--text-light); font-weight: 600;">Selecciona cómo deseas acceder a la aplicación:</p>
-            
-            <div class="card" onclick="entrarComoAlumno()" style="cursor: pointer;">
-                <h3>👤 ENTRAR COMO ALUMNO</h3>
-                <p>Identifícate con tu nombre y PIN para consultar tus clases, torneos y gestionar tu bono personal.</p>
-                <button style="pointer-events: none;">ACCEDER COMO ALUMNO ➔</button>
-            </div>
-
-            <div class="card success-card">
-                <h3 style="color: var(--success);">🎁 ¿NUEVO EN EL CLUB?</h3>
-                <p style="color: #065f46; margin-bottom: 15px; font-weight: 600;">Prueba una clase gratis y sin compromiso.</p>
-                
-                <label style="color: #065f46;">TU NOMBRE Y APELLIDOS:</label>
-                <input type="text" id="input-nombre-prueba" placeholder="Ej: Laura Martínez">
-                
-                <label style="color: #065f46;">TELÉFONO DE CONTACTO (Opcional):</label>
-                <input type="text" id="input-telefono-prueba" placeholder="Ej: 600123456">
-
-                <div class="terms-container">
-                    <input type="checkbox" id="check-rgpd-prueba">
-                    <label for="check-rgpd-prueba" style="color: #065f46; font-weight: normal; display: inline;">
-                        Acepto la <a href="#" onclick="mostrarToast('Política de Privacidad: Sus datos serán tratados exclusivamente para gestionar la clase de prueba y la comunicación interna del club de conformidad con el RGPD.', 'warning'); return false;" style="color: #047857; font-weight: bold;">política de protección de datos</a> y el tratamiento de mis datos.
-                    </label>
+    <!-- Pantalla de Login -->
+    <div id="login-screen" class="container mt-5" style="max-width: 420px;">
+        <div class="login-card mt-5 p-4">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-tools mb-2 text-primary" style="font-size: 2.5rem;"></i>
+                    <h3 class="fw-bold text-dark">Taller Mecánico</h3>
+                    <p class="text-muted small">Acceso Exclusivo</p>
                 </div>
 
-                <button class="success" onclick="pedirClaseLibreSinRegistro()">📩 SOLICITAR CLASE DE PRUEBA</button>
-            </div>
-
-            <div class="card warning" onclick="entrarComoMonitorSeleccion()" style="cursor: pointer; position: relative;">
-                <div style="position: absolute; top: 16px; right: 16px;">
-                    <span id="globo-notificaciones-home" class="notification-badge" style="display:inline-block; position:relative; top:0; right:0; font-size:0.8rem; padding:4px 8px;">0</span>
-                </div>
-                <h3 style="color: var(--primary);">🔑 ENTRAR COMO MONITOR</h3>
-                <p style="color: var(--primary-light);">Gestiona clases, torneos, altas de alumnos y aprueba recargas de bonos y solicitudes.</p>
-                <button class="warning" style="pointer-events: none;">ACCEDER COMO MONITOR ➔</button>
-            </div>
-        </div>
-        
-        <div id="seccion-entrenamientos" class="section">
-            <button class="btn-volver" style="margin-bottom: 20px;" onclick="volverAHome()">🏠 VOLVER A SELECCIÓN PRINCIPAL</button>
-            <h2>📅 PRÓXIMOS ENTRENAMIENTOS</h2>
-            <div id="lista-entrenamientos" style="margin-top: 10px;">
-                <p>Cargando entrenamientos...</p>
-            </div>
-            
-            <div class="card" id="panel-crear-entrenamiento" style="margin-top: 20px; background: #fafafa; display:none; border: 2px dashed #cbd5e1;">
-                <h3>➕ AÑADIR NUEVO ENTRENAMIENTO</h3>
-                <label>Título / Nivel:</label>
-                <input type="text" id="nuevo-titulo" placeholder="Ej: Iniciación Avanzada">
-                <label>Fecha y Hora:</label>
-                <input type="text" id="nuevo-fecha" placeholder="Ej: Mañana a las 18:00">
-                <label>Lugar:</label>
-                <input type="text" id="nuevo-lugar" placeholder="Ej: Pista Municipal Nº 2">
-                <button onclick="agregarEntrenamiento()">CREAR CLASE</button>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <label class="form-label small text-uppercase fw-bold text-secondary">Correo electrónico</label>
+                        <input type="email" id="login-email" class="form-control" autocomplete="off" required placeholder="Introduce tu correo">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small text-uppercase fw-bold text-secondary">Contraseña</label>
+                        <input type="password" id="login-password" class="form-control" autocomplete="new-password" required placeholder="Introduce tu contraseña">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">Entrar al Sistema</button>
+                </form>
             </div>
         </div>
-
-        <div id="seccion-torneos" class="section">
-            <button class="btn-volver" style="margin-bottom: 20px;" onclick="volverAHome()">🏠 VOLVER A SELECCIÓN PRINCIPAL</button>
-            <h2>🏆 TORNEOS Y COMPETICIONES</h2>
-            <div id="lista-torneos" style="margin-top: 10px;">
-                <p>Cargando torneos...</p>
-            </div>
-            
-            <div class="card" id="panel-crear-torneo" style="margin-top: 20px; background: #fafafa; display:none; border: 2px dashed #cbd5e1;">
-                <h3>➕ CREAR NUEVO TORNEO</h3>
-                <label>Nombre del Torneo:</label>
-                <input type="text" id="torneo-titulo" placeholder="Ej: Torneo Verano">
-                <label>Fecha y Hora:</label>
-                <input type="text" id="torneo-fecha" placeholder="Ej: Sábado a las 10:00">
-                <label>Lugar:</label>
-                <input type="text" id="torneo-lugar" placeholder="Ej: Club de Tenis">
-                <button onclick="agregarTorneo()">CREAR CLASE</button>
-            </div>
-        </div>
-
-        <div id="seccion-perfil" class="section">
-            <button class="btn-volver" style="margin-bottom: 20px;" onclick="volverAHome()">🏠 VOLVER A SELECCIÓN PRINCIPAL</button>
-            <h2>👤 MI PANEL DE ALUMNO</h2>
-            
-            <div id="panel-identificado" class="card" style="display:none; background: var(--success-bg); border-color: #a7f3d0;">
-                <span class="badge">Sesión Activa</span>
-                <h3 id="saludo-alumno" style="color: #065f46;">¡Hola!</h3>
-                <p id="info-bono-personal" style="font-size: 1.1rem; color: #047857; margin: 12px 0; font-weight: 800;">🎟️ MI BONO: 0 clases</p>
-                
-                <div id="historial-bono-alumno" style="margin-top: 12px; margin-bottom: 15px; font-size: 0.85rem; color: #065f46; background: rgba(255,255,255,0.6); padding: 10px; border-radius: 8px;">
-                    📜 <strong>Historial reciente:</strong> Cuenta activa correctamente sincronizada.
-                </div>
-
-                <div style="margin-top: 15px; border-top: 1px solid #d1fae5; padding-top: 15px;">
-                    <button class="success" onclick="solicitarRecargaBono()">SOLICITAR RECARGA</button>
-                </div>
-
-                <button class="danger" style="margin-top: 12px;" onclick="cerrarSesionAlumno()">CERRAR SESIÓN</button>
-            </div>
-        </div>
-
-        <div id="seccion-alumnos" class="section">
-            <button class="btn-volver" style="margin-bottom: 20px;" onclick="volverAHome()">🏠 VOLVER A SELECCIÓN PRINCIPAL</button>
-            <h2>👥 GESTIÓN DE ALUMNOS</h2>
-            <div class="card" style="background: var(--warning-bg); border-color: #fef3c7;">
-                <h3 style="color: #92400e;">➕ CREAR NUEVO ALUMNO</h3>
-                <label>Nombre del Alumno:</label>
-                <input type="text" id="nuevo-alumno-nombre" placeholder="Ej: Carlos Gómez">
-                <label>PIN de Acceso:</label>
-                <input type="text" id="nuevo-alumno-pass" placeholder="Ej: 1234">
-                <label>Clases iniciales en el Bono:</label>
-                <input type="number" id="nuevo-alumno-clases" value="10" placeholder="10">
-
-                <div class="terms-container">
-                    <input type="checkbox" id="check-rgpd-alumno" checked>
-                    <label for="check-rgpd-alumno" style="color: #92400e; font-weight: normal; display: inline;">
-                        Confirmo que el alumno ha sido informado y ha dado su consentimiento para el tratamiento de sus datos deportivos.
-                    </label>
-                </div>
-
-                <button onclick="registrarNuevoAlumno()" class="warning">CREAR ALUMNO</button>
-
-                <h3 style="margin-top:30px; color: var(--primary);">👥 ALUMNOS REGISTRADOS</h3>
-                <div id="lista-alumnos-admin" style="margin-top:10px;"></div>
-            </div>
-        </div>
-
-        <div id="seccion-gestion" class="section">
-            <button class="btn-volver" style="margin-bottom: 20px;" onclick="volverAHome()">🏠 VOLVER A SELECCIÓN PRINCIPAL</button>
-            <h2>⚙️ PANEL DE GESTIÓN</h2>
-            <div class="card" style="background: var(--warning-bg); border-color: #fef3c7;">
-                <h3 style="color: #92400e;">🚨 SOLICITUDES DE ALUMNOS Y PRUEBAS</h3>
-                <div id="lista-avisos-monitor" style="margin-bottom: 20px;">
-                    <p style="color: var(--text-light);">No hay solicitudes pendientes.</p>
-                </div>
-
-                <button class="danger" style="margin-top:20px;" onclick="reiniciarDatosCompletos()">⚠️ VACIAR / REINICIAR TODO</button>
-            </div>
-        </div>
-        
     </div>
 
-    <nav id="barra-navegacion-inferior" style="display: none;">
-        <button onclick="cambiarSeccion('entrenamientos')" id="nav-entrenamientos" class="active">
-            <span class="icon">📅</span>
-            <span>Clases</span>
-        </button>
-        <button onclick="cambiarSeccion('torneos')" id="nav-torneos">
-            <span class="icon">🏆</span>
-            <span>Torneos</span>
-        </button>
-        <button onclick="cambiarSeccion('perfil')" id="nav-perfil">
-            <span class="icon">👤</span>
-            <span>Perfil</span>
-        </button>
-        
-        <button onclick="cambiarSeccion('entrenamientos')" id="nav-monitor-clases" style="display: none;">
-            <span class="icon">📅</span>
-            <span>Clases</span>
-        </button>
-        <button onclick="cambiarSeccion('torneos')" id="nav-monitor-torneos" style="display: none;">
-            <span class="icon">🏆</span>
-            <span>Torneos</span>
-        </button>
-        <button onclick="cambiarSeccion('alumnos')" id="nav-monitor-alumnos" style="display: none;">
-            <span class="icon">👥</span>
-            <span>Alumnos</span>
-        </button>
-        <button onclick="cambiarSeccion('gestion')" id="nav-monitor-gestion" style="display: none;">
-            <span class="icon">
-                ⚙️
-                <span id="globo-notificaciones" class="notification-badge">0</span>
+    <!-- Pantalla Principal del Taller -->
+    <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
+        <nav class="navbar navbar-expand px-4 rounded mb-4">
+            <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
+                <i class="fas fa-car me-2 text-primary"></i> Planning Taller <span id="pro-label" class="privacy-active">Pro</span>
             </span>
-            <span>Gestión</span>
-        </button>
-    </nav>
+            <div class="ms-auto d-flex align-items-center">
+                <span id="sync-status" class="badge bg-warning text-dark me-3"><i class="fas fa-sync fa-spin me-1"></i> Conectando...</span>
+                <span id="user-display" class="text-secondary me-3 small d-none d-md-inline"><i class="fas fa-user-circle me-1"></i> Usuario</span>
+                <button class="btn btn-outline-primary btn-sm me-2 fw-bold" data-bs-toggle="modal" data-bs-target="#operatorsModal"><i class="fas fa-users-cog me-1"></i> Operarios</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-1"></i> Salir</button>
+            </div>
+        </nav>
 
-    <script>
-        const API_URL = "https://api.npoint.io/451d4728d05c351c11fb";
-        
-        let modoMonitorActivo = false;
-        let alumnoActual = null; 
-        
-        let datosGlobales = {
-            entrenamientos: [],
-            torneos: [],
-            alumnos: [],
-            avisos: []
+        <div class="row mb-3 align-items-center">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
+                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado..." oninput="renderOrders()">
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary bg-white border-secondary text-secondary fw-semibold dropdown-toggle rounded-0 rounded-end" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-left: 0;">
+                            <span id="smart-filter-label">🔍 Filtrar...</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" id="smart-filter-dropdown" style="max-height: 350px; overflow-y: auto; min-width: 280px;"></ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 text-md-end d-flex gap-2 justify-content-md-end align-items-center flex-wrap">
+                <div class="btn-group shadow-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-lunas-btn" onclick="toggleColumnVisibility('lunas')">
+                        <i class="fas fa-eye me-1" id="icon-lunas"></i> Mostrar Lunas
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-terminados-btn" onclick="toggleColumnVisibility('terminados')">
+                        <i class="fas fa-eye me-1" id="icon-terminados"></i> Mostrar Terminados
+                    </button>
+                </div>
+
+                <div class="btn-group shadow-sm" role="group">
+                    <button type="button" class="btn btn-outline-danger btn-sm fw-bold bg-white" onclick="setQuickFilter('urgent')"><i class="fas fa-fire me-1"></i> Urgentes</button>
+                    <button type="button" class="btn btn-outline-warning btn-sm fw-bold text-dark bg-white" onclick="setQuickFilter('overdue')"><i class="fas fa-exclamation-triangle me-1"></i> Vencidos</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" onclick="setQuickFilter('all')"><i class="fas fa-list me-1"></i> Todo</button>
+                </div>
+                <button class="btn btn-primary fw-bold px-3 shadow-sm btn-sm py-2" data-bs-toggle="modal" data-bs-target="#newOrderModal" onclick="setDefaultDates()">
+                    <i class="fas fa-plus me-1"></i> Nueva Orden
+                </button>
+            </div>
+        </div>
+
+        <!-- Leyenda Visual Integrada -->
+        <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3">
+            <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-pun px-2 py-1">PIN / Pintura</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #eff6ff; color:#1e40af; border:1px solid #93c5fd;">Mitad Izq: Reparación</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #f0fdf4; color:#166534; border:1px solid #86efac;">Mitad Der: Montaje</span></div>
+            <div class="vr mx-2"></div>
+            <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
+        </div>
+
+        <!-- Tablero Kanban Adaptado -->
+        <div class="kanban-container">
+            <!-- Columna Opcional: Lunas -->
+            <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
+                    <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
+                </div>
+                <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
+            </div>
+
+            <!-- Columna Principal: Chapista -->
+            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="min-width: 440px;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal">(Reparación y Montaje)</span></h6>
+                    <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
+                </div>
+                <div class="chapa-split-container">
+                    <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')">
+                        <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1"><i class="fas fa-hammer me-1"></i> Reparación</div>
+                        <div id="list-reparacion" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="chapa-subcol subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'montaje')">
+                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1"><i class="fas fa-tools me-1"></i> Montaje</div>
+                        <div id="list-montaje" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Principal: Pintura por Iniciales Dinámicas -->
+            <div class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="min-width: 580px;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Iniciales)</span></h6>
+                    <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
+                </div>
+                <div class="pintura-split-container">
+                    <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor1')">
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor1">PIN 1</div>
+                        <div id="list-pintor1" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor2')">
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor2">PIN 2</div>
+                        <div id="list-pintor2" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor3')">
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor3">PIN 3</div>
+                        <div id="list-pintor3" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor4')">
+                        <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" id="label-pintor4">PIN 4</div>
+                        <div id="list-pintor4" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Opcional: Terminados -->
+            <div id="col-terminados-wrapper" class="kanban-col p-3 border-top border-success border-4 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
+                    <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
+                </div>
+                <div id="list-terminados" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados')"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <div class="modal fade" id="operatorsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark">Administrar Operarios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="handleAddOperator(event)" class="mb-4">
+                        <div class="input-group">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. J.P o PIN/PO">
+                            <button type="submit" class="btn btn-primary fw-bold">Añadir</button>
+                        </div>
+                    </form>
+                    <div id="operators-list" class="d-flex flex-column gap-2" style="max-height: 250px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="newOrderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark">Registrar Nuevo Vehículo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="order-form" onsubmit="handleAddOrder(event)">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Matrícula</label>
+                                <input type="text" id="car-plate" class="form-control text-uppercase" required placeholder="Ej. 4523XYZ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Modelo</label>
+                                <input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Entrada</label>
+                                <input type="date" id="date-in" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Salida Prevista</label>
+                                <input type="date" id="date-out" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Operario</label>
+                                <select id="operator-select" class="form-select">
+                                    <option value="">Sin asignar (Libre)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Subestado</label>
+                                <select id="car-substatus" class="form-select">
+                                    <option value="">Ninguno / Normal</option>
+                                    <option value="Paragolpes fuera">Paragolpes fuera</option>
+                                    <option value="Faro reparándose">Faro reparándose</option>
+                                    <option value="Pendiente de recambios">Pendiente de recambios</option>
+                                    <option value="Luna aquí">Luna aquí</option>
+                                    <option value="Luna pendiente">Luna pendiente</option>
+                                    <option value="Golpe taller">Golpe taller</option>
+                                    <option value="Llanta reparándose fuera">Llanta reparándose fuera</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary fw-bold">Fase Inicial</label>
+                            <select id="car-status" class="form-select">
+                                <option value="lunas">1. Lunas</option>
+                                <option value="reparacion">2. Reparación (Chapa izq.)</option>
+                                <option value="montaje">3. Montaje (Chapa der.)</option>
+                                <option value="pintor1" id="opt-pintor1">4. Pintor 1</option>
+                                <option value="pintor2" id="opt-pintor2">4. Pintor 2</option>
+                                <option value="pintor3" id="opt-pintor3">4. Pintor 3</option>
+                                <option value="pintor4" id="opt-pintor4">4. Pintor 4</option>
+                                <option value="terminados">5. Terminados</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary fw-bold">Notas</label>
+                            <textarea id="car-notes" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="car-urgent">
+                            <label class="form-check-label text-danger fw-bold" for="car-urgent">Urgente</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Orden</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ficha, Edición y Trazabilidad -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-edit me-2 text-primary"></i> Ficha, Edición y Trazabilidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="detail-modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqzUFL_4PBhpIND_CFIg8...", 
+            authDomain: "planning-taller-23a87.firebaseapp.com",
+            projectId: "planning-taller-23a87",
+            storageBucket: "planning-taller-23a87.appspot.com",
+            messagingSenderId: "1094366720962",
+            appId: "1:1094366720962:web:860ecb...",
+            measurementId: "G-8B760E9RBP"
         };
 
-        // Función UX para mostrar notificaciones flotantes sin bloquear la app
-        function mostrarToast(mensaje, tipo = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${tipo}`;
-            let icono = '✅';
-            if(tipo === 'error') icono = '❌';
-            if(tipo === 'warning') icono = '⚠️';
-            
-            toast.innerHTML = `<span>${icono}</span> <span>${mensaje}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3000);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let orders = [];
+        let operators = [];
+        let privacyModeActive = true;
+        let activeQuickFilter = 'all';
+        let showLunasCol = false;
+        let showTerminadosCol = false;
+
+        window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
+        window.setDefaultDates = () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date-in').value = today;
+            document.getElementById('date-out').value = today;
         }
 
-        function volverAHome() {
-            modoMonitorActivo = false;
-            alumnoActual = null;
-            document.getElementById('barra-navegacion-inferior').style.display = 'none';
-            cambiarSeccion('home');
-        }
-
-        function entrarComoAlumno() {
-            let nombreInput = prompt("Introduce tu nombre:");
-            if(nombreInput === null) return; // Cancelado
-            nombreInput = nombreInput.trim();
-
-            if(!nombreInput) {
-                mostrarToast("Debes introducir tu nombre.", "error");
-                return;
-            }
-
-            let passInput = prompt("Introduce tu PIN personal:");
-            if(passInput === null) return; // Cancelado
-            passInput = passInput.trim();
-
-            let alumno = datosGlobales.alumnos.find(a => a.nombre.toLowerCase() === nombreInput.toLowerCase());
-            
-            if(alumno && alumno.pass === passInput) {
-                alumnoActual = alumno;
-                modoMonitorActivo = false; 
-                document.getElementById('barra-navegacion-inferior').style.display = 'flex';
-                ajustarMenuInferior(); 
-                mostrarToast("¡Bienvenido, " + alumno.nombre + "!");
-                cambiarSeccion('entrenamientos');
-            } else {
-                mostrarToast("Nombre o PIN incorrectos.", "error");
-            }
-        }
-
-        function entrarComoMonitorSeleccion() {
-            let pass = prompt("Introduce la contraseña de monitor:");
-            if(pass === "1234") {
-                modoMonitorActivo = true; 
-                alumnoActual = null;      
-                document.getElementById('barra-navegacion-inferior').style.display = 'flex';
-                ajustarMenuInferior(); 
-                cambiarSeccion('entrenamientos');
-            } else if(pass !== null) {
-                mostrarToast("Contraseña incorrecta.", "error");
-            }
-        }
-
-        function ajustarMenuInferior() {
-            let btnAlumnoClases = document.getElementById('nav-entrenamientos');
-            let btnAlumnoTorneos = document.getElementById('nav-torneos');
-            let btnAlumnoPerfil = document.getElementById('nav-perfil');
-            
-            let btnMonitorClases = document.getElementById('nav-monitor-clases');
-            let btnMonitorTorneos = document.getElementById('nav-monitor-torneos');
-            let btnMonitorAlumnos = document.getElementById('nav-monitor-alumnos');
-            let btnMonitorGestion = document.getElementById('nav-monitor-gestion');
-
-            if (modoMonitorActivo) {
-                btnAlumnoClases.style.display = 'none';
-                btnAlumnoTorneos.style.display = 'none';
-                btnAlumnoPerfil.style.display = 'none';
-
-                btnMonitorClases.style.display = 'flex';
-                btnMonitorTorneos.style.display = 'flex';
-                btnMonitorAlumnos.style.display = 'flex';
-                btnMonitorGestion.style.display = 'flex';
-
-                [btnMonitorClases, btnMonitorTorneos, btnMonitorAlumnos, btnMonitorGestion].forEach(b => b.style.width = '25%');
-            } else {
-                btnMonitorClases.style.display = 'none';
-                btnMonitorTorneos.style.display = 'none';
-                btnMonitorAlumnos.style.display = 'none';
-                btnMonitorGestion.style.display = 'none';
-
-                btnAlumnoClases.style.display = 'flex';
-                btnAlumnoTorneos.style.display = 'flex';
-                btnAlumnoPerfil.style.display = 'flex';
-
-                [btnAlumnoClases, btnAlumnoTorneos, btnAlumnoPerfil].forEach(b => b.style.width = '33.33%');
-            }
-        }
-
-        function cambiarSeccion(seccion) {
-            if ((seccion === 'alumnos' || seccion === 'gestion') && !modoMonitorActivo) {
-                mostrarToast("Acceso denegado. Debes iniciar sesión como monitor.", "error");
-                volverAHome();
-                return;
-            }
-
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById('seccion-' + seccion).classList.add('active');
-            
-            if(seccion !== 'home') {
-                let btnNav = document.getElementById('nav-' + seccion);
-                if(!btnNav && modoMonitorActivo) {
-                    btnNav = document.getElementById('nav-monitor-' + seccion);
+        window.toggleColumnVisibility = (colName) => {
+            if (colName === 'lunas') {
+                showLunasCol = !showLunasCol;
+                const wrapper = document.getElementById('col-lunas-wrapper');
+                const btn = document.getElementById('toggle-lunas-btn');
+                if (wrapper) wrapper.style.display = showLunasCol ? 'block' : 'none';
+                if (btn) {
+                    btn.innerHTML = showLunasCol ? '<i class="fas fa-eye-slash me-1" id="icon-lunas"></i> Ocultar Lunas' : '<i class="fas fa-eye me-1" id="icon-lunas"></i> Mostrar Lunas';
                 }
-                if(btnNav) btnNav.classList.add('active');
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            renderizar();
-        }
-
-        async function cargarDatos() {
-            try {
-                let respuesta = await fetch(API_URL);
-                if(respuesta.ok) {
-                    let json = await respuesta.json();
-                    if(json) {
-                        datosGlobales = json;
-                        if(!datosGlobales.avisos) datosGlobales.avisos = [];
-                        if(!datosGlobales.entrenamientos) datosGlobales.entrenamientos = [];
-                        if(!datosGlobales.torneos) datosGlobales.torneos = [];
-                        if(!datosGlobales.alumnos) datosGlobales.alumnos = [];
-                    }
-                    document.getElementById('estado-sync').innerText = "SINCRONIZADO 🟢";
+            } else if (colName === 'terminados') {
+                showTerminadosCol = !showTerminadosCol;
+                const wrapper = document.getElementById('col-terminados-wrapper');
+                const btn = document.getElementById('toggle-terminados-btn');
+                if (wrapper) wrapper.style.display = showTerminadosCol ? 'block' : 'none';
+                if (btn) {
+                    btn.innerHTML = showTerminadosCol ? '<i class="fas fa-eye-slash me-1" id="icon-terminados"></i> Ocultar Terminados' : '<i class="fas fa-eye me-1" id="icon-terminados"></i> Mostrar Terminados';
                 }
-            } catch(e) {
-                document.getElementById('estado-sync').innerText = "SIN CONEXIÓN 🔴";
             }
-            renderizar();
         }
 
-        async function guardarDatos() {
-            document.getElementById('estado-sync').innerText = "GUARDANDO... ⏳";
-            try {
-                let respuesta = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(datosGlobales)
-                });
-                if(respuesta.ok) {
-                    document.getElementById('estado-sync').innerText = "SINCRONIZADO 🟢";
-                } else {
-                    document.getElementById('estado-sync').innerText = "ERROR 🔴";
-                }
-            } catch(e) {
-                document.getElementById('estado-sync').innerText = "ERROR RED 🔴";
-            }
-            renderizar();
+        window.setQuickFilter = (filterType) => {
+            activeQuickFilter = filterType;
+            document.getElementById('search-input').value = '';
+            document.getElementById('smart-filter-label').innerText = '🔍 Filtrar...';
+            renderOrders();
         }
 
-        function pedirClaseLibreSinRegistro() {
-            let nombre = document.getElementById('input-nombre-prueba').value.trim();
-            let telefono = document.getElementById('input-telefono-prueba').value.trim();
-            let aceptoRgpd = document.getElementById('check-rgpd-prueba').checked;
+        function getOperatorBadgeClass(opName) {
+            if (!opName) return 'badge-none';
+            const upper = opName.toUpperCase();
+            if (upper.startsWith('CH')) return 'badge-ch';
+            if (upper.startsWith('PIN') || upper.startsWith('PUN')) return 'badge-pun';
+            return 'badge-none';
+        }
+        window.getOperatorBadgeClass = getOperatorBadgeClass;
 
-            if(!nombre) {
-                mostrarToast("Por favor, introduce al menos tu nombre y apellidos.", "error");
-                return;
-            }
+        function getPintorName(index) {
+            let pinOps = operators.filter(op => {
+                const upper = (op.name || '').toUpperCase();
+                return upper.startsWith('PIN') || upper.startsWith('PUN');
+            });
+            if (pinOps[index]) return pinOps[index].name;
+            return `Pintor ${index + 1}`;
+        }
 
-            if(!aceptoRgpd) {
-                mostrarToast("⚠️ Debes aceptar la política de protección de datos.", "warning");
-                return;
-            }
+        function buildStatusSelectOptions(currentStatus) {
+            return `
+                <option value="lunas" ${currentStatus === 'lunas' ? 'selected' : ''}>1. Lunas</option>
+                <option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación (Chapa)</option>
+                <option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje (Chapa)</option>
+                <option value="pintor1" ${currentStatus === 'pintor1' ? 'selected' : ''}>4. ${getPintorName(0)}</option>
+                <option value="pintor2" ${currentStatus === 'pintor2' ? 'selected' : ''}>4. ${getPintorName(1)}</option>
+                <option value="pintor3" ${currentStatus === 'pintor3' ? 'selected' : ''}>4. ${getPintorName(2)}</option>
+                <option value="pintor4" ${currentStatus === 'pintor4' ? 'selected' : ''}>4. ${getPintorName(3)}</option>
+                <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>5. Terminados</option>
+            `;
+        }
 
-            if(!datosGlobales.avisos) datosGlobales.avisos = [];
-
-            let textoAviso = `${nombre} ha solicitado una Clase de Prueba gratuita.`;
-            if(telefono) textoAviso += ` (Contacto: ${telefono})`;
-
-            datosGlobales.avisos.push({
-                id: Date.now(),
-                alumno: nombre,
-                tipo: 'Clase de Prueba (Sin Registro)',
-                texto: textoAviso
+        function buildGroupedOperatorOptions(selectedVal = "") {
+            let chOps = [];
+            let pinOps = [];
+            operators.forEach(op => {
+                const upper = (op.name || '').toUpperCase();
+                if (upper.startsWith('CH')) chOps.push(op.name);
+                else if (upper.startsWith('PIN') || upper.startsWith('PUN')) pinOps.push(op.name);
+                else chOps.push(op.name);
             });
 
-            guardarDatos();
-            document.getElementById('input-nombre-prueba').value = "";
-            document.getElementById('input-telefono-prueba').value = "";
-            document.getElementById('check-rgpd-prueba').checked = false;
-            mostrarToast("¡Solicitud enviada con éxito! El monitor ha recibido tu aviso.");
-        }
-
-        function registrarNuevoAlumno() {
-            if(!modoMonitorActivo) return mostrarToast("Acción no permitida.", "error");
-            let nombre = document.getElementById('nuevo-alumno-nombre').value.trim();
-            let pass = document.getElementById('nuevo-alumno-pass').value.trim();
-            let clases = parseInt(document.getElementById('nuevo-alumno-clases').value);
-            let aceptoRgpd = document.getElementById('check-rgpd-alumno').checked;
-            
-            if(isNaN(clases)) clases = 10;
-
-            if(!nombre || !pass) return mostrarToast("Escribe el nombre y la contraseña del alumno", "error");
-            
-            if(!aceptoRgpd) {
-                return mostrarToast("⚠️ Debes confirmar el consentimiento de protección de datos.", "warning");
+            let html = `<option value="">Sin asignar (Libre)</option>`;
+            if (chOps.length > 0) {
+                html += `<optgroup label="--- Chapa (CH) ---">`;
+                chOps.forEach(name => {
+                    let sel = (selectedVal === name) ? 'selected' : '';
+                    html += `<option value="${name}" ${sel}>${name}</option>`;
+                });
+                html += `</optgroup>`;
             }
-
-            if(!datosGlobales.alumnos) datosGlobales.alumnos = [];
-
-            let existe = datosGlobales.alumnos.find(a => a.nombre.toLowerCase() === nombre.toLowerCase());
-            if(existe) return mostrarToast("Ya existe un alumno con ese nombre.", "error");
-
-            datosGlobales.alumnos.push({ nombre, pass, clasesBono: clases });
-            document.getElementById('nuevo-alumno-nombre').value = "";
-            document.getElementById('nuevo-alumno-pass').value = "";
-            document.getElementById('nuevo-alumno-clases').value = "10";
-            document.getElementById('check-rgpd-alumno').checked = true;
-            guardarDatos();
-            mostrarToast("¡Alumno creado con éxito!");
-        }
-
-        function cerrarSesionAlumno() {
-            alumnoActual = null;
-            mostrarToast("Sesión cerrada correctamente.");
-            volverAHome();
-        }
-
-        function solicitarRecargaBono() {
-            if(!alumnoActual) {
-                mostrarToast("Debes iniciar sesión en tu perfil.", "error");
-                volverAHome();
-                return;
+            if (pinOps.length > 0) {
+                html += `<optgroup label="--- Pintura (PIN/PUN) ---">`;
+                pinOps.forEach(name => {
+                    let sel = (selectedVal === name) ? 'selected' : '';
+                    html += `<option value="${name}" ${sel}>${name}</option>`;
+                });
+                html += `</optgroup>`;
             }
-            if(!datosGlobales.avisos) datosGlobales.avisos = [];
+            return html;
+        }
 
-            let yaPedido = datosGlobales.avisos.find(a => a.alumno === alumnoActual.nombre && a.tipo === 'Recarga Bono');
-            if(yaPedido) return mostrarToast("Ya tienes una solicitud de recarga pendiente.", "warning");
+        window.handleLogin = (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value.trim();
+            if ((email === "taller@taller.com" && pass === "taller123") || (email === "jefe@taller.com" && pass === "jefe123")) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'block';
+                document.getElementById('user-display').innerHTML = `<i class="fas fa-user-circle me-1"></i> ${email}`;
+                initRealtimeSync();
+            } else { alert('Correo o contraseña incorrectos.'); }
+        }
 
-            datosGlobales.avisos.push({
-                id: Date.now(),
-                alumno: alumnoActual.nombre,
-                tipo: 'Recarga Bono',
-                texto: `${alumnoActual.nombre} solicita recargar su Bono de 10 clases.`
+        window.handleLogout = () => {
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('app-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+        }
+
+        function initRealtimeSync() {
+            onSnapshot(collection(db, "orders"), (snapshot) => {
+                orders = [];
+                snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
+                renderOrders();
+                const syncEl = document.getElementById('sync-status');
+                if (syncEl) {
+                    syncEl.className = "badge bg-success text-white me-3";
+                    syncEl.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado';
+                }
+            }, (error) => { console.error("Error sincronización órdenes:", error); });
+
+            onSnapshot(collection(db, "operators"), (snapshot) => {
+                operators = [];
+                snapshot.forEach(docSnap => operators.push({ id: docSnap.id, ...docSnap.data() }));
+                renderOperatorsUI();
+            }, (error) => { console.error("Error sincronización operarios:", error); });
+        }
+
+        function renderOperatorsUI() {
+            const listContainer = document.getElementById('operators-list');
+            const selectContainer = document.getElementById('operator-select');
+            if (!listContainer || !selectContainer) return;
+
+            listContainer.innerHTML = '';
+            let currentSelectedOp = selectContainer.value;
+
+            operators.forEach(op => {
+                let badgeClass = getOperatorBadgeClass(op.name);
+                listContainer.innerHTML += `
+                    <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border">
+                        <span class="badge ${badgeClass} px-2 py-1">${op.name}</span>
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
             });
-            guardarDatos();
-            mostrarToast("¡Aviso de recarga enviado al monitor correctamente!");
+
+            selectContainer.innerHTML = buildGroupedOperatorOptions(currentSelectedOp);
+            updateSmartFilterDropdown();
+            updatePintorLabelsAndSelects();
+            renderOrders();
         }
 
-        function resolverAviso(id) {
-            if(!modoMonitorActivo) return;
-            datosGlobales.avisos = datosGlobales.avisos.filter(a => a.id !== id);
-            guardarDatos();
-            mostrarToast("Aviso descartado.");
-        }
-
-        function aprobarRecargaBono(nombreAlumno) {
-            if(!modoMonitorActivo) return;
-            let alumnoBD = datosGlobales.alumnos.find(a => a.nombre === nombreAlumno);
-            if(alumnoBD) {
-                alumnoBD.clasesBono += 10;
-                if(alumnoActual && alumnoActual.nombre === nombreAlumno) {
-                    alumnoActual.clasesBono = alumnoBD.clasesBono;
-                }
-                if(datosGlobales.avisos) {
-                    datosGlobales.avisos = datosGlobales.avisos.filter(a => !(a.alumno === nombreAlumno && a.tipo === 'Recarga Bono'));
-                }
-                guardarDatos();
-                mostrarToast(`✅ ¡Bono recargado! Se sumaron 10 clases a ${nombreAlumno}.`);
+        function updatePintorLabelsAndSelects() {
+            for (let i = 1; i <= 4; i++) {
+                const labelEl = document.getElementById(`label-pintor${i}`);
+                const optEl = document.getElementById(`opt-pintor${i}`);
+                let pName = getPintorName(i - 1);
+                
+                if (labelEl) labelEl.innerText = pName;
+                if (optEl) optEl.innerText = `4. ${pName}`;
             }
         }
 
-        function devolverClase(entrenamientoId, nombreAlumno) {
-            if(!modoMonitorActivo) return;
-            if(confirm(`¿Estás seguro de devolver 1 clase a ${nombreAlumno} y eliminarle del entrenamiento?`)) {
-                let ent = datosGlobales.entrenamientos.find(e => e.id === entrenamientoId);
-                if(ent && ent.inscritos) {
-                    ent.inscritos = ent.inscritos.filter(nombre => nombre !== nombreAlumno);
-                }
-                let alumnoBD = datosGlobales.alumnos.find(a => a.nombre === nombreAlumno);
-                if(alumnoBD) {
-                    alumnoBD.clasesBono += 1;
-                    if(alumnoActual && alumnoActual.nombre === nombreAlumno) {
-                        alumnoActual.clasesBono = alumnoBD.clasesBono;
-                    }
-                }
-                guardarDatos();
-                mostrarToast(`✅ Clase devuelta a ${nombreAlumno}.`);
-            }
-        }
-
-        function desapuntarseEntrenamientoPropio(entrenamientoId) {
-            if(!alumnoActual) {
-                mostrarToast("Debes iniciar sesión primero.", "error");
-                volverAHome();
-                return;
-            }
-            if(confirm("¿Seguro que deseas anular tu asistencia? Se te devolverá 1 clase a tu bono.")) {
-                let ent = datosGlobales.entrenamientos.find(e => e.id === entrenamientoId);
-                if(ent && ent.inscritos) {
-                    ent.inscritos = ent.inscritos.filter(nombre => nombre !== alumnoActual.nombre);
-                }
-                let alumnoBD = datosGlobales.alumnos.find(a => a.nombre === alumnoActual.nombre);
-                if(alumnoBD) {
-                    alumnoBD.clasesBono += 1;
-                    alumnoActual.clasesBono = alumnoBD.clasesBono;
-                }
-                guardarDatos();
-                mostrarToast("✅ Asistencia anulada y clase devuelta a tu bono.");
-            }
-        }
-
-        function desapuntarseTorneoPropio(torneoId) {
-            if(!alumnoActual) {
-                mostrarToast("Debes iniciar sesión primero.", "error");
-                volverAHome();
-                return;
-            }
-            if(confirm("¿Seguro que deseas anular tu inscripción en este torneo?")) {
-                let tor = datosGlobales.torneos.find(t => t.id === torneoId);
-                if(tor && tor.inscritos) {
-                    tor.inscritos = tor.inscritos.filter(nombre => nombre !== alumnoActual.nombre);
-                }
-                guardarDatos();
-                mostrarToast("✅ Te has desapuntado del torneo.");
-            }
-        }
-
-        function renderizar() {
-            let totalAvisos = datosGlobales.avisos ? datosGlobales.avisos.length : 0;
+        function updateSmartFilterDropdown() {
+            const dropdownMenu = document.getElementById('smart-filter-dropdown');
+            if (!dropdownMenu) return;
             
-            let globoNav = document.getElementById('globo-notificaciones');
-            let globoHome = document.getElementById('globo-notificaciones-home');
-            
-            if(totalAvisos > 0) {
-                globoNav.innerText = totalAvisos;
-                globoNav.style.display = 'inline-block';
-                globoHome.innerText = totalAvisos;
-                globoHome.style.display = 'inline-block';
-            } else {
-                globoNav.style.display = 'none';
-                globoHome.style.display = 'none';
-            }
+            let chOps = [];
+            let pinOps = [];
+            operators.forEach(op => {
+                const upper = (op.name || '').toUpperCase();
+                if (upper.startsWith('CH')) chOps.push(op.name);
+                else if (upper.startsWith('PIN') || upper.startsWith('PUN')) pinOps.push(op.name);
+                else chOps.push(op.name);
+            });
 
-            if(alumnoActual) {
-                document.getElementById('panel-identificado').style.display = 'block';
-                document.getElementById('saludo-alumno').innerText = "¡Hola, " + alumnoActual.nombre + "!";
-                let reg = datosGlobales.alumnos.find(a => a.nombre === alumnoActual.nombre);
-                let clases = reg ? reg.clasesBono : 0;
-                alumnoActual.clasesBono = clases;
-                document.getElementById('info-bono-personal').innerHTML = `🎟️ <strong>MI BONO:</strong> ${clases} clases disponibles`;
-                document.getElementById('historial-bono-alumno').innerHTML = `📜 <strong>Estado de cuenta:</strong> Al día. Clases listas para reservar entrenamientos o torneos.`;
-            } else {
-                document.getElementById('panel-identificado').style.display = 'none';
-            }
-
-            let htmlEntrenamientos = "";
-            if(!datosGlobales.entrenamientos || datosGlobales.entrenamientos.length === 0) {
-                htmlEntrenamientos = "<p style='text-align:center; padding:20px; color:var(--text-light);'>No hay entrenamientos programados actualmente.</p>";
-            } else {
-                datosGlobales.entrenamientos.forEach(ent => {
-                    let btnBorrar = modoMonitorActivo ? `<button class="danger" onclick="borrarEntrenamiento(${ent.id})">🗑️ Borrar Clase</button>` : '';
-                    let lugarTxt = ent.lugar ? `<p>📍 <strong>Lugar:</strong> ${ent.lugar}</p>` : '';
-                    
-                    let estaApuntado = alumnoActual && ent.inscritos && ent.inscritos.includes(alumnoActual.nombre);
-                    let botonAccion = "";
-
-                    if(estaApuntado) {
-                        botonAccion = `<button class="danger" onclick="desapuntarseEntrenamientoPropio(${ent.id})">ANULAR ASISTENCIA</button>`;
-                    } else {
-                        botonAccion = `<button onclick="apuntarseEntrenamiento(${ent.id})">APUNTARME</button>`;
-                    }
-
-                    let listaInscritosHTML = "";
-                    let numInscritos = (ent.inscritos && ent.inscritos.length > 0) ? ent.inscritos.length : 0;
-
-                    if(modoMonitorActivo) {
-                        if(numInscritos > 0) {
-                            listaInscritosHTML = "<ul style='margin-left: 20px; margin-top: 5px;'>";
-                            ent.inscritos.forEach(alumnoNombre => {
-                                listaInscritosHTML += `<li style='margin-bottom: 6px;'>${alumnoNombre} <button class='success' style='padding: 2px 8px; font-size: 0.75rem; width: auto; display: inline-block; margin-top: 0; margin-left: 8px;' onclick="devolverClase(${ent.id}, '${alumnoNombre}')">↩️ Devolver clase</button></li>`;
-                            });
-                            listaInscritosHTML += "</ul>";
-                        } else {
-                            listaInscritosHTML = "Nadie apuntado aún";
-                        }
-                    } else {
-                        listaInscritosHTML = `${numInscritos} personas apuntadas`;
-                    }
-
-                    htmlEntrenamientos += `
-                        <div class="card">
-                            <h3>🏓 ${ent.titulo}</h3>
-                            <p>🕒 <strong>Fecha:</strong> ${ent.fecha}</p>
-                            ${lugarTxt}
-                            <p>👥 <strong>Inscritos:</strong> ${listaInscritosHTML}</p>
-                            ${botonAccion}
-                            ${btnBorrar}
-                        </div>
-                    `;
+            let html = `
+                <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('op:Sin asignar', 'Sin asignar')">Sin asignar</a></li>
+            `;
+            if (chOps.length > 0) {
+                html += `<li><h6 class="dropdown-header text-primary fw-bold ps-4">--- Chapa (CH) ---</h6></li>`;
+                chOps.forEach(name => {
+                    html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${name}', '${name}')"><span class="badge badge-ch px-2 py-1">${name}</span></a></li>`;
                 });
             }
-            document.getElementById('lista-entrenamientos').innerHTML = htmlEntrenamientos;
-
-            let htmlTorneos = "";
-            if(!datosGlobales.torneos || datosGlobales.torneos.length === 0) {
-                htmlTorneos = "<p style='text-align:center; padding:20px; color:var(--text-light);'>No hay torneos programados actualmente.</p>";
-            } else {
-                datosGlobales.torneos.forEach(tor => {
-                    let btnBorrarTorneo = modoMonitorActivo ? `<button class="danger" onclick="borrarTorneo(${tor.id})">🗑️ Borrar Torneo</button>` : '';
-                    let lugarTorneoTxt = tor.lugar ? `<p>📍 <strong>Lugar:</strong> ${tor.lugar}</p>` : '';
-                    
-                    let estaApuntadoTorneo = alumnoActual && tor.inscritos && tor.inscritos.includes(alumnoActual.nombre);
-                    let botonTorneoAccion = "";
-
-                    if(estaApuntadoTorneo) {
-                        botonTorneoAccion = `<button class="danger" onclick="desapuntarseTorneoPropio(${tor.id})">ANULAR ASISTENCIA</button>`;
-                    } else {
-                        botonTorneoAccion = `<button onclick="apuntarseTorneo(${tor.id})">APUNTARME</button>`;
-                    }
-
-                    let listaInscritosTorneoHTML = "";
-                    let numInscritosTorneo = (tor.inscritos && tor.inscritos.length > 0) ? tor.inscritos.length : 0;
-
-                    if(modoMonitorActivo) {
-                        if(numInscritosTorneo > 0) {
-                            listaInscritosTorneoHTML = "<ul style='margin-left: 20px; margin-top: 5px;'>";
-                            tor.inscritos.forEach(alumnoNombre => {
-                                listaInscritosTorneoHTML += `<li style='margin-bottom: 6px;'>${alumnoNombre}</li>`;
-                            });
-                            listaInscritosTorneoHTML += "</ul>";
-                        } else {
-                            listaInscritosTorneoHTML = "Nadie apuntado aún";
-                        }
-                    } else {
-                        listaInscritosTorneoHTML = `${numInscritosTorneo} personas apuntadas`;
-                    }
-
-                    htmlTorneos += `
-                        <div class="card">
-                            <h3>🏆 ${tor.titulo}</h3>
-                            <p>📅 <strong>Fecha:</strong> ${tor.fecha}</p>
-                            ${lugarTorneoTxt}
-                            <p>👥 <strong>Participantes:</strong> ${listaInscritosTorneoHTML}</p>
-                            ${botonTorneoAccion}
-                            ${btnBorrarTorneo}
-                        </div>
-                    `;
+            if (pinOps.length > 0) {
+                html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores (Iniciales) ---</h6></li>`;
+                pinOps.forEach(name => {
+                    html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${name}', '${name}')"><span class="badge badge-pun px-2 py-1">${name}</span></a></li>`;
                 });
             }
-            document.getElementById('lista-torneos').innerHTML = htmlTorneos;
+            dropdownMenu.innerHTML = html;
+        }
 
-            if(modoMonitorActivo) {
-                let avisosHtml = "";
-                if(datosGlobales.avisos && datosGlobales.avisos.length > 0) {
-                    datosGlobales.avisos.forEach(aviso => {
-                        let botonExtraAviso = "";
-                        if(aviso.tipo === 'Recarga Bono') {
-                            botonExtraAviso = `<button class="success" style="padding: 10px; font-size: 0.9rem; margin-top: 8px;" onclick="aprobarRecargaBono('${aviso.alumno}')">🎟️ Añadir bono</button>`;
-                        }
-                        
-                        avisosHtml += `
-                            <div class="card" style="background: white; border-color: #f59e0b; padding: 16px; margin-bottom: 12px;">
-                                <p style="color: #92400e; font-weight: bold; margin-bottom: 6px;">⚠️ Solicitud: ${aviso.tipo}</p>
-                                <p style="color: var(--text); font-size: 0.95rem; margin-bottom: 8px;">${aviso.texto}</p>
-                                ${botonExtraAviso}
-                                <button class="danger" style="padding: 8px; font-size: 0.85rem; margin-top: 6px; background-color: #64748b;" onclick="resolverAviso(${aviso.id})">✖ Descartar aviso</button>
+        window.handleSmartFilterSelect = (val, labelText) => {
+            activeQuickFilter = 'all';
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = val;
+            const labelEl = document.getElementById('smart-filter-label');
+            if (labelEl) labelEl.innerText = labelText;
+            renderOrders();
+        }
+
+        window.handleAddOperator = async (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('new-operator-name');
+            if (!nameInput || !nameInput.value.trim()) return;
+            try {
+                await addDoc(collection(db, "operators"), { name: nameInput.value.trim() });
+                nameInput.value = '';
+            } catch (err) { console.error(err); }
+        }
+
+        window.deleteOperator = async (id) => { 
+            if (confirm('¿Eliminar operario?')) {
+                try { await deleteDoc(doc(db, "operators", id)); } catch (err) { console.error(err); }
+            } 
+        }
+
+        window.allowDrop = (ev) => { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
+        window.removeDropStyle = (ev) => { ev.currentTarget.classList.remove('drag-over'); }
+        window.drag = (ev, id) => { ev.dataTransfer.setData("text/plain", id); }
+
+        window.dropOrder = async (ev, targetStatus) => {
+            ev.preventDefault();
+            ev.currentTarget.classList.remove('drag-over');
+            const orderId = ev.dataTransfer.getData("text/plain");
+            if (!orderId) return;
+
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+
+            let newOperator = order.operator || "";
+            if (targetStatus.startsWith('pintor')) {
+                const indexNum = parseInt(targetStatus.replace('pintor', '')) - 1;
+                newOperator = getPintorName(indexNum);
+            }
+
+            const historyEntry = { status: targetStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
+            const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
+
+            try {
+                await updateDoc(doc(db, "orders", orderId), { 
+                    status: targetStatus, 
+                    operator: newOperator, 
+                    history: updatedHistory 
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        window.renderOrders = () => {
+            const searchInput = document.getElementById('search-input');
+            const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const todayStr = new Date().toISOString().split('T')[0];
+            
+            const containers = {
+                lunas: document.getElementById('list-lunas'),
+                reparacion: document.getElementById('list-reparacion'),
+                montaje: document.getElementById('list-montaje'),
+                pintor1: document.getElementById('list-pintor1'),
+                pintor2: document.getElementById('list-pintor2'),
+                pintor3: document.getElementById('list-pintor3'),
+                pintor4: document.getElementById('list-pintor4'),
+                terminados: document.getElementById('list-terminados')
+            };
+            
+            if (!containers.reparacion) return;
+            Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
+            let counts = { lunas: 0, reparacion: 0, montaje: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
+
+            let filteredOrders = orders.filter(order => {
+                let status = order.status || 'reparacion';
+                let op = (order.operator || '').toLowerCase();
+                let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
+
+                if (activeQuickFilter === 'urgent') {
+                    if (!order.urgent) return false;
+                } else if (activeQuickFilter === 'overdue') {
+                    if (!isOverdue) return false;
+                }
+
+                if (filterVal.startsWith('op:')) {
+                    let targetOp = filterVal.replace('op:', '').trim();
+                    if (targetOp === 'sin asignar') return !order.operator;
+                    return op === targetOp;
+                }
+
+                return (order.plate || '').toLowerCase().includes(filterVal) || 
+                       (order.model || '').toLowerCase().includes(filterVal) || 
+                       op.includes(filterVal) || 
+                       (order.substatus || '').toLowerCase().includes(filterVal);
+            }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
+
+            filteredOrders.forEach(order => {
+                let status = order.status || 'reparacion';
+                if (status === 'lunas') counts.lunas++;
+                else if (status === 'reparacion' || status === 'montaje') {
+                    counts.chapaTotal++;
+                } else if (status.startsWith('pintor')) {
+                    counts.pintado++;
+                } else if (status === 'terminados') {
+                    counts.terminados++;
+                }
+                
+                let displayPlate = (order.plate || '').toUpperCase();
+                if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
+
+                let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
+                let cardClass = order.urgent ? 'urgent' : (isOverdue ? 'overdue' : '');
+                let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
+
+                let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
+                let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
+
+                let opBadgeClass = getOperatorBadgeClass(order.operator);
+                let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted small">No asignado</span>';
+
+                let statusSelectOptions = buildStatusSelectOptions(status);
+
+                if (containers[status]) {
+                    containers[status].innerHTML += `
+                        <div class="task-card p-2 ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
+                            ${urgentBanner}
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">${displayPlate} - ${order.model}</h6>
+                                <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
                             </div>
-                        `;
-                    });
-                } else {
-                    avisosHtml = `<p style="color: var(--text-light); font-size: 0.9rem;">No hay avisos pendientes.</p>`;
+                            ${substatusBadge}
+                            <div class="small text-secondary mb-1">
+                                <div class="d-flex align-items-center gap-1"><strong>Op:</strong> ${operatorDisplay}</div>
+                                <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'}</div>
+                            </div>
+                            <select class="form-select form-select-sm mt-1" style="font-size: 0.75rem; padding: 2px 5px;" onclick="event.stopPropagation()" onchange="changeOrderStatusDirect('${order.id}', this.value)">
+                                ${statusSelectOptions}
+                            </select>
+                        </div>
+                    `;
                 }
-                document.getElementById('lista-avisos-monitor').innerHTML = avisosHtml;
+            });
 
-                let listaAdminHtml = "";
-                if(datosGlobales.alumnos && datosGlobales.alumnos.length > 0) {
-                    datosGlobales.alumnos.forEach((al, idx) => {
-                        listaAdminHtml += `
-                            <div class="card" style="padding:14px; margin-bottom:12px; background:white;">
-                                <p style="font-weight:bold; color:var(--text); margin-bottom:4px; font-size: 1.05rem;">👤 ${al.nombre} <span style="font-weight:normal; font-size:0.85rem; color:var(--text-light);">(PIN: ${al.pass})</span></p>
-                                <p style="margin-bottom:10px;">🎟️ Clases en bono: <strong>${al.clasesBono}</strong></p>
-                                <button class="success" style="padding: 9px 12px; font-size: 0.9rem; margin-top: 0; margin-bottom: 8px;" onclick="aprobarRecargaBono('${al.nombre}')">➕ Añadir bono</button>
-                                <div style="display:flex; gap:10px;">
-                                    <button onclick="modificarBono(${idx})" style="padding:8px 12px; font-size:0.9rem; margin-top:0;">Editar Clases</button>
-                                    <button class="danger" style="padding:8px 12px; font-size:0.9rem; margin-top:0;" onclick="borrarAlumno(${idx})">Eliminar</button>
+            if (document.getElementById('count-lunas')) document.getElementById('count-lunas').innerText = counts.lunas;
+            if (document.getElementById('count-chapa')) document.getElementById('count-chapa').innerText = counts.chapaTotal;
+            if (document.getElementById('count-pintado')) document.getElementById('count-pintado').innerText = counts.pintado;
+            if (document.getElementById('count-terminados')) document.getElementById('count-terminados').innerText = counts.terminados;
+        }
+
+        window.changeOrderStatusDirect = async (orderId, newStatus) => {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            let newOperator = order.operator || "";
+            if (newStatus.startsWith('pintor')) {
+                const indexNum = parseInt(newStatus.replace('pintor', '')) - 1;
+                newOperator = getPintorName(indexNum);
+            }
+            const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
+            const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
+            try {
+                await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, history: updatedHistory });
+            } catch (err) { console.error(err); }
+        }
+
+        window.openDetailModal = (id) => {
+            const order = orders.find(o => o.id === id);
+            if (!order) return;
+
+            let historyHtml = '<p class="text-muted small fst-italic">No hay registros de movimientos todavía.</p>';
+            if (order.history && order.history.length > 0) {
+                historyHtml = `<div class="history-timeline">`;
+                order.history.forEach((h, index) => {
+                    let hOpBadge = getOperatorBadgeClass(h.operator);
+                    let historySelectOptions = buildGroupedOperatorOptions(h.operator || "Sin asignar");
+
+                    historyHtml += `
+                        <div class="history-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-bold text-primary text-uppercase small">${h.status}</div>
+                                <div class="text-dark small d-flex align-items-center gap-1 my-1">
+                                    <i class="fas fa-user-tie text-secondary"></i> Operario: 
+                                    <select class="form-select form-select-sm d-inline-block w-auto py-0 px-2 text-dark ${hOpBadge}" style="font-size: 0.8rem; height: 26px;" onchange="updateHistoryOperator('${order.id}', ${index}, this.value)">
+                                        ${historySelectOptions}
+                                    </select>
+                                </div>
+                                <div class="text-muted" style="font-size: 0.75rem;"><i class="far fa-clock me-1"></i> ${h.date}</div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="deleteHistoryItem('${order.id}', ${index})"><i class="fas fa-times"></i></button>
+                        </div>
+                    `;
+                });
+                historyHtml += `</div>`;
+            }
+
+            const modalBody = document.getElementById('detail-modal-body');
+            if (modalBody) {
+                modalBody.innerHTML = `
+                    <form onsubmit="handleUpdateOrder(event, '${order.id}')">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Matrícula</label>
+                                <input type="text" id="edit-plate" class="form-control text-uppercase" value="${order.plate || ''}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Modelo</label>
+                                <input type="text" id="edit-model" class="form-control" value="${order.model || ''}" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Fecha Entrada</label>
+                                <input type="date" id="edit-date-in" class="form-control" value="${order.dateIn || ''}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Fecha Salida Prevista</label>
+                                <input type="date" id="edit-date-out" class="form-control" value="${order.dateOut || ''}" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Subestado</label>
+                                <select id="edit-substatus" class="form-select">
+                                    <option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option>
+                                    <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
+                                    <option value="Faro reparándose" ${order.substatus === 'Faro reparándose' ? 'selected' : ''}>Faro reparándose</option>
+                                    <option value="Pendiente de recambios" ${order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente de recambios</option>
+                                    <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
+                                    <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
+                                    <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
+                                    <option value="Llanta reparándose fuera" ${order.substatus === 'Llanta reparándose fuera' ? 'selected' : ''}>Llanta reparándose fuera</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center pt-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="edit-urgent" ${order.urgent ? 'checked' : ''}>
+                                    <label class="form-check-label text-danger fw-bold" for="edit-urgent">Urgente</label>
                                 </div>
                             </div>
-                        `;
-                    });
-                } else {
-                    listaAdminHtml = `<p style="color:var(--text-light)">No hay alumnos dados de alta todavía.</p>`;
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary fw-bold">Notas</label>
+                            <textarea id="edit-notes" class="form-control" rows="2">${order.notes || ''}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-bold py-2 mb-4"><i class="fas fa-save me-1"></i> Guardar Cambios de la Ficha</button>
+                    </form>
+                    <hr class="mb-4">
+                    <h6 class="text-uppercase text-secondary fw-bold small mb-3">Historial y Trazabilidad</h6>
+                    ${historyHtml}
+                `;
+            }
+
+            const detailModalEl = document.getElementById('detailModal');
+            if (detailModalEl) {
+                let modalInstance = bootstrap.Modal.getInstance(detailModalEl);
+                if (!modalInstance) modalInstance = new bootstrap.Modal(detailModalEl);
+                modalInstance.show();
+            }
+        }
+
+        window.updateHistoryOperator = async (orderId, historyIndex, newOperator) => {
+            const order = orders.find(o => o.id === orderId);
+            if (!order || !order.history || !order.history[historyIndex]) return;
+            order.history[historyIndex].operator = newOperator;
+            let updatePayload = { history: order.history };
+            if (historyIndex === order.history.length - 1) {
+                updatePayload.operator = newOperator === 'Sin asignar' ? '' : newOperator;
+            }
+            try {
+                await updateDoc(doc(db, "orders", orderId), updatePayload);
+                openDetailModal(orderId);
+            } catch (err) { console.error(err); }
+        }
+
+        window.deleteHistoryItem = async (orderId, index) => {
+            const order = orders.find(o => o.id === orderId);
+            if (!order || !order.history) return;
+            if (confirm('¿Eliminar este registro?')) {
+                order.history.splice(index, 1);
+                try {
+                    await updateDoc(doc(db, "orders", orderId), { history: order.history });
+                    openDetailModal(orderId);
+                } catch (err) { console.error(err); }
+            }
+        }
+
+        window.handleUpdateOrder = async (e, id) => {
+            e.preventDefault();
+            try {
+                await updateDoc(doc(db, "orders", id), {
+                    plate: document.getElementById('edit-plate').value.trim(),
+                    model: document.getElementById('edit-model').value.trim(),
+                    dateIn: document.getElementById('edit-date-in').value,
+                    dateOut: document.getElementById('edit-date-out').value,
+                    substatus: document.getElementById('edit-substatus').value,
+                    notes: document.getElementById('edit-notes').value,
+                    urgent: document.getElementById('edit-urgent').checked
+                });
+                const modalEl = document.getElementById('detailModal');
+                if (modalEl) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) modalInstance.hide();
                 }
-                document.getElementById('lista-alumnos-admin').innerHTML = listaAdminHtml;
-            }
-
-            document.getElementById('panel-crear-entrenamiento').style.display = modoMonitorActivo ? 'block' : 'none';
-            document.getElementById('panel-crear-torneo').style.display = modoMonitorActivo ? 'block' : 'none';
+            } catch (err) { console.error(err); }
         }
 
-        function apuntarseEntrenamiento(id) {
-            if(!alumnoActual) {
-                mostrarToast("Debes iniciar sesión primero para apuntarte.", "warning");
-                return;
-            }
-
-            let alumnoBD = datosGlobales.alumnos.find(a => a.nombre === alumnoActual.nombre);
-
-            if(!alumnoBD || alumnoBD.clasesBono <= 0) {
-                mostrarToast("❌ No te quedan clases en tu bono. Solicita una recarga.", "error");
-                return;
-            }
-
-            let ent = datosGlobales.entrenamientos.find(e => e.id === id);
-            if(ent) {
-                if(!ent.inscritos) ent.inscritos = [];
-                if(!ent.inscritos.includes(alumnoActual.nombre)) {
-                    ent.inscritos.push(alumnoActual.nombre);
-                    alumnoBD.clasesBono -= 1;
-                    alumnoActual.clasesBono = alumnoBD.clasesBono;
-
-                    guardarDatos();
-                    mostrarToast("✅ ¡Apuntado con éxito! Se ha descontado 1 clase.");
-                } else { 
-                    mostrarToast("Ya estás apuntado a este entrenamiento.", "warning"); 
+        window.handleAddOrder = async (e) => {
+            e.preventDefault();
+            const initialStatus = document.getElementById('car-status').value;
+            const initialOperator = document.getElementById('operator-select').value;
+            try {
+                await addDoc(collection(db, "orders"), {
+                    plate: document.getElementById('car-plate').value.trim(),
+                    model: document.getElementById('car-model').value.trim(),
+                    dateIn: document.getElementById('date-in').value,
+                    dateOut: document.getElementById('date-out').value,
+                    operator: initialOperator,
+                    substatus: document.getElementById('car-substatus').value,
+                    status: initialStatus,
+                    notes: document.getElementById('car-notes').value,
+                    urgent: document.getElementById('car-urgent').checked,
+                    history: [{ status: initialStatus, operator: initialOperator || "Sin asignar", date: new Date().toLocaleString() }]
+                });
+                document.getElementById('order-form').reset();
+                const modalEl = document.getElementById('newOrderModal');
+                if (modalEl) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) modalInstance.hide();
                 }
-            }
+            } catch (err) { console.error(err); }
         }
 
-        function apuntarseTorneo(id) {
-            if(!alumnoActual) {
-                mostrarToast("Debes iniciar sesión primero para apuntarte.", "warning");
-                return;
-            }
-            let tor = datosGlobales.torneos.find(t => t.id === id);
-            if(tor) {
-                if(!tor.inscritos) tor.inscritos = [];
-                if(!tor.inscritos.includes(alumnoActual.nombre)) {
-                    tor.inscritos.push(alumnoActual.nombre);
-                    guardarDatos();
-                    mostrarToast("¡Apuntado al torneo con éxito!");
-                } else { mostrarToast("Ya estás apuntado a este torneo.", "warning"); }
-            }
+        window.deleteOrder = async (id) => { 
+            if (confirm('¿Eliminar orden?')) {
+                try { await deleteDoc(doc(db, "orders", id)); } catch (err) { console.error(err); }
+            } 
         }
-
-        function agregarEntrenamiento() {
-            if(!modoMonitorActivo) return;
-            let titulo = document.getElementById('nuevo-titulo').value;
-            let fecha = document.getElementById('nuevo-fecha').value;
-            let lugar = document.getElementById('nuevo-lugar').value;
-            if(!titulo || !fecha) return mostrarToast("Rellena el título y la fecha", "error");
-            if(!datosGlobales.entrenamientos) datosGlobales.entrenamientos = [];
-            datosGlobales.entrenamientos.push({ id: Date.now(), titulo, fecha, lugar, inscritos: [] });
-            document.getElementById('nuevo-titulo').value = "";
-            document.getElementById('nuevo-fecha').value = "";
-            document.getElementById('nuevo-lugar').value = "";
-            guardarDatos();
-            mostrarToast("Clase creada correctamente.");
-        }
-
-        function borrarEntrenamiento(id) {
-            if(!modoMonitorActivo) return;
-            if(confirm("¿Seguro que quieres borrar este entrenamiento?")) {
-                datosGlobales.entrenamientos = datosGlobales.entrenamientos.filter(e => e.id !== id);
-                guardarDatos();
-                mostrarToast("Entrenamiento borrado.");
-            }
-        }
-
-        function agregarTorneo() {
-            if(!modoMonitorActivo) return;
-            let titulo = document.getElementById('torneo-titulo').value;
-            let fecha = document.getElementById('torneo-fecha').value;
-            let lugar = document.getElementById('torneo-lugar').value;
-            if(!titulo || !fecha) return mostrarToast("Rellena el título y la fecha", "error");
-            if(!datosGlobales.torneos) datosGlobales.torneos = [];
-            datosGlobales.torneos.push({ id: Date.now(), titulo, fecha, lugar, inscritos: [] });
-            document.getElementById('torneo-titulo').value = "";
-            document.getElementById('torneo-fecha').value = "";
-            document.getElementById('torneo-lugar').value = "";
-            guardarDatos();
-            mostrarToast("Torneo creado correctamente.");
-        }
-
-        function borrarTorneo(id) {
-            if(!modoMonitorActivo) return;
-            if(confirm("¿Seguro que quieres borrar este torneo?")) {
-                datosGlobales.torneos = datosGlobales.torneos.filter(t => t.id !== id);
-                guardarDatos();
-                mostrarToast("Torneo borrado.");
-            }
-        }
-
-        function modificarBono(index) {
-            if(!modoMonitorActivo) return;
-            let nuevoValor = prompt("Introduce el nuevo número de clases disponibles:", datosGlobales.alumnos[index].clasesBono);
-            if(nuevoValor !== null && !isNaN(nuevoValor)) {
-                datosGlobales.alumnos[index].clasesBono = parseInt(nuevoValor);
-                guardarDatos();
-                mostrarToast("Bono modificado correctamente.");
-            }
-        }
-
-        function borrarAlumno(index) {
-            if(!modoMonitorActivo) return;
-            if(confirm("¿Seguro que quieres eliminar a este alumno?")) {
-                datosGlobales.alumnos.splice(index, 1);
-                guardarDatos();
-                mostrarToast("Alumno eliminado.");
-            }
-        }
-
-        function reiniciarDatosCompletos() {
-            if(!modoMonitorActivo) return;
-            if(prompt("Escribe 'BORRAR' para vaciar absolutamente todo:") === 'BORRAR') {
-                datosGlobales = { entrenamientos: [], torneos: [], alumnos: [], avisos: [] };
-                guardarDatos();
-                mostrarToast("Datos reiniciados.", "warning");
-            }
-        }
-
-        cargarDatos();
-        setInterval(cargarDatos, 5005);
     </script>
 </body>
+</html>
