@@ -881,11 +881,17 @@
                     return status === 'reparacion' || status === 'montaje';
                 }
 
+                // --- FILTRO DE OPERARIO / CHAPISTA CORREGIDO ---
                 if (filterVal.startsWith('op:')) {
                     let targetOp = filterVal.replace('op:', '').trim();
-                    if (targetOp === 'sin asignar') return !order.operator;
-                    return op === targetOp;
+                    if (targetOp === 'sin asignar') {
+                        return !order.operator || order.operator.trim() === "";
+                    }
+                    // Si se busca un operario específico, exigimos que tenga operario y que coincida
+                    if (!order.operator || order.operator.trim() === "") return false;
+                    return op === targetOp.toLowerCase();
                 }
+                // ----------------------------------------------
 
                 return (order.plate || '').toLowerCase().includes(filterVal) || 
                        (order.model || '').toLowerCase().includes(filterVal) || 
