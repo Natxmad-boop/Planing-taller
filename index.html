@@ -72,7 +72,7 @@
         .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
         .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
 
-        /* Contenedor dinámico de 4 columnas para Chapistas (Modo Filtrado) */
+        /* Contenedor dinámico multicolumna para Chapistas (Modo Filtrado) */
         .chapa-four-columns-container {
             display: flex;
             gap: 0.4rem;
@@ -271,7 +271,7 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <!-- Columna Principal: Chapista (Dinámica: vista estándar o 4 columnas si filtra por chapistas) -->
+            <!-- Columna Principal: Chapista (Dinámica: vista estándar o múltiples columnas si filtra por chapistas) -->
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas" style="min-width: 440px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
@@ -330,7 +330,7 @@
                 <div class="modal-body">
                     <form onsubmit="handleAddOperator(event)" class="mb-4">
                         <div class="input-group">
-                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. J.P o PIN/PO">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. CH/AE o PIN/PO">
                             <button type="submit" class="btn btn-primary fw-bold">Añadir</button>
                         </div>
                     </form>
@@ -499,20 +499,28 @@
         }
         window.getOperatorBadgeClass = getOperatorBadgeClass;
 
-        function getChapistaName(index) {
-            let chOps = operators.filter(op => {
+        function getChapistasList() {
+            return operators.filter(op => {
                 const upper = (op.name || '').toUpperCase();
                 return upper.startsWith('CH') || (!upper.startsWith('PIN') && !upper.startsWith('PUN'));
             });
+        }
+
+        function getPintoresList() {
+            return operators.filter(op => {
+                const upper = (op.name || '').toUpperCase();
+                return upper.startsWith('PIN') || upper.startsWith('PUN');
+            });
+        }
+
+        function getChapistaName(index) {
+            let chOps = getChapistasList();
             if (chOps[index]) return chOps[index].name;
             return `Chapista ${index + 1}`;
         }
 
         function getPintorName(index) {
-            let pinOps = operators.filter(op => {
-                const upper = (op.name || '').toUpperCase();
-                return upper.startsWith('PIN') || upper.startsWith('PUN');
-            });
+            let pinOps = getPintoresList();
             if (pinOps[index]) return pinOps[index].name;
             return `Pintor ${index + 1}`;
         }
@@ -531,14 +539,8 @@
         }
 
         function buildGroupedOperatorOptions(selectedVal = "") {
-            let chOps = [];
-            let pinOps = [];
-            operators.forEach(op => {
-                const upper = (op.name || '').toUpperCase();
-                if (upper.startsWith('CH')) chOps.push(op.name);
-                else if (upper.startsWith('PIN') || upper.startsWith('PUN')) pinOps.push(op.name);
-                else chOps.push(op.name);
-            });
+            let chOps = getChapistasList().map(o => o.name);
+            let pinOps =getPintoresList().map(o => o.name);
 
             let html = `<option value="">Sin asignar (Libre)</option>`;
             if (chOps.length > 0) {
@@ -637,19 +639,13 @@
             const dropdownMenu = document.getElementById('smart-filter-dropdown');
             if (!dropdownMenu) return;
             
-            let chOps = [];
-            let pinOps = [];
-            operators.forEach(op => {
-                const upper = (op.name || '').toUpperCase();
-                if (upper.startsWith('CH')) chOps.push(op.name);
-                else if (upper.startsWith('PIN') || upper.startsWith('PUN')) pinOps.push(op.name);
-                else chOps.push(op.name);
-            });
+            let chOps = getChapistasList().map(o => o.name);
+            let pinOps = getPintoresList().map(o => o.name);
 
             let html = `
                 <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item fw-bold text-primary" href="#" onclick="handleSmartFilterSelect('chapistas', '🛠️ Chapistas (4 Columnas)')">🛠️ Filtrar: Chapistas (4 Columnas)</a></li>
+                <li><a class="dropdown-item fw-bold text-primary" href="#" onclick="handleSmartFilterSelect('chapistas', '🛠️ Chapistas (Multicolumna)')">🛠️ Filtrar: Chapistas (Multicolumna)</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('op:Sin asignar', 'Sin asignar')">Sin asignar</a></li>
@@ -713,9 +709,9 @@
                 newOperator = getPintorName(indexNum);
             } else if (targetStatus.startsWith('chapa_sub')) {
                 const subIndex = parseInt(targetStatus.replace('chapa_sub', ''));
-                // Asignar al chapista correspondiente (0 y 1 para Chapista 1, 2 y 3 para Chapista 2)
-                const chapistaIndex = subIndex <= 2 ? 0 : 1;
-                newOperator = getChapistaName(chapistaIndex);
+                // Cada chapista ocupa 2 columnas: la par/impar define si es reparación (impar) o montaje (par)
+                const chapistaIdx = Math.floor((subIndex - 1) / 2);
+                newOperator = getChapistaName(chapistaIdx);
                 targetStatus = (subIndex % 2 !== 0) ? 'reparacion' : 'montaje';
             }
 
@@ -742,47 +738,46 @@
             const chapistasSubtitle = document.getElementById('chapistas-subtitle');
 
             let containers = {};
+            let chOpsList = getChapistasList();
 
             if (isChapistasFilter) {
-                if (chapistasColWidth) chapistasColWidth.style.minWidth = '580px';
-                if (chapistasSubtitle) chapistasSubtitle.innerText = '(4 Columnas por Chapista)';
+                let dynamicMinWidth = Math.max(580, chOpsList.length * 140);
+                if (chapistasColWidth) chapistasColWidth.style.minWidth = `${dynamicMinWidth}px`;
+                if (chapistasSubtitle) chapistasSubtitle.innerText = `(${chOpsList.length} Chapistas - 2 Subcolumnas c/u)`;
                 
-                let nameCh1 = getChapistaName(0);
-                let nameCh2 = getChapistaName(1);
-
-                chapaWrapper.innerHTML = `
-                    <div class="chapa-four-columns-container">
-                        <div class="chapa-subcol-item" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapa_sub1')">
-                            <div class="text-center fw-bold text-primary small mb-1 border-bottom pb-1 text-truncate" title="${nameCh1} - Rep.">${nameCh1} <br><span class="text-muted" style="font-size:0.7rem;">Reparación 1</span></div>
-                            <div id="list-chapa_sub1" class="d-flex flex-column gap-2"></div>
+                let htmlColumns = `<div class="chapa-four-columns-container">`;
+                
+                chOpsList.forEach((op, index) => {
+                    let sub1Id = `chapa_sub${(index * 2) + 1}`;
+                    let sub2Id = `chapa_sub${(index * 2) + 2}`;
+                    htmlColumns += `
+                        <div class="chapa-subcol-item" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub1Id}')">
+                            <div class="text-center fw-bold text-primary small mb-1 border-bottom pb-1 text-truncate" title="${op.name} - Rep.">${op.name} <br><span class="text-muted" style="font-size:0.7rem;">Reparación</span></div>
+                            <div id="list-${sub1Id}" class="d-flex flex-column gap-2"></div>
                         </div>
-                        <div class="chapa-subcol-item" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapa_sub2')">
-                            <div class="text-center fw-bold text-success small mb-1 border-bottom pb-1 text-truncate" title="${nameCh1} - Mont.">${nameCh1} <br><span class="text-muted" style="font-size:0.7rem;">Montaje 1</span></div>
-                            <div id="list-chapa_sub2" class="d-flex flex-column gap-2"></div>
+                        <div class="chapa-subcol-item" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub2Id}')">
+                            <div class="text-center fw-bold text-success small mb-1 border-bottom pb-1 text-truncate" title="${op.name} - Mont.">${op.name} <br><span class="text-muted" style="font-size:0.7rem;">Montaje</span></div>
+                            <div id="list-${sub2Id}" class="d-flex flex-column gap-2"></div>
                         </div>
-                        <div class="chapa-subcol-item" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapa_sub3')">
-                            <div class="text-center fw-bold text-primary small mb-1 border-bottom pb-1 text-truncate" title="${nameCh2} - Rep.">${nameCh2} <br><span class="text-muted" style="font-size:0.7rem;">Reparación 2</span></div>
-                            <div id="list-chapa_sub3" class="d-flex flex-column gap-2"></div>
-                        </div>
-                        <div class="chapa-subcol-item" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'chapa_sub4')">
-                            <div class="text-center fw-bold text-success small mb-1 border-bottom pb-1 text-truncate" title="${nameCh2} - Mont.">${nameCh2} <br><span class="text-muted" style="font-size:0.7rem;">Montaje 2</span></div>
-                            <div id="list-chapa_sub4" class="d-flex flex-column gap-2"></div>
-                        </div>
-                    </div>
-                `;
+                    `;
+                });
+                htmlColumns += `</div>`;
+                chapaWrapper.innerHTML = htmlColumns;
 
                 containers = {
                     lunas: document.getElementById('list-lunas'),
-                    chapa_sub1: document.getElementById('list-chapa_sub1'),
-                    chapa_sub2: document.getElementById('list-chapa_sub2'),
-                    chapa_sub3: document.getElementById('list-chapa_sub3'),
-                    chapa_sub4: document.getElementById('list-chapa_sub4'),
                     pintor1: document.getElementById('list-pintor1'),
                     pintor2: document.getElementById('list-pintor2'),
                     pintor3: document.getElementById('list-pintor3'),
                     pintor4: document.getElementById('list-pintor4'),
                     terminados: document.getElementById('list-terminados')
                 };
+
+                chOpsList.forEach((op, index) => {
+                    containers[`chapa_sub${(index * 2) + 1}`] = document.getElementById(`list-chapa_sub${(index * 2) + 1}`);
+                    containers[`chapa_sub${(index * 2) + 2}`] = document.getElementById(`list-chapa_sub${(index * 2) + 2}`);
+                });
+
             } else {
                 if (chapistasColWidth) chapistasColWidth.style.minWidth = '440px';
                 if (chapistasSubtitle) chapistasSubtitle.innerText = '(Reparación y Montaje)';
@@ -842,9 +837,6 @@
                        (order.substatus || '').toLowerCase().includes(filterVal);
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
 
-            let nameCh1 = getChapistaName(0).toLowerCase();
-            let nameCh2 = getChapistaName(1).toLowerCase();
-
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
                 let opLower = (order.operator || '').toLowerCase();
@@ -878,12 +870,13 @@
 
                 let targetContainerKey = status;
                 if (isChapistasFilter) {
-                    // Distribuir entre las 4 subcolumnas de chapistas según el chapista asignado y su fase
-                    let matchesCh2 = opLower.includes(nameCh2) && nameCh2 !== '';
+                    let assignedChapistaIdx = chOpsList.findIndex(opObj => opObj.name.toLowerCase() === opLower);
+                    if (assignedChapistaIdx === -1) assignedChapistaIdx = 0; // Por defecto al primero si no coincide exacto
+
                     if (status === 'reparacion') {
-                        targetContainerKey = matchesCh2 ? 'chapa_sub3' : 'chapa_sub1';
+                        targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 1}`;
                     } else if (status === 'montaje') {
-                        targetContainerKey = matchesCh2 ? 'chapa_sub4' : 'chapa_sub2';
+                        targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 2}`;
                     }
                 }
 
