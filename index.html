@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning de Taller Pro - Matriz Operarios</title>
+    <title>Planning de Taller Pro - Kanban Clásico</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -24,53 +24,29 @@
             border-bottom: 1px solid var(--border-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-
-        /* Estilos de la Matriz Operarios x Fases */
-        .matrix-table {
-            background-color: #ffffff;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
+        .kanban-container {
+            display: flex;
+            gap: 1rem;
             overflow-x: auto;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding-bottom: 1rem;
         }
-        .matrix-table th {
+        .kanban-col {
             background-color: #e2e8f0;
-            color: #1e293b;
-            font-weight: bold;
-            text-align: center;
-            vertical-align: middle;
-            padding: 12px;
-            border-bottom: 2px solid var(--border-color);
-            min-width: 200px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            min-width: 290px;
+            flex: 1;
+            min-height: 75vh;
         }
-        .matrix-table td {
-            vertical-align: top;
-            padding: 10px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: #f8fafc;
-        }
-        .matrix-row-header {
-            background-color: #e2e8f0 !important;
-            font-weight: bold;
-            text-align: center;
-            vertical-align: middle !important;
-            min-width: 160px;
-            color: #1e293b;
-        }
-        .matrix-dropzone {
-            min-height: 140px;
+        .kanban-dropzone {
+            min-height: 65vh;
             border-radius: 8px;
             transition: background-color 0.2s;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
         }
-        .matrix-dropzone.drag-over {
+        .kanban-dropzone.drag-over {
             background-color: rgba(37, 99, 235, 0.15) !important;
             border: 2px dashed #2563eb;
         }
-
-        /* Tarjetas de fases con colores distintivos */
         .task-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -79,21 +55,13 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             transition: all 0.2s ease;
             cursor: pointer;
-            padding: 10px;
         }
         
-        /* Colores según fase actual */
-        .card-phase-lunas { border-left: 5px solid #64748b !important; }
-        .card-phase-reparacion { border-left: 5px solid #d97706 !important; }
-        .card-phase-pintado { border-left: 5px solid #0ea5e9 !important; }
-        .card-phase-montaje { border-left: 5px solid #2563eb !important; }
-        .card-phase-terminados { border-left: 5px solid #16a34a !important; background-color: #f0fdf4 !important; }
-
         /* Estilo Súper Visible y Destacado para URGENTES */
         .task-card.urgent {
             background-color: #fff1f2 !important;
             border: 2px solid #e11d48 !important;
-            box-shadow: 0 0 12px rgba(225, 29, 72, 0.3) !important;
+            box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important;
         }
 
         @keyframes blink-animation {
@@ -101,6 +69,7 @@
             50% { opacity: 0.3; }
             100% { opacity: 1; }
         }
+
         .urgent-banner {
             animation: blink-animation 1s infinite;
         }
@@ -109,17 +78,30 @@
             border-color: #dc2626 !important;
             background-color: #fef2f2 !important;
         }
-        .badge-ch { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
-        .badge-pun { background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
-        .badge-none { background-color: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
-        
+        .badge-ch {
+            background-color: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        .badge-pun {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+        .badge-none {
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+        }
         .login-card {
             background-color: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        .privacy-active { color: #2563eb !important; }
+        .privacy-active {
+            color: #2563eb !important;
+        }
         .history-timeline {
             border-left: 2px solid #cbd5e1;
             padding-left: 1rem;
@@ -178,11 +160,11 @@
         </div>
     </div>
 
-    <!-- Pantalla Principal del Taller (Matriz) -->
+    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
             <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
-                <i class="fas fa-car me-2 text-primary"></i> Planning Taller <span id="pro-label" class="privacy-active">Pro (Matriz)</span>
+                <i class="fas fa-car me-2 text-primary"></i> Planning Taller <span id="pro-label" class="privacy-active">Pro</span>
             </span>
             <div class="ms-auto d-flex align-items-center">
                 <span id="sync-status" class="badge bg-warning text-dark me-3"><i class="fas fa-sync fa-spin me-1"></i> Conectando...</span>
@@ -227,34 +209,56 @@
 
         <!-- Leyenda Visual Integrada -->
         <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3">
-            <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda de Fases:</span>
-            <div class="d-flex align-items-center gap-1"><span class="badge" style="background:#64748b; width:12px; height:12px; display:inline-block; border-radius:50%;"></span> Lunas</div>
-            <div class="d-flex align-items-center gap-1"><span class="badge" style="background:#d97706; width:12px; height:12px; display:inline-block; border-radius:50%;"></span> Reparación</div>
-            <div class="d-flex align-items-center gap-1"><span class="badge" style="background:#0ea5e9; width:12px; height:12px; display:inline-block; border-radius:50%;"></span> Pintado</div>
-            <div class="d-flex align-items-center gap-1"><span class="badge" style="background:#2563eb; width:12px; height:12px; display:inline-block; border-radius:50%;"></span> Montaje</div>
-            <div class="d-flex align-items-center gap-1"><span class="badge" style="background:#16a34a; width:12px; height:12px; display:inline-block; border-radius:50%;"></span> Terminados</div>
+            <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span> (Azul)</div>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-pun px-2 py-1">PIN / Pintura</span> (Amarillo)</div>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-none px-2 py-1">Libre</span> (Gris)</div>
             <div class="vr mx-2"></div>
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-exclamation-triangle"></i> Vencido</div>
         </div>
 
-        <!-- Matriz Operarios (Filas) x Fases (Columnas) -->
-        <div class="table-responsive matrix-table">
-            <table class="table table-bordered mb-0">
-                <thead>
-                    <tr>
-                        <th class="matrix-row-header">Operario / Zona</th>
-                        <th><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</th>
-                        <th><i class="fas fa-wrench me-1 text-warning"></i> Reparación</th>
-                        <th><i class="fas fa-paint-brush me-1 text-info"></i> Pintado</th>
-                        <th><i class="fas fa-tools me-1 text-primary"></i> Montaje</th>
-                        <th><i class="fas fa-check-circle me-1 text-success"></i> Terminados</th>
-                    </tr>
-                </thead>
-                <tbody id="matrix-body">
-                    <!-- Se rellena dinámicamente -->
-                </tbody>
-            </table>
+        <!-- Tablero Kanban Clásico -->
+        <div class="kanban-container">
+            <div class="kanban-col p-3 border-top border-secondary border-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
+                    <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
+                </div>
+                <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
+            </div>
+
+            <div class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-warning"></i> Reparación</h6>
+                    <span id="count-reparacion" class="badge bg-warning text-dark rounded-pill">0</span>
+                </div>
+                <div id="list-reparacion" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')"></div>
+            </div>
+
+            <div class="kanban-col p-3 border-top border-info border-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-info"></i> Pintado</h6>
+                    <span id="count-pintado" class="badge bg-info text-dark rounded-pill">0</span>
+                </div>
+                <div id="list-pintado" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintado')"></div>
+            </div>
+
+            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-tools me-1 text-primary"></i> Montaje</h6>
+                    <span id="count-montaje" class="badge bg-primary rounded-pill">0</span>
+                </div>
+                <div id="list-montaje" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'montaje')"></div>
+            </div>
+
+            <div class="kanban-col p-3 border-top border-success border-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
+                    <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
+                </div>
+                <div id="list-terminados" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados')"></div>
+            </div>
         </div>
     </div>
 
@@ -367,6 +371,26 @@
         </div>
     </div>
 
+    <div class="modal fade" id="operatorPromptModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h6 class="modal-title fw-bold text-dark">Asignar Operario</h6>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted">Selecciona un operario o déjalo libre:</p>
+                    <select id="prompt-operator-select" class="form-select mb-3">
+                        <option value="">Sin asignar (Libre)</option>
+                    </select>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary btn-sm w-50" onclick="cancelPendingMove()">Cancelar</button>
+                        <button class="btn btn-primary btn-sm w-50 fw-bold" onclick="confirmPendingMove()">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -387,6 +411,7 @@
 
         let orders = [];
         let operators = [];
+        let pendingMoveData = null;
         let privacyModeActive = true;
         let activeQuickFilter = 'all';
 
@@ -491,10 +516,12 @@
         function renderOperatorsUI() {
             const listContainer = document.getElementById('operators-list');
             const selectContainer = document.getElementById('operator-select');
-            if (!listContainer || !selectContainer) return;
+            const promptSelectContainer = document.getElementById('prompt-operator-select');
+            if (!listContainer || !selectContainer || !promptSelectContainer) return;
 
             listContainer.innerHTML = '';
             let currentSelectedOp = selectContainer.value;
+            let currentPromptOp = promptSelectContainer.value;
 
             operators.forEach(op => {
                 let badgeClass = getOperatorBadgeClass(op.name);
@@ -507,8 +534,8 @@
             });
 
             selectContainer.innerHTML = buildGroupedOperatorOptions(currentSelectedOp);
+            promptSelectContainer.innerHTML = buildGroupedOperatorOptions(currentPromptOp);
             updateSmartFilterDropdown();
-            renderOrders();
         }
 
         function updateSmartFilterDropdown() {
@@ -574,7 +601,7 @@
             try {
                 await addDoc(collection(db, "operators"), { name: nameInput.value.trim() });
                 nameInput.value = '';
-            } catch (err) { console.error("Error al añadir operario:", err); }
+            } catch (err) { console.error(err); }
         }
 
         window.deleteOperator = async (id) => { 
@@ -587,27 +614,56 @@
         window.removeDropStyle = (ev) => { ev.currentTarget.classList.remove('drag-over'); }
         window.drag = (ev, id) => { ev.dataTransfer.setData("text/plain", id); }
 
-        window.dropOrderMatrix = async (ev, targetOperator, targetStatus) => {
+        window.dropOrder = (ev, targetStatus) => {
             ev.preventDefault();
             ev.currentTarget.classList.remove('drag-over');
             const orderId = ev.dataTransfer.getData("text/plain");
-            if (!orderId) return;
+            if (orderId) initiateStatusChange(orderId, targetStatus);
+        }
 
+        window.initiateStatusChange = (orderId, newStatus) => {
+            const order = orders.find(o => o.id === orderId);
+            if (!order || order.status === newStatus) return;
+            pendingMoveData = { orderId, newStatus };
+            const promptSel = document.getElementById('prompt-operator-select');
+            if (promptSel) promptSel.value = order.operator || "";
+            
+            const modalEl = document.getElementById('operatorPromptModal');
+            if (modalEl) {
+                let modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (!modalInstance) modalInstance = new bootstrap.Modal(modalEl);
+                modalInstance.show();
+            }
+        }
+
+        window.confirmPendingMove = async () => {
+            if (!pendingMoveData) return;
+            const chosenOperator = document.getElementById('prompt-operator-select').value;
+            const { orderId, newStatus } = pendingMoveData;
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
 
-            let finalOp = targetOperator === 'SIN_ASIGNAR' ? '' : targetOperator;
-            let historyEntry = { status: targetStatus, operator: finalOp || "Sin asignar", date: new Date().toLocaleString() };
-            let updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
+            const historyEntry = { status: newStatus, operator: chosenOperator || "Sin asignar", date: new Date().toLocaleString() };
+            const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
 
             try {
-                await updateDoc(doc(db, "orders", orderId), { 
-                    status: targetStatus, 
-                    operator: finalOp, 
-                    history: updatedHistory 
-                });
-            } catch (err) {
-                console.error("Error al mover tarjeta en matriz:", err);
+                await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: chosenOperator, history: updatedHistory });
+            } catch (err) { console.error(err); }
+
+            const modalEl = document.getElementById('operatorPromptModal');
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+            }
+            pendingMoveData = null;
+        }
+
+        window.cancelPendingMove = () => {
+            pendingMoveData = null;
+            const modalEl = document.getElementById('operatorPromptModal');
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
             }
         }
 
@@ -615,10 +671,17 @@
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
-            const matrixBody = document.getElementById('matrix-body');
-            if (!matrixBody) return;
-
-            matrixBody.innerHTML = '';
+            const containers = {
+                lunas: document.getElementById('list-lunas'),
+                reparacion: document.getElementById('list-reparacion'),
+                pintado: document.getElementById('list-pintado'),
+                montaje: document.getElementById('list-montaje'),
+                terminados: document.getElementById('list-terminados')
+            };
+            
+            if (!containers.lunas) return;
+            Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
+            let counts = { lunas: 0, reparacion: 0, pintado: 0, montaje: 0, terminados: 0 };
 
             let filteredOrders = orders.filter(order => {
                 let status = order.status || 'lunas';
@@ -646,74 +709,53 @@
                        (order.model || '').toLowerCase().includes(filterVal) || 
                        op.includes(filterVal) || 
                        sub.includes(filterVal);
+            }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
+
+            filteredOrders.forEach(order => {
+                let status = order.status || 'lunas';
+                if (counts[status] !== undefined) counts[status]++;
+                
+                let displayPlate = (order.plate || '').toUpperCase();
+                if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
+
+                let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
+                let cardClass = order.urgent ? 'urgent' : (isOverdue ? 'overdue' : '');
+                let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
+
+                let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
+                let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner" style="letter-spacing: 0.5px;"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
+
+                let opBadgeClass = getOperatorBadgeClass(order.operator);
+                let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted">No asignado</span>';
+
+                if (containers[status]) {
+                    containers[status].innerHTML += `
+                        <div class="task-card p-3 ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
+                            ${urgentBanner}
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="fw-bold mb-0 text-dark">${displayPlate} - ${order.model}</h6>
+                                <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                            ${substatusBadge}
+                            <div class="small text-secondary mb-2">
+                                <div class="d-flex align-items-center gap-1"><strong>Operario:</strong> ${operatorDisplay}</div>
+                                <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'} ${isOverdue ? '(Vencido)' : ''}</div>
+                            </div>
+                            <select class="form-select form-select-sm mt-2" onclick="event.stopPropagation()" onchange="initiateStatusChange('${order.id}', this.value)">
+                                <option value="lunas" ${status === 'lunas' ? 'selected' : ''}>1. Lunas</option>
+                                <option value="reparacion" ${status === 'reparacion' ? 'selected' : ''}>2. Reparación</option>
+                                <option value="pintado" ${status === 'pintado' ? 'selected' : ''}>3. Pintado</option>
+                                <option value="montaje" ${status === 'montaje' ? 'selected' : ''}>4. Montaje</option>
+                                <option value="terminados" ${status === 'terminados' ? 'selected' : ''}>5. Terminados</option>
+                            </select>
+                        </div>
+                    `;
+                }
             });
 
-            // Construir filas de operarios + Fila Sin Asignar
-            let activeOperatorsNames = operators.map(o => o.name);
-            let rowsToRender = ["SIN_ASIGNAR", ...activeOperatorsNames];
-
-            rowsToRender.forEach(opName => {
-                let rowTitleHtml = '';
-                if (opName === "SIN_ASIGNAR") {
-                    rowTitleHtml = `<span class="badge badge-none p-2 w-100 fw-bold">Sin Asignar</span>`;
-                } else {
-                    let badgeCls = getOperatorBadgeClass(opName);
-                    rowTitleHtml = `<span class="badge ${badgeCls} p-2 w-100 fw-bold" style="font-size:0.9rem;">${opName}</span>`;
-                }
-
-                let phases = ['lunas', 'reparacion', 'pintado', 'montaje', 'terminados'];
-                let phaseCellsHtml = '';
-
-                phases.forEach(phase => {
-                    let cellOrders = filteredOrders.filter(o => {
-                        let matchesOp = (opName === "SIN_ASIGNAR") ? !o.operator : (o.operator === opName);
-                        let matchesPhase = (o.status || 'lunas') === phase;
-                        return matchesOp && matchesPhase;
-                    });
-
-                    let cardsHtml = '';
-                    cellOrders.forEach(order => {
-                        let displayPlate = (order.plate || '').toUpperCase();
-                        if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
-
-                        let isOverdue = order.dateOut && order.dateOut < todayStr && phase !== 'terminados';
-                        let cardClass = order.urgent ? 'urgent' : (isOverdue ? 'overdue' : '');
-                        let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
-                        let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small" style="font-size:0.7rem;">${order.substatus}</div>` : '';
-                        let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-1 py-1 px-1 w-100 text-uppercase urgent-banner" style="font-size:0.65rem;"><i class="fas fa-fire me-1"></i> URGENTE</div>` : '';
-
-                        cardsHtml += `
-                            <div class="task-card card-phase-${phase} ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
-                                ${urgentBanner}
-                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <span class="fw-bold text-dark small">${displayPlate}</span>
-                                    <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')" style="font-size:0.8rem;"><i class="fas fa-trash"></i></button>
-                                </div>
-                                <div class="text-muted small mb-1" style="font-size:0.8rem;">${order.model}</div>
-                                ${substatusBadge}
-                                <div class="text-secondary" style="font-size:0.75rem; ${dateOutStyle}">
-                                    <i class="far fa-calendar-alt me-1"></i> ${order.dateOut || '-'}
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    let opParam = opName === "SIN_ASIGNAR" ? "SIN_ASIGNAR" : opName;
-                    phaseCellsHtml += `
-                        <td>
-                            <div class="matrix-dropzone" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrderMatrix(event, '${opParam}', '${phase}')">
-                                ${cardsHtml}
-                            </div>
-                        </td>
-                    `;
-                });
-
-                matrixBody.innerHTML += `
-                    <tr>
-                        <td class="matrix-row-header">${rowTitleHtml}</td>
-                        ${phaseCellsHtml}
-                    </tr>
-                `;
+            Object.keys(counts).forEach(k => { 
+                const badgeEl = document.getElementById(`count-${k}`);
+                if (badgeEl) badgeEl.innerText = counts[k]; 
             });
         }
 
