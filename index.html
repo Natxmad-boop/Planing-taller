@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning de Taller Pro - Vista Mixta</title>
+    <title>Planning de Taller Pro - Vista Ampliada</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -37,6 +37,7 @@
             min-width: 310px;
             flex: 1;
             min-height: 75vh;
+            transition: all 0.3s ease;
         }
         .kanban-dropzone {
             min-height: 60vh;
@@ -72,26 +73,28 @@
         .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
         .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
 
-        /* Contenedor multicomluna agrupado: 4 columnas de chapistas, cada una dividida en 2 */
+        /* Contenedor multicomluna agrupado a pantalla completa */
         .chapa-four-columns-container {
             display: flex;
-            gap: 0.5rem;
-            min-height: 60vh;
+            gap: 0.75rem;
+            min-height: 68vh;
             overflow-x: auto;
+            width: 100%;
         }
         .chapista-group-col {
             flex: 1;
-            min-width: 240px;
+            min-width: 260px;
             background-color: #f8fafc;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            padding: 8px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
         .chapista-group-inner {
             display: flex;
-            gap: 4px;
+            gap: 6px;
             flex: 1;
         }
         .chapista-sub-box {
@@ -99,8 +102,8 @@
             background-color: #ffffff;
             border: 1px dashed #94a3b8;
             border-radius: 6px;
-            padding: 4px;
-            min-height: 50vh;
+            padding: 6px;
+            min-height: 55vh;
             transition: background-color 0.2s;
         }
         .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
@@ -243,6 +246,11 @@
             </div>
             
             <div class="col-md-6 text-md-end d-flex gap-2 justify-content-md-end align-items-center flex-wrap">
+                <!-- Botón de Acceso Directo a Pantalla Completa de Chapistas -->
+                <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" id="fullscreen-chapa-toggle-btn" onclick="toggleChapistasFullscreen()">
+                    <i class="fas fa-expand me-1" id="fullscreen-icon"></i> <span id="fullscreen-btn-text">Pantalla Completa Chapistas</span>
+                </button>
+
                 <div class="btn-group shadow-sm" role="group">
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-lunas-btn" onclick="toggleColumnVisibility('lunas')">
                         <i class="fas fa-eye me-1" id="icon-lunas"></i> Mostrar Lunas
@@ -275,7 +283,7 @@
         </div>
 
         <!-- Tablero Kanban Adaptado -->
-        <div class="kanban-container">
+        <div class="kanban-container" id="main-kanban-container">
             <!-- Columna Opcional: Lunas -->
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -285,19 +293,19 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <!-- Columna Principal: Chapista (Dinámica: vista estándar o 4 columnas divididas) -->
-            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas" style="min-width: 440px;">
+            <!-- Columna Principal: Chapista (Dinámica: vista estándar o 4 columnas divididas a pantalla completa) -->
+            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas" style="min-width: 440px; flex: 2;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
                     <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
                 </div>
                 <div id="chapa-dynamic-wrapper">
-                    <!-- Se rellena por JavaScript según el filtro -->
+                    <!-- Se rellena por JavaScript -->
                 </div>
             </div>
 
             <!-- Columna Principal: Pintura por Iniciales Dinámicas -->
-            <div class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="min-width: 580px;">
+            <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="min-width: 580px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Iniciales)</span></h6>
                     <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
@@ -469,6 +477,7 @@
         let activeQuickFilter = 'all';
         let showLunasCol = false;
         let showTerminadosCol = false;
+        let chapistasFullscreenMode = false; // Estado de pantalla completa para chapistas
 
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
         window.setDefaultDates = () => {
@@ -477,7 +486,35 @@
             document.getElementById('date-out').value = today;
         }
 
+        window.toggleChapistasFullscreen = () => {
+            chapistasFullscreenMode = !chapistasFullscreenMode;
+            const btn = document.getElementById('fullscreen-chapa-toggle-btn');
+            const icon = document.getElementById('fullscreen-icon');
+            const btnText = document.getElementById('fullscreen-btn-text');
+            const pintoresCol = document.getElementById('col-pintores-wrapper');
+            const lunasCol = document.getElementById('col-lunas-wrapper');
+            const terminadosCol = document.getElementById('col-terminados-wrapper');
+
+            if (chapistasFullscreenMode) {
+                if (btn) btn.className = "btn btn-success btn-sm fw-bold shadow-sm";
+                if (icon) icon.className = "fas fa-compress me-1";
+                if (btnText) btnText.innerText = "Vista Normal Tablero";
+                if (pintoresCol) pintoresCol.style.display = 'none';
+                if (lunasCol) lunasCol.style.display = 'none';
+                if (terminadosCol) terminadosCol.style.display = 'none';
+            } else {
+                if (btn) btn.className = "btn btn-primary btn-sm fw-bold shadow-sm";
+                if (icon) icon.className = "fas fa-expand me-1";
+                if (btnText) btnText.innerText = "Pantalla Completa Chapistas";
+                if (pintoresCol) pintoresCol.style.display = 'block';
+                if (lunasCol) lunasCol.style.display = showLunasCol ? 'block' : 'none';
+                if (terminadosCol) terminadosCol.style.display = showTerminadosCol ? 'block' : 'none';
+            }
+            renderOrders();
+        }
+
         window.toggleColumnVisibility = (colName) => {
+            if (chapistasFullscreenMode) return; // En pantalla completa de chapistas estas columnas están ocultas
             if (colName === 'lunas') {
                 showLunasCol = !showLunasCol;
                 const wrapper = document.getElementById('col-lunas-wrapper');
@@ -659,7 +696,7 @@
             let html = `
                 <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item fw-bold text-primary" href="#" onclick="handleSmartFilterSelect('chapistas', '🛠️ Chapistas (4 Columnas)')">🛠️ Filtrar: Chapistas (4 Columnas)</a></li>
+                <li><a class="dropdown-item fw-bold text-primary" href="#" onclick="toggleChapistasFullscreen(); handleSmartFilterSelect('', '🔍 Filtrar...')">🛠️ Pantalla Completa Chapistas</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('op:Sin asignar', 'Sin asignar')">Sin asignar</a></li>
@@ -744,7 +781,6 @@
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
-            const isChapistasFilter = (filterVal === 'chapistas');
 
             const chapaWrapper = document.getElementById('chapa-dynamic-wrapper');
             const chapistasColWidth = document.getElementById('kanban-col-chapistas');
@@ -753,10 +789,9 @@
             let containers = {};
             let chOpsList = getChapistasList();
 
-            if (isChapistasFilter) {
-                let dynamicMinWidth = Math.max(600, chOpsList.length * 160);
-                if (chapistasColWidth) chapistasColWidth.style.minWidth = `${dynamicMinWidth}px`;
-                if (chapistasSubtitle) chapistasSubtitle.innerText = `(Chapistas - 4 Columnas divididas)`;
+            if (chapistasFullscreenMode) {
+                if (chapistasColWidth) chapistasColWidth.style.minWidth = '100%';
+                if (chapistasSubtitle) chapistasSubtitle.innerText = `(Pantalla Completa - 4 Columnas Divididas)`;
                 
                 let htmlColumns = `<div class="chapa-four-columns-container">`;
                 
@@ -765,14 +800,14 @@
                     let sub2Id = `chapa_sub${(index * 2) + 2}`;
                     htmlColumns += `
                         <div class="chapista-group-col">
-                            <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate" title="${op.name}">${op.name}</div>
+                            <div class="text-center fw-bold text-dark mb-2 border-bottom pb-1 text-truncate" title="${op.name}">${op.name}</div>
                             <div class="chapista-group-inner">
                                 <div class="chapista-sub-box" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub1Id}')">
-                                    <div class="text-center fw-bold text-primary" style="font-size:0.7rem; margin-bottom:4px;">Rep.</div>
+                                    <div class="text-center fw-bold text-primary" style="font-size:0.75rem; margin-bottom:4px;">Rep.</div>
                                     <div id="list-${sub1Id}" class="d-flex flex-column gap-2"></div>
                                 </div>
                                 <div class="chapista-sub-box" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub2Id}')">
-                                    <div class="text-center fw-bold text-success" style="font-size:0.7rem; margin-bottom:4px;">Mont.</div>
+                                    <div class="text-center fw-bold text-success" style="font-size:0.75rem; margin-bottom:4px;">Mont.</div>
                                     <div id="list-${sub2Id}" class="d-flex flex-column gap-2"></div>
                                 </div>
                             </div>
@@ -839,7 +874,7 @@
                     if (!isOverdue) return false;
                 }
 
-                if (isChapistasFilter) {
+                if (chapistasFullscreenMode) {
                     return status === 'reparacion' || status === 'montaje';
                 }
 
@@ -887,7 +922,7 @@
                 let statusSelectOptions = buildStatusSelectOptions(status);
 
                 let targetContainerKey = status;
-                if (isChapistasFilter) {
+                if (chapistasFullscreenMode) {
                     let assignedChapistaIdx = chOpsList.findIndex(opObj => opObj.name.toLowerCase() === opLower);
                     if (assignedChapistaIdx === -1) assignedChapistaIdx = 0;
 
@@ -1105,6 +1140,7 @@
                     if (modalInstance) modalInstance.hide();
                 }
             } catch (err) { console.error(err); }
+            window.renderOrders(); // Forzar actualización visual si se requiere
         }
 
         window.deleteOrder = async (id) => { 
