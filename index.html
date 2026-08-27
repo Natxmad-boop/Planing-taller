@@ -270,7 +270,7 @@
                 </div>
             </div>
 
-            <!-- Columna Principal: Pintura por Iniciales -->
+            <!-- Columna Principal: Pintura por Iniciales Dinámicas -->
             <div class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="min-width: 580px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Iniciales)</span></h6>
@@ -318,7 +318,7 @@
                 <div class="modal-body">
                     <form onsubmit="handleAddOperator(event)" class="mb-4">
                         <div class="input-group">
-                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. J.P o A.G">
+                            <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. J.P o PIN/PO">
                             <button type="submit" class="btn btn-primary fw-bold">Añadir</button>
                         </div>
                     </form>
@@ -384,10 +384,10 @@
                                 <option value="lunas">1. Lunas</option>
                                 <option value="reparacion">2. Reparación (Chapa izq.)</option>
                                 <option value="montaje">3. Montaje (Chapa der.)</option>
-                                <option value="pintor1">4. Pintor 1 (Inicial 1)</option>
-                                <option value="pintor2">4. Pintor 2 (Inicial 2)</option>
-                                <option value="pintor3">4. Pintor 3 (Inicial 3)</option>
-                                <option value="pintor4">4. Pintor 4 (Inicial 4)</option>
+                                <option value="pintor1" id="opt-pintor1">4. Pintor 1</option>
+                                <option value="pintor2" id="opt-pintor2">4. Pintor 2</option>
+                                <option value="pintor3" id="opt-pintor3">4. Pintor 3</option>
+                                <option value="pintor4" id="opt-pintor4">4. Pintor 4</option>
                                 <option value="terminados">5. Terminados</option>
                             </select>
                         </div>
@@ -487,6 +487,28 @@
         }
         window.getOperatorBadgeClass = getOperatorBadgeClass;
 
+        function getPintorName(index) {
+            let pinOps = operators.filter(op => {
+                const upper = (op.name || '').toUpperCase();
+                return upper.startsWith('PIN') || upper.startsWith('PUN');
+            });
+            if (pinOps[index]) return pinOps[index].name;
+            return `Pintor ${index + 1}`;
+        }
+
+        function buildStatusSelectOptions(currentStatus) {
+            return `
+                <option value="lunas" ${currentStatus === 'lunas' ? 'selected' : ''}>1. Lunas</option>
+                <option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación (Chapa)</option>
+                <option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje (Chapa)</option>
+                <option value="pintor1" ${currentStatus === 'pintor1' ? 'selected' : ''}>4. ${getPintorName(0)}</option>
+                <option value="pintor2" ${currentStatus === 'pintor2' ? 'selected' : ''}>4. ${getPintorName(1)}</option>
+                <option value="pintor3" ${currentStatus === 'pintor3' ? 'selected' : ''}>4. ${getPintorName(2)}</option>
+                <option value="pintor4" ${currentStatus === 'pintor4' ? 'selected' : ''}>4. ${getPintorName(3)}</option>
+                <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>5. Terminados</option>
+            `;
+        }
+
         function buildGroupedOperatorOptions(selectedVal = "") {
             let chOps = [];
             let pinOps = [];
@@ -575,24 +597,18 @@
 
             selectContainer.innerHTML = buildGroupedOperatorOptions(currentSelectedOp);
             updateSmartFilterDropdown();
-            updatePintorLabels();
+            updatePintorLabelsAndSelects();
+            renderOrders();
         }
 
-        function updatePintorLabels() {
-            let pinOps = operators.filter(op => {
-                const upper = (op.name || '').toUpperCase();
-                return upper.startsWith('PIN') || upper.startsWith('PUN');
-            });
-
+        function updatePintorLabelsAndSelects() {
             for (let i = 1; i <= 4; i++) {
                 const labelEl = document.getElementById(`label-pintor${i}`);
-                if (labelEl) {
-                    if (pinOps[i - 1]) {
-                        labelEl.innerText = pinOps[i - 1].name; // Muestra las iniciales registradas (ej. JP, AG, etc.)
-                    } else {
-                        labelEl.innerText = `PIN ${i}`;
-                    }
-                }
+                const optEl = document.getElementById(`opt-pintor${i}`);
+                let pName = getPintorName(i - 1);
+                
+                if (labelEl) labelEl.innerText = pName;
+                if (optEl) optEl.innerText = `4. ${pName}`;
             }
         }
 
@@ -671,13 +687,7 @@
             let newOperator = order.operator || "";
             if (targetStatus.startsWith('pintor')) {
                 const indexNum = parseInt(targetStatus.replace('pintor', '')) - 1;
-                let pinOps = operators.filter(op => {
-                    const upper = (op.name || '').toUpperCase();
-                    return upper.startsWith('PIN') || upper.startsWith('PUN');
-                });
-                if (pinOps[indexNum]) {
-                    newOperator = pinOps[indexNum].name;
-                }
+                newOperator = getPintorName(indexNum);
             }
 
             const historyEntry = { status: targetStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
@@ -759,6 +769,8 @@
                 let opBadgeClass = getOperatorBadgeClass(order.operator);
                 let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted small">No asignado</span>';
 
+                let statusSelectOptions = buildStatusSelectOptions(status);
+
                 if (containers[status]) {
                     containers[status].innerHTML += `
                         <div class="task-card p-2 ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
@@ -773,14 +785,7 @@
                                 <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'}</div>
                             </div>
                             <select class="form-select form-select-sm mt-1" style="font-size: 0.75rem; padding: 2px 5px;" onclick="event.stopPropagation()" onchange="changeOrderStatusDirect('${order.id}', this.value)">
-                                <option value="lunas" ${status === 'lunas' ? 'selected' : ''}>1. Lunas</option>
-                                <option value="reparacion" ${status === 'reparacion' ? 'selected' : ''}>2. Reparación (Chapa)</option>
-                                <option value="montaje" ${status === 'montaje' ? 'selected' : ''}>3. Montaje (Chapa)</option>
-                                <option value="pintor1" ${status === 'pintor1' ? 'selected' : ''}>4. Pintor 1</option>
-                                <option value="pintor2" ${status === 'pintor2' ? 'selected' : ''}>4. Pintor 2</option>
-                                <option value="pintor3" ${status === 'pintor3' ? 'selected' : ''}>4. Pintor 3</option>
-                                <option value="pintor4" ${status === 'pintor4' ? 'selected' : ''}>4. Pintor 4</option>
-                                <option value="terminados" ${status === 'terminados' ? 'selected' : ''}>5. Terminados</option>
+                                ${statusSelectOptions}
                             </select>
                         </div>
                     `;
@@ -799,11 +804,7 @@
             let newOperator = order.operator || "";
             if (newStatus.startsWith('pintor')) {
                 const indexNum = parseInt(newStatus.replace('pintor', '')) - 1;
-                let pinOps = operators.filter(op => {
-                    const upper = (op.name || '').toUpperCase();
-                    return upper.startsWith('PIN') || upper.startsWith('PUN');
-                });
-                if (pinOps[indexNum]) newOperator = pinOps[indexNum].name;
+                newOperator = getPintorName(indexNum);
             }
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
