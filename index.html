@@ -29,6 +29,7 @@
             gap: 1rem;
             overflow-x: auto;
             padding-bottom: 1rem;
+            align-items: flex-start;
         }
         .kanban-col {
             background-color: #e2e8f0;
@@ -39,6 +40,33 @@
             min-height: 75vh;
             transition: all 0.3s ease;
         }
+        /* Estilos de minimizado para columnas Kanban */
+        .kanban-col.minimized {
+            min-width: 80px !important;
+            flex: 0 0 80px !important;
+            min-height: auto !important;
+        }
+        .kanban-col.minimized .kanban-dropzone,
+        .kanban-col.minimized .chapa-split-container,
+        .kanban-col.minimized .pintura-split-container,
+        .kanban-col.minimized .badge,
+        .kanban-col.minimized .small {
+            display: none !important;
+        }
+        .kanban-col.minimized h6 {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            margin: 0 auto !important;
+            padding: 10px 0;
+            font-size: 0.85rem !important;
+            text-align: center;
+        }
+        .kanban-col.minimized .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+
         .kanban-dropzone {
             min-height: 60vh;
             border-radius: 8px;
@@ -289,7 +317,10 @@
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
-                    <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-lunas-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-lunas-wrapper"></i></button>
+                    </div>
                 </div>
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
@@ -297,7 +328,10 @@
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
-                    <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('kanban-col-chapistas')"><i class="fas fa-compress-alt" id="min-icon-kanban-col-chapistas"></i></button>
+                    </div>
                 </div>
                 <div id="chapa-dynamic-wrapper"></div>
             </div>
@@ -305,7 +339,10 @@
             <div id="col-pinturagral-wrapper" class="kanban-col p-3 border-top border-info border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-roller me-1 text-info"></i> Pintura Gral. <span class="small text-muted fw-normal">(Reparaciones fin Chapa)</span></h6>
-                    <span id="count-pinturagral" class="badge bg-info text-dark rounded-pill">0</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-pinturagral" class="badge bg-info text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-pinturagral-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pinturagral-wrapper"></i></button>
+                    </div>
                 </div>
                 <div id="list-pinturagral" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pinturagral')"></div>
             </div>
@@ -313,7 +350,10 @@
             <div id="col-paragolpes-wrapper" class="kanban-col p-3 border-top border-dark border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes <span class="small text-muted fw-normal">(Control de Piezas)</span></h6>
-                    <span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-paragolpes-wrapper"></i></button>
+                    </div>
                 </div>
                 <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
             </div>
@@ -321,7 +361,10 @@
             <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Iniciales)</span></h6>
-                    <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-pintores-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pintores-wrapper"></i></button>
+                    </div>
                 </div>
                 <div class="pintura-split-container">
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor1')">
@@ -346,7 +389,10 @@
             <div id="col-terminados-wrapper" class="kanban-col p-3 border-top border-success border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
-                    <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button>
+                    </div>
                 </div>
                 <div id="list-terminados" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados')"></div>
             </div>
@@ -498,6 +544,23 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date-in').value = today;
             document.getElementById('date-out').value = today;
+        }
+
+        // Función para minimizar o expandir una columna de forma individual
+        window.toggleMinimizeColumn = (columnId) => {
+            const col = document.getElementById(columnId);
+            const icon = document.getElementById(`min-icon-${columnId}`);
+            if (!col) return;
+            col.classList.toggle('minimized');
+            if (col.classList.contains('minimized')) {
+                if (icon) {
+                    icon.className = "fas fa-expand-alt";
+                }
+            } else {
+                if (icon) {
+                    icon.className = "fas fa-compress-alt";
+                }
+            }
         }
 
         window.toggleChapistasFullscreen = () => {
