@@ -205,7 +205,6 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
-        /* ESTILOS PARA ILUMINAR LOS BOTONES ACTIVOS */
         .btn-quick-filter.active-filter {
             background-color: #1e293b !important;
             color: #ffffff !important;
@@ -626,18 +625,15 @@
             }
         }
 
-        // FUNCIÓN ACTUALIZADA PARA ILUMINAR EL BOTÓN SELECCIONADO
         window.setQuickFilter = (filterType) => {
             activeQuickFilter = filterType;
             document.getElementById('search-input').value = '';
             document.getElementById('smart-filter-label').innerText = '🔍 Filtrar...';
 
-            // Quitar la clase 'active-filter' de todos los botones rápidos
             document.querySelectorAll('.btn-quick-filter').forEach(btn => {
                 btn.classList.remove('active-filter');
             });
 
-            // Añadir la clase 'active-filter' solo al botón pulsado
             const targetBtn = document.getElementById(`filter-btn-${filterType}`);
             if (targetBtn) {
                 targetBtn.classList.add('active-filter');
@@ -834,7 +830,6 @@
         window.handleSmartFilterSelect = (val, labelText) => {
             activeQuickFilter = 'all';
             
-            // Apagar también los botones rápidos si usa el buscador avanzado del desplegable
             document.querySelectorAll('.btn-quick-filter').forEach(btn => btn.classList.remove('active-filter'));
             const allBtn = document.getElementById('filter-btn-all');
             if (allBtn) allBtn.classList.add('active-filter');
