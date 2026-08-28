@@ -40,7 +40,6 @@
             min-height: 75vh;
             transition: all 0.3s ease;
         }
-        /* Estilos de minimizado para columnas Kanban */
         .kanban-col.minimized {
             min-width: 80px !important;
             flex: 0 0 80px !important;
@@ -77,7 +76,6 @@
             border: 2px dashed #2563eb;
         }
 
-        /* Contenedor estándar de Chapistas (Reparación y Montaje) */
         .chapa-split-container {
             display: flex;
             gap: 0.5rem;
@@ -90,18 +88,11 @@
             min-height: 55vh;
             transition: background-color 0.2s;
         }
-        .subcol-reparacion {
-            background-color: #eff6ff;
-            border: 1px dashed #93c5fd;
-        }
-        .subcol-montaje {
-            background-color: #f0fdf4;
-            border: 1px dashed #86efac;
-        }
+        .subcol-reparacion { background-color: #eff6ff; border: 1px dashed #93c5fd; }
+        .subcol-montaje { background-color: #f0fdf4; border: 1px dashed #86efac; }
         .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
         .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
 
-        /* Contenedor multicomcolumna agrupado a pantalla completa de chapistas */
         .chapa-four-columns-container {
             display: flex;
             gap: 0.75rem;
@@ -136,7 +127,6 @@
         }
         .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
 
-        /* Contenedor dividido para los Pintores por Iniciales */
         .pintura-split-container {
             display: flex;
             gap: 0.5rem;
@@ -165,7 +155,6 @@
             cursor: pointer;
             margin-bottom: 0.75rem;
         }
-        
         .task-card.urgent {
             background-color: #fff1f2 !important;
             border: 2px solid #e11d48 !important;
@@ -227,7 +216,6 @@
                     <h3 class="fw-bold text-dark">Taller Mecánico</h3>
                     <p class="text-muted small">Acceso Exclusivo</p>
                 </div>
-
                 <form id="login-form" onsubmit="handleLogin(event)">
                     <div class="mb-3">
                         <label class="form-label small text-uppercase fw-bold text-secondary">Correo electrónico</label>
@@ -338,7 +326,7 @@
 
             <div id="col-pinturagral-wrapper" class="kanban-col p-3 border-top border-info border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-roller me-1 text-info"></i> Pintura Gral. <span class="small text-muted fw-normal">(Reparaciones fin Chapa)</span></h6>
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-roller me-1 text-info"></i> Pintura Gral. <span class="small text-muted fw-normal">(Trabajos term. reparación)</span></h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-pinturagral" class="badge bg-info text-dark rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-pinturagral-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pinturagral-wrapper"></i></button>
@@ -347,7 +335,7 @@
                 <div id="list-pinturagral" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pinturagral')"></div>
             </div>
 
-            <div id="col-paragolpes-wrapper" class="kanban-col p-3 border-top border-dark border-4 shadow-sm" style="display: none;">
+            <div id="col-paragolpes-wrapper" class="kanban-col p-3 border-top border-dark border-4 shadow-sm" style="display: block;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes <span class="small text-muted fw-normal">(Control de Piezas)</span></h6>
                     <div class="d-flex align-items-center gap-2">
@@ -475,8 +463,8 @@
                                 <option value="lunas">1. Lunas</option>
                                 <option value="reparacion">2. Reparación (Chapa izq.)</option>
                                 <option value="montaje">3. Montaje (Chapa der.)</option>
-                                <option value="pinturagral">4. Pintura General (Trabajos term. reparación)</option>
-                                <option value="paragolpes">4. Paragolpes (Exclusivo piezas)</option>
+                                <option value="pinturagral">4. Pintura General</option>
+                                <option value="paragolpes" selected>4. Paragolpes (Exclusivo piezas)</option>
                                 <option value="pintor1" id="opt-pintor1">5. Pintor 1</option>
                                 <option value="pintor2" id="opt-pintor2">5. Pintor 2</option>
                                 <option value="pintor3" id="opt-pintor3">5. Pintor 3</option>
@@ -535,7 +523,7 @@
         let activeQuickFilter = 'all';
         let showLunasCol = false;
         let showPinturaGralCol = false;
-        let showParagolpesCol = false;
+        let showParagolpesCol = true;
         let showTerminadosCol = false;
         let chapistasFullscreenMode = false;
 
@@ -546,20 +534,13 @@
             document.getElementById('date-out').value = today;
         }
 
-        // Función para minimizar o expandir una columna de forma individual
         window.toggleMinimizeColumn = (columnId) => {
             const col = document.getElementById(columnId);
             const icon = document.getElementById(`min-icon-${columnId}`);
             if (!col) return;
             col.classList.toggle('minimized');
-            if (col.classList.contains('minimized')) {
-                if (icon) {
-                    icon.className = "fas fa-expand-alt";
-                }
-            } else {
-                if (icon) {
-                    icon.className = "fas fa-compress-alt";
-                }
+            if (icon) {
+                icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
             }
         }
 
@@ -729,13 +710,13 @@
                     syncEl.className = "badge bg-success text-white me-3";
                     syncEl.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado';
                 }
-            }, (error) => { console.error("Error sincronización órdenes:", error); });
+            }, (error) => { console.error("Error órdenes:", error); });
 
             onSnapshot(collection(db, "operators"), (snapshot) => {
                 operators = [];
                 snapshot.forEach(docSnap => operators.push({ id: docSnap.id, ...docSnap.data() }));
                 renderOperatorsUI();
-            }, (error) => { console.error("Error sincronización operarios:", error); });
+            }, (error) => { console.error("Error operarios:", error); });
         }
 
         function renderOperatorsUI() {
@@ -767,7 +748,6 @@
                 const labelEl = document.getElementById(`label-pintor${i}`);
                 const optEl = document.getElementById(`opt-pintor${i}`);
                 let pName = getPintorName(i - 1);
-                
                 if (labelEl) labelEl.innerText = pName;
                 if (optEl) optEl.innerText = `5. ${pName}`;
             }
@@ -795,7 +775,7 @@
                 });
             }
             if (pinOps.length > 0) {
-                html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores (Iniciales) ---</h6></li>`;
+                html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores ---</h6></li>`;
                 pinOps.forEach(name => {
                     html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${name}', '${name}')"><span class="badge badge-pun px-2 py-1">${name}</span></a></li>`;
                 });
@@ -859,11 +839,7 @@
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
 
             try {
-                await updateDoc(doc(db, "orders", orderId), { 
-                    status: targetStatus, 
-                    operator: newOperator, 
-                    history: updatedHistory 
-                });
+                await updateDoc(doc(db, "orders", orderId), { status: targetStatus, operator: newOperator, history: updatedHistory });
             } catch (err) { console.error(err); }
         }
 
@@ -886,7 +862,6 @@
                 if (pintoresCol) pintoresCol.style.display = 'none';
                 
                 let htmlColumns = `<div class="chapa-four-columns-container">`;
-                
                 chOpsList.forEach((op, index) => {
                     let sub1Id = `chapa_sub${(index * 2) + 1}`;
                     let sub2Id = `chapa_sub${(index * 2) + 2}`;
@@ -986,9 +961,7 @@
 
                 if (filterVal.startsWith('op:')) {
                     let targetOp = filterVal.replace('op:', '').trim();
-                    if (targetOp.toLowerCase() === 'sin asignar') {
-                        return orderOp === "";
-                    }
+                    if (targetOp.toLowerCase() === 'sin asignar') return orderOp === "";
                     if (orderOp === "") return false;
                     return orderOp.toLowerCase() === targetOp.toLowerCase();
                 }
@@ -1003,21 +976,15 @@
                 let status = order.status || 'reparacion';
                 let opLower = (order.operator || '').toLowerCase();
 
-                if (status === 'lunas') {
-                    counts.lunas++;
-                } else if (status === 'reparacion' || status === 'montaje') {
+                if (status === 'lunas') counts.lunas++;
+                else if (status === 'reparacion' || status === 'montaje') {
                     counts.chapaTotal++;
                     if (status === 'reparacion') counts.reparacion++;
                     if (status === 'montaje') counts.montaje++;
-                } else if (status === 'pinturagral') {
-                    counts.pinturagral++;
-                } else if (status === 'paragolpes') {
-                    counts.paragolpes++;
-                } else if (status.startsWith('pintor')) {
-                    counts.pintado++;
-                } else if (status === 'terminados') {
-                    counts.terminados++;
-                }
+                } else if (status === 'pinturagral') counts.pinturagral++;
+                else if (status === 'paragolpes') counts.paragolpes++;
+                else if (status.startsWith('pintor')) counts.pintado++;
+                else if (status === 'terminados') counts.terminados++;
                 
                 let displayPlate = (order.plate || '').toUpperCase();
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
@@ -1037,16 +1004,10 @@
                 let targetContainerKey = status;
                 if (chapistasFullscreenMode) {
                     let assignedChapistaIdx = chOpsList.findIndex(opObj => opObj.name.toLowerCase() === opLower);
-                    
-                    if (assignedChapistaIdx === -1) {
-                        return; 
-                    }
+                    if (assignedChapistaIdx === -1) return; 
 
-                    if (status === 'reparacion') {
-                        targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 1}`;
-                    } else if (status === 'montaje') {
-                        targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 2}`;
-                    }
+                    if (status === 'reparacion') targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 1}`;
+                    else if (status === 'montaje') targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 2}`;
                 }
 
                 if (containers[targetContainerKey]) {
@@ -1124,7 +1085,7 @@
             }
 
             let editOperatorOptions = buildGroupedOperatorOptions(order.operator || "");
-            let editStatusOptions = buildStatusSelectOptions(order.status || "reparacion");
+            let editStatusOptions = buildStatusSelectOptions(order.status || "paragolpes");
 
             const modalBody = document.getElementById('detail-modal-body');
             if (modalBody) {
