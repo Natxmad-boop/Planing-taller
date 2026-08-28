@@ -766,8 +766,8 @@
                 <li><a class="dropdown-item fw-bold text-primary" href="#" onclick="toggleChapistasFullscreen(); handleSmartFilterSelect('', '🔍 Filtrar...')">🛠️ Pantalla Completa Chapistas</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('op:Sin asignar', 'Sin asignar')">Sin asignar</a></li>
             `;
+
             if (chOps.length > 0) {
                 html += `<li><h6 class="dropdown-header text-primary fw-bold ps-4">--- Chapa (CH) ---</h6></li>`;
                 chOps.forEach(name => {
@@ -780,6 +780,20 @@
                     html += `<li><a class="dropdown-item ps-4" href="#" onclick="handleSmartFilterSelect('op:${name}', '${name}')"><span class="badge badge-pun px-2 py-1">${name}</span></a></li>`;
                 });
             }
+
+            // Añadido: Filtros de subestados en la lupa
+            html += `
+                <li><hr class="dropdown-divider"></li>
+                <li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro reparándose', 'Faro reparándose')"><div class="badge bg-light text-dark border small">Faro reparándose</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente de recambios', 'Pendiente de recambios')"><div class="badge bg-light text-dark border small">Pendiente de recambios</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')"><div class="badge bg-light text-dark border small">Luna aquí</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')"><div class="badge bg-light text-dark border small">Luna pendiente</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')"><div class="badge bg-light text-dark border small">Golpe taller</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Llanta reparándose fuera', 'Llanta reparándose fuera')"><div class="badge bg-light text-dark border small">Llanta reparándose fuera</div></a></li>
+            `;
+
             dropdownMenu.innerHTML = html;
         }
 
@@ -945,6 +959,7 @@
             let filteredOrders = orders.filter(order => {
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
+                let orderSub = (order.substatus || '').trim();
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
 
                 if (activeQuickFilter === 'urgent') {
@@ -959,6 +974,12 @@
                     if (status !== 'reparacion' && status !== 'montaje') return false;
                 }
 
+                // Soporte para filtrar por subestado desde la lupa
+                if (filterVal.startsWith('sub:')) {
+                    let targetSub = filterVal.replace('sub:', '').trim();
+                    return orderSub.toLowerCase() === targetSub.toLowerCase();
+                }
+
                 if (filterVal.startsWith('op:')) {
                     let targetOp = filterVal.replace('op:', '').trim();
                     if (targetOp.toLowerCase() === 'sin asignar') return orderOp === "";
@@ -969,7 +990,7 @@
                 return (order.plate || '').toLowerCase().includes(filterVal) || 
                        (order.model || '').toLowerCase().includes(filterVal) || 
                        orderOp.toLowerCase().includes(filterVal) || 
-                       (order.substatus || '').toLowerCase().includes(filterVal);
+                       orderSub.toLowerCase().includes(filterVal);
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
 
             filteredOrders.forEach(order => {
