@@ -204,6 +204,14 @@
             font-size: 0.85rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
+
+        /* ESTILOS PARA ILUMINAR LOS BOTONES ACTIVOS */
+        .btn-quick-filter.active-filter {
+            background-color: #1e293b !important;
+            color: #ffffff !important;
+            border-color: #1e293b !important;
+            box-shadow: 0 0 10px rgba(30, 41, 59, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -280,10 +288,10 @@
                 </div>
 
                 <div class="btn-group shadow-sm" role="group">
-                    <button type="button" class="btn btn-outline-danger btn-sm fw-bold bg-white" onclick="setQuickFilter('urgent')"><i class="fas fa-fire me-1"></i> Urgentes</button>
-                    <button type="button" class="btn btn-outline-warning btn-sm fw-bold text-dark bg-white" onclick="setQuickFilter('overdue')"><i class="fas fa-exclamation-triangle me-1"></i> Vencidos</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" onclick="setQuickFilter('unassigned')"><i class="fas fa-user-slash me-1"></i> Sin Asignar</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" onclick="setQuickFilter('all')"><i class="fas fa-list me-1"></i> Todo</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm fw-bold bg-white btn-quick-filter" id="filter-btn-urgent" onclick="setQuickFilter('urgent')"><i class="fas fa-fire me-1"></i> Urgentes</button>
+                    <button type="button" class="btn btn-outline-warning btn-sm fw-bold text-dark bg-white btn-quick-filter" id="filter-btn-overdue" onclick="setQuickFilter('overdue')"><i class="fas fa-exclamation-triangle me-1"></i> Vencidos</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white btn-quick-filter" id="filter-btn-unassigned" onclick="setQuickFilter('unassigned')"><i class="fas fa-user-slash me-1"></i> Sin Asignar</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white btn-quick-filter active-filter" id="filter-btn-all" onclick="setQuickFilter('all')"><i class="fas fa-list me-1"></i> Todo</button>
                 </div>
                 <button class="btn btn-primary fw-bold px-3 shadow-sm btn-sm py-2" data-bs-toggle="modal" data-bs-target="#newOrderModal" onclick="setDefaultDates()">
                     <i class="fas fa-plus me-1"></i> Nueva Orden
@@ -618,10 +626,23 @@
             }
         }
 
+        // FUNCIÓN ACTUALIZADA PARA ILUMINAR EL BOTÓN SELECCIONADO
         window.setQuickFilter = (filterType) => {
             activeQuickFilter = filterType;
             document.getElementById('search-input').value = '';
             document.getElementById('smart-filter-label').innerText = '🔍 Filtrar...';
+
+            // Quitar la clase 'active-filter' de todos los botones rápidos
+            document.querySelectorAll('.btn-quick-filter').forEach(btn => {
+                btn.classList.remove('active-filter');
+            });
+
+            // Añadir la clase 'active-filter' solo al botón pulsado
+            const targetBtn = document.getElementById(`filter-btn-${filterType}`);
+            if (targetBtn) {
+                targetBtn.classList.add('active-filter');
+            }
+
             renderOrders();
         }
 
@@ -812,6 +833,12 @@
 
         window.handleSmartFilterSelect = (val, labelText) => {
             activeQuickFilter = 'all';
+            
+            // Apagar también los botones rápidos si usa el buscador avanzado del desplegable
+            document.querySelectorAll('.btn-quick-filter').forEach(btn => btn.classList.remove('active-filter'));
+            const allBtn = document.getElementById('filter-btn-all');
+            if (allBtn) allBtn.classList.add('active-filter');
+
             const searchInput = document.getElementById('search-input');
             if (searchInput) searchInput.value = val;
             const labelEl = document.getElementById('smart-filter-label');
@@ -883,7 +910,6 @@
             let containers = {};
             let chOpsList = getChapistasList();
 
-            // Cálculos preliminares de conteos por operario/subcolumna para inyectarlos en la UI
             let countsByOpAndStatus = {};
             orders.forEach(o => {
                 let op = (o.operator || '').trim();
@@ -994,7 +1020,6 @@
                 };
             }
 
-            // Actualizar contadores individuales de los 4 pintores por defecto
             for (let i = 1; i <= 4; i++) {
                 let pName = getPintorName(i - 1);
                 let pCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.status !== 'terminados').length;
