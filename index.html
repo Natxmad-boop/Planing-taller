@@ -191,7 +191,6 @@
 </head>
 <body>
 
-    <!-- Pantalla de Login -->
     <div id="login-screen" class="container mt-5" style="max-width: 420px;">
         <div class="login-card mt-5 p-4">
             <div class="card-body">
@@ -216,7 +215,6 @@
         </div>
     </div>
 
-    <!-- Pantalla Principal del Taller -->
     <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
         <nav class="navbar navbar-expand px-4 rounded mb-4">
             <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
@@ -231,10 +229,10 @@
         </nav>
 
         <div class="row mb-3 align-items-center">
-            <div class="col-md-6 mb-2 mb-md-0">
+            <div class="col-md-5 mb-2 mb-md-0">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado, chapistas..." oninput="renderOrders()">
+                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado, operario..." oninput="renderOrders()">
                     
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary bg-white border-secondary text-secondary fw-semibold dropdown-toggle rounded-0 rounded-end" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-left: 0;">
@@ -245,17 +243,23 @@
                 </div>
             </div>
             
-            <div class="col-md-6 text-md-end d-flex gap-2 justify-content-md-end align-items-center flex-wrap">
+            <div class="col-md-7 text-md-end d-flex gap-1 justify-content-md-end align-items-center flex-wrap">
                 <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" id="fullscreen-chapa-toggle-btn" onclick="toggleChapistasFullscreen()">
                     <i class="fas fa-expand me-1" id="fullscreen-icon"></i> <span id="fullscreen-btn-text">Pantalla Completa Chapistas</span>
                 </button>
 
                 <div class="btn-group shadow-sm" role="group">
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-lunas-btn" onclick="toggleColumnVisibility('lunas')">
-                        <i class="fas fa-eye me-1" id="icon-lunas"></i> Mostrar Lunas
+                        <i class="fas fa-eye me-1" id="icon-lunas"></i> Lunas
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-pinturagral-btn" onclick="toggleColumnVisibility('pinturagral')">
+                        <i class="fas fa-eye me-1" id="icon-pinturagral"></i> Pintura Gral.
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-paragolpes-btn" onclick="toggleColumnVisibility('paragolpes')">
+                        <i class="fas fa-eye me-1" id="icon-paragolpes"></i> Paragolpes
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-terminados-btn" onclick="toggleColumnVisibility('terminados')">
-                        <i class="fas fa-eye me-1" id="icon-terminados"></i> Mostrar Terminados
+                        <i class="fas fa-eye me-1" id="icon-terminados"></i> Terminados
                     </button>
                 </div>
 
@@ -271,7 +275,6 @@
             </div>
         </div>
 
-        <!-- Leyenda Visual Integrada -->
         <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3">
             <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
             <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span></div>
@@ -282,7 +285,6 @@
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
         </div>
 
-        <!-- Tablero Kanban Equilibrado -->
         <div class="kanban-container" id="main-kanban-container">
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -298,6 +300,22 @@
                     <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
                 </div>
                 <div id="chapa-dynamic-wrapper"></div>
+            </div>
+
+            <div id="col-pinturagral-wrapper" class="kanban-col p-3 border-top border-info border-4 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-roller me-1 text-info"></i> Pintura Gral. <span class="small text-muted fw-normal">(Reparaciones fin Chapa)</span></h6>
+                    <span id="count-pinturagral" class="badge bg-info text-dark rounded-pill">0</span>
+                </div>
+                <div id="list-pinturagral" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pinturagral')"></div>
+            </div>
+
+            <div id="col-paragolpes-wrapper" class="kanban-col p-3 border-top border-dark border-4 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes <span class="small text-muted fw-normal">(Control de Piezas)</span></h6>
+                    <span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span>
+                </div>
+                <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
             </div>
 
             <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
@@ -335,7 +353,6 @@
         </div>
     </div>
 
-    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
@@ -360,7 +377,7 @@
         <div class="modal-dialog">
             <div class="modal-content shadow">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-dark">Registrar Nuevo Vehículo</h5>
+                    <h5 class="modal-title fw-bold text-dark">Registrar Nuevo Vehículo / Pieza</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -371,8 +388,8 @@
                                 <input type="text" id="car-plate" class="form-control text-uppercase" required placeholder="Ej. 4523XYZ">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Modelo</label>
-                                <input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León">
+                                <label class="form-label small text-secondary fw-bold">Modelo / Descripción</label>
+                                <input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León o Paragolpes Delantero">
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -412,11 +429,13 @@
                                 <option value="lunas">1. Lunas</option>
                                 <option value="reparacion">2. Reparación (Chapa izq.)</option>
                                 <option value="montaje">3. Montaje (Chapa der.)</option>
-                                <option value="pintor1" id="opt-pintor1">4. Pintor 1</option>
-                                <option value="pintor2" id="opt-pintor2">4. Pintor 2</option>
-                                <option value="pintor3" id="opt-pintor3">4. Pintor 3</option>
-                                <option value="pintor4" id="opt-pintor4">4. Pintor 4</option>
-                                <option value="terminados">5. Terminados</option>
+                                <option value="pinturagral">4. Pintura General (Trabajos term. reparación)</option>
+                                <option value="paragolpes">4. Paragolpes (Exclusivo piezas)</option>
+                                <option value="pintor1" id="opt-pintor1">5. Pintor 1</option>
+                                <option value="pintor2" id="opt-pintor2">5. Pintor 2</option>
+                                <option value="pintor3" id="opt-pintor3">5. Pintor 3</option>
+                                <option value="pintor4" id="opt-pintor4">5. Pintor 4</option>
+                                <option value="terminados">6. Terminados</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -434,7 +453,6 @@
         </div>
     </div>
 
-    <!-- Modal de Ficha, Edición y Trazabilidad -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -470,6 +488,8 @@
         let privacyModeActive = true;
         let activeQuickFilter = 'all';
         let showLunasCol = false;
+        let showPinturaGralCol = false;
+        let showParagolpesCol = false;
         let showTerminadosCol = false;
         let chapistasFullscreenMode = false;
 
@@ -487,6 +507,8 @@
             const btnText = document.getElementById('fullscreen-btn-text');
             const pintoresCol = document.getElementById('col-pintores-wrapper');
             const lunasCol = document.getElementById('col-lunas-wrapper');
+            const pinturaGralCol = document.getElementById('col-pinturagral-wrapper');
+            const paragolpesCol = document.getElementById('col-paragolpes-wrapper');
             const terminadosCol = document.getElementById('col-terminados-wrapper');
 
             if (chapistasFullscreenMode) {
@@ -495,6 +517,8 @@
                 if (btnText) btnText.innerText = "Vista Normal Tablero";
                 if (pintoresCol) pintoresCol.style.display = 'none';
                 if (lunasCol) lunasCol.style.display = 'none';
+                if (pinturaGralCol) pinturaGralCol.style.display = 'none';
+                if (paragolpesCol) paragolpesCol.style.display = 'none';
                 if (terminadosCol) terminadosCol.style.display = 'none';
             } else {
                 if (btn) btn.className = "btn btn-primary btn-sm fw-bold shadow-sm";
@@ -502,6 +526,8 @@
                 if (btnText) btnText.innerText = "Pantalla Completa Chapistas";
                 if (pintoresCol) pintoresCol.style.display = 'block';
                 if (lunasCol) lunasCol.style.display = showLunasCol ? 'block' : 'none';
+                if (pinturaGralCol) pinturaGralCol.style.display = showPinturaGralCol ? 'block' : 'none';
+                if (paragolpesCol) paragolpesCol.style.display = showParagolpesCol ? 'block' : 'none';
                 if (terminadosCol) terminadosCol.style.display = showTerminadosCol ? 'block' : 'none';
             }
             renderOrders();
@@ -514,17 +540,25 @@
                 const wrapper = document.getElementById('col-lunas-wrapper');
                 const btn = document.getElementById('toggle-lunas-btn');
                 if (wrapper) wrapper.style.display = showLunasCol ? 'block' : 'none';
-                if (btn) {
-                    btn.innerHTML = showLunasCol ? '<i class="fas fa-eye-slash me-1" id="icon-lunas"></i> Ocultar Lunas' : '<i class="fas fa-eye me-1" id="icon-lunas"></i> Mostrar Lunas';
-                }
+                if (btn) btn.innerHTML = showLunasCol ? '<i class="fas fa-eye-slash me-1"></i> Lunas' : '<i class="fas fa-eye me-1"></i> Lunas';
+            } else if (colName === 'pinturagral') {
+                showPinturaGralCol = !showPinturaGralCol;
+                const wrapper = document.getElementById('col-pinturagral-wrapper');
+                const btn = document.getElementById('toggle-pinturagral-btn');
+                if (wrapper) wrapper.style.display = showPinturaGralCol ? 'block' : 'none';
+                if (btn) btn.innerHTML = showPinturaGralCol ? '<i class="fas fa-eye-slash me-1"></i> Pintura Gral.' : '<i class="fas fa-eye me-1"></i> Pintura Gral.';
+            } else if (colName === 'paragolpes') {
+                showParagolpesCol = !showParagolpesCol;
+                const wrapper = document.getElementById('col-paragolpes-wrapper');
+                const btn = document.getElementById('toggle-paragolpes-btn');
+                if (wrapper) wrapper.style.display = showParagolpesCol ? 'block' : 'none';
+                if (btn) btn.innerHTML = showParagolpesCol ? '<i class="fas fa-eye-slash me-1"></i> Paragolpes' : '<i class="fas fa-eye me-1"></i> Paragolpes';
             } else if (colName === 'terminados') {
                 showTerminadosCol = !showTerminadosCol;
                 const wrapper = document.getElementById('col-terminados-wrapper');
                 const btn = document.getElementById('toggle-terminados-btn');
                 if (wrapper) wrapper.style.display = showTerminadosCol ? 'block' : 'none';
-                if (btn) {
-                    btn.innerHTML = showTerminadosCol ? '<i class="fas fa-eye-slash me-1" id="icon-terminados"></i> Ocultar Terminados' : '<i class="fas fa-eye me-1" id="icon-terminados"></i> Mostrar Terminados';
-                }
+                if (btn) btn.innerHTML = showTerminadosCol ? '<i class="fas fa-eye-slash me-1"></i> Terminados' : '<i class="fas fa-eye me-1"></i> Terminados';
             }
         }
 
@@ -569,11 +603,13 @@
                 <option value="lunas" ${currentStatus === 'lunas' ? 'selected' : ''}>1. Lunas</option>
                 <option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación (Chapa)</option>
                 <option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje (Chapa)</option>
-                <option value="pintor1" ${currentStatus === 'pintor1' ? 'selected' : ''}>4. ${getPintorName(0)}</option>
-                <option value="pintor2" ${currentStatus === 'pintor2' ? 'selected' : ''}>4. ${getPintorName(1)}</option>
-                <option value="pintor3" ${currentStatus === 'pintor3' ? 'selected' : ''}>4. ${getPintorName(2)}</option>
-                <option value="pintor4" ${currentStatus === 'pintor4' ? 'selected' : ''}>4. ${getPintorName(3)}</option>
-                <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>5. Terminados</option>
+                <option value="pinturagral" ${currentStatus === 'pinturagral' ? 'selected' : ''}>4. Pintura General</option>
+                <option value="paragolpes" ${currentStatus === 'paragolpes' ? 'selected' : ''}>4. Paragolpes (Piezas)</option>
+                <option value="pintor1" ${currentStatus === 'pintor1' ? 'selected' : ''}>5. ${getPintorName(0)}</option>
+                <option value="pintor2" ${currentStatus === 'pintor2' ? 'selected' : ''}>5. ${getPintorName(1)}</option>
+                <option value="pintor3" ${currentStatus === 'pintor3' ? 'selected' : ''}>5. ${getPintorName(2)}</option>
+                <option value="pintor4" ${currentStatus === 'pintor4' ? 'selected' : ''}>5. ${getPintorName(3)}</option>
+                <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>6. Terminados</option>
             `;
         }
 
@@ -670,7 +706,7 @@
                 let pName = getPintorName(i - 1);
                 
                 if (labelEl) labelEl.innerText = pName;
-                if (optEl) optEl.innerText = `4. ${pName}`;
+                if (optEl) optEl.innerText = `5. ${pName}`;
             }
         }
 
@@ -812,6 +848,8 @@
 
                 containers = {
                     lunas: document.getElementById('list-lunas'),
+                    pinturagral: document.getElementById('list-pinturagral'),
+                    paragolpes: document.getElementById('list-paragolpes'),
                     pintor1: document.getElementById('list-pintor1'),
                     pintor2: document.getElementById('list-pintor2'),
                     pintor3: document.getElementById('list-pintor3'),
@@ -853,6 +891,8 @@
                     lunas: document.getElementById('list-lunas'),
                     reparacion: document.getElementById('list-reparacion'),
                     montaje: document.getElementById('list-montaje'),
+                    pinturagral: document.getElementById('list-pinturagral'),
+                    paragolpes: document.getElementById('list-paragolpes'),
                     pintor1: document.getElementById('list-pintor1'),
                     pintor2: document.getElementById('list-pintor2'),
                     pintor3: document.getElementById('list-pintor3'),
@@ -862,7 +902,7 @@
             }
 
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
-            let counts = { lunas: 0, reparacion: 0, montaje: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
+            let counts = { lunas: 0, reparacion: 0, montaje: 0, pinturagral: 0, paragolpes: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
 
             let filteredOrders = orders.filter(order => {
                 let status = order.status || 'reparacion';
@@ -906,6 +946,10 @@
                     counts.chapaTotal++;
                     if (status === 'reparacion') counts.reparacion++;
                     if (status === 'montaje') counts.montaje++;
+                } else if (status === 'pinturagral') {
+                    counts.pinturagral++;
+                } else if (status === 'paragolpes') {
+                    counts.paragolpes++;
                 } else if (status.startsWith('pintor')) {
                     counts.pintado++;
                 } else if (status === 'terminados') {
@@ -965,6 +1009,8 @@
 
             if (document.getElementById('count-lunas')) document.getElementById('count-lunas').innerText = counts.lunas;
             if (document.getElementById('count-chapa')) document.getElementById('count-chapa').innerText = counts.chapaTotal;
+            if (document.getElementById('count-pinturagral')) document.getElementById('count-pinturagral').innerText = counts.pinturagral;
+            if (document.getElementById('count-paragolpes')) document.getElementById('count-paragolpes').innerText = counts.paragolpes;
             if (document.getElementById('count-pintado')) document.getElementById('count-pintado').innerText = counts.pintado;
             if (document.getElementById('count-terminados')) document.getElementById('count-terminados').innerText = counts.terminados;
         }
@@ -1027,7 +1073,7 @@
                                 <input type="text" id="edit-plate" class="form-control text-uppercase" value="${order.plate || ''}" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Modelo</label>
+                                <label class="form-label small text-secondary fw-bold">Modelo / Descripción</label>
                                 <input type="text" id="edit-model" class="form-control" value="${order.model || ''}" required>
                             </div>
                         </div>
@@ -1131,7 +1177,6 @@
             const newOperator = document.getElementById('edit-operator').value;
 
             let updatedHistory = order.history ? [...order.history] : [];
-            // Si cambió el estado o el operario, añadimos un registro automático al historial
             if (newStatus !== order.status || newOperator !== (order.operator || "")) {
                 updatedHistory.push({
                     status: newStatus,
