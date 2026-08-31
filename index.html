@@ -160,6 +160,12 @@
             border: 2px solid #e11d48 !important;
             box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important;
         }
+        /* Clase para la tarjeta checkeada/iluminada */
+        .task-card.checked-card {
+            background-color: #d1fae5 !important;
+            border: 2px solid #059669 !important;
+            box-shadow: 0 0 10px rgba(5, 150, 105, 0.3) !important;
+        }
 
         @keyframes blink-animation {
             0% { opacity: 1; }
@@ -944,6 +950,17 @@
             } catch (err) { console.error(err); }
         }
 
+        // NUEVA FUNCIÓN: Alternar check directo desde la tarjeta
+        window.toggleCardCheck = async (e, orderId) => {
+            e.stopPropagation();
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            const newCheckedState = !order.isChecked;
+            try {
+                await updateDoc(doc(db, "orders", orderId), { isChecked: newCheckedState });
+            } catch (err) { console.error(err); }
+        }
+
         window.renderOrders = () => {
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -991,32 +1008,8 @@
                        orderSub.toLowerCase().includes(filterVal);
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
 
-            if (filterVal !== '' || activeQuickFilter !== 'all') {
-                let hiddenColumnsToShow = new Set();
-                filteredOrders.forEach(order => {
-                    let st = order.status || 'reparacion';
-                    let orderOp = (order.operator || '').trim();
-                    if (st === 'lunas' && !showLunasCol) hiddenColumnsToShow.add('lunas');
-                    if (orderOp === "" && !showSinAsignarCol) hiddenColumnsToShow.add('sinasignar');
-                    if (st === 'pinturagral' && !showPinturaGralCol) hiddenColumnsToShow.add('pinturagral');
-                    if (st === 'terminados' && !showTerminadosCol) hiddenColumnsToShow.add('terminados');
-                    if (st === 'paragolpes' && !showParagolpesCol) hiddenColumnsToShow.add('paragolpes');
-                });
-
-                hiddenColumnsToShow.forEach(colName => {
-                    if (!chapistasFullscreenMode) {
-                        if (colName === 'sinasignar') {
-                            showSinAsignarCol = true;
-                            const wrap = document.getElementById('col-sinasignar-wrapper');
-                            if (wrap) wrap.style.display = 'block';
-                            const btn = document.getElementById('toggle-sinasignar-btn');
-                            if (btn) btn.innerHTML = '<i class="fas fa-eye-slash me-1"></i> Sin Asignar';
-                        } else {
-                            toggleColumnVisibility(colName);
-                        }
-                    }
-                });
-            }
+            // SE ELIMINÓ LA APERTURA AUTOMÁTICA DE MENÚS AL BUSCAR. 
+            // Ahora la búsqueda solo filtra en las columnas visibles según tu petición.
 
             let containers = {};
             let chOpsList = getChapistasList();
@@ -1167,7 +1160,9 @@
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
 
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
-                let cardClass = order.urgent ? 'urgent' : (isOverdue ? 'overdue' : '');
+                
+                // Aplicar clase si está chekeado o urgente/vencido
+                let cardClass = order.isChecked ? 'checked-card' : (order.urgent ? 'urgent' : (isOverdue ? 'overdue' : ''));
                 let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
@@ -1180,6 +1175,7 @@
 
                 let targetContainerKey = status;
                 
+                // CONDICIÓN PARA QUE SE QUEDE EN "SIN ASIGNAR" SI NO TIENE OPERARIO
                 if (isUnassigned && status !== 'terminados') {
                     targetContainerKey = 'sinasignar';
                 }
@@ -1194,13 +1190,20 @@
                     else if (status === 'montaje') targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 2}`;
                 }
 
+                // Botón de check en la tarjeta para iluminarla de forma rápida
+                let checkBtnColor = order.isChecked ? 'btn-success' : 'btn-outline-secondary';
+                let checkIconClass = order.isChecked ? 'fas fa-check-square' : 'far fa-square';
+
                 if (containers[targetContainerKey]) {
                     containers[targetContainerKey].innerHTML += `
                         <div class="task-card p-2 ${cardClass}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
                             ${urgentBanner}
                             <div class="d-flex justify-content-between align-items-start mb-1">
                                 <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">${displayPlate} - ${order.model}</h6>
-                                <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
+                                <div class="d-flex gap-1 align-items-center">
+                                    <button class="btn btn-sm ${checkBtnColor} py-0 px-1" title="Marcar/Chequear tarjeta" onclick="toggleCardCheck(event, '${order.id}')"><i class="${checkIconClass}"></i></button>
+                                    <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
+                                </div>
                             </div>
                             ${substatusBadge}
                             <div class="small text-secondary mb-1">
@@ -1430,6 +1433,7 @@
                     status: initialStatus,
                     notes: document.getElementById('car-notes').value,
                     urgent: document.getElementById('car-urgent').checked,
+                    isChecked: false,
                     history: [{ status: initialStatus, operator: initialOperator || "Sin asignar", date: new Date().toLocaleString() }]
                 });
                 document.getElementById('order-form').reset();
