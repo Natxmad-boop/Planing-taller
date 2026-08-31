@@ -277,17 +277,14 @@
                 </button>
 
                 <div class="btn-group shadow-sm" role="group">
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-cargatrabajo-btn" onclick="toggleColumnVisibility('cargatrabajo')">
-                        <i class="fas fa-eye me-1" id="icon-cargatrabajo"></i> Carga de trabajo
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-cargachapa-btn" onclick="toggleColumnVisibility('cargachapa')">
+                        <i class="fas fa-eye me-1" id="icon-cargachapa"></i> Carga Chapa
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-cargapintura-btn" onclick="toggleColumnVisibility('cargapintura')">
+                        <i class="fas fa-eye me-1" id="icon-cargapintura"></i> Carga Pintura
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-lunas-btn" onclick="toggleColumnVisibility('lunas')">
                         <i class="fas fa-eye me-1" id="icon-lunas"></i> Lunas
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-sinasignar-btn" onclick="toggleColumnVisibility('sinasignar')">
-                        <i class="fas fa-eye-slash me-1" id="icon-sinasignar"></i> Sin Asignar
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-pinturagral-btn" onclick="toggleColumnVisibility('pinturagral')">
-                        <i class="fas fa-eye me-1" id="icon-pinturagral"></i> Pintura Gral.
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-paragolpes-btn" onclick="toggleColumnVisibility('paragolpes')">
                         <i class="fas fa-eye-slash me-1" id="icon-paragolpes"></i> Paragolpes
@@ -300,7 +297,6 @@
                 <div class="btn-group shadow-sm" role="group" id="quick-filters-group">
                     <button type="button" class="btn btn-outline-danger btn-sm fw-bold bg-white btn-quick-filter" id="filter-btn-urgent" onclick="setQuickFilter('urgent')"><i class="fas fa-fire me-1"></i> Urgentes</button>
                     <button type="button" class="btn btn-outline-warning btn-sm fw-bold text-dark bg-white btn-quick-filter" id="filter-btn-overdue" onclick="setQuickFilter('overdue')"><i class="fas fa-exclamation-triangle me-1"></i> Vencidos</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white btn-quick-filter" id="filter-btn-unassigned" onclick="setQuickFilter('unassigned')"><i class="fas fa-user-slash me-1"></i> Sin Asignar</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white btn-quick-filter active-filter" id="filter-btn-all" onclick="setQuickFilter('all')"><i class="fas fa-list me-1"></i> Todo</button>
                 </div>
 
@@ -334,15 +330,26 @@
         </div>
 
         <div class="kanban-container" id="main-kanban-container">
-            <div id="col-cargatrabajo-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
+            <div id="col-cargachapa-wrapper" class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-secondary"></i> Carga de trabajo</h6>
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-primary"></i> Carga Chapa</h6>
                     <div class="d-flex align-items-center gap-2">
-                        <span id="count-cargatrabajo" class="badge bg-secondary rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-cargatrabajo-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargatrabajo-wrapper"></i></button>
+                        <span id="count-cargachapa" class="badge bg-primary rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-cargachapa-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargachapa-wrapper"></i></button>
                     </div>
                 </div>
-                <div id="list-cargatrabajo" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargatrabajo')"></div>
+                <div id="list-cargachapa" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargachapa')"></div>
+            </div>
+
+            <div id="col-cargapintura-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-warning"></i> Carga Pintura</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-cargapintura" class="badge bg-warning text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-cargapintura-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargapintura-wrapper"></i></button>
+                    </div>
+                </div>
+                <div id="list-cargapintura" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargapintura')"></div>
             </div>
 
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
@@ -356,17 +363,6 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <div id="col-sinasignar-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="display: block; background-color: #fffdf4;">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-user-slash me-1 text-warning"></i> Sin Asignar <span class="small text-muted fw-normal">(Libres)</span></h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-sinasignar" class="badge bg-warning text-dark rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-sinasignar-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-sinasignar-wrapper"></i></button>
-                    </div>
-                </div>
-                <div id="list-sinasignar" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'sinasignar')"></div>
-            </div>
-
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
@@ -376,17 +372,6 @@
                     </div>
                 </div>
                 <div id="chapa-dynamic-wrapper"></div>
-            </div>
-
-            <div id="col-pinturagral-wrapper" class="kanban-col p-3 border-top border-info border-4 shadow-sm" style="display: none;">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-roller me-1 text-info"></i> Pintura Gral. <span class="small text-muted fw-normal">(Trabajos term. reparación)</span></h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-pinturagral" class="badge bg-info text-dark rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-pinturagral-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pinturagral-wrapper"></i></button>
-                    </div>
-                </div>
-                <div id="list-pinturagral" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pinturagral')"></div>
             </div>
 
             <div id="col-paragolpes-wrapper" class="kanban-col p-3 border-top border-dark border-4 shadow-sm" style="display: block;">
@@ -526,11 +511,11 @@
                         <div class="mb-3">
                             <label class="form-label small text-secondary fw-bold">Fase Inicial</label>
                             <select id="car-status" class="form-select">
-                                <option value="cargatrabajo">Carga de trabajo</option>
+                                <option value="cargachapa">Carga Chapa</option>
+                                <option value="cargapintura">Carga Pintura</option>
                                 <option value="lunas">1. Lunas</option>
                                 <option value="reparacion">2. Reparación (Chapa izq.)</option>
                                 <option value="montaje">3. Montaje (Chapa der.)</option>
-                                <option value="pinturagral">4. Pintura General</option>
                                 <option value="paragolpes" selected>4. Paragolpes (Exclusivo piezas)</option>
                                 <option value="pintor1" id="opt-pintor1">5. Pintor 1</option>
                                 <option value="pintor2" id="opt-pintor2">5. Pintor 2</option>
@@ -588,10 +573,9 @@
         let operators = [];
         let privacyModeActive = true;
         let activeQuickFilter = 'all';
-        let showCargaTrabajoCol = false;
+        let showCargaChapaCol = false;
+        let showCargaPinturaCol = false;
         let showLunasCol = false;
-        let showSinAsignarCol = true;
-        let showPinturaGralCol = false;
         let showParagolpesCol = true;
         let showTerminadosCol = false;
         let chapistasFullscreenMode = false;
@@ -632,10 +616,9 @@
             const icon = document.getElementById('fullscreen-icon');
             const btnText = document.getElementById('fullscreen-btn-text');
             const pintoresCol = document.getElementById('col-pintores-wrapper');
-            const cargaTrabajoCol = document.getElementById('col-cargatrabajo-wrapper');
+            const cargaChapaCol = document.getElementById('col-cargachapa-wrapper');
+            const cargaPinturaCol = document.getElementById('col-cargapintura-wrapper');
             const lunasCol = document.getElementById('col-lunas-wrapper');
-            const sinAsignarCol = document.getElementById('col-sinasignar-wrapper');
-            const pinturaGralCol = document.getElementById('col-pinturagral-wrapper');
             const paragolpesCol = document.getElementById('col-paragolpes-wrapper');
             const terminadosCol = document.getElementById('col-terminados-wrapper');
 
@@ -644,9 +627,9 @@
                 if (icon) icon.className = "fas fa-compress me-1";
                 if (btnText) btnText.innerText = "Vista Normal Tablero";
                 if (pintoresCol) pintoresCol.style.display = 'none';
-                if (cargaTrabajoCol) cargaTrabajoCol.style.display = 'none';
-                if (sinAsignarCol) sinAsignarCol.style.display = 'none';
-                if (pinturaGralCol) pinturaGralCol.style.display = 'none';
+                if (cargaChapaCol) cargaChapaCol.style.display = 'none';
+                if (cargaPinturaCol) cargaPinturaCol.style.display = 'none';
+                if (lunasCol) lunasCol.style.display = 'none';
                 if (paragolpesCol) paragolpesCol.style.display = 'none';
                 if (terminadosCol) terminadosCol.style.display = 'none';
             } else {
@@ -654,10 +637,9 @@
                 if (icon) icon.className = "fas fa-expand me-1";
                 if (btnText) btnText.innerText = "Chapistas 4 Col.";
                 if (pintoresCol) pintoresCol.style.display = 'block';
-                if (cargaTrabajoCol) cargaTrabajoCol.style.display = showCargaTrabajoCol ? 'block' : 'none';
+                if (cargaChapaCol) cargaChapaCol.style.display = showCargaChapaCol ? 'block' : 'none';
+                if (cargaPinturaCol) cargaPinturaCol.style.display = showCargaPinturaCol ? 'block' : 'none';
                 if (lunasCol) lunasCol.style.display = showLunasCol ? 'block' : 'none';
-                if (sinAsignarCol) sinAsignarCol.style.display = showSinAsignarCol ? 'block' : 'none';
-                if (pinturaGralCol) pinturaGralCol.style.display = showPinturaGralCol ? 'block' : 'none';
                 if (paragolpesCol) paragolpesCol.style.display = showParagolpesCol ? 'block' : 'none';
                 if (terminadosCol) terminadosCol.style.display = showTerminadosCol ? 'block' : 'none';
             }
@@ -666,30 +648,24 @@
 
         window.toggleColumnVisibility = (colName, forceState = null) => {
             if (chapistasFullscreenMode) return;
-            if (colName === 'cargatrabajo') {
-                showCargaTrabajoCol = forceState !== null ? forceState : !showCargaTrabajoCol;
-                const wrapper = document.getElementById('col-cargatrabajo-wrapper');
-                const btn = document.getElementById('toggle-cargatrabajo-btn');
-                if (wrapper) wrapper.style.display = showCargaTrabajoCol ? 'block' : 'none';
-                if (btn) btn.innerHTML = showCargaTrabajoCol ? '<i class="fas fa-eye-slash me-1"></i> Carga de trabajo' : '<i class="fas fa-eye me-1"></i> Carga de trabajo';
+            if (colName === 'cargachapa') {
+                showCargaChapaCol = forceState !== null ? forceState : !showCargaChapaCol;
+                const wrapper = document.getElementById('col-cargachapa-wrapper');
+                const btn = document.getElementById('toggle-cargachapa-btn');
+                if (wrapper) wrapper.style.display = showCargaChapaCol ? 'block' : 'none';
+                if (btn) btn.innerHTML = showCargaChapaCol ? '<i class="fas fa-eye-slash me-1"></i> Carga Chapa' : '<i class="fas fa-eye me-1"></i> Carga Chapa';
+            } else if (colName === 'cargapintura') {
+                showCargaPinturaCol = forceState !== null ? forceState : !showCargaPinturaCol;
+                const wrapper = document.getElementById('col-cargapintura-wrapper');
+                const btn = document.getElementById('toggle-cargapintura-btn');
+                if (wrapper) wrapper.style.display = showCargaPinturaCol ? 'block' : 'none';
+                if (btn) btn.innerHTML = showCargaPinturaCol ? '<i class="fas fa-eye-slash me-1"></i> Carga Pintura' : '<i class="fas fa-eye me-1"></i> Carga Pintura';
             } else if (colName === 'lunas') {
                 showLunasCol = forceState !== null ? forceState : !showLunasCol;
                 const wrapper = document.getElementById('col-lunas-wrapper');
                 const btn = document.getElementById('toggle-lunas-btn');
                 if (wrapper) wrapper.style.display = showLunasCol ? 'block' : 'none';
                 if (btn) btn.innerHTML = showLunasCol ? '<i class="fas fa-eye-slash me-1"></i> Lunas' : '<i class="fas fa-eye me-1"></i> Lunas';
-            } else if (colName === 'sinasignar') {
-                showSinAsignarCol = forceState !== null ? forceState : !showSinAsignarCol;
-                const wrapper = document.getElementById('col-sinasignar-wrapper');
-                const btn = document.getElementById('toggle-sinasignar-btn');
-                if (wrapper) wrapper.style.display = showSinAsignarCol ? 'block' : 'none';
-                if (btn) btn.innerHTML = showSinAsignarCol ? '<i class="fas fa-eye-slash me-1"></i> Sin Asignar' : '<i class="fas fa-eye me-1"></i> Sin Asignar';
-            } else if (colName === 'pinturagral') {
-                showPinturaGralCol = forceState !== null ? forceState : !showPinturaGralCol;
-                const wrapper = document.getElementById('col-pinturagral-wrapper');
-                const btn = document.getElementById('toggle-pinturagral-btn');
-                if (wrapper) wrapper.style.display = showPinturaGralCol ? 'block' : 'none';
-                if (btn) btn.innerHTML = showPinturaGralCol ? '<i class="fas fa-eye-slash me-1"></i> Pintura Gral.' : '<i class="fas fa-eye me-1"></i> Pintura Gral.';
             } else if (colName === 'paragolpes') {
                 showParagolpesCol = forceState !== null ? forceState : !showParagolpesCol;
                 const wrapper = document.getElementById('col-paragolpes-wrapper');
@@ -753,11 +729,11 @@
 
         function buildStatusSelectOptions(currentStatus) {
             return `
-                <option value="cargatrabajo" ${currentStatus === 'cargatrabajo' ? 'selected' : ''}>Carga de trabajo</option>
+                <option value="cargachapa" ${currentStatus === 'cargachapa' ? 'selected' : ''}>Carga Chapa</option>
+                <option value="cargapintura" ${currentStatus === 'cargapintura' ? 'selected' : ''}>Carga Pintura</option>
                 <option value="lunas" ${currentStatus === 'lunas' ? 'selected' : ''}>1. Lunas</option>
                 <option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación (Chapa)</option>
                 <option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje (Chapa)</option>
-                <option value="pinturagral" ${currentStatus === 'pinturagral' ? 'selected' : ''}>4. Pintura General</option>
                 <option value="paragolpes" ${currentStatus === 'paragolpes' ? 'selected' : ''}>4. Paragolpes (Piezas)</option>
                 <option value="pintor1" ${currentStatus === 'pintor1' ? 'selected' : ''}>5. ${getPintorName(0)}</option>
                 <option value="pintor2" ${currentStatus === 'pintor2' ? 'selected' : ''}>5. ${getPintorName(1)}</option>
@@ -952,9 +928,7 @@
             if (!order) return;
 
             let newOperator = order.operator || "";
-            if (targetStatus === 'sinasignar') {
-                newOperator = "";
-            } else if (targetStatus.startsWith('pintor')) {
+            if (targetStatus.startsWith('pintor')) {
                 const indexNum = parseInt(targetStatus.replace('pintor', '')) - 1;
                 newOperator = getPintorName(indexNum);
             } else if (targetStatus.startsWith('chapa_sub')) {
@@ -991,17 +965,17 @@
             const todayStr = new Date().toISOString().split('T')[0];
 
             if (filterVal !== '') {
-                if (filterVal.includes('carga de trabajo') || filterVal === 'cargatrabajo') {
-                    if (!showCargaTrabajoCol) toggleColumnVisibility('cargatrabajo', true);
+                if (filterVal.includes('carga chapa') || filterVal === 'cargachapa') {
+                    if (!showCargaChapaCol) toggleColumnVisibility('cargachapa', true);
+                }
+                if (filterVal.includes('carga pintura') || filterVal === 'cargapintura') {
+                    if (!showCargaPinturaCol) toggleColumnVisibility('cargapintura', true);
                 }
                 if (filterVal.includes('luna') || filterVal === 'lunas') {
                     if (!showLunasCol) toggleColumnVisibility('lunas', true);
                 }
                 if (filterVal.includes('paragolpe') || filterVal === 'paragolpes') {
                     if (!showParagolpesCol) toggleColumnVisibility('paragolpes', true);
-                }
-                if (filterVal.includes('pintura general') || filterVal === 'pinturagral') {
-                    if (!showPinturaGralCol) toggleColumnVisibility('pinturagral', true);
                 }
                 if (filterVal.includes('terminado') || filterVal === 'terminados') {
                     if (!showTerminadosCol) toggleColumnVisibility('terminados', true);
@@ -1012,7 +986,6 @@
             const chapistasColWidth = document.getElementById('kanban-col-chapistas');
             const chapistasSubtitle = document.getElementById('chapistas-subtitle');
             const pintoresCol = document.getElementById('col-pintores-wrapper');
-            const sinAsignarCol = document.getElementById('col-sinasignar-wrapper');
 
             let filteredOrders = orders.filter(order => {
                 let status = order.status || 'reparacion';
@@ -1024,8 +997,6 @@
                     if (!order.urgent) return false;
                 } else if (activeQuickFilter === 'overdue') {
                     if (!isOverdue) return false;
-                } else if (activeQuickFilter === 'unassigned') {
-                    if (orderOp !== "") return false;
                 }
 
                 if (chapistasFullscreenMode) {
@@ -1057,7 +1028,6 @@
                 if (chapistasColWidth) chapistasColWidth.style.minWidth = '100%';
                 if (chapistasSubtitle) chapistasSubtitle.innerText = `(Pantalla Completa - 4 Columnas Divididas)`;
                 if (pintoresCol) pintoresCol.style.display = 'none';
-                if (sinAsignarCol) sinAsignarCol.style.display = 'none';
                 
                 let htmlColumns = `<div class="chapa-four-columns-container">`;
                 chOpsList.forEach((op, index) => {
@@ -1093,10 +1063,9 @@
                 chapaWrapper.innerHTML = htmlColumns;
 
                 containers = {
-                    cargatrabajo: document.getElementById('list-cargatrabajo'),
+                    cargachapa: document.getElementById('list-cargachapa'),
+                    cargapintura: document.getElementById('list-cargapintura'),
                     lunas: document.getElementById('list-lunas'),
-                    sinasignar: document.getElementById('list-sinasignar'),
-                    pinturagral: document.getElementById('list-pinturagral'),
                     paragolpes: document.getElementById('list-paragolpes'),
                     pintor1: document.getElementById('list-pintor1'),
                     pintor2: document.getElementById('list-pintor2'),
@@ -1119,9 +1088,6 @@
                     pintoresCol.style.display = 'block';
                     pintoresCol.style.minWidth = '380px';
                     pintoresCol.style.flex = '1';
-                }
-                if (sinAsignarCol) {
-                    sinAsignarCol.style.display = showSinAsignarCol ? 'block' : 'none';
                 }
                 if (chapistasSubtitle) chapistasSubtitle.innerText = '(Reparación y Montaje)';
 
@@ -1148,12 +1114,11 @@
                 `;
 
                 containers = {
-                    cargatrabajo: document.getElementById('list-cargatrabajo'),
+                    cargachapa: document.getElementById('list-cargachapa'),
+                    cargapintura: document.getElementById('list-cargapintura'),
                     lunas: document.getElementById('list-lunas'),
-                    sinasignar: document.getElementById('list-sinasignar'),
                     reparacion: document.getElementById('list-reparacion'),
                     montaje: document.getElementById('list-montaje'),
-                    pinturagral: document.getElementById('list-pinturagral'),
                     paragolpes: document.getElementById('list-paragolpes'),
                     pintor1: document.getElementById('list-pintor1'),
                     pintor2: document.getElementById('list-pintor2'),
@@ -1171,30 +1136,21 @@
             }
 
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
-            let counts = { cargatrabajo: 0, lunas: 0, sinasignar: 0, reparacion: 0, montaje: 0, pinturagral: 0, paragolpes: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
+            let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, reparacion: 0, montaje: 0, paragolpes: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
 
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
                 let opLower = orderOp.toLowerCase();
 
-                let isUnassigned = (orderOp === "");
-
-                if (status === 'cargatrabajo') counts.cargatrabajo++;
-                if (status === 'lunas') counts.lunas++;
-                
-                if (isUnassigned && status !== 'terminados') {
-                    counts.sinasignar++;
-                }
-
-                if (status === 'reparacion' || status === 'montaje') {
-                    if (!isUnassigned || chapistasFullscreenMode) {
-                        counts.chapaTotal++;
-                        if (status === 'reparacion') counts.reparacion++;
-                        if (status === 'montaje') counts.montaje++;
-                    }
-                } else if (status === 'pinturagral') counts.pinturagral++;
-                else if (status === 'paragolpes') counts.paragolpes++;
+                if (status === 'cargachapa') counts.cargachapa++;
+                else if (status === 'cargapintura') counts.cargapintura++;
+                else if (status === 'lunas') counts.lunas++;
+                else if (status === 'reparacion' || status === 'montaje') {
+                    counts.chapaTotal++;
+                    if (status === 'reparacion') counts.reparacion++;
+                    if (status === 'montaje') counts.montaje++;
+                } else if (status === 'paragolpes') counts.paragolpes++;
                 else if (status.startsWith('pintor')) counts.pintado++;
                 else if (status === 'terminados') counts.terminados++;
                 
@@ -1215,10 +1171,6 @@
                 let statusSelectOptions = buildStatusSelectOptions(status);
 
                 let targetContainerKey = status;
-                
-                if (isUnassigned && status !== 'terminados' && status !== 'cargatrabajo') {
-                    targetContainerKey = 'sinasignar';
-                }
 
                 if (chapistasFullscreenMode) {
                     let assignedChapistaIdx = chOpsList.findIndex(opObj => opObj.name.toLowerCase() === opLower);
@@ -1257,11 +1209,10 @@
                 }
             });
 
-            if (document.getElementById('count-cargatrabajo')) document.getElementById('count-cargatrabajo').innerText = counts.cargatrabajo;
+            if (document.getElementById('count-cargachapa')) document.getElementById('count-cargachapa').innerText = counts.cargachapa;
+            if (document.getElementById('count-cargapintura')) document.getElementById('count-cargapintura').innerText = counts.cargapintura;
             if (document.getElementById('count-lunas')) document.getElementById('count-lunas').innerText = counts.lunas;
-            if (document.getElementById('count-sinasignar')) document.getElementById('count-sinasignar').innerText = counts.sinasignar;
             if (document.getElementById('count-chapa')) document.getElementById('count-chapa').innerText = counts.chapaTotal;
-            if (document.getElementById('count-pinturagral')) document.getElementById('count-pinturagral').innerText = counts.pinturagral;
             if (document.getElementById('count-paragolpes')) document.getElementById('count-paragolpes').innerText = counts.paragolpes;
             if (document.getElementById('count-pintado')) document.getElementById('count-pintado').innerText = counts.pintado;
             if (document.getElementById('count-terminados')) document.getElementById('count-terminados').innerText = counts.terminados;
