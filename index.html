@@ -1046,7 +1046,6 @@
                 }
                 if (chapistasSubtitle) chapistasSubtitle.innerText = '(Reparación y Montaje)';
 
-                // MODIFICACIÓN CRUCIAL: Excluir explícitamente a los vehículos sin asignar de las columnas generales de operarios (reparación/montaje)
                 let countRepGen = orders.filter(o => o.status === 'reparacion' && (o.operator || '').trim() !== "").length;
                 let countMonGen = orders.filter(o => o.status === 'montaje' && (o.operator || '').trim() !== "").length;
 
@@ -1108,7 +1107,6 @@
                 }
 
                 if (status === 'reparacion' || status === 'montaje') {
-                    // Solo sumar a chapa general si está asignado a un operario o si estamos en pantalla completa
                     if (!isUnassigned || chapistasFullscreenMode) {
                         counts.chapaTotal++;
                         if (status === 'reparacion') counts.reparacion++;
@@ -1136,7 +1134,6 @@
 
                 let targetContainerKey = status;
                 
-                // ASIGNACIÓN DE CONTENEDOR ESTRICTA: Si no tiene operario, se envía obligatoriamente a la columna 'sinasignar'
                 if (isUnassigned && status !== 'terminados') {
                     targetContainerKey = 'sinasignar';
                 }
