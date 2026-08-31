@@ -592,7 +592,6 @@
                 if (icon) icon.className = "fas fa-compress me-1";
                 if (btnText) btnText.innerText = "Vista Normal Tablero";
                 if (pintoresCol) pintoresCol.style.display = 'none';
-                if (lunasCol) lunasCol.style.display = 'none';
                 if (sinAsignarCol) sinAsignarCol.style.display = 'none';
                 if (pinturaGralCol) pinturaGralCol.style.display = 'none';
                 if (paragolpesCol) paragolpesCol.style.display = 'none';
@@ -956,7 +955,6 @@
                        orderSub.toLowerCase().includes(filterVal);
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
 
-            // Auto-desplegar columnas ocultas si el resultado de la búsqueda se encuentra en ellas
             if (filterVal !== '' || activeQuickFilter !== 'all') {
                 let hiddenColumnsToShow = new Set();
                 filteredOrders.forEach(order => {
@@ -1048,8 +1046,9 @@
                 }
                 if (chapistasSubtitle) chapistasSubtitle.innerText = '(Reparación y Montaje)';
 
-                let countRepGen = orders.filter(o => o.status === 'reparacion').length;
-                let countMonGen = orders.filter(o => o.status === 'montaje').length;
+                // MODIFICACIÓN CRUCIAL: Excluir explícitamente a los vehículos sin asignar de las columnas generales de operarios (reparación/montaje)
+                let countRepGen = orders.filter(o => o.status === 'reparacion' && (o.operator || '').trim() !== "").length;
+                let countMonGen = orders.filter(o => o.status === 'montaje' && (o.operator || '').trim() !== "").length;
 
                 chapaWrapper.innerHTML = `
                     <div class="chapa-split-container">
@@ -1109,9 +1108,12 @@
                 }
 
                 if (status === 'reparacion' || status === 'montaje') {
-                    counts.chapaTotal++;
-                    if (status === 'reparacion') counts.reparacion++;
-                    if (status === 'montaje') counts.montaje++;
+                    // Solo sumar a chapa general si está asignado a un operario o si estamos en pantalla completa
+                    if (!isUnassigned || chapistasFullscreenMode) {
+                        counts.chapaTotal++;
+                        if (status === 'reparacion') counts.reparacion++;
+                        if (status === 'montaje') counts.montaje++;
+                    }
                 } else if (status === 'pinturagral') counts.pinturagral++;
                 else if (status === 'paragolpes') counts.paragolpes++;
                 else if (status.startsWith('pintor')) counts.pintado++;
@@ -1133,6 +1135,8 @@
                 let statusSelectOptions = buildStatusSelectOptions(status);
 
                 let targetContainerKey = status;
+                
+                // ASIGNACIÓN DE CONTENEDOR ESTRICTA: Si no tiene operario, se envía obligatoriamente a la columna 'sinasignar'
                 if (isUnassigned && status !== 'terminados') {
                     targetContainerKey = 'sinasignar';
                 }
