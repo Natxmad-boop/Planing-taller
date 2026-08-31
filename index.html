@@ -1093,7 +1093,9 @@
                 let targetContainerKey = status;
                 if (chapistasFullscreenMode) {
                     let assignedChapistaIdx = chOpsList.findIndex(opObj => opObj.name.toLowerCase() === opLower);
-                    if (assignedChapistaIdx === -1) return; 
+                    if (assignedChapistaIdx === -1) {
+                        assignedChapistaIdx = 0; // Por defecto al primero si no tiene o no coincide
+                    }
 
                     if (status === 'reparacion') targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 1}`;
                     else if (status === 'montaje') targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 2}`;
@@ -1307,7 +1309,7 @@
                     operator: newOperator,
                     status: newStatus,
                     substatus: document.getElementById('edit-substatus').value,
-                    notes: document.getElementById('edit-notes').value,
+                    notes: document.getElementById('edit-notes' ).value,
                     urgent: document.getElementById('edit-urgent').checked,
                     history: updatedHistory
                 });
