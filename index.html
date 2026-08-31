@@ -251,8 +251,9 @@
             </div>
         </nav>
 
+        <!-- Barra de Controles Superiores y Activadores -->
         <div class="row mb-3 align-items-center">
-            <div class="col-md-5 mb-2 mb-md-0">
+            <div class="col-md-5 mb-2 mb-md-0" id="search-bar-wrapper">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
                     <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar por matrícula, modelo, estado, operario..." oninput="renderOrders()">
@@ -267,13 +268,18 @@
             </div>
             
             <div class="col-md-7 text-md-end d-flex gap-1 justify-content-md-end align-items-center flex-wrap">
+                <!-- Botón de Pantalla Completa Chapistas -->
                 <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" id="fullscreen-chapa-toggle-btn" onclick="toggleChapistasFullscreen()">
-                    <i class="fas fa-expand me-1" id="fullscreen-icon"></i> <span id="fullscreen-btn-text">Pantalla Completa Chapistas</span>
+                    <i class="fas fa-expand me-1" id="fullscreen-icon"></i> <span id="fullscreen-btn-text">Chapistas 4 Col.</span>
                 </button>
 
+                <!-- Botones Columnas -->
                 <div class="btn-group shadow-sm" role="group">
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-lunas-btn" onclick="toggleColumnVisibility('lunas')">
                         <i class="fas fa-eye me-1" id="icon-lunas"></i> Lunas
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-sinasignar-btn" onclick="toggleColumnVisibility('sinasignar')">
+                        <i class="fas fa-eye me-1" id="icon-sinasignar"></i> Sin Asignar
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-pinturagral-btn" onclick="toggleColumnVisibility('pinturagral')">
                         <i class="fas fa-eye me-1" id="icon-pinturagral"></i> Pintura Gral.
@@ -286,19 +292,35 @@
                     </button>
                 </div>
 
-                <div class="btn-group shadow-sm" role="group">
+                <!-- Filtros Rápidos (Activador / Desactivador) -->
+                <div class="btn-group shadow-sm" role="group" id="quick-filters-group">
                     <button type="button" class="btn btn-outline-danger btn-sm fw-bold bg-white btn-quick-filter" id="filter-btn-urgent" onclick="setQuickFilter('urgent')"><i class="fas fa-fire me-1"></i> Urgentes</button>
                     <button type="button" class="btn btn-outline-warning btn-sm fw-bold text-dark bg-white btn-quick-filter" id="filter-btn-overdue" onclick="setQuickFilter('overdue')"><i class="fas fa-exclamation-triangle me-1"></i> Vencidos</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white btn-quick-filter" id="filter-btn-unassigned" onclick="setQuickFilter('unassigned')"><i class="fas fa-user-slash me-1"></i> Sin Asignar</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white btn-quick-filter active-filter" id="filter-btn-all" onclick="setQuickFilter('all')"><i class="fas fa-list me-1"></i> Todo</button>
                 </div>
+
+                <!-- Dropdown / Botón para Ocultar/Mostrar elementos superiores -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-dark btn-sm fw-bold dropdown-toggle bg-white" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Personalizar elementos superiores">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow p-2" style="font-size: 0.85rem; min-width: 200px;">
+                        <li><h6 class="dropdown-header text-dark fw-bold">Mostrar / Ocultar Elementos</h6></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><div class="form-check form-switch px-4 py-1"><input class="form-check-input" type="checkbox" id="switch-search" checked onchange="toggleTopElement('search')"><label class="form-check-label" for="switch-search">Buscador</label></div></li>
+                        <li><div class="form-check form-switch px-4 py-1"><input class="form-check-input" type="checkbox" id="switch-filters" checked onchange="toggleTopElement('filters')"><label class="form-check-label" for="switch-filters">Filtros Rápidos</label></div></li>
+                        <li><div class="form-check form-switch px-4 py-1"><input class="form-check-input" type="checkbox" id="switch-legend" checked onchange="toggleTopElement('legend')"><label class="form-check-label" for="switch-legend">Leyenda</label></div></li>
+                    </ul>
+                </div>
+
                 <button class="btn btn-primary fw-bold px-3 shadow-sm btn-sm py-2" data-bs-toggle="modal" data-bs-target="#newOrderModal" onclick="setDefaultDates()">
                     <i class="fas fa-plus me-1"></i> Nueva Orden
                 </button>
             </div>
         </div>
 
-        <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3">
+        <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3" id="legend-card-wrapper">
             <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
             <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span></div>
             <div class="d-flex align-items-center gap-1"><span class="badge badge-pun px-2 py-1">PIN / Pintura</span></div>
@@ -308,68 +330,75 @@
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
         </div>
 
+        <!-- Contenedor del Tablero Kanban -->
         <div class="kanban-container" id="main-kanban-container">
+            <!-- Columna Lunas -->
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-lunas-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-lunas-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-lunas-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-lunas-wrapper"></i></button>
                     </div>
                 </div>
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
 
-            <div id="col-sinasignar-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="background-color: #f8fafc;">
+            <!-- Columna Sin Asignar (Independiente) -->
+            <div id="col-sinasignar-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="display: block; background-color: #fffdf4;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-user-slash me-1 text-secondary"></i> Sin Asignar <span class="small text-muted fw-normal">(Libres)</span></h6>
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-user-slash me-1 text-warning"></i> Sin Asignar <span class="small text-muted fw-normal">(Libres)</span></h6>
                     <div class="d-flex align-items-center gap-2">
-                        <span id="count-sinasignar" class="badge bg-secondary rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-sinasignar-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-sinasignar-wrapper"></i></button>
+                        <span id="count-sinasignar" class="badge bg-warning text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-sinasignar-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-sinasignar-wrapper"></i></button>
                     </div>
                 </div>
                 <div id="list-sinasignar" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'sinasignar')"></div>
             </div>
 
+            <!-- Columna Chapistas -->
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('kanban-col-chapistas')"><i class="fas fa-compress-alt" id="min-icon-kanban-col-chapistas"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('kanban-col-chapistas')"><i class="fas fa-compress-alt" id="min-icon-kanban-col-chapistas"></i></button>
                     </div>
                 </div>
                 <div id="chapa-dynamic-wrapper"></div>
             </div>
 
+            <!-- Columna Pintura General -->
             <div id="col-pinturagral-wrapper" class="kanban-col p-3 border-top border-info border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-roller me-1 text-info"></i> Pintura Gral. <span class="small text-muted fw-normal">(Trabajos term. reparación)</span></h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-pinturagral" class="badge bg-info text-dark rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-pinturagral-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pinturagral-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-pinturagral-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pinturagral-wrapper"></i></button>
                     </div>
                 </div>
                 <div id="list-pinturagral" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pinturagral')"></div>
             </div>
 
+            <!-- Columna Paragolpes -->
             <div id="col-paragolpes-wrapper" class="kanban-col p-3 border-top border-dark border-4 shadow-sm" style="display: block;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes <span class="small text-muted fw-normal">(Control de Piezas)</span></h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-paragolpes-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-paragolpes-wrapper"></i></button>
                     </div>
                 </div>
                 <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
             </div>
 
+            <!-- Columna Pintores -->
             <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Iniciales)</span></h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-pintores-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pintores-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-pintores-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pintores-wrapper"></i></button>
                     </div>
                 </div>
                 <div class="pintura-split-container">
@@ -404,12 +433,13 @@
                 </div>
             </div>
 
+            <!-- Columna Terminados -->
             <div id="col-terminados-wrapper" class="kanban-col p-3 border-top border-success border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir pantalla" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button>
                     </div>
                 </div>
                 <div id="list-terminados" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados')"></div>
@@ -417,6 +447,7 @@
         </div>
     </div>
 
+    <!-- Modales -->
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content shadow">
@@ -552,6 +583,7 @@
         let privacyModeActive = true;
         let activeQuickFilter = 'all';
         let showLunasCol = false;
+        let showSinAsignarCol = true;
         let showPinturaGralCol = false;
         let showParagolpesCol = true;
         let showTerminadosCol = false;
@@ -571,6 +603,19 @@
             col.classList.toggle('minimized');
             if (icon) {
                 icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
+            }
+        }
+
+        window.toggleTopElement = (elementKey) => {
+            if (elementKey === 'search') {
+                const el = document.getElementById('search-bar-wrapper');
+                if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+            } else if (elementKey === 'filters') {
+                const el = document.getElementById('quick-filters-group');
+                if (el) el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+            } else if (elementKey === 'legend') {
+                const el = document.getElementById('legend-card-wrapper');
+                if (el) el.style.display = el.style.display === 'none' ? 'flex' : 'none';
             }
         }
 
@@ -598,10 +643,10 @@
             } else {
                 if (btn) btn.className = "btn btn-primary btn-sm fw-bold shadow-sm";
                 if (icon) icon.className = "fas fa-expand me-1";
-                if (btnText) btnText.innerText = "Pantalla Completa Chapistas";
+                if (btnText) btnText.innerText = "Chapistas 4 Col.";
                 if (pintoresCol) pintoresCol.style.display = 'block';
                 if (lunasCol) lunasCol.style.display = showLunasCol ? 'block' : 'none';
-                if (sinAsignarCol) sinAsignarCol.style.display = 'block';
+                if (sinAsignarCol) sinAsignarCol.style.display = showSinAsignarCol ? 'block' : 'none';
                 if (pinturaGralCol) pinturaGralCol.style.display = showPinturaGralCol ? 'block' : 'none';
                 if (paragolpesCol) paragolpesCol.style.display = showParagolpesCol ? 'block' : 'none';
                 if (terminadosCol) terminadosCol.style.display = showTerminadosCol ? 'block' : 'none';
@@ -617,6 +662,12 @@
                 const btn = document.getElementById('toggle-lunas-btn');
                 if (wrapper) wrapper.style.display = showLunasCol ? 'block' : 'none';
                 if (btn) btn.innerHTML = showLunasCol ? '<i class="fas fa-eye-slash me-1"></i> Lunas' : '<i class="fas fa-eye me-1"></i> Lunas';
+            } else if (colName === 'sinasignar') {
+                showSinAsignarCol = !showSinAsignarCol;
+                const wrapper = document.getElementById('col-sinasignar-wrapper');
+                const btn = document.getElementById('toggle-sinasignar-btn');
+                if (wrapper) wrapper.style.display = showSinAsignarCol ? 'block' : 'none';
+                if (btn) btn.innerHTML = showSinAsignarCol ? '<i class="fas fa-eye-slash me-1"></i> Sin Asignar' : '<i class="fas fa-eye me-1"></i> Sin Asignar';
             } else if (colName === 'pinturagral') {
                 showPinturaGralCol = !showPinturaGralCol;
                 const wrapper = document.getElementById('col-pinturagral-wrapper');
@@ -958,7 +1009,9 @@
                 let hiddenColumnsToShow = new Set();
                 filteredOrders.forEach(order => {
                     let st = order.status || 'reparacion';
+                    let orderOp = (order.operator || '').trim();
                     if (st === 'lunas' && !showLunasCol) hiddenColumnsToShow.add('lunas');
+                    if (orderOp === "" && !showSinAsignarCol) hiddenColumnsToShow.add('sinasignar');
                     if (st === 'pinturagral' && !showPinturaGralCol) hiddenColumnsToShow.add('pinturagral');
                     if (st === 'terminados' && !showTerminadosCol) hiddenColumnsToShow.add('terminados');
                     if (st === 'paragolpes' && !showParagolpesCol) hiddenColumnsToShow.add('paragolpes');
@@ -966,7 +1019,15 @@
 
                 hiddenColumnsToShow.forEach(colName => {
                     if (!chapistasFullscreenMode) {
-                        toggleColumnVisibility(colName);
+                        if (colName === 'sinasignar') {
+                            showSinAsignarCol = true;
+                            const wrap = document.getElementById('col-sinasignar-wrapper');
+                            if (wrap) wrap.style.display = 'block';
+                            const btn = document.getElementById('toggle-sinasignar-btn');
+                            if (btn) btn.innerHTML = '<i class="fas fa-eye-slash me-1"></i> Sin Asignar';
+                        } else {
+                            toggleColumnVisibility(colName);
+                        }
                     }
                 });
             }
@@ -1041,7 +1102,7 @@
                     pintoresCol.style.flex = '1';
                 }
                 if (sinAsignarCol) {
-                    sinAsignarCol.style.display = 'block';
+                    sinAsignarCol.style.display = showSinAsignarCol ? 'block' : 'none';
                 }
                 if (chapistasSubtitle) chapistasSubtitle.innerText = '(Reparación y Montaje)';
 
@@ -1356,7 +1417,7 @@
                     operator: newOperator,
                     status: newStatus,
                     substatus: document.getElementById('edit-substatus').value,
-                    notes: document.getElementById('edit-notes' ).value,
+                    notes: document.getElementById('edit-notes').value,
                     urgent: document.getElementById('edit-urgent').checked,
                     history: updatedHistory
                 });
