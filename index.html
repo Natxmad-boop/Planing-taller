@@ -964,7 +964,6 @@
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
 
-            // APERTURA AUTOMÁTICA DE MENÚS AL BUSCAR TÉRMINOS ESPECÍFICOS DE COLUMNAS OCULTAS
             if (filterVal !== '') {
                 if (filterVal.includes('luna') || filterVal === 'lunas') {
                     if (!showLunasCol) toggleColumnVisibility('lunas', true);
