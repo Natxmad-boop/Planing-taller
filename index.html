@@ -160,7 +160,6 @@
             border: 2px solid #e11d48 !important;
             box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important;
         }
-        /* Clase para la tarjeta checkeada/iluminada */
         .task-card.checked-card {
             background-color: #d1fae5 !important;
             border: 2px solid #059669 !important;
@@ -646,34 +645,34 @@
             renderOrders();
         }
 
-        window.toggleColumnVisibility = (colName) => {
+        window.toggleColumnVisibility = (colName, forceState = null) => {
             if (chapistasFullscreenMode) return;
             if (colName === 'lunas') {
-                showLunasCol = !showLunasCol;
+                showLunasCol = forceState !== null ? forceState : !showLunasCol;
                 const wrapper = document.getElementById('col-lunas-wrapper');
                 const btn = document.getElementById('toggle-lunas-btn');
                 if (wrapper) wrapper.style.display = showLunasCol ? 'block' : 'none';
                 if (btn) btn.innerHTML = showLunasCol ? '<i class="fas fa-eye-slash me-1"></i> Lunas' : '<i class="fas fa-eye me-1"></i> Lunas';
             } else if (colName === 'sinasignar') {
-                showSinAsignarCol = !showSinAsignarCol;
+                showSinAsignarCol = forceState !== null ? forceState : !showSinAsignarCol;
                 const wrapper = document.getElementById('col-sinasignar-wrapper');
                 const btn = document.getElementById('toggle-sinasignar-btn');
                 if (wrapper) wrapper.style.display = showSinAsignarCol ? 'block' : 'none';
                 if (btn) btn.innerHTML = showSinAsignarCol ? '<i class="fas fa-eye-slash me-1"></i> Sin Asignar' : '<i class="fas fa-eye me-1"></i> Sin Asignar';
             } else if (colName === 'pinturagral') {
-                showPinturaGralCol = !showPinturaGralCol;
+                showPinturaGralCol = forceState !== null ? forceState : !showPinturaGralCol;
                 const wrapper = document.getElementById('col-pinturagral-wrapper');
                 const btn = document.getElementById('toggle-pinturagral-btn');
                 if (wrapper) wrapper.style.display = showPinturaGralCol ? 'block' : 'none';
                 if (btn) btn.innerHTML = showPinturaGralCol ? '<i class="fas fa-eye-slash me-1"></i> Pintura Gral.' : '<i class="fas fa-eye me-1"></i> Pintura Gral.';
             } else if (colName === 'paragolpes') {
-                showParagolpesCol = !showParagolpesCol;
+                showParagolpesCol = forceState !== null ? forceState : !showParagolpesCol;
                 const wrapper = document.getElementById('col-paragolpes-wrapper');
                 const btn = document.getElementById('toggle-paragolpes-btn');
                 if (wrapper) wrapper.style.display = showParagolpesCol ? 'block' : 'none';
                 if (btn) btn.innerHTML = showParagolpesCol ? '<i class="fas fa-eye-slash me-1"></i> Paragolpes' : '<i class="fas fa-eye me-1"></i> Paragolpes';
             } else if (colName === 'terminados') {
-                showTerminadosCol = !showTerminadosCol;
+                showTerminadosCol = forceState !== null ? forceState : !showTerminadosCol;
                 const wrapper = document.getElementById('col-terminados-wrapper');
                 const btn = document.getElementById('toggle-terminados-btn');
                 if (wrapper) wrapper.style.display = showTerminadosCol ? 'block' : 'none';
@@ -950,7 +949,6 @@
             } catch (err) { console.error(err); }
         }
 
-        // NUEVA FUNCIÓN: Alternar check directo desde la tarjeta
         window.toggleCardCheck = async (e, orderId) => {
             e.stopPropagation();
             const order = orders.find(o => o.id === orderId);
@@ -965,6 +963,22 @@
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
+
+            // APERTURA AUTOMÁTICA DE MENÚS AL BUSCAR TÉRMINOS ESPECÍFICOS DE COLUMNAS OCULTAS
+            if (filterVal !== '') {
+                if (filterVal.includes('luna') || filterVal === 'lunas') {
+                    if (!showLunasCol) toggleColumnVisibility('lunas', true);
+                }
+                if (filterVal.includes('paragolpe') || filterVal === 'paragolpes') {
+                    if (!showParagolpesCol) toggleColumnVisibility('paragolpes', true);
+                }
+                if (filterVal.includes('pintura general') || filterVal === 'pinturagral') {
+                    if (!showPinturaGralCol) toggleColumnVisibility('pinturagral', true);
+                }
+                if (filterVal.includes('terminado') || filterVal === 'terminados') {
+                    if (!showTerminadosCol) toggleColumnVisibility('terminados', true);
+                }
+            }
 
             const chapaWrapper = document.getElementById('chapa-dynamic-wrapper');
             const chapistasColWidth = document.getElementById('kanban-col-chapistas');
@@ -1007,9 +1021,6 @@
                        orderOp.toLowerCase().includes(filterVal) || 
                        orderSub.toLowerCase().includes(filterVal);
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
-
-            // SE ELIMINÓ LA APERTURA AUTOMÁTICA DE MENÚS AL BUSCAR. 
-            // Ahora la búsqueda solo filtra en las columnas visibles según tu petición.
 
             let containers = {};
             let chOpsList = getChapistasList();
@@ -1161,7 +1172,6 @@
 
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
                 
-                // Aplicar clase si está chekeado o urgente/vencido
                 let cardClass = order.isChecked ? 'checked-card' : (order.urgent ? 'urgent' : (isOverdue ? 'overdue' : ''));
                 let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
 
@@ -1175,7 +1185,6 @@
 
                 let targetContainerKey = status;
                 
-                // CONDICIÓN PARA QUE SE QUEDE EN "SIN ASIGNAR" SI NO TIENE OPERARIO
                 if (isUnassigned && status !== 'terminados') {
                     targetContainerKey = 'sinasignar';
                 }
@@ -1190,7 +1199,6 @@
                     else if (status === 'montaje') targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 2}`;
                 }
 
-                // Botón de check en la tarjeta para iluminarla de forma rápida
                 let checkBtnColor = order.isChecked ? 'btn-success' : 'btn-outline-secondary';
                 let checkIconClass = order.isChecked ? 'fas fa-check-square' : 'far fa-square';
 
