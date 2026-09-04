@@ -174,6 +174,7 @@
         .urgent-banner { animation: blink-animation 1s infinite; }
         .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
 
+        /* Estilo para resaltar la tarjeta encontrada por el buscador global */
         .resaltado-busqueda {
             background-color: #fff3cd !important;
             border: 2px solid #ffc107 !important;
@@ -267,6 +268,7 @@
             <div class="col-md-5 mb-2 mb-md-0" id="search-bar-wrapper">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
+                    <!-- Modificado para ejecutar la búsqueda global automática al pulsar Enter -->
                     <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar matrícula (pulsa Enter para salto automático)..." onkeydown="handleSearchKeydown(event)" oninput="renderOrders()">
                     
                     <div class="dropdown">
@@ -705,12 +707,14 @@
             renderOrders();
         }
 
+        // --- NUEVA FUNCIÓN: Búsqueda global automática con salto de pestañas/vistas ---
         window.handleSearchKeydown = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 const query = document.getElementById('search-input').value.trim().toUpperCase();
                 if (!query) return;
 
+                // 1. Buscar la orden en el listado general
                 const ordenEncontrada = orders.find(o => (o.plate || '').toUpperCase().includes(query) || (o.model || '').toUpperCase().includes(query));
 
                 if (!ordenEncontrada) {
@@ -720,7 +724,9 @@
 
                 const status = ordenEncontrada.status || 'reparacion';
 
+                // 2. Gestionar la visibilidad de la vista o columna donde se encuentra el vehículo
                 if (chapistasFullscreenMode && status !== 'reparacion' && status !== 'montaje') {
+                    // Si estamos en modo pantalla completa de chapistas pero el coche está en otra sección, salimos del modo completo
                     toggleChapistasFullscreen();
                 }
 
@@ -736,9 +742,11 @@
                     toggleColumnVisibility('terminados', true);
                 }
 
+                // Limpiamos el buscador para que se muestren todas las tarjetas y se pueda enfocar la encontrada
                 document.getElementById('search-input').value = '';
                 renderOrders();
 
+                // 3. Desplazamiento y resaltado visual automático de la tarjeta
                 setTimeout(() => {
                     const tarjetaEl = document.getElementById(`card-${ordenEncontrada.id}`);
                     if (tarjetaEl) {
@@ -1452,7 +1460,7 @@
                     status: newStatus,
                     substatus: document.getElementById('edit-substatus').value,
                     notes: document.getElementById('edit-notes').value,
-                    urgent: document.getElementById('edit-urgent').checked,
+                    urgent: document.getElementById('edit-urgent').colored || document.getElementById('edit-urgent').checked,
                     history: updatedHistory
                 });
                 const modalEl = document.getElementById('detailModal');
