@@ -174,7 +174,6 @@
         .urgent-banner { animation: blink-animation 1s infinite; }
         .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
 
-        /* Estilo para resaltar la tarjeta encontrada por el buscador global */
         .resaltado-busqueda {
             background-color: #fff3cd !important;
             border: 2px solid #ffc107 !important;
@@ -268,7 +267,6 @@
             <div class="col-md-5 mb-2 mb-md-0" id="search-bar-wrapper">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
-                    <!-- Modificado para ejecutar la búsqueda global automática al pulsar Enter -->
                     <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar matrícula (pulsa Enter para salto automático)..." onkeydown="handleSearchKeydown(event)" oninput="renderOrders()">
                     
                     <div class="dropdown">
@@ -406,28 +404,48 @@
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor1')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor1" class="text-truncate">PIN 1</span>
-                            <span id="badge-pintor1-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario(getPintorName(0))" title="Deseleccionar todo de este operario">
+                                    <i class="fas fa-square-minus"></i>
+                                </button>
+                                <span id="badge-pintor1-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            </div>
                         </div>
                         <div id="list-pintor1" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor2')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor2" class="text-truncate">PIN 2</span>
-                            <span id="badge-pintor2-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario(getPintorName(1))" title="Deseleccionar todo de este operario">
+                                    <i class="fas fa-square-minus"></i>
+                                </button>
+                                <span id="badge-pintor2-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            </div>
                         </div>
                         <div id="list-pintor2" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor3')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor3" class="text-truncate">PIN 3</span>
-                            <span id="badge-pintor3-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario(getPintorName(2))" title="Deseleccionar todo de este operario">
+                                    <i class="fas fa-square-minus"></i>
+                                </button>
+                                <span id="badge-pintor3-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            </div>
                         </div>
                         <div id="list-pintor3" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor4')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor4" class="text-truncate">PIN 4</span>
-                            <span id="badge-pintor4-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario(getPintorName(3))" title="Deseleccionar todo de este operario">
+                                    <i class="fas fa-square-minus"></i>
+                                </button>
+                                <span id="badge-pintor4-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            </div>
                         </div>
                         <div id="list-pintor4" class="d-flex flex-column gap-2"></div>
                     </div>
@@ -707,14 +725,12 @@
             renderOrders();
         }
 
-        // --- NUEVA FUNCIÓN: Búsqueda global automática con salto de pestañas/vistas ---
         window.handleSearchKeydown = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 const query = document.getElementById('search-input').value.trim().toUpperCase();
                 if (!query) return;
 
-                // 1. Buscar la orden en el listado general
                 const ordenEncontrada = orders.find(o => (o.plate || '').toUpperCase().includes(query) || (o.model || '').toUpperCase().includes(query));
 
                 if (!ordenEncontrada) {
@@ -724,9 +740,7 @@
 
                 const status = ordenEncontrada.status || 'reparacion';
 
-                // 2. Gestionar la visibilidad de la vista o columna donde se encuentra el vehículo
                 if (chapistasFullscreenMode && status !== 'reparacion' && status !== 'montaje') {
-                    // Si estamos en modo pantalla completa de chapistas pero el coche está en otra sección, salimos del modo completo
                     toggleChapistasFullscreen();
                 }
 
@@ -742,11 +756,9 @@
                     toggleColumnVisibility('terminados', true);
                 }
 
-                // Limpiamos el buscador para que se muestren todas las tarjetas y se pueda enfocar la encontrada
                 document.getElementById('search-input').value = '';
                 renderOrders();
 
-                // 3. Desplazamiento y resaltado visual automático de la tarjeta
                 setTimeout(() => {
                     const tarjetaEl = document.getElementById(`card-${ordenEncontrada.id}`);
                     if (tarjetaEl) {
@@ -759,6 +771,28 @@
                 }, 150);
             }
         }
+
+        // --- NUEVA FUNCIÓN PARA DESMARCAR LAS HOJAS DE UN OPERARIO CONCRETO ---
+        window.desmarcarColumnaOperario = async (nombreOperario) => {
+            const ordenesOperario = orders.filter(o => 
+                (o.operator || '').trim().toLowerCase() === nombreOperario.trim().toLowerCase() && o.isChecked === true
+            );
+
+            if (ordenesOperario.length === 0) {
+                alert(`El operario ${nombreOperario} no tiene ninguna hoja seleccionada actualmente.`);
+                return;
+            }
+
+            try {
+                const promesas = ordenesOperario.map(orden => 
+                    updateDoc(doc(db, "orders", orden.id), { isChecked: false })
+                );
+                await Promise.all(promesas);
+                console.log(`Se han desmarcado todas las hojas de ${nombreOperario}`);
+            } catch (err) {
+                console.error("Error al desmarcar las hojas del operario:", err);
+            }
+        };
 
         function getOperatorBadgeClass(opName) {
             if (!opName) return 'badge-none';
@@ -788,6 +822,7 @@
             if (pinOps[index]) return pinOps[index].name;
             return `Pintor ${index + 1}`;
         }
+        window.getPintorName = getPintorName;
 
         function buildStatusSelectOptions(currentStatus) {
             return `
@@ -1101,7 +1136,12 @@
 
                     htmlColumns += `
                         <div class="chapista-group-col">
-                            <div class="text-center fw-bold text-dark mb-2 border-bottom pb-1 text-truncate" title="${op.name}">${op.name}</div>
+                            <div class="text-center fw-bold text-dark mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1" title="${op.name}">
+                                <span>${op.name}</span>
+                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario('${op.name}')" title="Deseleccionar todo de este operario">
+                                    <i class="fas fa-square-minus"></i> Limpiar
+                                </button>
+                            </div>
                             <div class="chapista-group-inner">
                                 <div class="chapista-sub-box" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub1Id}')">
                                     <div class="text-center fw-bold text-primary d-flex justify-content-between align-items-center px-1" style="font-size:0.75rem; margin-bottom:4px;">
@@ -1460,7 +1500,7 @@
                     status: newStatus,
                     substatus: document.getElementById('edit-substatus').value,
                     notes: document.getElementById('edit-notes').value,
-                    urgent: document.getElementById('edit-urgent').colored || document.getElementById('edit-urgent').checked,
+                    urgent: document.getElementById('edit-urgent').checked,
                     history: updatedHistory
                 });
                 const modalEl = document.getElementById('detailModal');
