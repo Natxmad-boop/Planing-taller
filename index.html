@@ -174,12 +174,16 @@
         .urgent-banner { animation: blink-animation 1s infinite; }
         .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
 
-        /* Estilo para resaltar la tarjeta encontrada por el buscador global */
+        /* Estilo para resaltar la tarjeta encontrada por el buscador global con animación de parpadeo */
+        @keyframes highlight-pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 193, 7, 0); }
+            50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(255, 193, 7, 0.9); background-color: #fff3cd !important; border-color: #ffc107 !important; }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 193, 7, 0.6); background-color: #fff3cd !important; border-color: #ffc107 !important; }
+        }
         .resaltado-busqueda {
-            background-color: #fff3cd !important;
+            animation: highlight-pulse 1s infinite alternate;
             border: 2px solid #ffc107 !important;
-            box-shadow: 0 0 15px rgba(255, 193, 7, 0.8) !important;
-            transform: scale(1.02);
+            z-index: 10;
         }
 
         .badge-ch { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
@@ -268,7 +272,6 @@
             <div class="col-md-5 mb-2 mb-md-0" id="search-bar-wrapper">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
-                    <!-- Modificado para ejecutar la búsqueda global automática al pulsar Enter -->
                     <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar matrícula (pulsa Enter para salto automático)..." onkeydown="handleSearchKeydown(event)" oninput="renderOrders()">
                     
                     <div class="dropdown">
@@ -406,28 +409,41 @@
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor1')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor1" class="text-truncate">PIN 1</span>
-                            <span id="badge-pintor1-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <!-- Checkbox general al lado del contador del operario -->
+                                <button type="button" class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" title="Marcar/Desmarcar todos de este operario" onclick="toggleAllByOperator('PIN 1')"><i class="far fa-check-square"></i></button>
+                                <span id="badge-pintor1-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            </div>
                         </div>
                         <div id="list-pintor1" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor2')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor2" class="text-truncate">PIN 2</span>
-                            <span id="badge-pintor2-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <button type="button" class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" title="Marcar/Desmarcar todos de este operario" onclick="toggleAllByOperator('PIN 2')"><i class="far fa-check-square"></i></button>
+                                <span id="badge-pintor2-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            </div>
                         </div>
                         <div id="list-pintor2" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor3')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor3" class="text-truncate">PIN 3</span>
-                            <span id="badge-pintor3-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <button type="button" class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" title="Marcar/Desmarcar todos de este operario" onclick="toggleAllByOperator('PIN 3')"><i class="far fa-check-square"></i></button>
+                                <span id="badge-pintor3-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            </div>
                         </div>
                         <div id="list-pintor3" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor4')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor4" class="text-truncate">PIN 4</span>
-                            <span id="badge-pintor4-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <button type="button" class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" title="Marcar/Desmarcar todos de este operario" onclick="toggleAllByOperator('PIN 4')"><i class="far fa-check-square"></i></button>
+                                <span id="badge-pintor4-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
+                            </div>
                         </div>
                         <div id="list-pintor4" class="d-flex flex-column gap-2"></div>
                     </div>
@@ -707,14 +723,13 @@
             renderOrders();
         }
 
-        // --- NUEVA FUNCIÓN: Búsqueda global automática con salto de pestañas/vistas ---
+        // Búsqueda global automática con salto y resaltado brillante de la tarjeta
         window.handleSearchKeydown = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 const query = document.getElementById('search-input').value.trim().toUpperCase();
                 if (!query) return;
 
-                // 1. Buscar la orden en el listado general
                 const ordenEncontrada = orders.find(o => (o.plate || '').toUpperCase().includes(query) || (o.model || '').toUpperCase().includes(query));
 
                 if (!ordenEncontrada) {
@@ -724,29 +739,19 @@
 
                 const status = ordenEncontrada.status || 'reparacion';
 
-                // 2. Gestionar la visibilidad de la vista o columna donde se encuentra el vehículo
                 if (chapistasFullscreenMode && status !== 'reparacion' && status !== 'montaje') {
-                    // Si estamos en modo pantalla completa de chapistas pero el coche está en otra sección, salimos del modo completo
                     toggleChapistasFullscreen();
                 }
 
-                if (status === 'cargachapa') {
-                    toggleColumnVisibility('cargachapa', true);
-                } else if (status === 'cargapintura') {
-                    toggleColumnVisibility('cargapintura', true);
-                } else if (status === 'lunas') {
-                    toggleColumnVisibility('lunas', true);
-                } else if (status === 'paragolpes') {
-                    toggleColumnVisibility('paragolpes', true);
-                } else if (status === 'terminados') {
-                    toggleColumnVisibility('terminados', true);
-                }
+                if (status === 'cargachapa') toggleColumnVisibility('cargachapa', true);
+                else if (status === 'cargapintura') toggleColumnVisibility('cargapintura', true);
+                else if (status === 'lunas') toggleColumnVisibility('lunas', true);
+                else if (status === 'paragolpes') toggleColumnVisibility('paragolpes', true);
+                else if (status === 'terminados') toggleColumnVisibility('terminados', true);
 
-                // Limpiamos el buscador para que se muestren todas las tarjetas y se pueda enfocar la encontrada
                 document.getElementById('search-input').value = '';
                 renderOrders();
 
-                // 3. Desplazamiento y resaltado visual automático de la tarjeta
                 setTimeout(() => {
                     const tarjetaEl = document.getElementById(`card-${ordenEncontrada.id}`);
                     if (tarjetaEl) {
@@ -754,7 +759,7 @@
                         tarjetaEl.classList.add('resaltado-busqueda');
                         setTimeout(() => {
                             tarjetaEl.classList.remove('resaltado-busqueda');
-                        }, 3500);
+                        }, 4000);
                     }
                 }, 150);
             }
@@ -787,6 +792,28 @@
             let pinOps = getPintoresList();
             if (pinOps[index]) return pinOps[index].name;
             return `Pintor ${index + 1}`;
+        }
+
+        // Función para marcar/desmarcar en bloque todas las tarjetas de un operario concreto
+        window.toggleAllByOperator = async (pintorLabel) => {
+            let targetOpName = pintorLabel;
+            if (pintorLabel.startsWith('PIN ')) {
+                let index = parseInt(pintorLabel.replace('PIN ', '')) - 1;
+                targetOpName = getPintorName(index);
+            }
+
+            let affectedOrders = orders.filter(o => (o.operator || '').trim().toLowerCase() === targetOpName.toLowerCase());
+            if (affectedOrders.length === 0) return;
+
+            // Comprobamos si ya están todos marcados para decidir si marcarlos o desmarcarlos todos
+            let allChecked = affectedOrders.every(o => o.isChecked);
+            let newState = !allChecked;
+
+            try {
+                for (let order of affectedOrders) {
+                    await updateDoc(doc(db, "orders", order.id), { isChecked: newState });
+                }
+            } catch (err) { console.error("Error al actualizar en bloque:", err); }
         }
 
         function buildStatusSelectOptions(currentStatus) {
@@ -1460,7 +1487,7 @@
                     status: newStatus,
                     substatus: document.getElementById('edit-substatus').value,
                     notes: document.getElementById('edit-notes').value,
-                    urgent: document.getElementById('edit-urgent').colored || document.getElementById('edit-urgent').checked,
+                    urgent: document.getElementById('edit-urgent').checked,
                     history: updatedHistory
                 });
                 const modalEl = document.getElementById('detailModal');
