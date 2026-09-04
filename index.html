@@ -174,14 +174,14 @@
         .urgent-banner { animation: blink-animation 1s infinite; }
         .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
 
-        @keyframes highlight-pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 193, 7, 0); }
-            50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(255, 193, 7, 0.9); background-color: #fff3cd !important; border-color: #ffc107 !important; }
-            100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 193, 7, 0.6); background-color: #fff3cd !important; border-color: #ffc107 !important; }
+        @keyframes highlight-pulse-blue {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(37, 99, 235, 0); }
+            50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(37, 99, 235, 0.9); background-color: #dbeafe !important; border-color: #2563eb !important; }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(37, 99, 235, 0.6); background-color: #dbeafe !important; border-color: #2563eb !important; }
         }
         .resaltado-busqueda {
-            animation: highlight-pulse 1s infinite alternate;
-            border: 2px solid #ffc107 !important;
+            animation: highlight-pulse-blue 1s infinite alternate;
+            border: 2px solid #2563eb !important;
             z-index: 10;
         }
 
@@ -271,7 +271,7 @@
             <div class="col-md-5 mb-2 mb-md-0" id="search-bar-wrapper">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar matrícula (pulsa Enter para salto automático)..." onkeydown="handleSearchKeydown(event)" oninput="renderOrders()">
+                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar matrícula (pulsa Enter para salto automático e iluminar en azul)..." onkeydown="handleSearchKeydown(event)" oninput="renderOrders()">
                     
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary bg-white border-secondary text-secondary fw-semibold dropdown-toggle rounded-0 rounded-end" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-left: 0;">
@@ -299,6 +299,9 @@
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-paragolpes-btn" onclick="toggleColumnVisibility('paragolpes')">
                         <i class="fas fa-eye-slash me-1" id="icon-paragolpes"></i> Paragolpes
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-destajos-btn" onclick="toggleColumnVisibility('destajos')">
+                        <i class="fas fa-eye-slash me-1" id="icon-destajos"></i> Destajos
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-terminados-btn" onclick="toggleColumnVisibility('terminados')">
                         <i class="fas fa-eye me-1" id="icon-terminados"></i> Terminados
@@ -394,6 +397,17 @@
                     </div>
                 </div>
                 <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
+            </div>
+
+            <div id="col-destajos-wrapper" class="kanban-col p-3 border-top border-info border-4 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-file-invoice-dollar me-1 text-info"></i> Destajos <span class="small text-muted fw-normal">(Trabajos a destajo)</span></h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-destajos" class="badge bg-info text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" title="Minimizar / Expandir" onclick="toggleMinimizeColumn('col-destajos-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-destajos-wrapper"></i></button>
+                    </div>
+                </div>
+                <div id="list-destajos" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'destajos')"></div>
             </div>
 
             <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
@@ -540,6 +554,7 @@
                                 <option value="reparacion">2. Reparación (Chapa izq.)</option>
                                 <option value="montaje">3. Montaje (Chapa der.)</option>
                                 <option value="paragolpes" selected>4. Paragolpes (Exclusivo piezas)</option>
+                                <option value="destajos">Destajos</option>
                                 <option value="pintor1" id="opt-pintor1">5. Pintor 1</option>
                                 <option value="pintor2" id="opt-pintor2">5. Pintor 2</option>
                                 <option value="pintor3" id="opt-pintor3">5. Pintor 3</option>
@@ -600,8 +615,9 @@
         let showCargaPinturaCol = false;
         let showLunasCol = false;
         let showParagolpesCol = true;
+        let showDestajosCol = false;
         let showTerminadosCol = false;
-        let chapistasFullscreenMode = false; // Por defecto arranca en vista general de 2 columnas (Reparación / Montaje)
+        let chapistasFullscreenMode = false;
 
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
         window.setDefaultDates = () => {
@@ -676,6 +692,12 @@
                 const btn = document.getElementById('toggle-paragolpes-btn');
                 if (wrapper) wrapper.style.display = showParagolpesCol ? 'block' : 'none';
                 if (btn) btn.innerHTML = showParagolpesCol ? '<i class="fas fa-eye-slash me-1"></i> Paragolpes' : '<i class="fas fa-eye me-1"></i> Paragolpes';
+            } else if (colName === 'destajos') {
+                showDestajosCol = forceState !== null ? forceState : !showDestajosCol;
+                const wrapper = document.getElementById('col-destajos-wrapper');
+                const btn = document.getElementById('toggle-destajos-btn');
+                if (wrapper) wrapper.style.display = showDestajosCol ? 'block' : 'none';
+                if (btn) btn.innerHTML = showDestajosCol ? '<i class="fas fa-eye-slash me-1"></i> Destajos' : '<i class="fas fa-eye me-1"></i> Destajos';
             } else if (colName === 'terminados') {
                 showTerminadosCol = forceState !== null ? forceState : !showTerminadosCol;
                 const wrapper = document.getElementById('col-terminados-wrapper');
@@ -728,6 +750,7 @@
                 else if (status === 'cargapintura') toggleColumnVisibility('cargapintura', true);
                 else if (status === 'lunas') toggleColumnVisibility('lunas', true);
                 else if (status === 'paragolpes') toggleColumnVisibility('paragolpes', true);
+                else if (status === 'destajos') toggleColumnVisibility('destajos', true);
                 else if (status === 'terminados') toggleColumnVisibility('terminados', true);
 
                 renderOrders();
@@ -800,6 +823,7 @@
                 <option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación (Chapa)</option>
                 <option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje (Chapa)</option>
                 <option value="paragolpes" ${currentStatus === 'paragolpes' ? 'selected' : ''}>4. Paragolpes (Piezas)</option>
+                <option value="destajos" ${currentStatus === 'destajos' ? 'selected' : ''}>Destajos</option>
                 <option value="pintor1" ${currentStatus === 'pintor1' ? 'selected' : ''}>5. ${getPintorName(0)}</option>
                 <option value="pintor2" ${currentStatus === 'pintor2' ? 'selected' : ''}>5. ${getPintorName(1)}</option>
                 <option value="pintor3" ${currentStatus === 'pintor3' ? 'selected' : ''}>5. ${getPintorName(2)}</option>
@@ -1042,6 +1066,9 @@
                 if (filterVal.includes('paragolpe') || filterVal === 'paragolpes') {
                     if (!showParagolpesCol) toggleColumnVisibility('paragolpes', true);
                 }
+                if (filterVal.includes('destajo') || filterVal === 'destajos') {
+                    if (!showDestajosCol) toggleColumnVisibility('destajos', true);
+                }
                 if (filterVal.includes('terminado') || filterVal === 'terminados') {
                     if (!showTerminadosCol) toggleColumnVisibility('terminados', true);
                 }
@@ -1131,6 +1158,7 @@
                     cargapintura: document.getElementById('list-cargapintura'),
                     lunas: document.getElementById('list-lunas'),
                     paragolpes: document.getElementById('list-paragolpes'),
+                    destajos: document.getElementById('list-destajos'),
                     pintor1: document.getElementById('list-pintor1'),
                     pintor2: document.getElementById('list-pintor2'),
                     pintor3: document.getElementById('list-pintor3'),
@@ -1185,6 +1213,7 @@
                     reparacion: document.getElementById('list-reparacion'),
                     montaje: document.getElementById('list-montaje'),
                     paragolpes: document.getElementById('list-paragolpes'),
+                    destajos: document.getElementById('list-destajos'),
                     pintor1: document.getElementById('list-pintor1'),
                     pintor2: document.getElementById('list-pintor2'),
                     pintor3: document.getElementById('list-pintor3'),
@@ -1201,7 +1230,7 @@
             }
 
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
-            let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, reparacion: 0, montaje: 0, paragolpes: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
+            let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, reparacion: 0, montaje: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
 
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
@@ -1216,6 +1245,7 @@
                     if (status === 'reparacion') counts.reparacion++;
                     if (status === 'montaje') counts.montaje++;
                 } else if (status === 'paragolpes') counts.paragolpes++;
+                else if (status === 'destajos') counts.destajos++;
                 else if (status.startsWith('pintor')) counts.pintado++;
                 else if (status === 'terminados') counts.terminados++;
                 
@@ -1278,6 +1308,7 @@
             if (document.getElementById('count-lunas')) document.getElementById('count-lunas').innerText = counts.lunas;
             if (document.getElementById('count-chapa')) document.getElementById('count-chapa').innerText = counts.chapaTotal;
             if (document.getElementById('count-paragolpes')) document.getElementById('count-paragolpes').innerText = counts.paragolpes;
+            if (document.getElementById('count-destajos')) document.getElementById('count-destajos').innerText = counts.destajos;
             if (document.getElementById('count-pintado')) document.getElementById('count-pintado').innerText = counts.pintado;
             if (document.getElementById('count-terminados')) document.getElementById('count-terminados').innerText = counts.terminados;
         }
@@ -1494,7 +1525,7 @@
                 document.getElementById('order-form').reset();
                 const modalEl = document.getElementById('newOrderModal');
                 if (modalEl) {
-                    const modalInstance = bootstrap.Modal.getElementById(modalEl);
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
                     if (modalInstance) modalInstance.hide();
                 }
             } catch (err) { console.error(err); }
