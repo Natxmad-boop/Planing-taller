@@ -404,48 +404,28 @@
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor1')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor1" class="text-truncate">PIN 1</span>
-                            <div class="d-flex align-items-center gap-1">
-                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario(getPintorName(0))" title="Deseleccionar todo de este operario">
-                                    <i class="fas fa-square-minus"></i>
-                                </button>
-                                <span id="badge-pintor1-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
-                            </div>
+                            <span id="badge-pintor1-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
                         </div>
                         <div id="list-pintor1" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor2')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor2" class="text-truncate">PIN 2</span>
-                            <div class="d-flex align-items-center gap-1">
-                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario(getPintorName(1))" title="Deseleccionar todo de este operario">
-                                    <i class="fas fa-square-minus"></i>
-                                </button>
-                                <span id="badge-pintor2-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
-                            </div>
+                            <span id="badge-pintor2-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
                         </div>
                         <div id="list-pintor2" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor3')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor3" class="text-truncate">PIN 3</span>
-                            <div class="d-flex align-items-center gap-1">
-                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario(getPintorName(2))" title="Deseleccionar todo de este operario">
-                                    <i class="fas fa-square-minus"></i>
-                                </button>
-                                <span id="badge-pintor3-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
-                            </div>
+                            <span id="badge-pintor3-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
                         </div>
                         <div id="list-pintor3" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintor4')">
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor4" class="text-truncate">PIN 4</span>
-                            <div class="d-flex align-items-center gap-1">
-                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario(getPintorName(3))" title="Deseleccionar todo de este operario">
-                                    <i class="fas fa-square-minus"></i>
-                                </button>
-                                <span id="badge-pintor4-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
-                            </div>
+                            <span id="badge-pintor4-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
                         </div>
                         <div id="list-pintor4" class="d-flex flex-column gap-2"></div>
                     </div>
@@ -772,28 +752,6 @@
             }
         }
 
-        // --- NUEVA FUNCIÓN PARA DESMARCAR LAS HOJAS DE UN OPERARIO CONCRETO ---
-        window.desmarcarColumnaOperario = async (nombreOperario) => {
-            const ordenesOperario = orders.filter(o => 
-                (o.operator || '').trim().toLowerCase() === nombreOperario.trim().toLowerCase() && o.isChecked === true
-            );
-
-            if (ordenesOperario.length === 0) {
-                alert(`El operario ${nombreOperario} no tiene ninguna hoja seleccionada actualmente.`);
-                return;
-            }
-
-            try {
-                const promesas = ordenesOperario.map(orden => 
-                    updateDoc(doc(db, "orders", orden.id), { isChecked: false })
-                );
-                await Promise.all(promesas);
-                console.log(`Se han desmarcado todas las hojas de ${nombreOperario}`);
-            } catch (err) {
-                console.error("Error al desmarcar las hojas del operario:", err);
-            }
-        };
-
         function getOperatorBadgeClass(opName) {
             if (!opName) return 'badge-none';
             const upper = opName.toUpperCase();
@@ -822,7 +780,6 @@
             if (pinOps[index]) return pinOps[index].name;
             return `Pintor ${index + 1}`;
         }
-        window.getPintorName = getPintorName;
 
         function buildStatusSelectOptions(currentStatus) {
             return `
@@ -1136,12 +1093,7 @@
 
                     htmlColumns += `
                         <div class="chapista-group-col">
-                            <div class="text-center fw-bold text-dark mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1" title="${op.name}">
-                                <span>${op.name}</span>
-                                <button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 0.65rem;" onclick="desmarcarColumnaOperario('${op.name}')" title="Deseleccionar todo de este operario">
-                                    <i class="fas fa-square-minus"></i> Limpiar
-                                </button>
-                            </div>
+                            <div class="text-center fw-bold text-dark mb-2 border-bottom pb-1 text-truncate" title="${op.name}">${op.name}</div>
                             <div class="chapista-group-inner">
                                 <div class="chapista-sub-box" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${sub1Id}')">
                                     <div class="text-center fw-bold text-primary d-flex justify-content-between align-items-center px-1" style="font-size:0.75rem; margin-bottom:4px;">
