@@ -727,14 +727,22 @@
                 const query = document.getElementById('search-input').value.trim().toUpperCase();
                 if (!query) return;
 
-                const ordenEncontrada = orders.find(o => (o.plate || '').toUpperCase().includes(query) || (o.model || '').toUpperCase().includes(query));
+                const matchingOrders = orders.filter(o => (o.plate || '').toUpperCase().includes(query) || (o.model || '').toUpperCase().includes(query));
 
-                if (!ordenEncontrada) {
+                if (matchingOrders.length === 0) {
                     alert('No se ha encontrado ningún vehículo o pieza con ese criterio.');
                     return;
                 }
 
-                const status = ordenEncontrada.status || 'reparacion';
+                // NUEVA FUNCIONALIDAD: Checkbox masivo / Ciclo de salto inteligente para múltiples coincidencias
+                let targetOrder = matchingOrders[0];
+                if (matchingOrders.length > 1) {
+                    let currentIndex = matchingOrders.findIndex(o => document.getElementById(`card-${o.id}`) && document.getElementById(`card-${o.id}`).classList.contains('resaltado-busqueda'));
+                    let nextIndex = (currentIndex + 1) % matchingOrders.length;
+                    targetOrder = matchingOrders[nextIndex];
+                }
+
+                const status = targetOrder.status || 'reparacion';
 
                 if (chapistasFullscreenMode && status !== 'reparacion' && status !== 'montaje') {
                     toggleChapistasFullscreen();
@@ -746,17 +754,14 @@
                 else if (status === 'paragolpes') toggleColumnVisibility('paragolpes', true);
                 else if (status === 'terminados') toggleColumnVisibility('terminados', true);
 
-                document.getElementById('search-input').value = '';
                 renderOrders();
 
                 setTimeout(() => {
-                    const tarjetaEl = document.getElementById(`card-${ordenEncontrada.id}`);
+                    document.querySelectorAll('.task-card').forEach(c => c.classList.remove('resaltado-busqueda'));
+                    const tarjetaEl = document.getElementById(`card-${targetOrder.id}`);
                     if (tarjetaEl) {
                         tarjetaEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         tarjetaEl.classList.add('resaltado-busqueda');
-                        setTimeout(() => {
-                            tarjetaEl.classList.remove('resaltado-busqueda');
-                        }, 4000);
                     }
                 }, 150);
             }
