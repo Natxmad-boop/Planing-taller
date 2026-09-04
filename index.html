@@ -313,11 +313,6 @@
                     </ul>
                 </div>
 
-                <!-- Botón de Pegado Inteligente Lens -->
-                <button class="btn btn-warning fw-bold px-3 shadow-sm btn-sm py-2 text-dark" data-bs-toggle="modal" data-bs-target="#lensModal">
-                    <i class="fas fa-magic me-1"></i> Pegado Lens
-                </button>
-
                 <button class="btn btn-primary fw-bold px-3 shadow-sm btn-sm py-2" data-bs-toggle="modal" data-bs-target="#newOrderModal" onclick="setDefaultDates()">
                     <i class="fas fa-plus me-1"></i> Nueva Orden
                 </button>
@@ -439,25 +434,6 @@
                     </div>
                 </div>
                 <div id="list-terminados" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados')"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Pegado Inteligente Lens -->
-    <div class="modal fade" id="lensModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content shadow">
-                <div class="modal-header bg-warning text-dark">
-                    <h5 class="modal-title fw-bold"><i class="fas fa-magic me-2"></i> Pegado Inteligente Lens</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label small text-secondary fw-bold">Pega el texto copiado de Google Lens aquí:</label>
-                        <textarea id="lens-raw-text" class="form-control" rows="5" placeholder="Pega el texto caótico aquí... Detectará matrícula, modelo y fecha automáticamente."></textarea>
-                    </div>
-                    <button type="button" class="btn btn-warning text-dark fw-bold w-100 py-2 shadow-sm" onclick="processLensText()">Procesar y Rellenar Formulario</button>
-                </div>
             </div>
         </div>
     </div>
@@ -607,59 +583,8 @@
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
         window.setDefaultDates = () => {
             const today = new Date().toISOString().split('T')[0];
-            if(!document.getElementById('date-in').value) document.getElementById('date-in').value = today;
-            if(!document.getElementById('date-out').value) document.getElementById('date-out').value = today;
-        }
-
-        // Lógica de procesamiento de texto de Google Lens
-        window.processLensText = () => {
-            const raw = document.getElementById('lens-raw-text').value;
-            if (!raw.trim()) {
-                alert('Por favor, pega algún texto primero.');
-                return;
-            }
-
-            // 1. Buscar matrícula (formato español: 4 dígitos + 3 letras, o formatos antiguos ej. M-1234-AB)
-            let plateMatch = raw.match(/\b\d{4}\s*[A-Z]{3}\b/i) || raw.match(/\b[A-Z]{1,2}\s*\d{4}\s*[A-Z]{1,2}\b/i);
-            let plate = plateMatch ? plateMatch[0].replace(/\s+/g, '').toUpperCase() : '';
-
-            // 2. Buscar fechas (formatos DD/MM/YYYY, DD-MM-YYYY, etc.)
-            let dateMatch = raw.match(/\b(0?[1-9]|[12]\d|3[01])[\/\-\.](0?[1-9]|1[0-2])[\/\-\.](\d{2,4})\b/);
-            let dateOut = '';
-            if (dateMatch) {
-                let d = dateMatch[1].padStart(2, '0');
-                let m = dateMatch[2].padStart(2, '0');
-                let y = dateMatch[3];
-                if (y.length === 2) y = '20' + y;
-                dateOut = `${y}-${m}-${d}`;
-            }
-
-            // 3. Limpieza para inferir modelo o descripción
-            let lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 2);
-            let model = '';
-            for (let line of lines) {
-                // Ignorar líneas que parezcan matrículas o fechas puras
-                if (line === plate || (dateMatch && line.includes(dateMatch[0]))) continue;
-                if (line.length > 3 && !line.match(/^\d+$/)) {
-                    model = line;
-                    break;
-                }
-            }
-
-            // Rellenar formulario principal y abrir modal de nueva orden
-            window.setDefaultDates();
-            if (plate) document.getElementById('car-plate').value = plate;
-            if (model) document.getElementById('car-model').value = model;
-            if (dateOut) document.getElementById('date-out').value = dateOut;
-
-            // Cerrar modal Lens y abrir modal Nueva Orden
-            const lensModalEl = document.getElementById('lensModal');
-            const newOrderModalEl = document.getElementById('newOrderModal');
-            
-            bootstrap.Modal.getInstance(lensModalEl).hide();
-            document.getElementById('lens-raw-text').value = '';
-            
-            new.bootstrap.Modal(newOrderModalEl).show(); // Nota: corregido abajo en la instanciación de bootstrap modal
+            document.getElementById('date-in').value = today;
+            document.getElementById('date-out').value = today;
         }
 
         window.toggleMinimizeColumn = (columnId) => {
@@ -1498,7 +1423,7 @@
                     substatus: document.getElementById('car-substatus').value,
                     status: initialStatus,
                     notes: document.getElementById('car-notes').value,
-                    urgent: document.getElementById('car-urgent'].checked ? document.getElementById('car-urgent').checked : false,
+                    urgent: document.getElementById('car-urgent').checked,
                     isChecked: false,
                     history: [{ status: initialStatus, operator: initialOperator || "Sin asignar", date: new Date().toLocaleString() }]
                 });
