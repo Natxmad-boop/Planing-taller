@@ -227,6 +227,28 @@
             border-color: #1e293b !important;
             box-shadow: 0 0 10px rgba(30, 41, 59, 0.4);
         }
+
+        /* Estilos específicos para la plantilla interactiva de vehículo */
+        .plantilla-coche-container {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8fafc;
+        }
+        .zona-pieza {
+            position: absolute;
+            cursor: pointer;
+            border: 2px dashed transparent;
+            transition: all 0.2s;
+        }
+        .zona-pieza:hover {
+            border: 2px dashed #2563eb;
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+        .zona-pieza.seleccionada {
+            background-color: rgba(225, 29, 72, 0.3) !important;
+            border: 2px solid #e11d48 !important;
+        }
     </style>
 </head>
 <body>
@@ -327,7 +349,7 @@
                     </ul>
                 </div>
 
-                <button class="btn btn-primary fw-bold px-3 shadow-sm btn-sm py-2" data-bs-toggle="modal" data-bs-target="#newOrderModal" onclick="setDefaultDates()">
+                <button class="btn btn-primary fw-bold px-3 shadow-sm btn-sm py-2" data-bs-toggle="modal" data-bs-target="#newOrderModal" onclick="setDefaultDates(); resetPlantillaCoche('crear');">
                     <i class="fas fa-plus me-1"></i> Nueva Orden
                 </button>
             </div>
@@ -495,8 +517,9 @@
         </div>
     </div>
 
+    <!-- MODAL NUEVA ORDEN (Con plantilla interactiva integrada y opcional) -->
     <div class="modal fade" id="newOrderModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold text-dark">Registrar Nuevo Vehículo / Pieza</h5>
@@ -545,6 +568,25 @@
                                 </select>
                             </div>
                         </div>
+
+                        <!-- PLANTILLA INTERACTIVA DE PIEZAS (Opcional) -->
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary fw-bold">Plantilla de Daños (Opcional - Haz clic para marcar/desmarcar piezas)</label>
+                            <div class="plantilla-coche-container text-center position-relative">
+                                <div style="position: relative; display: inline-block; max-width: 100%;">
+                                    <img src="https://i.ibb.co/6803874/esquema-vehiculo.png" alt="Esquema del Vehículo" class="img-fluid" style="max-height: 280px;">
+                                    
+                                    <!-- Zonas interactivas superpuestas -->
+                                    <div class="zona-pieza" data-pieza="Paragolpes Delantero" onclick="togglePiezaPlantilla(this, 'crear')" style="top: 35%; left: 10%; width: 15%; height: 25%;"></div>
+                                    <div class="zona-pieza" data-pieza="Aleta Delantera Izda" onclick="togglePiezaPlantilla(this, 'crear')" style="top: 30%; left: 27%; width: 18%; height: 28%;"></div>
+                                    <div class="zona-pieza" data-pieza="Lateral / Puertas" onclick="togglePiezaPlantilla(this, 'crear')" style="top: 30%; left: 47%; width: 28%; height: 30%;"></div>
+                                    <div class="zona-pieza" data-pieza="Aleta Trasera / Maletero" onclick="togglePiezaPlantilla(this, 'crear')" style="top: 32%; left: 78%; width: 15%; height: 25%;"></div>
+                                    <div class="zona-pieza" data-pieza="Techo / Central" onclick="togglePiezaPlantilla(this, 'crear')" style="top: 58%; left: 35%; width: 32%; height: 28%;"></div>
+                                </div>
+                                <div class="mt-2 text-muted small" id="resumen-piezas-crear">Ninguna pieza seleccionada</div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label small text-secondary fw-bold">Fase Inicial</label>
                             <select id="car-status" class="form-select">
@@ -577,6 +619,7 @@
         </div>
     </div>
 
+    <!-- MODAL DETALLE / EDICIÓN -->
     <div class="modal fade" id="detailModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -618,6 +661,56 @@
         let showDestajosCol = false;
         let showTerminadosCol = false;
         let chapistasFullscreenMode = false;
+
+        // Variables temporales para la plantilla interactiva de piezas (opcional)
+        let piezasSeleccionadasCrear = [];
+        let piezasSeleccionadasEditar = [];
+
+        window.togglePiezaPlantilla = (element, modo, piezaNombreParam = null) => {
+            let pName = piezaNombreParam || element.getAttribute('data-pieza');
+            if (modo === 'crear') {
+                if (piezasSeleccionadasCrear.includes(pName)) {
+                    piezasSeleccionadasCrear = piezasSeleccionadasCrear.filter(p => p !== pName);
+                    if (element) element.classList.remove('seleccionada');
+                } else {
+                    piezasSeleccionadasCrear.push(pName);
+                    if (element) element.classList.add('seleccionada');
+                }
+                const resumen = document.getElementById('resumen-piezas-crear');
+                if (resumen) resumen.innerText = piezasSeleccionadasCrear.length > 0 ? "Piezas marcadas: " + piezasSeleccionadasCrear.join(', ') : "Ninguna pieza seleccionada";
+            } else {
+                if (piezasSeleccionadasEditar.includes(pName)) {
+                    piezasSeleccionadasEditar = piezasSeleccionadasEditar.filter(p => p !== pName);
+                    if (element) element.classList.remove('seleccionada');
+                } else {
+                    piezasSeleccionadasEditar.push(pName);
+                    if (element) element.classList.add('seleccionada');
+                }
+                const resumen = document.getElementById('resumen-piezas-editar');
+                if (resumen) resumen.innerText = piezasSeleccionadasEditar.length > 0 ? "Piezas marcadas: " + piezasSeleccionadasEditar.join(', ') : "Ninguna pieza seleccionada";
+            }
+        }
+
+        window.resetPlantillaCoche = (modo, piezasExistentes = []) => {
+            if (modo === 'crear') {
+                piezasSeleccionadasCrear = [];
+                document.querySelectorAll('#newOrderModal .zona-pieza').forEach(el => el.classList.remove('seleccionada'));
+                const resumen = document.getElementById('resumen-piezas-crear');
+                if (resumen) resumen.innerText = "Ninguna pieza seleccionada";
+            } else {
+                piezasSeleccionadasEditar = [...piezasExistentes];
+                document.querySelectorAll('#detailModal .zona-pieza').forEach(el => {
+                    let pName = el.getAttribute('data-pieza');
+                    if (piezasSeleccionadasEditar.includes(pName)) {
+                        el.classList.add('seleccionada');
+                    } else {
+                        el.classList.remove('seleccionada');
+                    }
+                });
+                const resumen = document.getElementById('resumen-piezas-editar');
+                if (resumen) resumen.innerText = piezasSeleccionadasEditar.length > 0 ? "Piezas marcadas: " + piezasSeleccionadasEditar.join(', ') : "Ninguna pieza seleccionada";
+            }
+        }
 
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
         window.setDefaultDates = () => {
@@ -1260,6 +1353,12 @@
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
                 let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
 
+                // Mostrar piezas seleccionadas en la tarjeta si existen
+                let piezasBadge = '';
+                if (order.piezas && order.piezas.length > 0) {
+                    piezasBadge = `<div class="text-muted small mt-1" style="font-size:0.75rem;"><i class="fas fa-car-side me-1"></i> <strong>Piezas:</strong> ${order.piezas.join(', ')}</div>`;
+                }
+
                 let opBadgeClass = getOperatorBadgeClass(order.operator);
                 let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted small">No asignado</span>';
 
@@ -1291,7 +1390,8 @@
                                 </div>
                             </div>
                             ${substatusBadge}
-                            <div class="small text-secondary mb-1">
+                            ${piezasBadge}
+                            <div class="small text-secondary mb-1 mt-1">
                                 <div class="d-flex align-items-center gap-1"><strong>Op:</strong> ${operatorDisplay}</div>
                                 <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'}</div>
                             </div>
@@ -1331,6 +1431,8 @@
         window.openDetailModal = (id) => {
             const order = orders.find(o => o.id === id);
             if (!order) return;
+
+            resetPlantillaCoche('editar', order.piezas || []);
 
             let historyHtml = '<p class="text-muted small fst-italic">No hay registros de movimientos todavía.</p>';
             if (order.history && order.history.length > 0) {
@@ -1399,6 +1501,24 @@
                                 </select>
                             </div>
                         </div>
+
+                        <!-- PLANTILLA DE DAÑOS EN EDICIÓN -->
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary fw-bold">Plantilla de Daños (Opcional - Haz clic para marcar/desmarcar)</label>
+                            <div class="plantilla-coche-container text-center position-relative">
+                                <div style="position: relative; display: inline-block; max-width: 100%;">
+                                    <img src="https://i.ibb.co/6803874/esquema-vehiculo.png" alt="Esquema del Vehículo" class="img-fluid" style="max-height: 250px;">
+                                    
+                                    <div class="zona-pieza" data-pieza="Paragolpes Delantero" onclick="togglePiezaPlantilla(this, 'editar')" style="top: 35%; left: 10%; width: 15%; height: 25%;"></div>
+                                    <div class="zona-pieza" data-pieza="Aleta Delantera Izda" onclick="togglePiezaPlantilla(this, 'editar')" style="top: 30%; left: 27%; width: 18%; height: 28%;"></div>
+                                    <div class="zona-pieza" data-pieza="Lateral / Puertas" onclick="togglePiezaPlantilla(this, 'editar')" style="top: 30%; left: 47%; width: 28%; height: 30%;"></div>
+                                    <div class="zona-pieza" data-pieza="Aleta Trasera / Maletero" onclick="togglePiezaPlantilla(this, 'editar')" style="top: 32%; left: 78%; width: 15%; height: 25%;"></div>
+                                    <div class="zona-pieza" data-pieza="Techo / Central" onclick="togglePiezaPlantilla(this, 'editar')" style="top: 58%; left: 35%; width: 32%; height: 28%;"></div>
+                                </div>
+                                <div class="mt-2 text-muted small" id="resumen-piezas-editar">Ninguna pieza seleccionada</div>
+                            </div>
+                        </div>
+
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label small text-secondary fw-bold">Subestado</label>
@@ -1430,6 +1550,9 @@
                     <h6 class="text-uppercase text-secondary fw-bold small mb-3">Historial y Trazabilidad</h6>
                     ${historyHtml}
                 `;
+                
+                // Aplicar estado visual inicial de las piezas en el modal de edición
+                resetPlantillaCoche('editar', order.piezas || []);
             }
 
             const detailModalEl = document.getElementById('detailModal');
@@ -1494,6 +1617,7 @@
                     substatus: document.getElementById('edit-substatus').value,
                     notes: document.getElementById('edit-notes').value,
                     urgent: document.getElementById('edit-urgent').checked,
+                    piezas: [...piezasSeleccionadasEditar],
                     history: updatedHistory
                 });
                 const modalEl = document.getElementById('detailModal');
@@ -1519,10 +1643,12 @@
                     status: initialStatus,
                     notes: document.getElementById('car-notes').value,
                     urgent: document.getElementById('car-urgent').checked,
+                    piezas: [...piezasSeleccionadasCrear],
                     isChecked: false,
                     history: [{ status: initialStatus, operator: initialOperator || "Sin asignar", date: new Date().toLocaleString() }]
                 });
                 document.getElementById('order-form').reset();
+                resetPlantillaCoche('crear');
                 const modalEl = document.getElementById('newOrderModal');
                 if (modalEl) {
                     const modalInstance = bootstrap.Modal.getInstance(modalEl);
