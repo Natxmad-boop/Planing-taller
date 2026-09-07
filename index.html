@@ -496,7 +496,7 @@
     </div>
 
     <div class="modal fade" id="newOrderModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold text-dark">Registrar Nuevo Vehículo / Pieza</h5>
@@ -562,6 +562,100 @@
                                 <option value="terminados">6. Terminados</option>
                             </select>
                         </div>
+                        
+                        <!-- NUEVA SECCIÓN DE CHECKLIST DE PIEZAS EN 4 COLUMNAS -->
+                        <div class="mb-3 p-3 bg-light border rounded">
+                            <label class="form-label small text-primary fw-bold mb-2 d-block">
+                                <i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos (4 Columnas)
+                            </label>
+                            <div class="row g-2" id="checklist-four-columns-container">
+                                <!-- Columna 1 -->
+                                <div class="col-md-3">
+                                    <div class="p-2 bg-white border rounded h-100">
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Paragolpes Delantero" id="chk-parag-del">
+                                            <label class="form-check-label small" for="chk-parag-del">Paragolpes Del.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Delantera Izq" id="chk-aleta-izq">
+                                            <label class="form-check-label small" for="chk-aleta-izq">Aleta Del. Izq.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Delantera Der" id="chk-aleta-der">
+                                            <label class="form-check-label small" for="chk-aleta-der">Aleta Del. Der.</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Capó" id="chk-capo">
+                                            <label class="form-check-label small" for="chk-capo">Capó</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Columna 2 -->
+                                <div class="col-md-3">
+                                    <div class="p-2 bg-white border rounded h-100">
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Paragolpes Trasero" id="chk-parag-tras">
+                                            <label class="form-check-label small" for="chk-parag-tras">Paragolpes Tras.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Portón / Maletero" id="chk-porton">
+                                            <label class="form-check-label small" for="chk-porton">Portón / Maletero</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Izq" id="chk-puerta-d-izq">
+                                            <label class="form-check-label small" for="chk-puerta-d-izq">Puerta Del. Izq.</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Der" id="chk-puerta-d-der">
+                                            <label class="form-check-label small" for="chk-puerta-d-der">Puerta Del. Der.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Columna 3 -->
+                                <div class="col-md-3">
+                                    <div class="p-2 bg-white border rounded h-100">
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Trasera Izq" id="chk-puerta-t-izq">
+                                            <label class="form-check-label small" for="chk-puerta-t-izq">Puerta Tras. Izq.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Trasera Der" id="chk-puerta-t-der">
+                                            <label class="form-check-label small" for="chk-puerta-t-der">Puerta Tras. Der.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Izq" id="chk-aleta-t-izq">
+                                            <label class="form-check-label small" for="chk-aleta-t-izq">Aleta Tras. Izq.</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Der" id="chk-aleta-t-der">
+                                            <label class="form-check-label small" for="chk-aleta-t-der">Aleta Tras. Der.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Columna 4 -->
+                                <div class="col-md-3">
+                                    <div class="p-2 bg-white border rounded h-100">
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Techo" id="chk-techo">
+                                            <label class="form-check-label small" for="chk-techo">Techo</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Luna Delantera" id="chk-luna-del">
+                                            <label class="form-check-label small" for="chk-luna-del">Luna Delantera</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Retrovisor Izq/Der" id="chk-retrovisor">
+                                            <label class="form-check-label small" for="chk-retrovisor">Retrovisores</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Llantas" id="chk-llantas">
+                                            <label class="form-check-label small" for="chk-llantas">Llantas</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label small text-secondary fw-bold">Notas</label>
                             <textarea id="car-notes" class="form-control" rows="2"></textarea>
@@ -624,6 +718,8 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date-in').value = today;
             document.getElementById('date-out').value = today;
+            // Limpiar checkboxes del checklist al abrir modal nuevo
+            document.querySelectorAll('.piece-check').forEach(chk => chk.checked = false);
         }
 
         window.toggleMinimizeColumn = (columnId) => {
@@ -1258,6 +1354,17 @@
                 let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
+                
+                // Renderizar las piezas seleccionadas si existen en la orden
+                let piecesHtml = '';
+                if (order.pieces && order.pieces.length > 0) {
+                    piecesHtml = `<div class="mb-1"><small class="text-muted fw-bold">Piezas:</small> <div class="d-flex flex-wrap gap-1 mt-1">`;
+                    order.pieces.forEach(p => {
+                        piecesHtml += `<span class="badge bg-light text-secondary border" style="font-size:0.65rem;"><i class="fas fa-check text-success me-1"></i>${p}</span>`;
+                    });
+                    piecesHtml += `</div></div>`;
+                }
+
                 let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
 
                 let opBadgeClass = getOperatorBadgeClass(order.operator);
@@ -1291,6 +1398,7 @@
                                 </div>
                             </div>
                             ${substatusBadge}
+                            ${piecesHtml}
                             <div class="small text-secondary mb-1">
                                 <div class="d-flex align-items-center gap-1"><strong>Op:</strong> ${operatorDisplay}</div>
                                 <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'}</div>
@@ -1508,6 +1616,13 @@
             e.preventDefault();
             const initialStatus = document.getElementById('car-status').value;
             const initialOperator = document.getElementById('operator-select').value;
+            
+            // Recoger los elementos seleccionados del checklist de 4 columnas
+            let selectedPieces = [];
+            document.querySelectorAll('.piece-check:checked').forEach(chk => {
+                selectedPieces.push(chk.value);
+            });
+
             try {
                 await addDoc(collection(db, "orders"), {
                     plate: document.getElementById('car-plate').value.trim(),
@@ -1517,6 +1632,7 @@
                     operator: initialOperator,
                     substatus: document.getElementById('car-substatus').value,
                     status: initialStatus,
+                    pieces: selectedPieces,
                     notes: document.getElementById('car-notes').value,
                     urgent: document.getElementById('car-urgent').checked,
                     isChecked: false,
