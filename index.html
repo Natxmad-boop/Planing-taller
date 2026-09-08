@@ -559,7 +559,7 @@
                                 <select id="car-substatus" class="form-select">
                                     <option value="">Ninguno / Normal</option>
                                     <option value="Ampliación">Ampliación</option>
-                                    <option value="Pendiente de recambios">Pendiente de recambios</option>
+                                    <option value="Pendiente recambios">Pendiente recambios</option>
                                     <option value="Paragolpes fuera">Paragolpes fuera</option>
                                     <option value="Faro izquierdo reparándose">Faro izquierdo reparándose</option>
                                     <option value="Faro derecho reparándose">Faro derecho reparándose</option>
@@ -1093,7 +1093,7 @@
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Ampliación', 'Ampliación')"><div class="badge substatus-badge-ampliacion">Ampliación</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente de recambios', 'Pendiente de recambios')"><div class="badge substatus-badge-recambios">Pendiente de recambios</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente recambios', 'Pendiente recambios')"><div class="badge substatus-badge-recambios">Pendiente recambios</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo reparándose', 'Faro izquierdo reparándose')"><div class="badge bg-light text-dark border small">Faro izquierdo reparándose</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho reparándose', 'Faro derecho reparándose')"><div class="badge bg-light text-dark border small">Faro derecho reparándose</div></a></li>
@@ -1391,7 +1391,7 @@
                 
                 if (order.substatus === 'Ampliación') {
                     cardClass += ' substatus-ampliacion';
-                } else if (order.substatus === 'Pendiente de recambios') {
+                } else if (order.substatus === 'Pendiente recambios') {
                     cardClass += ' substatus-recambios';
                 }
 
@@ -1400,7 +1400,7 @@
                 let substatusBadge = '';
                 if (order.substatus === 'Ampliación') {
                     substatusBadge = `<div class="badge substatus-badge-ampliacion mb-1 small">${order.substatus}</div>`;
-                } else if (order.substatus === 'Pendiente de recambios') {
+                } else if (order.substatus === 'Pendiente recambios') {
                     substatusBadge = `<div class="badge substatus-badge-recambios mb-1 small">${order.substatus}</div>`;
                 } else if (order.substatus) {
                     substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
@@ -1562,7 +1562,7 @@
                             <select id="edit-substatus" class="form-select">
                                 <option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option>
                                 <option value="Ampliación" ${order.substatus === 'Ampliación' ? 'selected' : ''}>Ampliación</option>
-                                <option value="Pendiente de recambios" ${order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente de recambios</option>
+                                <option value="Pendiente recambios" ${order.substatus === 'Pendiente recambios' ? 'selected' : ''}>Pendiente recambios</option>
                                 <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
                                 <option value="Faro izquierdo reparándose" ${order.substatus === 'Faro izquierdo reparándose' ? 'selected' : ''}>Faro izquierdo reparándose</option>
                                 <option value="Faro derecho reparándose" ${order.substatus === 'Faro derecho reparándose' ? 'selected' : ''}>Faro derecho reparándose</option>
