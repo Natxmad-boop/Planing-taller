@@ -166,24 +166,6 @@
             box-shadow: 0 0 10px rgba(5, 150, 105, 0.3) !important;
         }
 
-        /* NUEVAS CAPAS VISUALES SOLICITADAS */
-        .task-card.layer-recambios {
-            background-color: #fff7ed !important; /* Tono naranja suave */
-            border: 1px solid #fdba74 !important;
-        }
-        .task-card.layer-ampliacion {
-            background-color: #f5f3ff !important; /* Tono azul/morado suave */
-            border: 1px solid #c4b5fd !important;
-        }
-        .operational-indicator {
-            width: 8px;
-            height: 8px;
-            background-color: #22c55e;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 6px #22c55e;
-        }
-
         @keyframes blink-animation {
             0% { opacity: 1; }
             50% { opacity: 0.3; }
@@ -351,19 +333,12 @@
             </div>
         </div>
 
-        <!-- LEYENDA SUPERIOR ACTUALIZADA SEGÚN ESPECIFICACIONES -->
         <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3" id="legend-card-wrapper">
-            <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda Planning:</span>
-            <div class="d-flex align-items-center gap-2">
-                <span class="operational-indicator"></span>
-                <span class="small fw-semibold">Coches Activos (Con checklist)</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge px-2 py-1" style="background-color: #fff7ed; border: 1px solid #fdba74; color: #9a3412;">Pendiente de Recambios</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge px-2 py-1" style="background-color: #f5f3ff; border: 1px solid #c4b5fd; color: #5b21b6;">Pendiente de Ampliación</span>
-            </div>
+            <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-pun px-2 py-1">PIN / Pintura</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #eff6ff; color:#1e40af; border:1px solid #93c5fd;">Mitad Izq: Reparación</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #f0fdf4; color:#166534; border:1px solid #86efac;">Mitad Der: Montaje</span></div>
             <div class="vr mx-2"></div>
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
         </div>
@@ -563,8 +538,7 @@
                                     <option value="Paragolpes fuera">Paragolpes fuera</option>
                                     <option value="Faro izquierdo reparándose">Faro izquierdo reparándose</option>
                                     <option value="Faro derecho reparándose">Faro derecho reparándose</option>
-                                    <option value="Pendiente de recambios">Pendiente de recambios</option>
-                                    <option value="Pendiente de ampliación">Pendiente de ampliación</option>
+                                    <option value="Pendiente recambios">Pendiente recambios</option>
                                     <option value="Luna aquí">Luna aquí</option>
                                     <option value="Luna pendiente">Luna pendiente</option>
                                     <option value="Golpe taller">Golpe taller</option>
@@ -590,11 +564,13 @@
                             </select>
                         </div>
                         
+                        <!-- SECCIÓN DE CHECKLIST DE PIEZAS EN 4 COLUMNAS -->
                         <div class="mb-3 p-3 bg-light border rounded">
                             <label class="form-label small text-primary fw-bold mb-2 d-block">
                                 <i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos (4 Columnas)
                             </label>
                             <div class="row g-2" id="checklist-four-columns-container">
+                                <!-- Columna 1 -->
                                 <div class="col-md-3">
                                     <div class="p-2 bg-white border rounded h-100">
                                         <div class="form-check mb-1">
@@ -619,6 +595,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Columna 2 -->
                                 <div class="col-md-3">
                                     <div class="p-2 bg-white border rounded h-100">
                                         <div class="form-check mb-1">
@@ -643,6 +620,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Columna 3 -->
                                 <div class="col-md-3">
                                     <div class="p-2 bg-white border rounded h-100">
                                         <div class="form-check mb-1">
@@ -667,6 +645,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Columna 4 -->
                                 <div class="col-md-3">
                                     <div class="p-2 bg-white border rounded h-100">
                                         <div class="form-check mb-1">
@@ -1097,8 +1076,7 @@
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo reparándose', 'Faro izquierdo reparándose')"><div class="badge bg-light text-dark border small">Faro izquierdo reparándose</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho reparándose', 'Faro derecho reparándose')"><div class="badge bg-light text-dark border small">Faro derecho reparándose</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente de recambios', 'Pendiente de recambios')"><div class="badge bg-light text-dark border small">Pendiente de recambios</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente de ampliación', 'Pendiente de ampliación')"><div class="badge bg-light text-dark border small">Pendiente de ampliación</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente recambios', 'Pendiente recambios')"><div class="badge bg-light text-dark border small">Pendiente recambios</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')"><div class="badge bg-light text-dark border small">Luna aquí</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')"><div class="badge bg-light text-dark border small">Luna pendiente</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')"><div class="badge bg-light text-dark border small">Golpe taller</div></a></li>
@@ -1247,6 +1225,12 @@
             let containers = {};
             let chOpsList = getChapistasList();
 
+            // Función auxiliar para saber si el vehículo está en activo (excluyendo subestados de pausa para el contador)
+            const isActivelyWorking = (o) => {
+                let sub = (o.substatus || '').trim().toLowerCase();
+                return sub !== 'pendiente recambios' && sub !== 'pendiente de recambios' && sub !== 'pendiente de ampliación';
+            };
+
             if (chapistasFullscreenMode) {
                 if (chapistasColWidth) chapistasColWidth.style.minWidth = '100%';
                 if (chapistasSubtitle) chapistasSubtitle.innerText = `(Desglosado por Operarios)`;
@@ -1257,8 +1241,8 @@
                     let sub1Id = `chapa_sub${(index * 2) + 1}`;
                     let sub2Id = `chapa_sub${(index * 2) + 2}`;
                     
-                    let countRep = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'reparacion').length;
-                    let countMon = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'montaje').length;
+                    let countRep = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'reparacion' && isActivelyWorking(o)).length;
+                    let countMon = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'montaje' && isActivelyWorking(o)).length;
 
                     htmlColumns += `
                         <div class="chapista-group-col">
@@ -1318,8 +1302,8 @@
                 }
                 if (chapistasSubtitle) chapistasSubtitle.innerText = '(Reparación y Montaje)';
 
-                let countRepGen = orders.filter(o => o.status === 'reparacion').length;
-                let countMonGen = orders.filter(o => o.status === 'montaje').length;
+                let countRepGen = orders.filter(o => o.status === 'reparacion' && isActivelyWorking(o)).length;
+                let countMonGen = orders.filter(o => o.status === 'montaje' && isActivelyWorking(o)).length;
 
                 let chapaColsHtml = `
                     <div class="chapa-split-container">
@@ -1359,7 +1343,7 @@
 
             for (let i = 1; i <= 4; i++) {
                 let pName = getPintorName(i - 1);
-                let pCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.status !== 'terminados').length;
+                let pCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.status !== 'terminados' && isActivelyWorking(o)).length;
                 let badgeEl = document.getElementById(`badge-pintor${i}-count`);
                 if (badgeEl) badgeEl.innerText = pCount;
             }
@@ -1371,38 +1355,26 @@
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
                 let opLower = orderOp.toLowerCase();
+                let active = isActivelyWorking(order);
 
-                if (status === 'cargachapa') counts.cargachapa++;
-                else if (status === 'cargapintura') counts.cargapintura++;
-                else if (status === 'lunas') counts.lunas++;
-                else if (status === 'reparacion' || status === 'montaje') {
+                if (status === 'cargachapa' && active) counts.cargachapa++;
+                else if (status === 'cargapintura' && active) counts.cargapintura++;
+                else if (status === 'lunas' && active) counts.lunas++;
+                else if ((status === 'reparacion' || status === 'montaje') && active) {
                     counts.chapaTotal++;
                     if (status === 'reparacion') counts.reparacion++;
                     if (status === 'montaje') counts.montaje++;
-                } else if (status === 'paragolpes') counts.paragolpes++;
-                else if (status === 'destajos') counts.destajos++;
-                else if (status.startsWith('pintor')) counts.pintado++;
-                else if (status === 'terminados') counts.terminados++;
+                } else if (status === 'paragolpes' && active) counts.paragolpes++;
+                else if (status === 'destajos' && active) counts.destajos++;
+                else if (status.startsWith('pintor') && active) counts.pintado++;
+                else if (status === 'terminados' && active) counts.terminados++;
                 
                 let displayPlate = (order.plate || '').toUpperCase();
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
 
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
                 
-                // Aplicar capas visuales sobre el estado actual sin romper base de datos ni contadores
-                let substatusLower = (order.substatus || '').toLowerCase();
-                let cardLayerClass = '';
-                let indicatorHtml = '';
-
-                if (substatusLower.includes('pendiente de recambios')) {
-                    cardLayerClass = 'layer-recambios';
-                } else if (substatusLower.includes('pendiente de ampliación') || substatusLower.includes('pendiente de ampliacion')) {
-                    cardLayerClass = 'layer-ampliacion';
-                } else if (order.pieces && order.pieces.length > 0) {
-                    indicatorHtml = `<span class="operational-indicator ms-2" title="Coche activo con checklist"></span>`;
-                }
-
-                let cardClass = order.isChecked ? 'checked-card' : (order.urgent ? 'urgent' : (isOverdue ? 'overdue' : cardLayerClass));
+                let cardClass = order.isChecked ? 'checked-card' : (order.urgent ? 'urgent' : (isOverdue ? 'overdue' : ''));
                 let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
@@ -1439,7 +1411,7 @@
                         <div class="task-card p-2 ${cardClass}" id="card-${order.id}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
                             ${urgentBanner}
                             <div class="d-flex justify-content-between align-items-start mb-1">
-                                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">${displayPlate} - ${order.model} ${indicatorHtml}</h6>
+                                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">${displayPlate} - ${order.model}</h6>
                                 <div class="d-flex gap-1 align-items-center">
                                     <button class="btn btn-sm ${checkBtnColor} py-0 px-1" title="Marcar/Chequear tarjeta" onclick="toggleCardCheck(event, '${order.id}')"><i class="${checkIconClass}"></i></button>
                                     <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
@@ -1563,8 +1535,7 @@
                                     <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
                                     <option value="Faro izquierdo reparándose" ${order.substatus === 'Faro izquierdo reparándose' ? 'selected' : ''}>Faro izquierdo reparándose</option>
                                     <option value="Faro derecho reparándose" ${order.substatus === 'Faro derecho reparándose' ? 'selected' : ''}>Faro derecho reparándose</option>
-                                    <option value="Pendiente de recambios" ${order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente de recambios</option>
-                                    <option value="Pendiente de ampliación" ${order.substatus === 'Pendiente de ampliación' ? 'selected' : ''}>Pendiente de ampliación</option>
+                                    <option value="Pendiente recambios" ${order.substatus === 'Pendiente recambios' || order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente recambios</option>
                                     <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
                                     <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
                                     <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
