@@ -536,9 +536,9 @@
                                 <select id="car-substatus" class="form-select">
                                     <option value="">Ninguno / Normal</option>
                                     <option value="Paragolpes fuera">Paragolpes fuera</option>
-                                    <option value="Faro izquierdo reparándose">Faro izquierdo reparándose</option>
-                                    <option value="Faro derecho reparándose">Faro derecho reparándose</option>
-                                    <option value="Pendiente recambios">Pendiente recambios</option>
+                                    <option value="Faro izquierdo / piloto reparándose">Faro izquierdo / piloto reparándose</option>
+                                    <option value="Faro derecho / piloto reparándose">Faro derecho / piloto reparándose</option>
+                                    <option value="Pendiente de recambios">Pendiente de recambios</option>
                                     <option value="Luna aquí">Luna aquí</option>
                                     <option value="Luna pendiente">Luna pendiente</option>
                                     <option value="Golpe taller">Golpe taller</option>
@@ -564,7 +564,7 @@
                             </select>
                         </div>
                         
-                        <!-- SECCIÓN DE CHECKLIST DE PIEZAS EN 4 COLUMNAS -->
+                        <!-- SECCIÓN DE CHECKLIST DE PIEZAS EN 4 COLUMNAS (Actualizada) -->
                         <div class="mb-3 p-3 bg-light border rounded">
                             <label class="form-label small text-primary fw-bold mb-2 d-block">
                                 <i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos (4 Columnas)
@@ -645,7 +645,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Columna 4 -->
+                                <!-- Columna 4 (Actualizada con Faro izquierdo/piloto y Faro derecho/piloto) -->
                                 <div class="col-md-3">
                                     <div class="p-2 bg-white border rounded h-100">
                                         <div class="form-check mb-1">
@@ -657,12 +657,12 @@
                                             <label class="form-check-label small" for="chk-estribo-der">Estribo Der.</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Faro izquierdo" id="chk-faro-izq">
-                                            <label class="form-check-label small" for="chk-faro-izq">Faro Izq.</label>
+                                            <input class="form-check-input piece-check" type="checkbox" value="Faro izquierdo / piloto" id="chk-faro-izq">
+                                            <label class="form-check-label small" for="chk-faro-izq">Faro izq. / piloto</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Faro derecho" id="chk-faro-der">
-                                            <label class="form-check-label small" for="chk-faro-der">Faro Der.</label>
+                                            <input class="form-check-input piece-check" type="checkbox" value="Faro derecho / piloto" id="chk-faro-der">
+                                            <label class="form-check-label small" for="chk-faro-der">Faro der. / piloto</label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input piece-check" type="checkbox" value="Llantas" id="chk-llantas">
@@ -1074,9 +1074,9 @@
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo reparándose', 'Faro izquierdo reparándose')"><div class="badge bg-light text-dark border small">Faro izquierdo reparándose</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho reparándose', 'Faro derecho reparándose')"><div class="badge bg-light text-dark border small">Faro derecho reparándose</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente recambios', 'Pendiente recambios')"><div class="badge bg-light text-dark border small">Pendiente recambios</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo / piloto reparándose', 'Faro izquierdo / piloto reparándose')"><div class="badge bg-light text-dark border small">Faro izquierdo / piloto reparándose</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho / piloto reparándose', 'Faro derecho / piloto reparándose')"><div class="badge bg-light text-dark border small">Faro derecho / piloto reparándose</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente de recambios', 'Pendiente de recambios')"><div class="badge bg-light text-dark border small">Pendiente de recambios</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')"><div class="badge bg-light text-dark border small">Luna aquí</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')"><div class="badge bg-light text-dark border small">Luna pendiente</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')"><div class="badge bg-light text-dark border small">Golpe taller</div></a></li>
@@ -1225,12 +1225,6 @@
             let containers = {};
             let chOpsList = getChapistasList();
 
-            // Función auxiliar para saber si el vehículo está en activo (excluyendo subestados de pausa para el contador)
-            const isActivelyWorking = (o) => {
-                let sub = (o.substatus || '').trim().toLowerCase();
-                return sub !== 'pendiente recambios' && sub !== 'pendiente de recambios' && sub !== 'pendiente de ampliación';
-            };
-
             if (chapistasFullscreenMode) {
                 if (chapistasColWidth) chapistasColWidth.style.minWidth = '100%';
                 if (chapistasSubtitle) chapistasSubtitle.innerText = `(Desglosado por Operarios)`;
@@ -1241,8 +1235,8 @@
                     let sub1Id = `chapa_sub${(index * 2) + 1}`;
                     let sub2Id = `chapa_sub${(index * 2) + 2}`;
                     
-                    let countRep = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'reparacion' && isActivelyWorking(o)).length;
-                    let countMon = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'montaje' && isActivelyWorking(o)).length;
+                    let countRep = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'reparacion').length;
+                    let countMon = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'montaje').length;
 
                     htmlColumns += `
                         <div class="chapista-group-col">
@@ -1302,8 +1296,8 @@
                 }
                 if (chapistasSubtitle) chapistasSubtitle.innerText = '(Reparación y Montaje)';
 
-                let countRepGen = orders.filter(o => o.status === 'reparacion' && isActivelyWorking(o)).length;
-                let countMonGen = orders.filter(o => o.status === 'montaje' && isActivelyWorking(o)).length;
+                let countRepGen = orders.filter(o => o.status === 'reparacion').length;
+                let countMonGen = orders.filter(o => o.status === 'montaje').length;
 
                 let chapaColsHtml = `
                     <div class="chapa-split-container">
@@ -1343,7 +1337,7 @@
 
             for (let i = 1; i <= 4; i++) {
                 let pName = getPintorName(i - 1);
-                let pCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.status !== 'terminados' && isActivelyWorking(o)).length;
+                let pCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.status !== 'terminados').length;
                 let badgeEl = document.getElementById(`badge-pintor${i}-count`);
                 if (badgeEl) badgeEl.innerText = pCount;
             }
@@ -1355,19 +1349,18 @@
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
                 let opLower = orderOp.toLowerCase();
-                let active = isActivelyWorking(order);
 
-                if (status === 'cargachapa' && active) counts.cargachapa++;
-                else if (status === 'cargapintura' && active) counts.cargapintura++;
-                else if (status === 'lunas' && active) counts.lunas++;
-                else if ((status === 'reparacion' || status === 'montaje') && active) {
+                if (status === 'cargachapa') counts.cargachapa++;
+                else if (status === 'cargapintura') counts.cargapintura++;
+                else if (status === 'lunas') counts.lunas++;
+                else if (status === 'reparacion' || status === 'montaje') {
                     counts.chapaTotal++;
                     if (status === 'reparacion') counts.reparacion++;
                     if (status === 'montaje') counts.montaje++;
-                } else if (status === 'paragolpes' && active) counts.paragolpes++;
-                else if (status === 'destajos' && active) counts.destajos++;
-                else if (status.startsWith('pintor') && active) counts.pintado++;
-                else if (status === 'terminados' && active) counts.terminados++;
+                } else if (status === 'paragolpes') counts.paragolpes++;
+                else if (status === 'destajos') counts.destajos++;
+                else if (status.startsWith('pintor')) counts.pintado++;
+                else if (status === 'terminados') counts.terminados++;
                 
                 let displayPlate = (order.plate || '').toUpperCase();
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
@@ -1533,9 +1526,9 @@
                                 <select id="edit-substatus" class="form-select">
                                     <option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option>
                                     <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
-                                    <option value="Faro izquierdo reparándose" ${order.substatus === 'Faro izquierdo reparándose' ? 'selected' : ''}>Faro izquierdo reparándose</option>
-                                    <option value="Faro derecho reparándose" ${order.substatus === 'Faro derecho reparándose' ? 'selected' : ''}>Faro derecho reparándose</option>
-                                    <option value="Pendiente recambios" ${order.substatus === 'Pendiente recambios' || order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente recambios</option>
+                                    <option value="Faro izquierdo / piloto reparándose" ${order.substatus === 'Faro izquierdo / piloto reparándose' ? 'selected' : ''}>Faro izquierdo / piloto reparándose</option>
+                                    <option value="Faro derecho / piloto reparándose" ${order.substatus === 'Faro derecho / piloto reparándose' ? 'selected' : ''}>Faro derecho / piloto reparándose</option>
+                                    <option value="Pendiente de recambios" ${order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente de recambios</option>
                                     <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
                                     <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
                                     <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
