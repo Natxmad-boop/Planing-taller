@@ -536,7 +536,8 @@
                                 <select id="car-substatus" class="form-select">
                                     <option value="">Ninguno / Normal</option>
                                     <option value="Paragolpes fuera">Paragolpes fuera</option>
-                                    <option value="Faro reparándose">Faro reparándose</option>
+                                    <option value="Faro izquierdo reparándose">Faro izquierdo reparándose</option>
+                                    <option value="Faro derecho reparándose">Faro derecho reparándose</option>
                                     <option value="Pendiente de recambios">Pendiente de recambios</option>
                                     <option value="Luna aquí">Luna aquí</option>
                                     <option value="Luna pendiente">Luna pendiente</option>
@@ -563,7 +564,7 @@
                             </select>
                         </div>
                         
-                        <!-- SECCIÓN DE CHECKLIST DE PIEZAS EN 4 COLUMNAS (Actualizada con Estribos) -->
+                        <!-- SECCIÓN DE CHECKLIST DE PIEZAS EN 4 COLUMNAS (Actualizada con Estribos y Faros) -->
                         <div class="mb-3 p-3 bg-light border rounded">
                             <label class="form-label small text-primary fw-bold mb-2 d-block">
                                 <i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos (4 Columnas)
@@ -644,7 +645,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Columna 4 (Nuevos Estribos añadidos aquí) -->
+                                <!-- Columna 4 (Estribos y Faros añadidos) -->
                                 <div class="col-md-3">
                                     <div class="p-2 bg-white border rounded h-100">
                                         <div class="form-check mb-1">
@@ -656,6 +657,14 @@
                                             <label class="form-check-label small" for="chk-estribo-der">Estribo Der.</label>
                                         </div>
                                         <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Faro izquierdo" id="chk-faro-izq">
+                                            <label class="form-check-label small" for="chk-faro-izq">Faro Izq.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Faro derecho" id="chk-faro-der">
+                                            <label class="form-check-label small" for="chk-faro-der">Faro Der.</label>
+                                        </div>
+                                        <div class="form-check">
                                             <input class="form-check-input piece-check" type="checkbox" value="Llantas" id="chk-llantas">
                                             <label class="form-check-label small" for="chk-llantas">Llantas</label>
                                         </div>
@@ -1065,7 +1074,8 @@
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro reparándose', 'Faro reparándose')"><div class="badge bg-light text-dark border small">Faro reparándose</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo reparándose', 'Faro izquierdo reparándose')"><div class="badge bg-light text-dark border small">Faro izquierdo reparándose</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho reparándose', 'Faro derecho reparándose')"><div class="badge bg-light text-dark border small">Faro derecho reparándose</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente de recambios', 'Pendiente de recambios')"><div class="badge bg-light text-dark border small">Pendiente de recambios</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')"><div class="badge bg-light text-dark border small">Luna aquí</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')"><div class="badge bg-light text-dark border small">Luna pendiente</div></a></li>
@@ -1362,7 +1372,6 @@
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
                 
-                // Mostrar solo el número de piezas en lugar de la lista completa para optimizar espacio
                 let piecesHtml = '';
                 if (order.pieces && order.pieces.length > 0) {
                     let pieceText = order.pieces.length === 1 ? '1 pieza' : `${order.pieces.length} piezas`;
@@ -1517,7 +1526,8 @@
                                 <select id="edit-substatus" class="form-select">
                                     <option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option>
                                     <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
-                                    <option value="Faro reparándose" ${order.substatus === 'Faro reparándose' ? 'selected' : ''}>Faro reparándose</option>
+                                    <option value="Faro izquierdo reparándose" ${order.substatus === 'Faro izquierdo reparándose' ? 'selected' : ''}>Faro izquierdo reparándose</option>
+                                    <option value="Faro derecho reparándose" ${order.substatus === 'Faro derecho reparándose' ? 'selected' : ''}>Faro derecho reparándose</option>
                                     <option value="Pendiente de recambios" ${order.substatus === 'Pendiente de recambios' ? 'selected' : ''}>Pendiente de recambios</option>
                                     <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
                                     <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
