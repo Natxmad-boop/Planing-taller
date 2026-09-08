@@ -563,7 +563,7 @@
                             </select>
                         </div>
                         
-                        <!-- NUEVA SECCIÓN DE CHECKLIST DE PIEZAS EN 4 COLUMNAS -->
+                        <!-- SECCIÓN DE CHECKLIST DE PIEZAS EN 4 COLUMNAS (Actualizada con Estribos) -->
                         <div class="mb-3 p-3 bg-light border rounded">
                             <label class="form-label small text-primary fw-bold mb-2 d-block">
                                 <i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos (4 Columnas)
@@ -584,9 +584,13 @@
                                             <input class="form-check-input piece-check" type="checkbox" value="Aleta Delantera Der" id="chk-aleta-der">
                                             <label class="form-check-label small" for="chk-aleta-der">Aleta Del. Der.</label>
                                         </div>
-                                        <div class="form-check">
+                                        <div class="form-check mb-1">
                                             <input class="form-check-input piece-check" type="checkbox" value="Capó" id="chk-capo">
                                             <label class="form-check-label small" for="chk-capo">Capó</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Techo" id="chk-techo">
+                                            <label class="form-check-label small" for="chk-techo">Techo</label>
                                         </div>
                                     </div>
                                 </div>
@@ -605,9 +609,13 @@
                                             <input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Izq" id="chk-puerta-d-izq">
                                             <label class="form-check-label small" for="chk-puerta-d-izq">Puerta Del. Izq.</label>
                                         </div>
-                                        <div class="form-check">
+                                        <div class="form-check mb-1">
                                             <input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Der" id="chk-puerta-d-der">
                                             <label class="form-check-label small" for="chk-puerta-d-der">Puerta Del. Der.</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Luna Delantera" id="chk-luna-del">
+                                            <label class="form-check-label small" for="chk-luna-del">Luna Delantera</label>
                                         </div>
                                     </div>
                                 </div>
@@ -626,28 +634,28 @@
                                             <input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Izq" id="chk-aleta-t-izq">
                                             <label class="form-check-label small" for="chk-aleta-t-izq">Aleta Tras. Izq.</label>
                                         </div>
-                                        <div class="form-check">
+                                        <div class="form-check mb-1">
                                             <input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Der" id="chk-aleta-t-der">
                                             <label class="form-check-label small" for="chk-aleta-t-der">Aleta Tras. Der.</label>
                                         </div>
-                                    </div>
-                                </div>
-                                <!-- Columna 4 -->
-                                <div class="col-md-3">
-                                    <div class="p-2 bg-white border rounded h-100">
-                                        <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Techo" id="chk-techo">
-                                            <label class="form-check-label small" for="chk-techo">Techo</label>
-                                        </div>
-                                        <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Luna Delantera" id="chk-luna-del">
-                                            <label class="form-check-label small" for="chk-luna-del">Luna Delantera</label>
-                                        </div>
-                                        <div class="form-check mb-1">
+                                        <div class="form-check">
                                             <input class="form-check-input piece-check" type="checkbox" value="Retrovisor Izq/Der" id="chk-retrovisor">
                                             <label class="form-check-label small" for="chk-retrovisor">Retrovisores</label>
                                         </div>
-                                        <div class="form-check">
+                                    </div>
+                                </div>
+                                <!-- Columna 4 (Nuevos Estribos añadidos aquí) -->
+                                <div class="col-md-3">
+                                    <div class="p-2 bg-white border rounded h-100">
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Estribo izquierdo" id="chk-estribo-izq">
+                                            <label class="form-check-label small" for="chk-estribo-izq">Estribo Izq.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Estribo derecho" id="chk-estribo-der">
+                                            <label class="form-check-label small" for="chk-estribo-der">Estribo Der.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
                                             <input class="form-check-input piece-check" type="checkbox" value="Llantas" id="chk-llantas">
                                             <label class="form-check-label small" for="chk-llantas">Llantas</label>
                                         </div>
@@ -718,7 +726,6 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date-in').value = today;
             document.getElementById('date-out').value = today;
-            // Limpiar checkboxes del checklist al abrir modal nuevo
             document.querySelectorAll('.piece-check').forEach(chk => chk.checked = false);
         }
 
@@ -1355,14 +1362,11 @@
 
                 let substatusBadge = order.substatus ? `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>` : '';
                 
-                // Renderizar las piezas seleccionadas si existen en la orden
+                // Mostrar solo el número de piezas en lugar de la lista completa para optimizar espacio
                 let piecesHtml = '';
                 if (order.pieces && order.pieces.length > 0) {
-                    piecesHtml = `<div class="mb-1"><small class="text-muted fw-bold">Piezas:</small> <div class="d-flex flex-wrap gap-1 mt-1">`;
-                    order.pieces.forEach(p => {
-                        piecesHtml += `<span class="badge bg-light text-secondary border" style="font-size:0.65rem;"><i class="fas fa-check text-success me-1"></i>${p}</span>`;
-                    });
-                    piecesHtml += `</div></div>`;
+                    let pieceText = order.pieces.length === 1 ? '1 pieza' : `${order.pieces.length} piezas`;
+                    piecesHtml = `<div class="mb-1"><span class="badge bg-light text-secondary border px-2 py-1" style="font-size:0.7rem;"><i class="fas fa-boxes text-primary me-1"></i>${pieceText}</span></div>`;
                 }
 
                 let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
@@ -1617,7 +1621,6 @@
             const initialStatus = document.getElementById('car-status').value;
             const initialOperator = document.getElementById('operator-select').value;
             
-            // Recoger los elementos seleccionados del checklist de 4 columnas
             let selectedPieces = [];
             document.querySelectorAll('.piece-check:checked').forEach(chk => {
                 selectedPieces.push(chk.value);
