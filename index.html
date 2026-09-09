@@ -445,6 +445,7 @@
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor1" class="text-truncate">PIN 1</span>
                             <div class="d-flex align-items-center gap-1">
+                                <span id="badge-pintor1-destajo" class="badge bg-primary rounded-pill" style="font-size: 0.65rem;" title="Destajos de este operario">0</span>
                                 <button type="button" class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" title="Marcar/Desmarcar todos de este operario" onclick="toggleAllByOperator('PIN 1')"><i class="far fa-check-square"></i></button>
                                 <span id="badge-pintor1-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
                             </div>
@@ -455,6 +456,7 @@
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor2" class="text-truncate">PIN 2</span>
                             <div class="d-flex align-items-center gap-1">
+                                <span id="badge-pintor2-destajo" class="badge bg-primary rounded-pill" style="font-size: 0.65rem;" title="Destajos de este operario">0</span>
                                 <button type="button" class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" title="Marcar/Desmarcar todos de este operario" onclick="toggleAllByOperator('PIN 2')"><i class="far fa-check-square"></i></button>
                                 <span id="badge-pintor2-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
                             </div>
@@ -465,6 +467,7 @@
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor3" class="text-truncate">PIN 3</span>
                             <div class="d-flex align-items-center gap-1">
+                                <span id="badge-pintor3-destajo" class="badge bg-primary rounded-pill" style="font-size: 0.65rem;" title="Destajos de este operario">0</span>
                                 <button type="button" class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" title="Marcar/Desmarcar todos de este operario" onclick="toggleAllByOperator('PIN 3')"><i class="far fa-check-square"></i></button>
                                 <span id="badge-pintor3-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
                             </div>
@@ -475,6 +478,7 @@
                         <div class="text-center fw-bold text-dark small mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                             <span id="label-pintor4" class="text-truncate">PIN 4</span>
                             <div class="d-flex align-items-center gap-1">
+                                <span id="badge-pintor4-destajo" class="badge bg-primary rounded-pill" style="font-size: 0.65rem;" title="Destajos de este operario">0</span>
                                 <button type="button" class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" title="Marcar/Desmarcar todos de este operario" onclick="toggleAllByOperator('PIN 4')"><i class="far fa-check-square"></i></button>
                                 <span id="badge-pintor4-count" class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">0</span>
                             </div>
@@ -1384,6 +1388,14 @@
                 let pCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.status !== 'terminados').length;
                 let badgeEl = document.getElementById(`badge-pintor${i}-count`);
                 if (badgeEl) badgeEl.innerText = pCount;
+
+                // Cálculo y visualización del número de destajos de ese pintor en azul
+                let pDestajoCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.isDestajo === true && o.status !== 'terminados').length;
+                let badgeDestajoEl = document.getElementById(`badge-pintor${i}-destajo`);
+                if (badgeDestajoEl) {
+                    badgeDestajoEl.innerText = pDestajoCount;
+                    badgeDestajoEl.style.display = pDestajoCount > 0 ? 'inline-block' : 'none';
+                }
             }
 
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
@@ -1443,7 +1455,6 @@
                 
                 let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;"><i class="fas fa-file-invoice-dollar me-1"></i>Destajo</span>` : '';
 
-                // MODIFICACIÓN PRINCIPAL: En lugar de listar todas las piezas, mostramos un número total con tooltip o desplegable
                 let piecesHtml = '';
                 if (order.pieces && order.pieces.length > 0) {
                     let totalPieces = order.pieces.length;
@@ -1504,7 +1515,6 @@
                 }
             });
 
-            // Actualizar contadores dinámicos de las subcolumnas reales de tarjetas
             Object.keys(dynamicSubCounters).forEach(subKey => {
                 let badgeSubEl = document.getElementById(`count-${subKey}`);
                 if (badgeSubEl) badgeSubEl.innerText = dynamicSubCounters[subKey];
