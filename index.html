@@ -175,17 +175,6 @@
             background-color: #fffbeb !important;
         }
 
-        .substatus-badge-ampliacion {
-            background-color: #ede9fe !important;
-            color: #6d28d9 !important;
-            border: 1px solid #c4b5fd !important;
-        }
-        .substatus-badge-recambios {
-            background-color: #fef3c7 !important;
-            color: #b45309 !important;
-            border: 1px solid #fde68a !important;
-        }
-
         @keyframes blink-animation {
             0% { opacity: 1; }
             50% { opacity: 0.3; }
@@ -1269,6 +1258,10 @@
             let containers = {};
             let chOpsList = getChapistasList();
 
+            // Guardaremos contadores de tarjetas CHEQUEADAS para los operarios de chapa en modo full
+            let chapaOpCheckedTotals = {};
+            chOpsList.forEach(op => { chapaOpCheckedTotals[op.name.toLowerCase()] = 0; });
+
             if (chapistasFullscreenMode) {
                 if (chapistasColWidth) chapistasColWidth.style.minWidth = '100%';
                 if (chapistasSubtitle) chapistasSubtitle.innerText = `(Desglosado por Operarios)`;
@@ -1278,20 +1271,13 @@
                 chOpsList.forEach((op, index) => {
                     let sub1Id = `chapa_sub${(index * 2) + 1}`;
                     let sub2Id = `chapa_sub${(index * 2) + 2}`;
-                    
-                    let ordersRep = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'reparacion');
-                    let ordersMon = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status === 'montaje');
-
-                    let countRepCards = ordersRep.length;
-                    let countMonCards = ordersMon.length;
-                    let totalOperarioGlobal = countRepCards + countMonCards;
 
                     htmlColumns += `
                         <div class="chapista-group-col">
                             <div class="text-center fw-bold text-dark mb-2 border-bottom pb-1 text-truncate d-flex justify-content-between align-items-center px-1">
                                 <span class="text-truncate" title="${op.name}">${op.name}</span>
                                 <div class="d-flex align-items-center gap-1">
-                                    <span class="badge bg-secondary rounded-pill" style="font-size: 0.65rem;" title="Total general">${totalOperarioGlobal}</span>
+                                    <span class="badge bg-secondary rounded-pill" style="font-size: 0.65rem;" title="Total hojas marcadas" id="count-op-total-${index}">0</span>
                                     <button type="button" class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" title="Marcar/Desmarcar todos de este operario" onclick="toggleAllByOperator('${op.name}')"><i class="far fa-check-square"></i></button>
                                 </div>
                             </div>
@@ -1385,11 +1371,11 @@
 
             for (let i = 1; i <= 4; i++) {
                 let pName = getPintorName(i - 1);
-                let pCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.status !== 'terminados').length;
+                // MODIFICACIÓN: Contar únicamente los chequeados (isChecked === true) para el pintor
+                let pCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.status !== 'terminados' && o.isChecked).length;
                 let badgeEl = document.getElementById(`badge-pintor${i}-count`);
                 if (badgeEl) badgeEl.innerText = pCount;
 
-                // Cálculo y visualización del número de destajos de ese pintor en azul
                 let pDestajoCount = orders.filter(o => (o.operator || '').trim().toLowerCase() === pName.toLowerCase() && o.isDestajo === true && o.status !== 'terminados').length;
                 let badgeDestajoEl = document.getElementById(`badge-pintor${i}-destajo`);
                 if (badgeDestajoEl) {
@@ -1421,12 +1407,16 @@
                 else if (status === 'cargapintura') counts.cargapintura++;
                 else if (status === 'lunas') counts.lunas++;
                 else if (status === 'reparacion' || status === 'montaje') {
-                    counts.chapaTotal++;
-                    if (status === 'reparacion') counts.reparacion++;
-                    if (status === 'montaje') counts.montaje++;
+                    // MODIFICACIÓN: Contar solo chapaTotal si está chequeado
+                    if (order.isChecked) counts.chapaTotal++;
+                    
+                    if (status === 'reparacion' && order.isChecked) counts.reparacion++;
+                    if (status === 'montaje' && order.isChecked) counts.montaje++;
                 } else if (status === 'paragolpes') counts.paragolpes++;
                 else if (status === 'destajos') counts.destajos++;
-                else if (status.startsWith('pintor')) counts.pintado++;
+                else if (status.startsWith('pintor')) {
+                    if (order.isChecked) counts.pintado++;
+                }
                 else if (status === 'terminados') counts.terminados++;
                 
                 let displayPlate = (order.plate || '').toUpperCase();
@@ -1478,10 +1468,18 @@
                     }
                     if (status === 'reparacion') targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 1}`;
                     else if (status === 'montaje') targetContainerKey = `chapa_sub${(assignedChapistaIdx * 2) + 2}`;
+
+                    // Acumular total de chequeadas para este operario si la tarjeta está marcada
+                    if (order.isChecked && chOpsList[assignedChapistaIdx]) {
+                        chapaOpCheckedTotals[chOpsList[assignedChapistaIdx].name.toLowerCase()] = (chapaOpCheckedTotals[chOpsList[assignedChapistaIdx].name.toLowerCase()] || 0) + 1;
+                    }
                 }
 
                 if (dynamicSubCounters[targetContainerKey] !== undefined) {
-                    dynamicSubCounters[targetContainerKey]++;
+                    // MODIFICACIÓN: Contar exclusivamente las tarjetas CHEQUEADAS dentro de cada subcolumna de chapa
+                    if (order.isChecked) {
+                        dynamicSubCounters[targetContainerKey]++;
+                    }
                 }
 
                 let checkBtnColor = order.isChecked ? 'btn-success' : 'btn-outline-secondary';
@@ -1519,6 +1517,16 @@
                 let badgeSubEl = document.getElementById(`count-${subKey}`);
                 if (badgeSubEl) badgeSubEl.innerText = dynamicSubCounters[subKey];
             });
+
+            // Pintar los totales globales al lado de cada operario de chapa en modo full
+            if (chapistasFullscreenMode) {
+                chOpsList.forEach((op, index) => {
+                    let totalBadgeEl = document.getElementById(`count-op-total-${index}`);
+                    if (totalBadgeEl) {
+                        totalBadgeEl.innerText = chapaOpCheckedTotals[op.name.toLowerCase()] || 0;
+                    }
+                });
+            }
 
             if (document.getElementById('count-cargachapa')) document.getElementById('count-cargachapa').innerText = counts.cargachapa;
             if (document.getElementById('count-cargapintura')) document.getElementById('count-cargapintura').innerText = counts.cargapintura;
