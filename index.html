@@ -1443,11 +1443,12 @@
                 
                 let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;"><i class="fas fa-file-invoice-dollar me-1"></i>Destajo</span>` : '';
 
+                // MODIFICACIÓN PRINCIPAL: En lugar de listar todas las piezas, mostramos un número total con tooltip o desplegable
                 let piecesHtml = '';
                 if (order.pieces && order.pieces.length > 0) {
-                    // Vista visual e intuitiva mejorada: muestra las piezas seleccionadas directamente recortadas o en píldoras compactas
-                    let piecesTags = order.pieces.map(p => `<span class="badge bg-white text-secondary border me-1 mb-1" style="font-size:0.65rem;">${p}</span>`).join('');
-                    piecesHtml = `<div class="mb-1 d-flex flex-wrap">${piecesTags}</div>`;
+                    let totalPieces = order.pieces.length;
+                    let piecesListTooltip = order.pieces.join(', ');
+                    piecesHtml = `<div class="mb-1"><span class="badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span></div>`;
                 }
 
                 let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
@@ -1735,7 +1736,7 @@
             const dateIn = document.getElementById('date-in').value;
             const dateOut = document.getElementById('date-out').value;
             const operator = document.getElementById('operator-select').value;
-            const substatus = document.getElementById('car-substatus5').value; // respetado
+            const substatus = document.getElementById('car-substatus').value;
             const status = document.getElementById('car-status').value;
             const notes = document.getElementById('car-notes').value;
             const urgent = document.getElementById('car-urgent').checked;
