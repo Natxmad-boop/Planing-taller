@@ -1068,6 +1068,8 @@
             let html = `
                 <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
                 <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item fw-bold text-info" href="#" onclick="handleSmartFilterSelect('destajo:true', '🛠️ Destajos Terminados')">🛠️ Ver Destajos (Historial)</a></li>
+                <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item fw-bold text-primary" href="#" onclick="toggleChapistasFullscreen(); handleSmartFilterSelect('', '🔍 Filtrar...')">🛠️ Vista por Operarios Chapa</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
@@ -1149,6 +1151,12 @@
             if (!order) return;
 
             let newOperator = order.operator || "";
+            let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
+
+            if (targetStatus === 'destajos') {
+                isDestajoFlag = true;
+            }
+
             if (targetStatus.startsWith('pintor')) {
                 const indexNum = parseInt(targetStatus.replace('pintor', '')) - 1;
                 newOperator = getPintorName(indexNum);
@@ -1166,7 +1174,12 @@
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
 
             try {
-                await updateDoc(doc(db, "orders", orderId), { status: targetStatus, operator: newOperator, history: updatedHistory });
+                await updateDoc(doc(db, "orders", orderId), { 
+                    status: targetStatus, 
+                    operator: newOperator, 
+                    isDestajo: isDestajoFlag, 
+                    history: updatedHistory 
+                });
             } catch (err) { console.error(err); }
         }
 
@@ -1221,6 +1234,10 @@
                     if (!order.urgent) return false;
                 } else if (activeQuickFilter === 'overdue') {
                     if (!isOverdue) return false;
+                }
+
+                if (filterVal === 'destajo:true') {
+                    return order.isDestajo === true;
                 }
 
                 if (filterVal.startsWith('sub:')) {
@@ -1412,6 +1429,8 @@
                     substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
                 }
                 
+                let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;"><i class="fas fa-file-invoice-dollar me-1"></i>Destajo</span>` : '';
+
                 let piecesHtml = '';
                 if (order.pieces && order.pieces.length > 0) {
                     let pieceText = order.pieces.length === 1 ? '1 pieza' : `${order.pieces.length} piezas`;
@@ -1450,7 +1469,10 @@
                                     <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
                                 </div>
                             </div>
-                            ${substatusBadge}
+                            <div>
+                                ${substatusBadge}
+                                ${destajoBadge}
+                            </div>
                             ${piecesHtml}
                             <div class="small text-secondary mb-1">
                                 <div class="d-flex align-items-center gap-1"><strong>Op:</strong> ${operatorDisplay}</div>
@@ -1478,6 +1500,11 @@
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
             let newOperator = order.operator || "";
+            let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
+            if (newStatus === 'destajos') {
+                isDestajoFlag = true;
+            }
+
             if (newStatus.startsWith('pintor')) {
                 const indexNum = parseInt(newStatus.replace('pintor', '')) - 1;
                 newOperator = getPintorName(indexNum);
@@ -1485,7 +1512,12 @@
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
             try {
-                await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, history: updatedHistory });
+                await updateDoc(doc(db, "orders", orderId), { 
+                    status: newStatus, 
+                    operator: newOperator, 
+                    isDestajo: isDestajoFlag,
+                    history: updatedHistory 
+                });
             } catch (err) { console.error(err); }
         }
 
@@ -1633,6 +1665,8 @@
             const newNotes = document.getElementById('edit-notes').value;
             const newUrgent = document.getElementById('edit-urgent').checked;
 
+            let isDestajoFlag = order.isDestajo || (order.status === 'destajos') || (newStatus === 'destajos');
+
             let selectedPieces = [];
             document.querySelectorAll('.edit-piece-check').forEach(chk => {
                 if (chk.checked) selectedPieces.push(chk.value);
@@ -1661,6 +1695,7 @@
                     notes: newNotes,
                     urgent: newUrgent,
                     pieces: selectedPieces,
+                    isDestajo: isDestajoFlag,
                     history: updatedHistory
                 });
 
@@ -1682,6 +1717,8 @@
             const notes = document.getElementById('car-notes').value;
             const urgent = document.getElementById('car-urgent').checked;
 
+            let isDestajoFlag = (status === 'destajos');
+
             let selectedPieces = [];
             document.querySelectorAll('.piece-check').forEach(chk => {
                 if (chk.checked) selectedPieces.push(chk.value);
@@ -1698,6 +1735,7 @@
                     plate, model, dateIn, dateOut, operator, substatus, status, notes, urgent,
                     pieces: selectedPieces,
                     isChecked: false,
+                    isDestajo: isDestajoFlag,
                     history: initialHistory
                 });
 
