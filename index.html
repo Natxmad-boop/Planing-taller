@@ -560,8 +560,8 @@
                                     <option value="Ampliación">Ampliación</option>
                                     <option value="Pendiente recambios">Pendiente recambios</option>
                                     <option value="Paragolpes fuera">Paragolpes fuera</option>
-                                    <option value="Faro izquierdo reparándose">Faro izquierdo reparándose</option>
-                                    <option value="Faro derecho reparándose">Faro derecho reparándose</option>
+                                    <option value="Faro izquierdo / piloto reparándose">Faro izq. / piloto reparándose</option>
+                                    <option value="Faro derecho / piloto reparándose">Faro dcho. / piloto reparándose</option>
                                     <option value="Luna aquí">Luna aquí</option>
                                     <option value="Luna pendiente">Luna pendiente</option>
                                     <option value="Golpe taller">Golpe taller</option>
@@ -589,9 +589,10 @@
                         
                         <div class="mb-3 p-3 bg-light border rounded">
                             <label class="form-label small text-primary fw-bold mb-2 d-block">
-                                <i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos (4 Columnas)
+                                <i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos (Ordenado por Zonas)
                             </label>
                             <div class="row g-2" id="checklist-four-columns-container">
+                                <!-- Columna 1: Frente y Lado Izquierdo Frontal -->
                                 <div class="col-md-3">
                                     <div class="p-2 bg-white border rounded h-100">
                                         <div class="form-check mb-1">
@@ -599,23 +600,49 @@
                                             <label class="form-check-label small" for="chk-parag-del">Paragolpes Del.</label>
                                         </div>
                                         <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Capó" id="chk-capo">
+                                            <label class="form-check-label small" for="chk-capo">Capó</label>
+                                        </div>
+                                        <div class="form-check mb-1">
                                             <input class="form-check-input piece-check" type="checkbox" value="Aleta Delantera Izq" id="chk-aleta-izq">
                                             <label class="form-check-label small" for="chk-aleta-izq">Aleta Del. Izq.</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Delantera Der" id="chk-aleta-der">
-                                            <label class="form-check-label small" for="chk-aleta-der">Aleta Del. Der.</label>
-                                        </div>
-                                        <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Capó" id="chk-capo">
-                                            <label class="form-check-label small" for="chk-capo">Capó</label>
+                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Izq" id="chk-puerta-d-izq">
+                                            <label class="form-check-label small" for="chk-puerta-d-izq">Puerta Del. Izq.</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Techo" id="chk-techo">
-                                            <label class="form-check-label small" for="chk-techo">Techo</label>
+                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Trasera Izq" id="chk-puerta-t-izq">
+                                            <label class="form-check-label small" for="chk-puerta-t-izq">Puerta Tras. Izq.</label>
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Columna 2: Lado Izquierdo Trasero y Techo -->
+                                <div class="col-md-3">
+                                    <div class="p-2 bg-white border rounded h-100">
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Izq" id="chk-aleta-t-izq">
+                                            <label class="form-check-label small" for="chk-aleta-t-izq">Aleta Tras. Izq.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Estribo izquierdo" id="chk-estribo-izq">
+                                            <label class="form-check-label small" for="chk-estribo-izq">Estribo Izq.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Techo" id="chk-techo">
+                                            <label class="form-check-label small" for="chk-techo">Techo</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Luna Delantera" id="chk-luna-del">
+                                            <label class="form-check-label small" for="chk-luna-del">Luna Delantera</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Retrovisor Izq/Der" id="chk-retrovisor">
+                                            <label class="form-check-label small" for="chk-retrovisor">Retrovisores</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Columna 3: Parte Trasera y Lado Derecho Trasero -->
                                 <div class="col-md-3">
                                     <div class="p-2 bg-white border rounded h-100">
                                         <div class="form-check mb-1">
@@ -627,60 +654,37 @@
                                             <label class="form-check-label small" for="chk-porton">Portón / Maletero</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Izq" id="chk-puerta-d-izq">
-                                            <label class="form-check-label small" for="chk-puerta-d-izq">Puerta Del. Izq.</label>
-                                        </div>
-                                        <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Der" id="chk-puerta-d-der">
-                                            <label class="form-check-label small" for="chk-puerta-d-der">Puerta Del. Der.</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Luna Delantera" id="chk-luna-del">
-                                            <label class="form-check-label small" for="chk-luna-del">Luna Delantera</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="p-2 bg-white border rounded h-100">
-                                        <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Trasera Izq" id="chk-puerta-t-izq">
-                                            <label class="form-check-label small" for="chk-puerta-t-izq">Puerta Tras. Izq.</label>
+                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Der" id="chk-aleta-t-der">
+                                            <label class="form-check-label small" for="chk-aleta-t-der">Aleta Tras. Der.</label>
                                         </div>
                                         <div class="form-check mb-1">
                                             <input class="form-check-input piece-check" type="checkbox" value="Puerta Trasera Der" id="chk-puerta-t-der">
                                             <label class="form-check-label small" for="chk-puerta-t-der">Puerta Tras. Der.</label>
                                         </div>
-                                        <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Izq" id="chk-aleta-t-izq">
-                                            <label class="form-check-label small" for="chk-aleta-t-izq">Aleta Tras. Izq.</label>
-                                        </div>
-                                        <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Der" id="chk-aleta-t-der">
-                                            <label class="form-check-label small" for="chk-aleta-t-der">Aleta Tras. Der.</label>
-                                        </div>
                                         <div class="form-check">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Retrovisor Izq/Der" id="chk-retrovisor">
-                                            <label class="form-check-label small" for="chk-retrovisor">Retrovisores</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="p-2 bg-white border rounded h-100">
-                                        <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Estribo izquierdo" id="chk-estribo-izq">
-                                            <label class="form-check-label small" for="chk-estribo-izq">Estribo Izq.</label>
-                                        </div>
-                                        <div class="form-check mb-1">
                                             <input class="form-check-input piece-check" type="checkbox" value="Estribo derecho" id="chk-estribo-der">
                                             <label class="form-check-label small" for="chk-estribo-der">Estribo Der.</label>
                                         </div>
+                                    </div>
+                                </div>
+                                <!-- Columna 4: Lado Derecho Frontal, Luces y Ruedas -->
+                                <div class="col-md-3">
+                                    <div class="p-2 bg-white border rounded h-100">
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Faro izquierdo" id="chk-faro-izq">
-                                            <label class="form-check-label small" for="chk-faro-izq">Faro Izq.</label>
+                                            <input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Der" id="chk-puerta-d-der">
+                                            <label class="form-check-label small" for="chk-puerta-d-der">Puerta Del. Der.</label>
                                         </div>
                                         <div class="form-check mb-1">
-                                            <input class="form-check-input piece-check" type="checkbox" value="Faro derecho" id="chk-faro-der">
-                                            <label class="form-check-label small" for="chk-faro-der">Faro Der.</label>
+                                            <input class="form-check-input piece-check" type="checkbox" value="Aleta Delantera Der" id="chk-aleta-der">
+                                            <label class="form-check-label small" for="chk-aleta-der">Aleta Del. Der.</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Faro izq. / piloto" id="chk-faro-izq">
+                                            <label class="form-check-label small" for="chk-faro-izq">Faro izq. / piloto</label>
+                                        </div>
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input piece-check" type="checkbox" value="Faro dcho. / piloto" id="chk-faro-der">
+                                            <label class="form-check-label small" for="chk-faro-der">Faro dcho. / piloto</label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input piece-check" type="checkbox" value="Llantas" id="chk-llantas">
@@ -1096,8 +1100,8 @@
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Ampliación', 'Ampliación')"><div class="badge substatus-badge-ampliacion">Ampliación</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente recambios', 'Pendiente recambios')"><div class="badge substatus-badge-recambios">Pendiente recambios</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo reparándose', 'Faro izquierdo reparándose')"><div class="badge bg-light text-dark border small">Faro izquierdo reparándose</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho reparándose', 'Faro derecho reparándose')"><div class="badge bg-light text-dark border small">Faro derecho reparándose</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo / piloto reparándose', 'Faro izq. / piloto reparándose')"><div class="badge bg-light text-dark border small">Faro izq. / piloto reparándose</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho / piloto reparándose', 'Faro dcho. / piloto reparándose')"><div class="badge bg-light text-dark border small">Faro dcho. / piloto reparándose</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')"><div class="badge bg-light text-dark border small">Luna aquí</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')"><div class="badge bg-light text-dark border small">Luna pendiente</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')"><div class="badge bg-light text-dark border small">Golpe taller</div></a></li>
@@ -1547,10 +1551,10 @@
 
             let checklistHtml = '';
             let allPossiblePieces = [
-                "Paragolpes Delantero", "Aleta Delantera Izq", "Aleta Delantera Der", "Capó", "Techo",
-                "Paragolpes Trasero", "Portón / Maletero", "Puerta Delantera Izq", "Puerta Delantera Der", "Luna Delantera",
-                "Puerta Trasera Izq", "Puerta Trasera Der", "Aleta Trasera Izq", "Aleta Trasera Der", "Retrovisor Izq/Der",
-                "Estribo izquierdo", "Estribo derecho", "Faro izquierdo", "Faro derecho", "Llantas"
+                "Paragolpes Delantero", "Capó", "Aleta Delantera Izq", "Puerta Delantera Izq", "Puerta Trasera Izq",
+                "Aleta Trasera Izq", "Estribo izquierdo", "Techo", "Luna Delantera", "Retrovisor Izq/Der",
+                "Paragolpes Trasero", "Portón / Maletero", "Aleta Trasera Der", "Puerta Trasera Der", "Estribo derecho",
+                "Puerta Delantera Der", "Aleta Delantera Der", "Faro izq. / piloto", "Faro dcho. / piloto", "Llantas"
             ];
 
             allPossiblePieces.forEach(pieceName => {
@@ -1602,8 +1606,8 @@
                                 <option value="Ampliación" ${order.substatus === 'Ampliación' ? 'selected' : ''}>Ampliación</option>
                                 <option value="Pendiente recambios" ${order.substatus === 'Pendiente recambios' ? 'selected' : ''}>Pendiente recambios</option>
                                 <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
-                                <option value="Faro izquierdo reparándose" ${order.substatus === 'Faro izquierdo reparándose' ? 'selected' : ''}>Faro izquierdo reparándose</option>
-                                <option value="Faro derecho reparándose" ${order.substatus === 'Faro derecho reparándose' ? 'selected' : ''}>Faro derecho reparándose</option>
+                                <option value="Faro izquierdo / piloto reparándose" ${order.substatus === 'Faro izquierdo / piloto reparándose' ? 'selected' : ''}>Faro izq. / piloto reparándose</option>
+                                <option value="Faro derecho / piloto reparándose" ${order.substatus === 'Faro derecho / piloto reparándose' ? 'selected' : ''}>Faro dcho. / piloto reparándose</option>
                                 <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
                                 <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
                                 <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
