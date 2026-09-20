@@ -102,8 +102,6 @@
         .period-selector button { border: none; background: transparent; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; color: #64748b; transition: all 0.15s; }
         .period-selector button.active { background: linear-gradient(135deg, #2563eb, #4f46e5); color: #ffffff; box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.4); }
         .period-selector button:hover:not(.active) { background: #f1f5f9; }
-
-        /* Panel desplegable de la tabla de KPIs */
         .kpi-detail-panel { background: #ffffff; border-radius: 16px; border: 1px solid #e8edf3; box-shadow: 0 4px 20px -10px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: hidden; }
         .kpi-detail-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
         .kpi-detail-header h6 { margin: 0; font-weight: 800; color: #0f172a; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
@@ -118,7 +116,16 @@
         .kpi-detail-table .plate-cell { font-family: 'Courier New', monospace; font-weight: 800; color: #0f172a; }
         .kpi-detail-table .date-cell.overdue { color: #dc2626; font-weight: 700; }
         .kpi-detail-empty { padding: 30px 20px; text-align: center; color: #94a3b8; font-style: italic; font-size: 0.85rem; }
-
+        .pieces-zone-card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; height: 100%; }
+        .pieces-zone-title { font-size: 0.78rem; font-weight: 700; color: #1e40af; text-transform: uppercase; border-bottom: 2px solid #dbeafe; padding-bottom: 4px; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .pieces-zone-title.zone-trasera { color: #b45309; border-bottom-color: #fef3c7; }
+        .pieces-zone-title.zone-lat-izq { color: #047857; border-bottom-color: #d1fae5; }
+        .pieces-zone-title.zone-lat-der { color: #047857; border-bottom-color: #d1fae5; }
+        .pieces-zone-title.zone-molduras { color: #6b21a8; border-bottom-color: #f3e8ff; }
+        .pieces-zone-title.zone-techo { color: #475569; border-bottom-color: #e2e8f0; }
+        .piece-check-label { font-size: 0.78rem; }
+        .coche-completo-box { background-color: #fff1f2; border: 2px dashed #fda4af; border-radius: 8px; padding: 12px; text-align: center; }
+        .coche-completo-box .form-check-label { font-weight: 700; color: #be123c; font-size: 0.95rem; }
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
             .chapista-group-col { min-width: 240px; padding: 8px; }
@@ -276,8 +283,7 @@
                                 <th>Estado</th>
                             </tr>
                         </thead>
-                        <tbody id="kpi-detail-body">
-                        </tbody>
+                        <tbody id="kpi-detail-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -535,37 +541,8 @@
                             </select>
                         </div>
                         <div class="mb-3 p-3 bg-light border rounded">
-                            <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Checklist de Piezas</label>
-                            <div class="row g-2" id="checklist-four-columns-container">
-                                <div class="col-md-3"><div class="p-2 bg-white border rounded h-100">
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Paragolpes Delantero"><label class="form-check-label small">Paragolpes Del.</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Capó"><label class="form-check-label small">Capó</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Aleta Delantera Izq"><label class="form-check-label small">Aleta Del. Izq.</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Izq"><label class="form-check-label small">Puerta Del. Izq.</label></div>
-                                    <div class="form-check"><input class="form-check-input piece-check" type="checkbox" value="Puerta Trasera Izq"><label class="form-check-label small">Puerta Tras. Izq.</label></div>
-                                </div></div>
-                                <div class="col-md-3"><div class="p-2 bg-white border rounded h-100">
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Izq"><label class="form-check-label small">Aleta Tras. Izq.</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Estribo izquierdo"><label class="form-check-label small">Estribo Izq.</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Techo"><label class="form-check-label small">Techo</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Luna Delantera"><label class="form-check-label small">Luna Delantera</label></div>
-                                    <div class="form-check"><input class="form-check-input piece-check" type="checkbox" value="Retrovisor Izq/Der"><label class="form-check-label small">Retrovisores</label></div>
-                                </div></div>
-                                <div class="col-md-3"><div class="p-2 bg-white border rounded h-100">
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Paragolpes Trasero"><label class="form-check-label small">Paragolpes Tras.</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Portón / Maletero"><label class="form-check-label small">Portón / Maletero</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Aleta Trasera Der"><label class="form-check-label small">Aleta Tras. Der.</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Puerta Trasera Der"><label class="form-check-label small">Puerta Tras. Der.</label></div>
-                                    <div class="form-check"><input class="form-check-input piece-check" type="checkbox" value="Estribo derecho"><label class="form-check-label small">Estribo Der.</label></div>
-                                </div></div>
-                                <div class="col-md-3"><div class="p-2 bg-white border rounded h-100">
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Puerta Delantera Der"><label class="form-check-label small">Puerta Del. Der.</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Aleta Delantera Der"><label class="form-check-label small">Aleta Del. Der.</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Faro izq. / piloto"><label class="form-check-label small">Faro izq. / piloto</label></div>
-                                    <div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="Faro dcho. / piloto"><label class="form-check-label small">Faro dcho. / piloto</label></div>
-                                    <div class="form-check"><input class="form-check-input piece-check" type="checkbox" value="Llantas"><label class="form-check-label small">Llantas</label></div>
-                                </div></div>
-                            </div>
+                            <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos</label>
+                            <div class="row g-2" id="checklist-new-container"></div>
                         </div>
                         <div class="mb-3"><label class="form-label small text-secondary fw-bold">Notas</label><textarea id="car-notes" class="form-control" rows="2"></textarea></div>
                         <div class="mb-3 form-check"><input type="checkbox" class="form-check-input" id="car-urgent"><label class="form-check-label text-danger fw-bold" for="car-urgent">Urgente</label></div>
@@ -607,6 +584,17 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        const PIECES_ZONES = [
+            { title: "Parte Delantera", cls: "", pieces: ["Paragolpes delantero","Spoiler delantero","Molduras negras","Capó","Luna delantera","Faro izquierdo","Faro derecho"] },
+            { title: "Parte Trasera", cls: "zone-trasera", pieces: ["Paragolpes trasero","Spoiler trasero","Moldura negra","Portón","Luna trasera","Piloto izquierdo","Piloto derecho"] },
+            { title: "Lateral Izquierdo", cls: "zone-lat-izq", pieces: ["Aleta delantera izquierda","Puerta delantera izquierda","Puerta trasera izquierda","Aleta trasera izquierda","Estribo izquierdo","Llanta delantera izquierda","Llanta trasera izquierda","Retrovisor izquierdo"] },
+            { title: "Lateral Derecho", cls: "zone-lat-der", pieces: ["Aleta delantera derecha","Puerta delantera derecha","Puerta trasera derecha","Aleta trasera derecha","Estribo derecho","Llanta delantera derecha","Llanta trasera derecha","Retrovisor derecho"] },
+            { title: "Molduras Pase de Aleta", cls: "zone-molduras", pieces: ["Moldura pase aleta delantera izq.","Moldura pase aleta delantera der.","Moldura pase aleta trasera izq.","Moldura pase aleta trasera der."] },
+            { title: "Techo", cls: "zone-techo", pieces: ["Techo"] }
+        ];
+
+        const COCHE_COMPLETO_PIEZAS = 12;
+
         let orders = [];
         let operators = [];
         let privacyModeActive = true;
@@ -629,6 +617,69 @@
 
         function safeId(str) { return String(str).replace(/[^a-zA-Z0-9]/g, '_'); }
 
+        function buildPiecesChecklistHtml(checkedPieces, prefixId) {
+            let html = '';
+            PIECES_ZONES.forEach((zone, zIdx) => {
+                html += `<div class="col-md-4">
+                    <div class="pieces-zone-card">
+                        <div class="pieces-zone-title ${zone.cls}">${zone.title}</div>`;
+                zone.pieces.forEach((piece, pIdx) => {
+                    const id = `${prefixId}-chk-${zIdx}-${pIdx}`;
+                    const isChecked = checkedPieces.includes(piece);
+                    html += `<div class="form-check mb-1">
+                        <input class="form-check-input piece-check" type="checkbox" value="${piece}" id="${id}" ${isChecked ? 'checked' : ''}>
+                        <label class="form-check-label piece-check-label" for="${id}">${piece}</label>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            });
+            const cocheCompletoChecked = checkedPieces.includes("COCHE COMPLETO");
+            html += `<div class="col-md-4">
+                <div class="coche-completo-box h-100 d-flex flex-column justify-content-center">
+                    <div class="form-check d-flex justify-content-center align-items-center">
+                        <input class="form-check-input piece-check coche-completo-check" type="checkbox" value="COCHE COMPLETO" id="${prefixId}-chk-coche-completo" ${cocheCompletoChecked ? 'checked' : ''}>
+                        <label class="form-check-label ms-2" for="${prefixId}-chk-coche-completo">
+                            <i class="fas fa-car-side me-1"></i> COCHE COMPLETO
+                        </label>
+                    </div>
+                    <div class="text-muted small text-center mt-2">Marca si es el coche entero (cuenta como ${COCHE_COMPLETO_PIEZAS} piezas).</div>
+                </div>
+            </div>`;
+            return html;
+        }
+
+        function setupCocheCompletoLogic(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const cocheCompletoChk = container.querySelector('.coche-completo-check');
+            const allPieceChks = container.querySelectorAll('.piece-check:not(.coche-completo-check)');
+            if (cocheCompletoChk) {
+                cocheCompletoChk.addEventListener('change', () => {
+                    if (cocheCompletoChk.checked) {
+                        allPieceChks.forEach(c => c.checked = false);
+                    }
+                });
+            }
+            allPieceChks.forEach(chk => {
+                chk.addEventListener('change', () => {
+                    if (chk.checked && cocheCompletoChk) cocheCompletoChk.checked = false;
+                });
+            });
+        }
+
+        function initNewOrderChecklist() {
+            const container = document.getElementById('checklist-new-container');
+            if (container) {
+                container.innerHTML = buildPiecesChecklistHtml([], 'new');
+                setupCocheCompletoLogic('checklist-new-container');
+            }
+        }
+
+        function getPiecesCount(order) {
+            if (order.cocheCompleto) return COCHE_COMPLETO_PIEZAS;
+            return (order.pieces || []).length;
+        }
+
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
 
         window.toggleBossDashboard = () => {
@@ -637,24 +688,15 @@
             const btnText = document.getElementById('boss-btn-text');
             if (container) container.style.display = bossDashboardActive ? 'block' : 'none';
             if (btnText) btnText.innerText = bossDashboardActive ? 'Ocultar Panel 360' : 'Ver Panel 360';
-            if (bossDashboardActive) {
-                operatorChartLevel = 'area';
-                operatorChartArea = null;
-                activeKpiDetail = null;
-                renderBossDashboardStats();
-            } else {
-                activeKpiDetail = null;
-                const panel = document.getElementById('kpi-detail-panel');
-                if (panel) panel.style.display = 'none';
-            }
+            if (bossDashboardActive) { operatorChartLevel = 'area'; operatorChartArea = null; activeKpiDetail = null; renderBossDashboardStats(); }
+            else { activeKpiDetail = null; const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none'; }
         }
 
         window.setBossPeriod = (period) => {
             bossPeriod = period;
             document.querySelectorAll('#period-selector button').forEach(b => b.classList.toggle('active', b.dataset.period === period));
             activeKpiDetail = null;
-            const panel = document.getElementById('kpi-detail-panel');
-            if (panel) panel.style.display = 'none';
+            const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none';
             renderBossDashboardStats();
         }
 
@@ -662,7 +704,7 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date-in').value = today;
             document.getElementById('date-out').value = today;
-            document.querySelectorAll('.piece-check').forEach(chk => chk.checked = false);
+            document.querySelectorAll('#checklist-new-container .piece-check').forEach(chk => chk.checked = false);
             document.getElementById('car-insurance').value = '';
             document.getElementById('car-insurance-custom').style.display = 'none';
             document.getElementById('car-insurance-custom').value = '';
@@ -672,14 +714,8 @@
 
         window.checkCustomInsurance = (selectEl) => {
             const customInput = document.getElementById('car-insurance-custom');
-            if (selectEl.value === 'OTRA') {
-                customInput.style.display = 'block';
-                customInput.required = true;
-            } else {
-                customInput.style.display = 'none';
-                customInput.required = false;
-                customInput.value = '';
-            }
+            if (selectEl.value === 'OTRA') { customInput.style.display = 'block'; customInput.required = true; }
+            else { customInput.style.display = 'none'; customInput.required = false; customInput.value = ''; }
         }
 
         window.autoSuggestStatusFromOperator = () => {
@@ -689,13 +725,8 @@
             const op = operators.find(o => o.name === operatorVal);
             if (!op) return;
             const currentStatus = statusSelect.value;
-            if (op.type === 'chapa') {
-                if (!currentStatus || currentStatus === 'cargachapa' || currentStatus === 'cargapintura') {
-                    statusSelect.value = 'reparacion';
-                }
-            } else if (op.type === 'pintura') {
-                statusSelect.value = 'pintura';
-            }
+            if (op.type === 'chapa') { if (!currentStatus || currentStatus === 'cargachapa' || currentStatus === 'cargapintura') statusSelect.value = 'reparacion'; }
+            else if (op.type === 'pintura') { statusSelect.value = 'pintura'; }
         }
 
         window.toggleMinimizeColumn = (columnId) => {
@@ -864,7 +895,6 @@
                 const syncEl = document.getElementById('sync-status');
                 if (syncEl) { syncEl.className = "badge bg-success text-white"; syncEl.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado'; }
             }, (error) => { console.error("Error órdenes:", error); });
-
             onSnapshot(collection(db, "operators"), (snapshot) => {
                 operators = [];
                 snapshot.forEach(docSnap => operators.push({ id: docSnap.id, ...docSnap.data() }));
@@ -909,15 +939,8 @@
         function updateSmartFilterDropdown() {
             const dropdownMenu = document.getElementById('smart-filter-dropdown');
             if (!dropdownMenu) return;
-            let chOps = getChapistasList();
-            let pinOps = getPintoresList();
-            let html = `
-                <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item fw-bold text-info" href="#" onclick="handleSmartFilterSelect('destajo:true', '🛠️ Destajos')">🛠️ Ver Destajos (Historial)</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
-            `;
+            let chOps = getChapistasList(); let pinOps = getPintoresList();
+            let html = `<li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li><li><hr class="dropdown-divider"></li><li><a class="dropdown-item fw-bold text-info" href="#" onclick="handleSmartFilterSelect('destajo:true', '🛠️ Destajos')">🛠️ Ver Destajos (Historial)</a></li><li><hr class="dropdown-divider"></li><li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>`;
             if (chOps.length > 0) {
                 html += `<li><h6 class="dropdown-header text-primary fw-bold ps-4">--- Chapa (CH) ---</h6></li>`;
                 chOps.forEach(op => { let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-ch px-2 py-1">${op.name}${suffix}</span><span class="badge bg-primary rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`; });
@@ -926,9 +949,7 @@
                 html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores ---</h6></li>`;
                 pinOps.forEach(op => { let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-pun px-2 py-1">${op.name}${suffix}</span><span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`; });
             }
-            html += `
-                <li><hr class="dropdown-divider"></li>
-                <li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>
+            html += `<li><hr class="dropdown-divider"></li><li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Ampliación', 'Ampliación')"><div class="badge substatus-badge-ampliacion">Ampliación</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente recambios', 'Pendiente recambios')"><div class="badge substatus-badge-recambios">Pendiente recambios</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li>
@@ -937,8 +958,7 @@
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')"><div class="badge bg-light text-dark border small">Luna aquí</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')"><div class="badge bg-light text-dark border small">Luna pendiente</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')"><div class="badge bg-light text-dark border small">Golpe taller</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Llanta reparándose fuera', 'Llanta reparándose fuera')"><div class="badge bg-light text-dark border small">Llanta reparándose fuera</div></a></li>
-            `;
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Llanta reparándose fuera', 'Llanta reparándose fuera')"><div class="badge bg-light text-dark border small">Llanta reparándose fuera</div></a></li>`;
             dropdownMenu.innerHTML = html;
         }
 
@@ -1051,7 +1071,13 @@
                 else if (order.substatus) substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
                 let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;">Destajo</span>` : '';
                 let piecesHtml = '';
-                if (order.pieces && order.pieces.length > 0) { let totalPieces = order.pieces.length; let piecesListTooltip = order.pieces.join(', '); piecesHtml = `<div class="mb-1"><span class="badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span></div>`; }
+                if (order.cocheCompleto) {
+                    piecesHtml = `<div class="mb-1"><span class="badge bg-danger text-white" style="font-size:0.7rem;"><i class="fas fa-car-side me-1"></i> COCHE COMPLETO</span></div>`;
+                } else if (order.pieces && order.pieces.length > 0) {
+                    let totalPieces = order.pieces.length;
+                    let piecesListTooltip = order.pieces.join(', ');
+                    piecesHtml = `<div class="mb-1"><span class="badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span></div>`;
+                }
                 let insuranceBadge = '';
                 const insVal = (order.insurance || '').trim();
                 if (insVal && insVal !== 'Sin asignar') insuranceBadge = `<span class="badge bg-info-subtle text-info-emphasis border border-info" style="font-size:0.65rem;"><i class="fas fa-building me-1"></i> ${insVal}</span>`;
@@ -1231,9 +1257,7 @@
             let historyHtml = '';
             if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
             else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
-            let checklistHtml = '';
-            let allPossiblePieces = ["Paragolpes Delantero","Capó","Aleta Delantera Izq","Puerta Delantera Izq","Puerta Trasera Izq","Aleta Trasera Izq","Estribo izquierdo","Techo","Luna Delantera","Retrovisor Izq/Der","Paragolpes Trasero","Portón / Maletero","Aleta Trasera Der","Puerta Trasera Der","Estribo derecho","Puerta Delantera Der","Aleta Delantera Der","Faro izq. / piloto","Faro dcho. / piloto","Llantas"];
-            allPossiblePieces.forEach(pieceName => { let isChecked = order.pieces && order.pieces.includes(pieceName); let safeP = safeId(pieceName); checklistHtml += `<div class="col-md-4 mb-2"><div class="form-check"><input class="form-check-input edit-piece-check" type="checkbox" value="${pieceName}" id="edit-chk-${safeP}" ${isChecked ? 'checked' : ''}><label class="form-check-label small" for="edit-chk-${safeP}">${pieceName}</label></div></div>`; });
+            const piecesChecklistHtml = buildPiecesChecklistHtml(order.pieces || (order.cocheCompleto ? ['COCHE COMPLETO'] : []), 'edit');
             const body = document.getElementById('detail-modal-body');
             body.innerHTML = `
                 <form onsubmit="handleUpdateOrder(event, '${order.id}')">
@@ -1269,7 +1293,7 @@
                     </div>
                     <div class="mb-3 p-3 bg-light border rounded">
                         <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Modificar Piezas</label>
-                        <div class="row g-1" id="edit-pieces-container">${checklistHtml}</div>
+                        <div class="row g-2" id="edit-pieces-container">${piecesChecklistHtml}</div>
                     </div>
                     <div class="mb-3"><label class="form-label small text-secondary fw-bold">Notas</label><textarea id="edit-notes" class="form-control" rows="2">${order.notes || ''}</textarea></div>
                     <div class="mb-3 form-check"><input type="checkbox" class="form-check-input" id="edit-urgent" ${order.urgent ? 'checked' : ''}><label class="form-check-label text-danger fw-bold" for="edit-urgent">Urgente</label></div>
@@ -1279,6 +1303,7 @@
                     <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Cambios</button>
                 </form>
             `;
+            setupCocheCompletoLogic('edit-pieces-container');
             const modal = new bootstrap.Modal(document.getElementById('detailModal')); modal.show();
         }
 
@@ -1297,12 +1322,19 @@
             const newUrgent = document.getElementById('edit-urgent').checked;
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos') || (newStatus === 'destajos');
             let selectedPieces = [];
-            document.querySelectorAll('.edit-piece-check').forEach(chk => { if (chk.checked) selectedPieces.push(chk.value); });
+            let cocheCompleto = false;
+            document.querySelectorAll('#edit-pieces-container .piece-check').forEach(chk => {
+                if (chk.checked) {
+                    if (chk.value === 'COCHE COMPLETO') cocheCompleto = true;
+                    else selectedPieces.push(chk.value);
+                }
+            });
+            if (cocheCompleto) selectedPieces = [];
             let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator;
             let updatedHistory = order.history ? [...order.history] : [];
             if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() });
             try {
-                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, isDestajo: isDestajoFlag, history: updatedHistory });
+                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, history: updatedHistory });
                 const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
             } catch (err) { console.error("Error:", err); }
         }
@@ -1324,10 +1356,17 @@
             if (!status) status = 'cargachapa';
             let isDestajoFlag = (status === 'destajos');
             let selectedPieces = [];
-            document.querySelectorAll('.piece-check').forEach(chk => { if (chk.checked) selectedPieces.push(chk.value); });
+            let cocheCompleto = false;
+            document.querySelectorAll('#checklist-new-container .piece-check').forEach(chk => {
+                if (chk.checked) {
+                    if (chk.value === 'COCHE COMPLETO') cocheCompleto = true;
+                    else selectedPieces.push(chk.value);
+                }
+            });
+            if (cocheCompleto) selectedPieces = [];
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString() }];
             try {
-                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, isChecked: false, isDestajo: isDestajoFlag, history: initialHistory });
+                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, history: initialHistory });
                 const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
@@ -1350,7 +1389,6 @@
         }
 
         function categorizeOrderForKpi(o, todayStr) {
-            // Devuelve la categoría única de la orden (evita duplicados entre recambios, externas y pasados)
             const sub = (o.substatus || '').toLowerCase();
             if (sub.includes('recambio')) return 'recambios';
             if (sub.includes('reparándose') || sub.includes('reparandose')) return 'externas';
@@ -1360,21 +1398,16 @@
 
         function renderBossDashboardStats() {
             const periodOrders = filterOrdersByBossPeriod(orders, bossPeriod);
-            const labels = { day: 'Hoy', month: 'Este mes', lastMonth: 'Mes anterior', year: 'Este año', all: 'Todo' };
             const todayStr = new Date().toISOString().split('T')[0];
-
             const total = periodOrders.length;
             const terminados = periodOrders.filter(o => o.status === 'terminados').length;
             const activas = total - terminados;
             const pctT = total > 0 ? Math.round((terminados / total) * 100) : 0;
-
-            // Clasificación única (excluyente)
             const recambios = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'recambios').length;
             const externas = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'externas').length;
             const pasados = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'pasados').length;
             const pctRec = total > 0 ? Math.round((recambios / total) * 100) : 0;
             const pctExt = total > 0 ? Math.round((externas / total) * 100) : 0;
-
             document.getElementById('kpi-activas').innerText = activas;
             document.getElementById('kpi-terminados').innerText = terminados;
             document.getElementById('kpi-porcentaje-terminados').innerText = `${pctT}% del total`;
@@ -1383,11 +1416,9 @@
             document.getElementById('kpi-externas').innerText = `${pctExt}%`;
             document.getElementById('kpi-externas-count').innerText = `${externas} afectados`;
             document.getElementById('kpi-pasados').innerText = pasados;
-
             renderOperatorChart(periodOrders);
             renderInsuranceChart(periodOrders);
             renderFasesChart(periodOrders);
-
             if (activeKpiDetail) renderKpiDetailTable(activeKpiDetail, periodOrders, todayStr);
         }
 
@@ -1409,35 +1440,18 @@
         }
 
         function renderKpiDetailTable(kpi, periodOrders, todayStr) {
-            const titles = {
-                activas: 'Órdenes Activas',
-                terminados: 'Órdenes Terminadas',
-                recambios: 'Órdenes con Recambios Pendientes',
-                externas: 'Órdenes con Reparación Externa',
-                pasados: 'Órdenes Pasadas de Fecha'
-            };
+            const titles = { activas: 'Órdenes Activas', terminados: 'Órdenes Terminadas', recambios: 'Órdenes con Recambios Pendientes', externas: 'Órdenes con Reparación Externa', pasados: 'Órdenes Pasadas de Fecha' };
             let filtered = [];
             if (kpi === 'activas') filtered = periodOrders.filter(o => o.status !== 'terminados');
             else if (kpi === 'terminados') filtered = periodOrders.filter(o => o.status === 'terminados');
             else if (kpi === 'recambios') filtered = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'recambios');
             else if (kpi === 'externas') filtered = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'externas');
             else if (kpi === 'pasados') filtered = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'pasados');
-
             document.getElementById('kpi-detail-title').innerText = titles[kpi] || 'Detalle';
             document.getElementById('kpi-detail-count').innerText = filtered.length;
-
             const tbody = document.getElementById('kpi-detail-body');
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="kpi-detail-empty">Sin órdenes en esta categoría.</td></tr>`;
-                return;
-            }
-
-            const statusLabelMap = {
-                cargachapa: 'Carga Chapa', cargapintura: 'Carga Pintura', lunas: 'Lunas',
-                reparacion: 'Reparación', montaje: 'Montaje', paragolpes: 'Paragolpes',
-                destajos: 'Destajos', pintura: 'Pintura', terminados: 'Terminados'
-            };
-
+            if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="kpi-detail-empty">Sin órdenes en esta categoría.</td></tr>`; return; }
+            const statusLabelMap = { cargachapa: 'Carga Chapa', cargapintura: 'Carga Pintura', lunas: 'Lunas', reparacion: 'Reparación', montaje: 'Montaje', paragolpes: 'Paragolpes', destajos: 'Destajos', pintura: 'Pintura', terminados: 'Terminados' };
             let html = '';
             filtered.forEach(o => {
                 const opBadge = o.operator ? `<span class="badge ${getOperatorBadgeClass(o.operator)}">${o.operator}</span>` : '<span class="text-muted small">Libre</span>';
@@ -1458,7 +1472,6 @@
             tbody.innerHTML = html;
         }
 
-        // Plugin para dibujar el texto del centro de los doughnuts
         const centerTextPlugin = {
             id: 'centerText',
             afterDraw: (chart) => {
@@ -1466,17 +1479,10 @@
                 const centerInfo = chart.config.options.plugins.centerText;
                 if (!centerInfo || !centerInfo.display) return;
                 const { ctx, chartArea: { top, bottom, left, right } } = chart;
-                const centerX = (left + right) / 2;
-                const centerY = (top + bottom) / 2;
-                ctx.save();
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.font = '800 11px Segoe UI, Tahoma, sans-serif';
-                ctx.fillStyle = '#64748b';
-                ctx.fillText(centerInfo.title || '', centerX, centerY - 12);
-                ctx.font = '800 26px Segoe UI, Tahoma, sans-serif';
-                ctx.fillStyle = '#0f172a';
-                ctx.fillText(centerInfo.value || '', centerX, centerY + 10);
+                const centerX = (left + right) / 2; const centerY = (top + bottom) / 2;
+                ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.font = '800 11px Segoe UI, Tahoma, sans-serif'; ctx.fillStyle = '#64748b'; ctx.fillText(centerInfo.title || '', centerX, centerY - 12);
+                ctx.font = '800 26px Segoe UI, Tahoma, sans-serif'; ctx.fillStyle = '#0f172a'; ctx.fillText(centerInfo.value || '', centerX, centerY + 10);
                 ctx.restore();
             }
         };
@@ -1486,7 +1492,6 @@
             const titleEl = document.getElementById('chart-area-breadcrumb');
             const hintEl = document.getElementById('chart-operators-hint');
             let labels, data, colors, chartType, centerTitle, centerValue;
-
             if (operatorChartLevel === 'area') {
                 const chapaCount = periodOrders.filter(o => o.status === 'reparacion' || o.status === 'montaje' || o.status === 'cargachapa').length;
                 const pinturaCount = periodOrders.filter(o => o.status === 'pintura' || o.status === 'cargapintura').length;
@@ -1509,7 +1514,6 @@
                 if (titleEl) titleEl.innerText = `— ${area === 'chapa' ? 'Chapa' : 'Pintura'}`;
                 if (hintEl) { hintEl.innerText = '⬅ Pulsa aquí para volver a la vista general.'; hintEl.classList.add('active'); hintEl.onclick = () => { operatorChartLevel = 'area'; operatorChartArea = null; renderBossDashboardStats(); }; }
             }
-
             if (charts.operators) charts.operators.destroy();
             charts.operators = new Chart(document.getElementById('chart-operators'), {
                 type: chartType,
@@ -1518,21 +1522,7 @@
                     responsive: true, maintainAspectRatio: false, cutout: '62%',
                     plugins: {
                         centerText: { display: true, title: centerTitle, value: centerValue },
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                font: { size: 11, weight: '600' }, padding: 10,
-                                generateLabels: function(chart) {
-                                    const data = chart.data; if (!data.labels.length) return [];
-                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                    return data.labels.map((label, i) => {
-                                        const value = data.datasets[0].data[i];
-                                        const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
-                                        return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i };
-                                    });
-                                }
-                            }
-                        },
+                        legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
                         tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
                     },
                     onClick: (evt, elements) => {
@@ -1550,7 +1540,6 @@
             periodOrders.forEach(o => { const ins = (o.insurance && o.insurance.trim()) ? o.insurance.trim() : 'Sin asignar'; insCounts[ins] = (insCounts[ins] || 0) + 1; });
             const insLabels = Object.keys(insCounts); const insData = Object.values(insCounts);
             const colors = insLabels.map((l, i) => l === 'Sin asignar' ? '#94a3b8' : COLOR_PALETTE[i % COLOR_PALETTE.length]);
-
             if (charts.insurance) charts.insurance.destroy();
             charts.insurance = new Chart(document.getElementById('chart-insurance'), {
                 type: 'doughnut',
@@ -1559,21 +1548,7 @@
                     responsive: true, maintainAspectRatio: false, cutout: '62%',
                     plugins: {
                         centerText: { display: true, title: 'TOTAL', value: String(periodOrders.length) },
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                font: { size: 11, weight: '600' }, padding: 10,
-                                generateLabels: function(chart) {
-                                    const data = chart.data; if (!data.labels.length) return [];
-                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                    return data.labels.map((label, i) => {
-                                        const value = data.datasets[0].data[i];
-                                        const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
-                                        return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i };
-                                    });
-                                }
-                            }
-                        },
+                        legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
                         tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
                     }
                 }
@@ -1585,7 +1560,6 @@
             const faseKeys = ['cargachapa', 'cargapintura', 'lunas', 'reparacion', 'montaje', 'paragolpes', 'destajos', 'pintura', 'terminados'];
             const faseCounts = faseKeys.map(k => periodOrders.filter(o => (o.status || '') === k).length);
             const faseColors = ['#2563eb', '#f59e0b', '#64748b', '#1d4ed8', '#059669', '#1e293b', '#0891b2', '#fbbf24', '#10b981'];
-
             if (charts.fases) charts.fases.destroy();
             charts.fases = new Chart(document.getElementById('chart-fases'), {
                 type: 'doughnut',
@@ -1594,28 +1568,19 @@
                     responsive: true, maintainAspectRatio: false, cutout: '62%',
                     plugins: {
                         centerText: { display: true, title: 'TOTAL', value: String(periodOrders.length) },
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                font: { size: 11, weight: '600' }, padding: 10,
-                                generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                    return data.labels.map((label, i) => {
-                                        const value = data.datasets[0].data[i];
-                                        const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
-                                        return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i };
-                                    });
-                                }
-                            }
-                        },
+                        legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
                         tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
                     }
                 }
             });
         }
 
-        initRealtimeSync();
+        // Arrancar
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initNewOrderChecklist);
+        } else {
+            initNewOrderChecklist();
+        }
     </script>
 </body>
 </html>
