@@ -7,468 +7,118 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-light: #f1f5f9;
-            --card-bg: #ffffff;
-            --border-color: #cbd5e1;
-            --text-main: #1e293b;
-            --accent-blue: #2563eb;
-        }
-        body {
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .navbar {
-            background-color: #ffffff;
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .kanban-container {
-            display: flex;
-            gap: 1rem;
-            overflow-x: auto;
-            padding-bottom: 1rem;
-            align-items: flex-start;
-        }
-        .kanban-col {
-            background-color: #e2e8f0;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            min-width: 320px;
-            flex: 1;
-            min-height: 75vh;
-            transition: all 0.3s ease;
-        }
-        .kanban-col.minimized {
-            min-width: 80px !important;
-            flex: 0 0 80px !important;
-            min-height: auto !important;
-        }
-        .kanban-col.minimized .kanban-dropzone,
-        .kanban-col.minimized .chapa-split-container,
-        .kanban-col.minimized .pintura-split-container,
-        .kanban-col.minimized .badge,
-        .kanban-col.minimized .small { display: none !important; }
-        .kanban-col.minimized h6 {
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            margin: 0 auto !important;
-            padding: 10px 0;
-            font-size: 0.85rem !important;
-            text-align: center;
-        }
-        .kanban-col.minimized .d-flex.justify-content-between {
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-        }
-        .kanban-dropzone {
-            min-height: 60vh;
-            border-radius: 8px;
-            transition: background-color 0.2s;
-        }
-        .kanban-dropzone.drag-over {
-            background-color: rgba(37, 99, 235, 0.15) !important;
-            border: 2px dashed #2563eb;
-        }
-        .chapa-split-container {
-            display: flex;
-            gap: 0.5rem;
-            min-height: 60vh;
-        }
-        .chapa-subcol {
-            flex: 1;
-            border-radius: 8px;
-            padding: 8px;
-            min-height: 55vh;
-            transition: background-color 0.2s;
-        }
+        :root { --bg-light: #f1f5f9; --card-bg: #ffffff; --border-color: #cbd5e1; --text-main: #1e293b; --accent-blue: #2563eb; }
+        body { background-color: var(--bg-light); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar { background-color: #ffffff; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .kanban-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
+        .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; }
+        .kanban-col.minimized { min-width: 80px !important; flex: 0 0 80px !important; min-height: auto !important; }
+        .kanban-col.minimized .kanban-dropzone, .kanban-col.minimized .chapa-split-container, .kanban-col.minimized .pintura-split-container, .kanban-col.minimized .badge, .kanban-col.minimized .small { display: none !important; }
+        .kanban-col.minimized h6 { writing-mode: vertical-rl; transform: rotate(180deg); margin: 0 auto !important; padding: 10px 0; font-size: 0.85rem !important; text-align: center; }
+        .kanban-col.minimized .d-flex.justify-content-between { flex-direction: column; align-items: center; height: 100%; }
+        .kanban-dropzone { min-height: 60vh; border-radius: 8px; transition: background-color 0.2s; }
+        .kanban-dropzone.drag-over { background-color: rgba(37, 99, 235, 0.15) !important; border: 2px dashed #2563eb; }
+        .chapa-split-container { display: flex; gap: 0.5rem; min-height: 60vh; }
+        .chapa-subcol { flex: 1; border-radius: 8px; padding: 8px; min-height: 55vh; transition: background-color 0.2s; }
         .subcol-reparacion { background-color: #eff6ff; border: 1px dashed #93c5fd; }
         .subcol-montaje { background-color: #f0fdf4; border: 1px dashed #86efac; }
         .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
         .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
-        .chapa-four-columns-container {
-            display: flex;
-            gap: 0.75rem;
-            min-height: 68vh;
-            overflow-x: auto;
-            width: 100%;
-        }
-        .chapista-group-col {
-            flex: 1;
-            min-width: 280px;
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: all 0.3s ease;
-        }
+        .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; }
+        .chapista-group-col { flex: 1; min-width: 280px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.3s ease; }
         .chapista-group-col.vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .chapista-group-col.baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
-        .chapista-group-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            padding: 6px 8px;
-            border-bottom: 2px solid rgba(0,0,0,0.08);
-            font-size: 0.85rem;
-            font-weight: 700;
-        }
+        .chapista-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 8px; border-bottom: 2px solid rgba(0,0,0,0.08); font-size: 0.85rem; font-weight: 700; }
         .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
-        .chapista-sub-box {
-            flex: 1;
-            background-color: #ffffff;
-            border: 1px dashed #94a3b8;
-            border-radius: 6px;
-            padding: 6px;
-            min-height: 55vh;
-            transition: background-color 0.2s;
-        }
+        .chapista-sub-box { flex: 1; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
         .chapista-group-col.vacaciones .chapista-sub-box { background-color: #fdf4ff; }
         .chapista-group-col.baja .chapista-sub-box { background-color: #f1f5f9; }
         .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
-        .pintura-split-container {
-            display: flex;
-            gap: 0.5rem;
-            min-height: 60vh;
-            overflow-x: auto;
-        }
-        .pintor-subcol {
-            flex: 1;
-            min-width: 180px;
-            background-color: #fffbeb;
-            border: 1px dashed #fcd34d;
-            border-radius: 8px;
-            padding: 8px;
-            min-height: 55vh;
-            transition: all 0.2s;
-        }
+        .pintura-split-container { display: flex; gap: 0.5rem; min-height: 60vh; overflow-x: auto; }
+        .pintor-subcol { flex: 1; min-width: 180px; background-color: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 8px; min-height: 55vh; transition: all 0.2s; }
         .pintor-subcol.pintor-vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .pintor-subcol.pintor-baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
         .pintor-subcol.drag-over { background-color: #fef3c7 !important; }
-        .pintor-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            padding: 4px 6px;
-            border-bottom: 2px solid rgba(0,0,0,0.08);
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
+        .pintor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 4px 6px; border-bottom: 2px solid rgba(0,0,0,0.08); font-size: 0.8rem; font-weight: 700; }
         .badge-estado { font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
         .badge-estado.badge-vacaciones { background-color: #c084fc; color: #ffffff; }
         .badge-estado.badge-baja { background-color: #94a3b8; color: #ffffff; }
-        .task-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            margin-bottom: 0.75rem;
-        }
-        .task-card.urgent {
-            background-color: #fff1f2 !important;
-            border: 2px solid #e11d48 !important;
-            box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important;
-        }
-        .task-card.checked-card {
-            background-color: #d1fae5 !important;
-            border: 2px solid #059669 !important;
-            box-shadow: 0 0 10px rgba(5, 150, 105, 0.3) !important;
-        }
-        .task-card.substatus-ampliacion {
-            border-left: 6px solid #8b5cf6 !important;
-            background-color: #faf5ff !important;
-        }
-        .task-card.substatus-recambios {
-            border-left: 6px solid #f59e0b !important;
-            background-color: #fffbeb !important;
-        }
-        .substatus-badge-ampliacion {
-            background-color: #f3e8ff !important; color: #6b21a8 !important;
-            border: 1px solid #d8b4fe !important; font-weight: 600;
-        }
-        .substatus-badge-recambios {
-            background-color: #fef3c7 !important; color: #b45309 !important;
-            border: 1px solid #fde047 !important; font-weight: 600;
-        }
+        .task-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.75rem; }
+        .task-card.urgent { background-color: #fff1f2 !important; border: 2px solid #e11d48 !important; box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important; }
+        .task-card.checked-card { background-color: #d1fae5 !important; border: 2px solid #059669 !important; box-shadow: 0 0 10px rgba(5, 150, 105, 0.3) !important; }
+        .task-card.substatus-ampliacion { border-left: 6px solid #8b5cf6 !important; background-color: #faf5ff !important; }
+        .task-card.substatus-recambios { border-left: 6px solid #f59e0b !important; background-color: #fffbeb !important; }
+        .substatus-badge-ampliacion { background-color: #f3e8ff !important; color: #6b21a8 !important; border: 1px solid #d8b4fe !important; font-weight: 600; }
+        .substatus-badge-recambios { background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde047 !important; font-weight: 600; }
         @keyframes blink-animation { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         .urgent-banner { animation: blink-animation 1s infinite; }
         .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
-        @keyframes highlight-pulse-blue {
-            0% { transform: scale(1); box-shadow: 0 0 0 rgba(37, 99, 235, 0); }
-            50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(37, 99, 235, 0.9); background-color: #dbeafe !important; border-color: #2563eb !important; }
-            100% { transform: scale(1); box-shadow: 0 0 15px rgba(37, 99, 235, 0.6); background-color: #dbeafe !important; border-color: #2563eb !important; }
-        }
+        @keyframes highlight-pulse-blue { 0% { transform: scale(1); box-shadow: 0 0 0 rgba(37, 99, 235, 0); } 50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(37, 99, 235, 0.9); background-color: #dbeafe !important; border-color: #2563eb !important; } 100% { transform: scale(1); box-shadow: 0 0 15px rgba(37, 99, 235, 0.6); background-color: #dbeafe !important; border-color: #2563eb !important; } }
         .resaltado-busqueda { animation: highlight-pulse-blue 1s infinite alternate; border: 2px solid #2563eb !important; z-index: 10; }
         .badge-ch { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
         .badge-pun { background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
         .badge-none { background-color: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
         .badge-sin-asignar { background-color: #f1f5f9; color: #64748b; border: 1px dashed #cbd5e1; font-style: italic; font-size: 0.65rem; }
-        .login-card {
-            background-color: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
+        .login-card { background-color: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .privacy-active { color: #2563eb !important; }
-        .history-timeline {
-            border-left: 2px solid #cbd5e1;
-            padding-left: 1rem;
-            margin-left: 0.5rem;
-        }
+        .history-timeline { border-left: 2px solid #cbd5e1; padding-left: 1rem; margin-left: 0.5rem; }
         .history-item { position: relative; margin-bottom: 1rem; }
-        .history-item::before {
-            content: '';
-            position: absolute;
-            left: -1.35rem;
-            top: 0.25rem;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #2563eb;
-        }
-        .legend-card {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 10px 15px;
-            font-size: 0.85rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        }
-        .btn-quick-filter.active-filter {
-            background-color: #1e293b !important;
-            color: #ffffff !important;
-            border-color: #1e293b !important;
-            box-shadow: 0 0 10px rgba(30, 41, 59, 0.4);
-        }
-
-        /* ===== PANEL 360 PROFESIONAL ===== */
-        .boss-dashboard-container {
-            background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 40%, #f0f9ff 100%);
-            border: 1px solid #c7d2fe;
-            border-radius: 18px;
-            padding: 24px;
-            box-shadow: 0 20px 40px -20px rgba(37, 99, 235, 0.15), 0 4px 12px rgba(0,0,0,0.03);
-            margin-bottom: 2rem;
-        }
-        .boss-dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding-bottom: 18px;
-            margin-bottom: 22px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .boss-dashboard-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .boss-dashboard-title .boss-icon-circle {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #2563eb, #4f46e5);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.5);
-        }
-        .boss-dashboard-title h3 {
-            margin: 0;
-            font-weight: 800;
-            color: #0f172a;
-            font-size: 1.4rem;
-            letter-spacing: -0.3px;
-        }
-        .boss-dashboard-title .subtitle {
-            margin: 0;
-            color: #64748b;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        .stat-card-boss {
-            background: #ffffff;
-            border: 1px solid #e8edf3;
-            border-radius: 14px;
-            padding: 20px;
-            box-shadow: 0 4px 16px -8px rgba(0,0,0,0.06);
-            height: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .stat-card-boss:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1);
-        }
-        .stat-card-boss h6 {
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 16px;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .stat-card-boss h6 .stat-title-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: #eff6ff;
-            color: #2563eb;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-        }
-        /* KPIs */
-        .kpi-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 20px 22px;
-            box-shadow: 0 4px 20px -10px rgba(0,0,0,0.08);
-            border: 1px solid #e8edf3;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-        .kpi-card::after {
-            content: '';
-            position: absolute;
-            right: -20px;
-            top: -20px;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            opacity: 0.08;
-        }
-        .kpi-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 16px 32px -14px rgba(0,0,0,0.12);
-        }
-        .kpi-card .kpi-icon-circle {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
+        .history-item::before { content: ''; position: absolute; left: -1.35rem; top: 0.25rem; width: 10px; height: 10px; border-radius: 50%; background-color: #2563eb; }
+        .legend-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 15px; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .btn-quick-filter.active-filter { background-color: #1e293b !important; color: #ffffff !important; border-color: #1e293b !important; box-shadow: 0 0 10px rgba(30, 41, 59, 0.4); }
+        .boss-dashboard-container { background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 40%, #f0f9ff 100%); border: 1px solid #c7d2fe; border-radius: 18px; padding: 24px; box-shadow: 0 20px 40px -20px rgba(37, 99, 235, 0.15), 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 2rem; }
+        .boss-dashboard-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 18px; margin-bottom: 22px; border-bottom: 1px solid #e2e8f0; }
+        .boss-dashboard-title { display: flex; align-items: center; gap: 12px; }
+        .boss-dashboard-title .boss-icon-circle { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.5); }
+        .boss-dashboard-title h3 { margin: 0; font-weight: 800; color: #0f172a; font-size: 1.4rem; letter-spacing: -0.3px; }
+        .boss-dashboard-title .subtitle { margin: 0; color: #64748b; font-size: 0.85rem; font-weight: 500; }
+        .stat-card-boss { background: #ffffff; border: 1px solid #e8edf3; border-radius: 14px; padding: 20px; box-shadow: 0 4px 16px -8px rgba(0,0,0,0.06); height: 100%; transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card-boss:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1); }
+        .stat-card-boss h6 { font-weight: 700; color: #0f172a; margin-bottom: 16px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+        .stat-card-boss h6 .stat-title-icon { width: 28px; height: 28px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+        .kpi-card { background: #ffffff; border-radius: 16px; padding: 18px 20px; box-shadow: 0 4px 20px -10px rgba(0,0,0,0.08); border: 1px solid #e8edf3; height: 100%; display: flex; align-items: center; gap: 14px; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; cursor: pointer; }
+        .kpi-card::after { content: ''; position: absolute; right: -20px; top: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.08; }
+        .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -14px rgba(0,0,0,0.12); }
+        .kpi-card.active-tab { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        .kpi-card .kpi-icon-circle { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
         .kpi-card.kpi-blue .kpi-icon-circle { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
         .kpi-card.kpi-green .kpi-icon-circle { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #047857; }
         .kpi-card.kpi-amber .kpi-icon-circle { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
         .kpi-card.kpi-red .kpi-icon-circle { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #b91c1c; }
+        .kpi-card.kpi-purple .kpi-icon-circle { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #6d28d9; }
         .kpi-card.kpi-blue::after { background: #2563eb; }
         .kpi-card.kpi-green::after { background: #059669; }
         .kpi-card.kpi-amber::after { background: #f59e0b; }
         .kpi-card.kpi-red::after { background: #dc2626; }
+        .kpi-card.kpi-purple::after { background: #7c3aed; }
         .kpi-card .kpi-body { flex: 1; min-width: 0; }
-        .kpi-card .kpi-label {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            font-weight: 800;
-            color: #64748b;
-            margin-bottom: 4px;
-        }
-        .kpi-card .kpi-value {
-            font-size: 1.9rem;
-            font-weight: 800;
-            color: #0f172a;
-            line-height: 1;
-            letter-spacing: -0.5px;
-        }
-        .kpi-card .kpi-sub {
-            font-size: 0.72rem;
-            color: #94a3b8;
-            margin-top: 4px;
-            font-weight: 500;
-        }
+        .kpi-card .kpi-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 800; color: #64748b; margin-bottom: 4px; }
+        .kpi-card .kpi-value { font-size: 1.9rem; font-weight: 800; color: #0f172a; line-height: 1; letter-spacing: -0.5px; }
+        .kpi-card .kpi-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 4px; font-weight: 500; }
         .chart-wrapper { position: relative; height: 320px; }
-        .chart-nav-hint {
-            font-size: 0.8rem;
-            color: #64748b;
-            font-style: italic;
-            margin-top: 8px;
-            text-align: center;
-        }
-        .chart-nav-hint.active {
-            color: #2563eb;
-            font-weight: 700;
-            font-style: normal;
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 8px;
-            background: #eff6ff;
-            display: inline-block;
-            width: auto;
-            margin: 8px auto 0;
-        }
-        .period-selector {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 5px;
-            border: 1px solid #e2e8f0;
-            display: inline-flex;
-            gap: 3px;
-            flex-wrap: wrap;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-        }
-        .period-selector button {
-            border: none;
-            background: transparent;
-            padding: 7px 14px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            color: #64748b;
-            transition: all 0.15s;
-        }
-        .period-selector button.active {
-            background: linear-gradient(135deg, #2563eb, #4f46e5);
-            color: #ffffff;
-            box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.4);
-        }
+        .chart-nav-hint { font-size: 0.8rem; color: #64748b; font-style: italic; margin-top: 8px; text-align: center; }
+        .chart-nav-hint.active { color: #2563eb; font-weight: 700; font-style: normal; cursor: pointer; padding: 6px 12px; border-radius: 8px; background: #eff6ff; display: inline-block; width: auto; margin: 8px auto 0; }
+        .period-selector { background: #ffffff; border-radius: 12px; padding: 5px; border: 1px solid #e2e8f0; display: inline-flex; gap: 3px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+        .period-selector button { border: none; background: transparent; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; color: #64748b; transition: all 0.15s; }
+        .period-selector button.active { background: linear-gradient(135deg, #2563eb, #4f46e5); color: #ffffff; box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.4); }
         .period-selector button:hover:not(.active) { background: #f1f5f9; }
 
-        /* Estilo del centro de los doughnuts */
-        .doughnut-center-label {
-            text-align: center;
-            line-height: 1.15;
-        }
-        .doughnut-center-label .center-title {
-            font-size: 0.65rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: #64748b;
-            text-transform: uppercase;
-        }
-        .doughnut-center-label .center-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #0f172a;
-            margin-top: 2px;
-        }
+        /* Panel desplegable de la tabla de KPIs */
+        .kpi-detail-panel { background: #ffffff; border-radius: 16px; border: 1px solid #e8edf3; box-shadow: 0 4px 20px -10px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: hidden; }
+        .kpi-detail-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+        .kpi-detail-header h6 { margin: 0; font-weight: 800; color: #0f172a; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
+        .kpi-detail-header .badge-count { background: #2563eb; color: #fff; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+        .kpi-detail-close { background: transparent; border: none; color: #64748b; font-size: 1rem; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; }
+        .kpi-detail-close:hover { background: #fee2e2; color: #dc2626; }
+        .kpi-detail-table { margin: 0; font-size: 0.85rem; }
+        .kpi-detail-table thead th { background: #f8fafc; color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+        .kpi-detail-table tbody tr { border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.15s; }
+        .kpi-detail-table tbody tr:hover { background: #eff6ff; }
+        .kpi-detail-table tbody td { padding: 10px 14px; vertical-align: middle; }
+        .kpi-detail-table .plate-cell { font-family: 'Courier New', monospace; font-weight: 800; color: #0f172a; }
+        .kpi-detail-table .date-cell.overdue { color: #dc2626; font-weight: 700; }
+        .kpi-detail-empty { padding: 30px 20px; text-align: center; color: #94a3b8; font-style: italic; font-size: 0.85rem; }
 
-        /* iPad y tablets */
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
             .chapista-group-col { min-width: 240px; padding: 8px; }
@@ -482,7 +132,6 @@
             .kpi-card .kpi-value { font-size: 1.5rem; }
             .kpi-card .kpi-label { font-size: 0.62rem; }
             .kpi-card .kpi-icon-circle { width: 44px; height: 44px; font-size: 1.2rem; }
-            .kpi-card .kpi-icon { display: none; }
             .boss-dashboard-container { padding: 16px; }
             .stat-card-boss { padding: 14px; }
             .stat-card-boss h6 { font-size: 0.85rem; }
@@ -558,45 +207,78 @@
             </div>
 
             <div class="row g-3 mb-4">
-                <div class="col-md-3 col-6">
-                    <div class="kpi-card kpi-blue">
-                        <div class="kpi-icon-circle"><i class="fas fa-car"></i></div>
+                <div class="col">
+                    <div class="kpi-card kpi-blue" data-kpi="activas" onclick="toggleKpiDetail('activas')">
+                        <div class="kpi-icon-circle"><i class="fas fa-play-circle"></i></div>
                         <div class="kpi-body">
-                            <div class="kpi-label">Vehículos / Piezas</div>
-                            <div class="kpi-value" id="kpi-total">0</div>
-                            <div class="kpi-sub" id="kpi-periodo-label">Este mes</div>
+                            <div class="kpi-label">Activas</div>
+                            <div class="kpi-value" id="kpi-activas">0</div>
+                            <div class="kpi-sub">En proceso</div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="kpi-card kpi-green">
+                <div class="col">
+                    <div class="kpi-card kpi-green" data-kpi="terminados" onclick="toggleKpiDetail('terminados')">
                         <div class="kpi-icon-circle"><i class="fas fa-check-circle"></i></div>
                         <div class="kpi-body">
-                            <div class="kpi-label">Terminados</div>
+                            <div class="kpi-label">Terminadas</div>
                             <div class="kpi-value text-success" id="kpi-terminados">0</div>
                             <div class="kpi-sub" id="kpi-porcentaje-terminados">0% del total</div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="kpi-card kpi-amber">
+                <div class="col">
+                    <div class="kpi-card kpi-amber" data-kpi="recambios" onclick="toggleKpiDetail('recambios')">
                         <div class="kpi-icon-circle"><i class="fas fa-clock"></i></div>
                         <div class="kpi-body">
-                            <div class="kpi-label">Retrasos (Recambios)</div>
+                            <div class="kpi-label">Recambios</div>
                             <div class="kpi-value text-warning" id="kpi-retrasos">0%</div>
                             <div class="kpi-sub" id="kpi-retrasos-count">0 afectados</div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="kpi-card kpi-red">
-                        <div class="kpi-icon-circle"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="col">
+                    <div class="kpi-card kpi-red" data-kpi="externas" onclick="toggleKpiDetail('externas')">
+                        <div class="kpi-icon-circle"><i class="fas fa-external-link-alt"></i></div>
                         <div class="kpi-body">
-                            <div class="kpi-label">Externas (Faros/Parag.)</div>
+                            <div class="kpi-label">Externas</div>
                             <div class="kpi-value text-danger" id="kpi-externas">0%</div>
                             <div class="kpi-sub" id="kpi-externas-count">0 afectados</div>
                         </div>
                     </div>
+                </div>
+                <div class="col">
+                    <div class="kpi-card kpi-purple" data-kpi="pasados" onclick="toggleKpiDetail('pasados')">
+                        <div class="kpi-icon-circle"><i class="fas fa-hourglass-end"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Pasados</div>
+                            <div class="kpi-value" style="color:#7c3aed;" id="kpi-pasados">0</div>
+                            <div class="kpi-sub">Fuera de fecha</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="kpi-detail-panel" class="kpi-detail-panel" style="display:none;">
+                <div class="kpi-detail-header">
+                    <h6><i class="fas fa-list-ul"></i> <span id="kpi-detail-title">Detalle</span> <span class="badge-count" id="kpi-detail-count">0</span></h6>
+                    <button class="kpi-detail-close" onclick="closeKpiDetail()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table kpi-detail-table">
+                        <thead>
+                            <tr>
+                                <th>Matrícula</th>
+                                <th>Modelo</th>
+                                <th>Operario</th>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kpi-detail-body">
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -688,7 +370,6 @@
                 </div>
                 <div id="list-cargachapa" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargachapa')"></div>
             </div>
-
             <div id="col-cargapintura-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-warning"></i> Carga Pintura</h6>
@@ -699,7 +380,6 @@
                 </div>
                 <div id="list-cargapintura" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargapintura')"></div>
             </div>
-
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
@@ -710,7 +390,6 @@
                 </div>
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
-
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
@@ -721,7 +400,6 @@
                 </div>
                 <div id="chapa-dynamic-wrapper"></div>
             </div>
-
             <div id="col-paragolpes-wrapper" class="kanban-col p-3 border-top border-dark border-4 shadow-sm" style="display: block;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes</h6>
@@ -732,7 +410,6 @@
                 </div>
                 <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
             </div>
-
             <div id="col-destajos-wrapper" class="kanban-col p-3 border-top border-info border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-file-invoice-dollar me-1 text-info"></i> Destajos</h6>
@@ -743,7 +420,6 @@
                 </div>
                 <div id="list-destajos" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'destajos')"></div>
             </div>
-
             <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Operario)</span></h6>
@@ -754,7 +430,6 @@
                 </div>
                 <div id="pintores-dynamic-wrapper" class="pintura-split-container"></div>
             </div>
-
             <div id="col-terminados-wrapper" class="kanban-col p-3 border-top border-success border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
@@ -778,28 +453,10 @@
                 <div class="modal-body">
                     <form onsubmit="handleAddOperator(event)" class="mb-4 p-3 bg-light border rounded">
                         <div class="row g-2 align-items-end">
-                            <div class="col-md-5">
-                                <label class="form-label small fw-bold">Nombre</label>
-                                <input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. AE, Rubén, PO...">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label small fw-bold">Tipo</label>
-                                <select id="new-operator-type" class="form-select" required>
-                                    <option value="chapa">Chapa</option>
-                                    <option value="pintura">Pintura</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label small fw-bold">Estado</label>
-                                <select id="new-operator-state" class="form-select">
-                                    <option value="activo">Activo</option>
-                                    <option value="vacaciones">Vacaciones</option>
-                                    <option value="baja">Baja</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-primary fw-bold w-100">Añadir</button>
-                            </div>
+                            <div class="col-md-5"><label class="form-label small fw-bold">Nombre</label><input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. AE, Rubén, PO..."></div>
+                            <div class="col-md-3"><label class="form-label small fw-bold">Tipo</label><select id="new-operator-type" class="form-select" required><option value="chapa">Chapa</option><option value="pintura">Pintura</option></select></div>
+                            <div class="col-md-2"><label class="form-label small fw-bold">Estado</label><select id="new-operator-state" class="form-select"><option value="activo">Activo</option><option value="vacaciones">Vacaciones</option><option value="baja">Baja</option></select></div>
+                            <div class="col-md-2"><button type="submit" class="btn btn-primary fw-bold w-100">Añadir</button></div>
                         </div>
                     </form>
                     <h6 class="fw-bold text-secondary mb-2">Listado de operarios</h6>
@@ -819,14 +476,8 @@
                 <div class="modal-body">
                     <form id="order-form" onsubmit="handleAddOrder(event)">
                         <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label small text-secondary fw-bold">Matrícula</label>
-                                <input type="text" id="car-plate" class="form-control text-uppercase" required placeholder="Ej. 4523XYZ">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small text-secondary fw-bold">Modelo / Descripción</label>
-                                <input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León">
-                            </div>
+                            <div class="col-md-4"><label class="form-label small text-secondary fw-bold">Matrícula</label><input type="text" id="car-plate" class="form-control text-uppercase" required placeholder="Ej. 4523XYZ"></div>
+                            <div class="col-md-4"><label class="form-label small text-secondary fw-bold">Modelo / Descripción</label><input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León"></div>
                             <div class="col-md-4">
                                 <label class="form-label small text-secondary fw-bold"><i class="fas fa-shield-alt text-primary me-1"></i> Compañía Aseguradora</label>
                                 <select id="car-insurance" class="form-select" onchange="checkCustomInsurance(this)">
@@ -847,22 +498,11 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Entrada</label>
-                                <input type="date" id="date-in" class="form-control" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Salida Prevista</label>
-                                <input type="date" id="date-out" class="form-control" required>
-                            </div>
+                            <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Entrada</label><input type="date" id="date-in" class="form-control" required></div>
+                            <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Salida Prevista</label><input type="date" id="date-out" class="form-control" required></div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label small text-secondary fw-bold">Operario</label>
-                                <select id="operator-select" class="form-select" onchange="autoSuggestStatusFromOperator()">
-                                    <option value="">Sin asignar (Libre)</option>
-                                </select>
-                            </div>
+                            <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Operario</label><select id="operator-select" class="form-select" onchange="autoSuggestStatusFromOperator()"><option value="">Sin asignar (Libre)</option></select></div>
                             <div class="col-md-6">
                                 <label class="form-label small text-secondary fw-bold">Subestado</label>
                                 <select id="car-substatus" class="form-select">
@@ -949,14 +589,13 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAqzUFL_4PBhpIND_CFIg8...", 
+            apiKey: "AIzaSyAqzUFL_4PBhpIND_CFIg8...",
             authDomain: "planning-taller-23a87.firebaseapp.com",
             projectId: "planning-taller-23a87",
             storageBucket: "planning-taller-23a87.appspot.com",
@@ -984,14 +623,9 @@
         let charts = { insurance: null, operators: null, fases: null };
         let operatorChartLevel = 'area';
         let operatorChartArea = null;
+        let activeKpiDetail = null;
 
-        // Paleta de colores vivos para operarios y compañías
-        const COLOR_PALETTE = [
-            '#2563eb', '#059669', '#f59e0b', '#dc2626', '#7c3aed',
-            '#0891b2', '#be185d', '#65a30d', '#ea580c', '#4338ca',
-            '#0d9488', '#9333ea', '#ca8a04', '#e11d48', '#0284c7',
-            '#a16207', '#0f766e', '#c026d3', '#64748b', '#db2777'
-        ];
+        const COLOR_PALETTE = ['#2563eb','#059669','#f59e0b','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c','#4338ca','#0d9488','#9333ea','#ca8a04','#e11d48','#0284c7','#a16207','#0f766e','#c026d3','#64748b','#db2777'];
 
         function safeId(str) { return String(str).replace(/[^a-zA-Z0-9]/g, '_'); }
 
@@ -1006,13 +640,21 @@
             if (bossDashboardActive) {
                 operatorChartLevel = 'area';
                 operatorChartArea = null;
+                activeKpiDetail = null;
                 renderBossDashboardStats();
+            } else {
+                activeKpiDetail = null;
+                const panel = document.getElementById('kpi-detail-panel');
+                if (panel) panel.style.display = 'none';
             }
         }
 
         window.setBossPeriod = (period) => {
             bossPeriod = period;
             document.querySelectorAll('#period-selector button').forEach(b => b.classList.toggle('active', b.dataset.period === period));
+            activeKpiDetail = null;
+            const panel = document.getElementById('kpi-detail-panel');
+            if (panel) panel.style.display = 'none';
             renderBossDashboardStats();
         }
 
@@ -1082,31 +724,12 @@
         }
 
         window.toggleColumnVisibility = (colName, forceState = null) => {
-            if (colName === 'cargachapa') {
-                showCargaChapaCol = forceState !== null ? forceState : !showCargaChapaCol;
-                const wrapper = document.getElementById('col-cargachapa-wrapper');
-                if (wrapper) wrapper.style.display = showCargaChapaCol ? 'block' : 'none';
-            } else if (colName === 'cargapintura') {
-                showCargaPinturaCol = forceState !== null ? forceState : !showCargaPinturaCol;
-                const wrapper = document.getElementById('col-cargapintura-wrapper');
-                if (wrapper) wrapper.style.display = showCargaPinturaCol ? 'block' : 'none';
-            } else if (colName === 'lunas') {
-                showLunasCol = forceState !== null ? forceState : !showLunasCol;
-                const wrapper = document.getElementById('col-lunas-wrapper');
-                if (wrapper) wrapper.style.display = showLunasCol ? 'block' : 'none';
-            } else if (colName === 'paragolpes') {
-                showParagolpesCol = forceState !== null ? forceState : !showParagolpesCol;
-                const wrapper = document.getElementById('col-paragolpes-wrapper');
-                if (wrapper) wrapper.style.display = showParagolpesCol ? 'block' : 'none';
-            } else if (colName === 'destajos') {
-                showDestajosCol = forceState !== null ? forceState : !showDestajosCol;
-                const wrapper = document.getElementById('col-destajos-wrapper');
-                if (wrapper) wrapper.style.display = showDestajosCol ? 'block' : 'none';
-            } else if (colName === 'terminados') {
-                showTerminadosCol = forceState !== null ? forceState : !showTerminadosCol;
-                const wrapper = document.getElementById('col-terminados-wrapper');
-                if (wrapper) wrapper.style.display = showTerminadosCol ? 'block' : 'none';
-            }
+            if (colName === 'cargachapa') { showCargaChapaCol = forceState !== null ? forceState : !showCargaChapaCol; const w = document.getElementById('col-cargachapa-wrapper'); if (w) w.style.display = showCargaChapaCol ? 'block' : 'none'; }
+            else if (colName === 'cargapintura') { showCargaPinturaCol = forceState !== null ? forceState : !showCargaPinturaCol; const w = document.getElementById('col-cargapintura-wrapper'); if (w) w.style.display = showCargaPinturaCol ? 'block' : 'none'; }
+            else if (colName === 'lunas') { showLunasCol = forceState !== null ? forceState : !showLunasCol; const w = document.getElementById('col-lunas-wrapper'); if (w) w.style.display = showLunasCol ? 'block' : 'none'; }
+            else if (colName === 'paragolpes') { showParagolpesCol = forceState !== null ? forceState : !showParagolpesCol; const w = document.getElementById('col-paragolpes-wrapper'); if (w) w.style.display = showParagolpesCol ? 'block' : 'none'; }
+            else if (colName === 'destajos') { showDestajosCol = forceState !== null ? forceState : !showDestajosCol; const w = document.getElementById('col-destajos-wrapper'); if (w) w.style.display = showDestajosCol ? 'block' : 'none'; }
+            else if (colName === 'terminados') { showTerminadosCol = forceState !== null ? forceState : !showTerminadosCol; const w = document.getElementById('col-terminados-wrapper'); if (w) w.style.display = showTerminadosCol ? 'block' : 'none'; }
         }
 
         window.setQuickFilter = (filterType) => {
@@ -1138,10 +761,7 @@
                 setTimeout(() => {
                     document.querySelectorAll('.task-card').forEach(c => c.classList.remove('resaltado-busqueda'));
                     const tarjetaEl = document.getElementById(`card-${targetOrder.id}`);
-                    if (tarjetaEl) {
-                        tarjetaEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        tarjetaEl.classList.add('resaltado-busqueda');
-                    }
+                    if (tarjetaEl) { tarjetaEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); tarjetaEl.classList.add('resaltado-busqueda'); }
                 }, 150);
             }
         }
@@ -1149,10 +769,7 @@
         function getOperatorBadgeClass(opName) {
             if (!opName) return 'badge-none';
             const op = operators.find(o => o.name === opName);
-            if (op && op.type) {
-                if (op.type === 'chapa') return 'badge-ch';
-                if (op.type === 'pintura') return 'badge-pun';
-            }
+            if (op && op.type) { if (op.type === 'chapa') return 'badge-ch'; if (op.type === 'pintura') return 'badge-pun'; }
             const upper = opName.toUpperCase();
             if (upper.startsWith('CH')) return 'badge-ch';
             if (upper.startsWith('PIN') || upper.startsWith('PUN')) return 'badge-pun';
@@ -1167,7 +784,6 @@
                 return upper.startsWith('CH') || (!upper.startsWith('PIN') && !upper.startsWith('PUN'));
             });
         }
-
         function getPintoresList() {
             return operators.filter(op => {
                 if (op.type) return op.type === 'pintura';
@@ -1185,11 +801,8 @@
             if (affectedOrders.length === 0) return;
             let allChecked = affectedOrders.every(o => o.isChecked);
             let newState = !allChecked;
-            try {
-                for (let order of affectedOrders) {
-                    await updateDoc(doc(db, "orders", order.id), { isChecked: newState });
-                }
-            } catch (err) { console.error("Error al actualizar en bloque:", err); }
+            try { for (let order of affectedOrders) { await updateDoc(doc(db, "orders", order.id), { isChecked: newState }); } }
+            catch (err) { console.error("Error al actualizar en bloque:", err); }
         }
 
         function buildStatusSelectOptions(currentStatus) {
@@ -1212,20 +825,12 @@
             let html = `<option value="">Sin asignar (Libre)</option>`;
             if (chOps.length > 0) {
                 html += `<optgroup label="--- Chapa ---">`;
-                chOps.forEach(op => {
-                    let sel = (selectedVal === op.name) ? 'selected' : '';
-                    let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : '';
-                    html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`;
-                });
+                chOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`; });
                 html += `</optgroup>`;
             }
             if (pinOps.length > 0) {
                 html += `<optgroup label="--- Pintura ---">`;
-                pinOps.forEach(op => {
-                    let sel = (selectedVal === op.name) ? 'selected' : '';
-                    let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : '';
-                    html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`;
-                });
+                pinOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`; });
                 html += `</optgroup>`;
             }
             return html;
@@ -1257,10 +862,7 @@
                 renderOrders();
                 if (bossDashboardActive) renderBossDashboardStats();
                 const syncEl = document.getElementById('sync-status');
-                if (syncEl) {
-                    syncEl.className = "badge bg-success text-white";
-                    syncEl.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado';
-                }
+                if (syncEl) { syncEl.className = "badge bg-success text-white"; syncEl.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado'; }
             }, (error) => { console.error("Error órdenes:", error); });
 
             onSnapshot(collection(db, "operators"), (snapshot) => {
@@ -1274,14 +876,9 @@
             const listContainer = document.getElementById('operators-list');
             const selectContainer = document.getElementById('operator-select');
             if (!listContainer || !selectContainer) return;
-
             listContainer.innerHTML = '';
             let currentSelectedOp = selectContainer.value;
-
-            if (operators.length === 0) {
-                listContainer.innerHTML = '<p class="text-muted small">No hay operarios. Añade uno arriba.</p>';
-            }
-
+            if (operators.length === 0) listContainer.innerHTML = '<p class="text-muted small">No hay operarios. Añade uno arriba.</p>';
             operators.forEach(op => {
                 const type = op.type || ((op.name || '').toUpperCase().startsWith('CH') ? 'chapa' : 'pintura');
                 const state = op.state || 'activo';
@@ -1290,14 +887,9 @@
                 if (state === 'vacaciones') stateBadge = '<span class="badge badge-estado badge-vacaciones">🌴 Vacaciones</span>';
                 else if (state === 'baja') stateBadge = '<span class="badge badge-estado badge-baja">⛔ Baja</span>';
                 else stateBadge = '<span class="badge bg-success" style="font-size:0.6rem;">Activo</span>';
-
                 listContainer.innerHTML += `
                     <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border flex-wrap gap-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="fw-bold">${op.name}</span>
-                            ${typeBadge}
-                            ${stateBadge}
-                        </div>
+                        <div class="d-flex align-items-center gap-2"><span class="fw-bold">${op.name}</span>${typeBadge}${stateBadge}</div>
                         <div class="d-flex gap-1 align-items-center">
                             <select class="form-select form-select-sm" style="width:auto; font-size:0.8rem;" onchange="changeOperatorState('${op.id}', this.value)">
                                 <option value="activo" ${state === 'activo' ? 'selected' : ''}>Activo</option>
@@ -1309,7 +901,6 @@
                     </div>
                 `;
             });
-
             selectContainer.innerHTML = buildGroupedOperatorOptions(currentSelectedOp);
             updateSmartFilterDropdown();
             renderOrders();
@@ -1318,10 +909,8 @@
         function updateSmartFilterDropdown() {
             const dropdownMenu = document.getElementById('smart-filter-dropdown');
             if (!dropdownMenu) return;
-            
             let chOps = getChapistasList();
             let pinOps = getPintoresList();
-
             let html = `
                 <li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li>
                 <li><hr class="dropdown-divider"></li>
@@ -1329,24 +918,14 @@
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>
             `;
-
             if (chOps.length > 0) {
                 html += `<li><h6 class="dropdown-header text-primary fw-bold ps-4">--- Chapa (CH) ---</h6></li>`;
-                chOps.forEach(op => {
-                    let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length;
-                    let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : '';
-                    html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-ch px-2 py-1">${op.name}${suffix}</span><span class="badge bg-primary rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`;
-                });
+                chOps.forEach(op => { let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-ch px-2 py-1">${op.name}${suffix}</span><span class="badge bg-primary rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`; });
             }
             if (pinOps.length > 0) {
                 html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores ---</h6></li>`;
-                pinOps.forEach(op => {
-                    let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length;
-                    let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : '';
-                    html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-pun px-2 py-1">${op.name}${suffix}</span><span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`;
-                });
+                pinOps.forEach(op => { let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-pun px-2 py-1">${op.name}${suffix}</span><span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`; });
             }
-
             html += `
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>
@@ -1360,19 +939,15 @@
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')"><div class="badge bg-light text-dark border small">Golpe taller</div></a></li>
                 <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Llanta reparándose fuera', 'Llanta reparándose fuera')"><div class="badge bg-light text-dark border small">Llanta reparándose fuera</div></a></li>
             `;
-
             dropdownMenu.innerHTML = html;
         }
 
         window.handleSmartFilterSelect = (val, labelText) => {
             activeQuickFilter = 'all';
             document.querySelectorAll('.btn-quick-filter').forEach(btn => btn.classList.remove('active-filter'));
-            const allBtn = document.getElementById('filter-btn-all');
-            if (allBtn) allBtn.classList.add('active-filter');
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) searchInput.value = val;
-            const labelEl = document.getElementById('smart-filter-label');
-            if (labelEl) labelEl.innerText = labelText;
+            const allBtn = document.getElementById('filter-btn-all'); if (allBtn) allBtn.classList.add('active-filter');
+            const searchInput = document.getElementById('search-input'); if (searchInput) searchInput.value = val;
+            const labelEl = document.getElementById('smart-filter-label'); if (labelEl) labelEl.innerText = labelText;
             renderOrders();
         }
 
@@ -1383,56 +958,35 @@
             const stateInput = document.getElementById('new-operator-state');
             const name = nameInput.value.trim();
             if (!name) return;
-            try {
-                await addDoc(collection(db, "operators"), { name, type: typeInput.value, state: stateInput.value });
-                nameInput.value = '';
-                typeInput.value = 'chapa';
-                stateInput.value = 'activo';
-            } catch (err) { console.error(err); }
-        }
-
-        window.changeOperatorState = async (id, newState) => {
-            try { await updateDoc(doc(db, "operators", id), { state: newState }); }
+            try { await addDoc(collection(db, "operators"), { name, type: typeInput.value, state: stateInput.value }); nameInput.value = ''; typeInput.value = 'chapa'; stateInput.value = 'activo'; }
             catch (err) { console.error(err); }
         }
 
-        window.deleteOperator = async (id) => { 
-            if (confirm('¿Eliminar operario?')) {
-                try { await deleteDoc(doc(db, "operators", id)); } catch (err) { console.error(err); }
-            } 
-        }
+        window.changeOperatorState = async (id, newState) => { try { await updateDoc(doc(db, "operators", id), { state: newState }); } catch (err) { console.error(err); } }
+        window.deleteOperator = async (id) => { if (confirm('¿Eliminar operario?')) { try { await deleteDoc(doc(db, "operators", id)); } catch (err) { console.error(err); } } }
 
         window.allowDrop = (ev) => { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
         window.removeDropStyle = (ev) => { ev.currentTarget.classList.remove('drag-over'); }
         window.drag = (ev, id) => { ev.dataTransfer.setData("text/plain", id); }
 
         window.dropOrder = async (ev, targetStatus) => {
-            ev.preventDefault();
-            ev.currentTarget.classList.remove('drag-over');
-            const orderId = ev.dataTransfer.getData("text/plain");
-            if (!orderId) return;
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
+            ev.preventDefault(); ev.currentTarget.classList.remove('drag-over');
+            const orderId = ev.dataTransfer.getData("text/plain"); if (!orderId) return;
+            const order = orders.find(o => o.id === orderId); if (!order) return;
             let newOperator = order.operator || "";
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
             let newStatus = targetStatus;
             if (targetStatus === 'destajos') isDestajoFlag = true;
-            if (targetStatus.startsWith('op_')) {
-                const parts = targetStatus.split('_');
-                newOperator = parts[1];
-                newStatus = parts.slice(2).join('_');
-            }
+            if (targetStatus.startsWith('op_')) { const parts = targetStatus.split('_'); newOperator = parts[1]; newStatus = parts.slice(2).join('_'); }
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
-            try {
-                await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, history: updatedHistory });
-            } catch (err) { console.error(err); }
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, history: updatedHistory }); }
+            catch (err) { console.error(err); }
         }
 
         window.toggleCardCheck = async (e, orderId) => {
             e.stopPropagation();
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
+            const order = orders.find(o => o.id === orderId); if (!order) return;
             const newCheckedState = !order.isChecked;
             try { await updateDoc(doc(db, "orders", orderId), { isChecked: newCheckedState }); }
             catch (err) { console.error(err); }
@@ -1442,7 +996,6 @@
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
-
             if (filterVal !== '') {
                 if (filterVal.includes('carga chapa') || filterVal === 'cargachapa') { if (!showCargaChapaCol) toggleColumnVisibility('cargachapa', true); }
                 if (filterVal.includes('carga pintura') || filterVal === 'cargapintura') { if (!showCargaPinturaCol) toggleColumnVisibility('cargapintura', true); }
@@ -1451,7 +1004,6 @@
                 if (filterVal.includes('destajo') || filterVal === 'destajos') { if (!showDestajosCol) toggleColumnVisibility('destajos', true); }
                 if (filterVal.includes('terminado') || filterVal === 'terminados') { if (!showTerminadosCol) toggleColumnVisibility('terminados', true); }
             }
-
             let filteredOrders = orders.filter(order => {
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
@@ -1461,33 +1013,19 @@
                 else if (activeQuickFilter === 'overdue') { if (!isOverdue) return false; }
                 if (filterVal === 'destajo:true') return order.isDestajo === true;
                 if (filterVal.startsWith('sub:')) { let targetSub = filterVal.replace('sub:', '').trim(); return orderSub.toLowerCase() === targetSub.toLowerCase(); }
-                if (filterVal.startsWith('op:')) {
-                    let targetOp = filterVal.replace('op:', '').trim();
-                    if (targetOp.toLowerCase() === 'sin asignar') return orderOp === "";
-                    if (orderOp === "") return false;
-                    return orderOp.toLowerCase() === targetOp.toLowerCase();
-                }
+                if (filterVal.startsWith('op:')) { let targetOp = filterVal.replace('op:', '').trim(); if (targetOp.toLowerCase() === 'sin asignar') return orderOp === ""; if (orderOp === "") return false; return orderOp.toLowerCase() === targetOp.toLowerCase(); }
                 return (order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal);
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
 
             renderChapistasStructure();
             renderPintoresStructure();
 
-            let containers = {
-                cargachapa: document.getElementById('list-cargachapa'),
-                cargapintura: document.getElementById('list-cargapintura'),
-                lunas: document.getElementById('list-lunas'),
-                paragolpes: document.getElementById('list-paragolpes'),
-                destajos: document.getElementById('list-destajos'),
-                terminados: document.getElementById('list-terminados')
-            };
+            let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminados: document.getElementById('list-terminados') };
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
 
             let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
-            let chapaOpCounters = {};
-            getChapistasList().forEach(op => { chapaOpCounters[op.name] = { rep: 0, mon: 0 }; });
-            let pintorOpCounters = {};
-            getPintoresList().forEach(op => { pintorOpCounters[op.name] = 0; });
+            let chapaOpCounters = {}; getChapistasList().forEach(op => { chapaOpCounters[op.name] = { rep: 0, mon: 0 }; });
+            let pintorOpCounters = {}; getPintoresList().forEach(op => { pintorOpCounters[op.name] = 0; });
 
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
@@ -1495,19 +1033,11 @@
                 if (status === 'cargachapa') counts.cargachapa++;
                 else if (status === 'cargapintura') counts.cargapintura++;
                 else if (status === 'lunas') counts.lunas++;
-                else if (status === 'reparacion' || status === 'montaje') {
-                    if (order.isChecked) counts.chapaTotal++;
-                    if (chapaOpCounters[orderOp]) {
-                        if (status === 'reparacion') chapaOpCounters[orderOp].rep++;
-                        if (status === 'montaje') chapaOpCounters[orderOp].mon++;
-                    }
-                } else if (status === 'paragolpes') counts.paragolpes++;
+                else if (status === 'reparacion' || status === 'montaje') { if (order.isChecked) counts.chapaTotal++; if (chapaOpCounters[orderOp]) { if (status === 'reparacion') chapaOpCounters[orderOp].rep++; if (status === 'montaje') chapaOpCounters[orderOp].mon++; } }
+                else if (status === 'paragolpes') counts.paragolpes++;
                 else if (status === 'destajos') counts.destajos++;
-                else if (status === 'pintura' || status.startsWith('pintor')) {
-                    if (order.isChecked) counts.pintado++;
-                    if (pintorOpCounters[orderOp] !== undefined) pintorOpCounters[orderOp]++;
-                } else if (status === 'terminados') counts.terminados++;
-                
+                else if (status === 'pintura' || status.startsWith('pintor')) { if (order.isChecked) counts.pintado++; if (pintorOpCounters[orderOp] !== undefined) pintorOpCounters[orderOp]++; }
+                else if (status === 'terminados') counts.terminados++;
                 let displayPlate = (order.plate || '').toUpperCase();
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
@@ -1521,11 +1051,7 @@
                 else if (order.substatus) substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
                 let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;">Destajo</span>` : '';
                 let piecesHtml = '';
-                if (order.pieces && order.pieces.length > 0) {
-                    let totalPieces = order.pieces.length;
-                    let piecesListTooltip = order.pieces.join(', ');
-                    piecesHtml = `<div class="mb-1"><span class="badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span></div>`;
-                }
+                if (order.pieces && order.pieces.length > 0) { let totalPieces = order.pieces.length; let piecesListTooltip = order.pieces.join(', '); piecesHtml = `<div class="mb-1"><span class="badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span></div>`; }
                 let insuranceBadge = '';
                 const insVal = (order.insurance || '').trim();
                 if (insVal && insVal !== 'Sin asignar') insuranceBadge = `<span class="badge bg-info-subtle text-info-emphasis border border-info" style="font-size:0.65rem;"><i class="fas fa-building me-1"></i> ${insVal}</span>`;
@@ -1558,22 +1084,14 @@
                 `;
                 if (status === 'reparacion' || status === 'montaje') {
                     let subId;
-                    if (orderOp && getChapistasList().some(o => o.name === orderOp)) {
-                        subId = status === 'reparacion' ? `subcol-rep-${safeId(orderOp)}` : `subcol-mon-${safeId(orderOp)}`;
-                    } else {
-                        subId = status === 'reparacion' ? 'subcol-rep-general' : 'subcol-mon-general';
-                    }
-                    const target = document.getElementById(subId);
-                    if (target) target.innerHTML += cardHtml;
+                    if (orderOp && getChapistasList().some(o => o.name === orderOp)) subId = status === 'reparacion' ? `subcol-rep-${safeId(orderOp)}` : `subcol-mon-${safeId(orderOp)}`;
+                    else subId = status === 'reparacion' ? 'subcol-rep-general' : 'subcol-mon-general';
+                    const target = document.getElementById(subId); if (target) target.innerHTML += cardHtml;
                 } else if (status === 'pintura' || status.startsWith('pintor')) {
                     let targetId;
-                    if (orderOp && getPintoresList().some(o => o.name === orderOp)) {
-                        targetId = `list-pintor-${safeId(orderOp)}`;
-                    } else {
-                        targetId = 'list-pintor-general';
-                    }
-                    const target = document.getElementById(targetId);
-                    if (target) target.innerHTML += cardHtml;
+                    if (orderOp && getPintoresList().some(o => o.name === orderOp)) targetId = `list-pintor-${safeId(orderOp)}`;
+                    else targetId = 'list-pintor-general';
+                    const target = document.getElementById(targetId); if (target) target.innerHTML += cardHtml;
                 } else if (containers[status]) {
                     containers[status].innerHTML += cardHtml;
                 }
@@ -1581,18 +1099,10 @@
 
             getChapistasList().forEach(op => {
                 const counters = chapaOpCounters[op.name] || { rep: 0, mon: 0 };
-                const repEl = document.getElementById(`count-rep-${safeId(op.name)}`);
-                const monEl = document.getElementById(`count-mon-${safeId(op.name)}`);
-                const totalEl = document.getElementById(`count-total-${safeId(op.name)}`);
-                if (repEl) repEl.innerText = counters.rep;
-                if (monEl) monEl.innerText = counters.mon;
-                if (totalEl) totalEl.innerText = (counters.rep + counters.mon);
+                const repEl = document.getElementById(`count-rep-${safeId(op.name)}`); const monEl = document.getElementById(`count-mon-${safeId(op.name)}`); const totalEl = document.getElementById(`count-total-${safeId(op.name)}`);
+                if (repEl) repEl.innerText = counters.rep; if (monEl) monEl.innerText = counters.mon; if (totalEl) totalEl.innerText = (counters.rep + counters.mon);
             });
-            getPintoresList().forEach(op => {
-                const el = document.getElementById(`count-total-pin-${safeId(op.name)}`);
-                if (el) el.innerText = pintorOpCounters[op.name] || 0;
-            });
-
+            getPintoresList().forEach(op => { const el = document.getElementById(`count-total-pin-${safeId(op.name)}`); if (el) el.innerText = pintorOpCounters[op.name] || 0; });
             if (document.getElementById('count-cargachapa')) document.getElementById('count-cargachapa').innerText = counts.cargachapa;
             if (document.getElementById('count-cargapintura')) document.getElementById('count-cargapintura').innerText = counts.cargapintura;
             if (document.getElementById('count-lunas')) document.getElementById('count-lunas').innerText = counts.lunas;
@@ -1608,29 +1118,21 @@
             const subtitle = document.getElementById('chapistas-subtitle');
             if (!wrapper) return;
             const chOpsList = getChapistasList();
-            if (chOpsList.length === 0) {
-                wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>';
-                if (subtitle) subtitle.innerText = '(Sin operarios)';
-                return;
-            }
+            if (chOpsList.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; if (subtitle) subtitle.innerText = '(Sin operarios)'; return; }
             if (subtitle) subtitle.innerText = '(Desglosado por Operarios)';
             let html = `<div class="chapa-four-columns-container">`;
             chOpsList.forEach(op => {
                 const sid = safeId(op.name);
                 const state = op.state || 'activo';
                 let colClass = 'chapista-group-col';
-                if (state === 'vacaciones') colClass += ' vacaciones';
-                else if (state === 'baja') colClass += ' baja';
+                if (state === 'vacaciones') colClass += ' vacaciones'; else if (state === 'baja') colClass += ' baja';
                 let badgeEstado = '';
                 if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴 Vacaciones</span>';
                 else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔ Baja</span>';
                 html += `
                     <div class="${colClass}">
                         <div class="chapista-group-header">
-                            <div class="d-flex align-items-center gap-1 flex-wrap">
-                                <span>${op.name}</span>
-                                ${badgeEstado}
-                            </div>
+                            <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
                             <div class="d-flex align-items-center gap-1">
                                 <span class="badge bg-primary rounded-pill" style="font-size:0.7rem;" id="count-total-${sid}">0</span>
                                 <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
@@ -1638,8 +1140,7 @@
                         </div>
                         <div class="chapista-group-inner">
                             <div class="chapista-sub-box subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_reparacion')">
-                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
-                                    <span class="fw-bold text-primary">Rep.</span>
+                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;"><span class="fw-bold text-primary">Rep.</span>
                                     <div class="d-flex align-items-center gap-1">
                                         <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;" id="count-rep-${sid}">0</span>
                                         <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'reparacion')"><i class="far fa-check-square"></i></button>
@@ -1648,8 +1149,7 @@
                                 <div id="subcol-rep-${sid}" class="d-flex flex-column gap-2"></div>
                             </div>
                             <div class="chapista-sub-box subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_montaje')">
-                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
-                                    <span class="fw-bold text-success">Mont.</span>
+                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;"><span class="fw-bold text-success">Mont.</span>
                                     <div class="d-flex align-items-center gap-1">
                                         <span class="badge bg-success rounded-pill" style="font-size:0.65rem;" id="count-mon-${sid}">0</span>
                                         <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'montaje')"><i class="far fa-check-square"></i></button>
@@ -1681,27 +1181,20 @@
             const wrapper = document.getElementById('pintores-dynamic-wrapper');
             if (!wrapper) return;
             const pintores = getPintoresList();
-            if (pintores.length === 0) {
-                wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay pintores. Añádelos en "Operarios".</p>';
-                return;
-            }
+            if (pintores.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay pintores. Añádelos en "Operarios".</p>'; return; }
             let html = '';
             pintores.forEach(op => {
                 const sid = safeId(op.name);
                 const state = op.state || 'activo';
                 let colClass = 'pintor-subcol';
-                if (state === 'vacaciones') colClass += ' pintor-vacaciones';
-                else if (state === 'baja') colClass += ' pintor-baja';
+                if (state === 'vacaciones') colClass += ' pintor-vacaciones'; else if (state === 'baja') colClass += ' pintor-baja';
                 let badgeEstado = '';
                 if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴</span>';
                 else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔</span>';
                 html += `
                     <div class="${colClass}" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_pintura')">
                         <div class="pintor-header">
-                            <div class="d-flex align-items-center gap-1 flex-wrap">
-                                <span>${op.name}</span>
-                                ${badgeEstado}
-                            </div>
+                            <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
                             <div class="d-flex align-items-center gap-1">
                                 <span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;" id="count-total-pin-${sid}">0</span>
                                 <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
@@ -1721,47 +1214,26 @@
         }
 
         window.changeOrderStatusDirect = async (orderId, newStatus) => {
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
+            const order = orders.find(o => o.id === orderId); if (!order) return;
             let newOperator = order.operator || "";
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
             if (newStatus === 'destajos') isDestajoFlag = true;
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
-            try {
-                await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, history: updatedHistory });
-            } catch (err) { console.error(err); }
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, history: updatedHistory }); }
+            catch (err) { console.error(err); }
         }
 
-        window.deleteOrder = async (id) => {
-            if (confirm('¿Eliminar orden?')) {
-                try { await deleteDoc(doc(db, "orders", id)); } catch (err) { console.error(err); }
-            }
-        }
+        window.deleteOrder = async (id) => { if (confirm('¿Eliminar orden?')) { try { await deleteDoc(doc(db, "orders", id)); } catch (err) { console.error(err); } } }
 
         window.openDetailModal = (orderId) => {
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
+            const order = orders.find(o => o.id === orderId); if (!order) return;
             let historyHtml = '';
-            if (order.history && order.history.length > 0) {
-                order.history.slice().reverse().forEach(h => {
-                    historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`;
-                });
-            } else {
-                historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
-            }
+            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
+            else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
             let checklistHtml = '';
-            let allPossiblePieces = [
-                "Paragolpes Delantero", "Capó", "Aleta Delantera Izq", "Puerta Delantera Izq", "Puerta Trasera Izq",
-                "Aleta Trasera Izq", "Estribo izquierdo", "Techo", "Luna Delantera", "Retrovisor Izq/Der",
-                "Paragolpes Trasero", "Portón / Maletero", "Aleta Trasera Der", "Puerta Trasera Der", "Estribo derecho",
-                "Puerta Delantera Der", "Aleta Delantera Der", "Faro izq. / piloto", "Faro dcho. / piloto", "Llantas"
-            ];
-            allPossiblePieces.forEach(pieceName => {
-                let isChecked = order.pieces && order.pieces.includes(pieceName);
-                let safeP = safeId(pieceName);
-                checklistHtml += `<div class="col-md-4 mb-2"><div class="form-check"><input class="form-check-input edit-piece-check" type="checkbox" value="${pieceName}" id="edit-chk-${safeP}" ${isChecked ? 'checked' : ''}><label class="form-check-label small" for="edit-chk-${safeP}">${pieceName}</label></div></div>`;
-            });
+            let allPossiblePieces = ["Paragolpes Delantero","Capó","Aleta Delantera Izq","Puerta Delantera Izq","Puerta Trasera Izq","Aleta Trasera Izq","Estribo izquierdo","Techo","Luna Delantera","Retrovisor Izq/Der","Paragolpes Trasero","Portón / Maletero","Aleta Trasera Der","Puerta Trasera Der","Estribo derecho","Puerta Delantera Der","Aleta Delantera Der","Faro izq. / piloto","Faro dcho. / piloto","Llantas"];
+            allPossiblePieces.forEach(pieceName => { let isChecked = order.pieces && order.pieces.includes(pieceName); let safeP = safeId(pieceName); checklistHtml += `<div class="col-md-4 mb-2"><div class="form-check"><input class="form-check-input edit-piece-check" type="checkbox" value="${pieceName}" id="edit-chk-${safeP}" ${isChecked ? 'checked' : ''}><label class="form-check-label small" for="edit-chk-${safeP}">${pieceName}</label></div></div>`; });
             const body = document.getElementById('detail-modal-body');
             body.innerHTML = `
                 <form onsubmit="handleUpdateOrder(event, '${order.id}')">
@@ -1807,14 +1279,12 @@
                     <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Cambios</button>
                 </form>
             `;
-            const modal = new bootstrap.Modal(document.getElementById('detailModal'));
-            modal.show();
+            const modal = new bootstrap.Modal(document.getElementById('detailModal')); modal.show();
         }
 
         window.handleUpdateOrder = async (e, orderId) => {
             e.preventDefault();
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
+            const order = orders.find(o => o.id === orderId); if (!order) return;
             const newPlate = document.getElementById('edit-plate').value.toUpperCase().trim();
             const newModel = document.getElementById('edit-model').value.trim();
             const newInsurance = document.getElementById('edit-insurance').value.trim();
@@ -1832,16 +1302,8 @@
             let updatedHistory = order.history ? [...order.history] : [];
             if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() });
             try {
-                await updateDoc(doc(db, "orders", orderId), {
-                    plate: newPlate, model: newModel, insurance: newInsurance,
-                    dateIn: newDateIn, dateOut: newDateOut, operator: newOperator,
-                    substatus: newSubstatus, status: newStatus, notes: newNotes,
-                    urgent: newUrgent, pieces: selectedPieces, isDestajo: isDestajoFlag,
-                    history: updatedHistory
-                });
-                const modalEl = document.getElementById('detailModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
+                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, isDestajo: isDestajoFlag, history: updatedHistory });
+                const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
             } catch (err) { console.error("Error:", err); }
         }
 
@@ -1858,34 +1320,22 @@
             let status = document.getElementById('car-status').value;
             const notes = document.getElementById('car-notes').value;
             const urgent = document.getElementById('car-urgent').checked;
-            if (!status && operator) {
-                const op = operators.find(o => o.name === operator);
-                if (op) {
-                    if (op.type === 'chapa') status = 'reparacion';
-                    else if (op.type === 'pintura') status = 'pintura';
-                }
-            }
+            if (!status && operator) { const op = operators.find(o => o.name === operator); if (op) { if (op.type === 'chapa') status = 'reparacion'; else if (op.type === 'pintura') status = 'pintura'; } }
             if (!status) status = 'cargachapa';
             let isDestajoFlag = (status === 'destajos');
             let selectedPieces = [];
             document.querySelectorAll('.piece-check').forEach(chk => { if (chk.checked) selectedPieces.push(chk.value); });
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString() }];
             try {
-                await addDoc(collection(db, "orders"), {
-                    plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent,
-                    pieces: selectedPieces, isChecked: false, isDestajo: isDestajoFlag, history: initialHistory
-                });
-                const modalEl = document.getElementById('newOrderModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
+                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, isChecked: false, isDestajo: isDestajoFlag, history: initialHistory });
+                const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
         }
 
         // ===== PANEL 360 =====
         function getBossPeriodRange(period) {
-            const now = new Date();
-            let start, end;
+            const now = new Date(); let start, end;
             if (period === 'day') { start = new Date(now.getFullYear(), now.getMonth(), now.getDate()); end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59); }
             else if (period === 'month') { start = new Date(now.getFullYear(), now.getMonth(), 1); end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59); }
             else if (period === 'lastMonth') { start = new Date(now.getFullYear(), now.getMonth() - 1, 1); end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59); }
@@ -1895,37 +1345,117 @@
         }
 
         function filterOrdersByBossPeriod(list, period) {
-            const range = getBossPeriodRange(period);
-            if (!range) return list;
-            return list.filter(o => {
-                const dateRef = o.dateIn || o.dateOut;
-                if (!dateRef) return false;
-                const d = new Date(dateRef + 'T12:00:00');
-                return d >= range.start && d <= range.end;
-            });
+            const range = getBossPeriodRange(period); if (!range) return list;
+            return list.filter(o => { const dateRef = o.dateIn || o.dateOut; if (!dateRef) return false; const d = new Date(dateRef + 'T12:00:00'); return d >= range.start && d <= range.end; });
+        }
+
+        function categorizeOrderForKpi(o, todayStr) {
+            // Devuelve la categoría única de la orden (evita duplicados entre recambios, externas y pasados)
+            const sub = (o.substatus || '').toLowerCase();
+            if (sub.includes('recambio')) return 'recambios';
+            if (sub.includes('reparándose') || sub.includes('reparandose')) return 'externas';
+            if (o.dateOut && o.dateOut < todayStr && (o.status || 'reparacion') !== 'terminados') return 'pasados';
+            return null;
         }
 
         function renderBossDashboardStats() {
             const periodOrders = filterOrdersByBossPeriod(orders, bossPeriod);
             const labels = { day: 'Hoy', month: 'Este mes', lastMonth: 'Mes anterior', year: 'Este año', all: 'Todo' };
+            const todayStr = new Date().toISOString().split('T')[0];
+
             const total = periodOrders.length;
             const terminados = periodOrders.filter(o => o.status === 'terminados').length;
+            const activas = total - terminados;
             const pctT = total > 0 ? Math.round((terminados / total) * 100) : 0;
-            document.getElementById('kpi-total').innerText = total;
+
+            // Clasificación única (excluyente)
+            const recambios = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'recambios').length;
+            const externas = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'externas').length;
+            const pasados = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'pasados').length;
+            const pctRec = total > 0 ? Math.round((recambios / total) * 100) : 0;
+            const pctExt = total > 0 ? Math.round((externas / total) * 100) : 0;
+
+            document.getElementById('kpi-activas').innerText = activas;
             document.getElementById('kpi-terminados').innerText = terminados;
             document.getElementById('kpi-porcentaje-terminados').innerText = `${pctT}% del total`;
-            document.getElementById('kpi-periodo-label').innerText = labels[bossPeriod] || '';
-            const recCount = periodOrders.filter(o => (o.substatus || '').toLowerCase().includes('recambio')).length;
-            const recPct = total > 0 ? Math.round((recCount / total) * 100) : 0;
-            document.getElementById('kpi-retrasos').innerText = `${recPct}%`;
-            document.getElementById('kpi-retrasos-count').innerText = `${recCount} afectados`;
-            const extCount = periodOrders.filter(o => (o.substatus || '').toLowerCase().includes('reparándose')).length;
-            const extPct = total > 0 ? Math.round((extCount / total) * 100) : 0;
-            document.getElementById('kpi-externas').innerText = `${extPct}%`;
-            document.getElementById('kpi-externas-count').innerText = `${extCount} afectados`;
+            document.getElementById('kpi-retrasos').innerText = `${pctRec}%`;
+            document.getElementById('kpi-retrasos-count').innerText = `${recambios} afectados`;
+            document.getElementById('kpi-externas').innerText = `${pctExt}%`;
+            document.getElementById('kpi-externas-count').innerText = `${externas} afectados`;
+            document.getElementById('kpi-pasados').innerText = pasados;
+
             renderOperatorChart(periodOrders);
             renderInsuranceChart(periodOrders);
             renderFasesChart(periodOrders);
+
+            if (activeKpiDetail) renderKpiDetailTable(activeKpiDetail, periodOrders, todayStr);
+        }
+
+        window.toggleKpiDetail = (kpi) => {
+            if (activeKpiDetail === kpi) { closeKpiDetail(); return; }
+            activeKpiDetail = kpi;
+            document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-tab'));
+            const card = document.querySelector(`.kpi-card[data-kpi="${kpi}"]`); if (card) card.classList.add('active-tab');
+            const periodOrders = filterOrdersByBossPeriod(orders, bossPeriod);
+            const todayStr = new Date().toISOString().split('T')[0];
+            renderKpiDetailTable(kpi, periodOrders, todayStr);
+            const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'block';
+        }
+
+        window.closeKpiDetail = () => {
+            activeKpiDetail = null;
+            document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-tab'));
+            const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none';
+        }
+
+        function renderKpiDetailTable(kpi, periodOrders, todayStr) {
+            const titles = {
+                activas: 'Órdenes Activas',
+                terminados: 'Órdenes Terminadas',
+                recambios: 'Órdenes con Recambios Pendientes',
+                externas: 'Órdenes con Reparación Externa',
+                pasados: 'Órdenes Pasadas de Fecha'
+            };
+            let filtered = [];
+            if (kpi === 'activas') filtered = periodOrders.filter(o => o.status !== 'terminados');
+            else if (kpi === 'terminados') filtered = periodOrders.filter(o => o.status === 'terminados');
+            else if (kpi === 'recambios') filtered = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'recambios');
+            else if (kpi === 'externas') filtered = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'externas');
+            else if (kpi === 'pasados') filtered = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'pasados');
+
+            document.getElementById('kpi-detail-title').innerText = titles[kpi] || 'Detalle';
+            document.getElementById('kpi-detail-count').innerText = filtered.length;
+
+            const tbody = document.getElementById('kpi-detail-body');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="kpi-detail-empty">Sin órdenes en esta categoría.</td></tr>`;
+                return;
+            }
+
+            const statusLabelMap = {
+                cargachapa: 'Carga Chapa', cargapintura: 'Carga Pintura', lunas: 'Lunas',
+                reparacion: 'Reparación', montaje: 'Montaje', paragolpes: 'Paragolpes',
+                destajos: 'Destajos', pintura: 'Pintura', terminados: 'Terminados'
+            };
+
+            let html = '';
+            filtered.forEach(o => {
+                const opBadge = o.operator ? `<span class="badge ${getOperatorBadgeClass(o.operator)}">${o.operator}</span>` : '<span class="text-muted small">Libre</span>';
+                const isOverdue = o.dateOut && o.dateOut < todayStr && o.status !== 'terminados';
+                let estadoLabel = statusLabelMap[o.status] || o.status || '-';
+                if (o.substatus) estadoLabel = `${estadoLabel} · ${o.substatus}`;
+                html += `
+                    <tr onclick="openDetailModal('${o.id}')">
+                        <td class="plate-cell">${o.plate || '-'}</td>
+                        <td>${o.model || '-'}</td>
+                        <td>${opBadge}</td>
+                        <td class="text-muted small">${o.dateIn || '-'}</td>
+                        <td class="date-cell ${isOverdue ? 'overdue' : ''}">${o.dateOut || '-'}</td>
+                        <td class="small">${estadoLabel}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
         }
 
         // Plugin para dibujar el texto del centro de los doughnuts
@@ -1941,11 +1471,9 @@
                 ctx.save();
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                // Título
                 ctx.font = '800 11px Segoe UI, Tahoma, sans-serif';
                 ctx.fillStyle = '#64748b';
                 ctx.fillText(centerInfo.title || '', centerX, centerY - 12);
-                // Valor
                 ctx.font = '800 26px Segoe UI, Tahoma, sans-serif';
                 ctx.fillStyle = '#0f172a';
                 ctx.fillText(centerInfo.value || '', centerX, centerY + 10);
@@ -1962,29 +1490,19 @@
             if (operatorChartLevel === 'area') {
                 const chapaCount = periodOrders.filter(o => o.status === 'reparacion' || o.status === 'montaje' || o.status === 'cargachapa').length;
                 const pinturaCount = periodOrders.filter(o => o.status === 'pintura' || o.status === 'cargapintura').length;
-                labels = ['Chapa', 'Pintura'];
-                data = [chapaCount, pinturaCount];
-                colors = ['#2563eb', '#f59e0b'];
-                chartType = 'doughnut';
-                centerTitle = 'TOTAL';
-                centerValue = String(periodOrders.length);
+                labels = ['Chapa', 'Pintura']; data = [chapaCount, pinturaCount]; colors = ['#2563eb', '#f59e0b']; chartType = 'doughnut';
+                centerTitle = 'TOTAL'; centerValue = String(periodOrders.length);
                 if (titleEl) titleEl.innerText = '';
                 if (hintEl) { hintEl.innerText = 'Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.'; hintEl.classList.remove('active'); hintEl.onclick = null; }
             } else {
                 const area = operatorChartArea;
-                const filterFn = area === 'chapa'
-                    ? (o => (o.status === 'reparacion' || o.status === 'montaje'))
-                    : (o => o.status === 'pintura' || (o.status || '').startsWith('pintor'));
+                const filterFn = area === 'chapa' ? (o => (o.status === 'reparacion' || o.status === 'montaje')) : (o => o.status === 'pintura' || (o.status || '').startsWith('pintor'));
                 const opCounts = {};
-                periodOrders.filter(filterFn).forEach(o => {
-                    const opName = o.operator || 'Sin asignar';
-                    opCounts[opName] = (opCounts[opName] || 0) + 1;
-                });
-                labels = Object.keys(opCounts);
-                data = Object.values(opCounts);
+                periodOrders.filter(filterFn).forEach(o => { const opName = o.operator || 'Sin asignar'; opCounts[opName] = (opCounts[opName] || 0) + 1; });
+                labels = Object.keys(opCounts); data = Object.values(opCounts);
                 colors = labels.map((l, i) => COLOR_PALETTE[i % COLOR_PALETTE.length]);
                 chartType = 'doughnut';
-                const totalArea = data.reduce((a,b) => a+b, 0);
+                const totalArea = data.reduce((a, b) => a + b, 0);
                 const pctArea = periodOrders.length > 0 ? Math.round((totalArea / periodOrders.length) * 100) : 0;
                 centerTitle = area === 'chapa' ? 'CHAPA' : 'PINTURA';
                 centerValue = `${pctArea}%`;
@@ -1995,53 +1513,32 @@
             if (charts.operators) charts.operators.destroy();
             charts.operators = new Chart(document.getElementById('chart-operators'), {
                 type: chartType,
-                data: {
-                    labels: labels.length ? labels : ['Sin datos'],
-                    datasets: [{
-                        data: data.length ? data : [1],
-                        backgroundColor: labels.length ? colors : ['#e2e8f0'],
-                        borderColor: '#ffffff',
-                        borderWidth: 2
-                    }]
-                },
+                data: { labels: labels.length ? labels : ['Sin datos'], datasets: [{ data: data.length ? data : [1], backgroundColor: labels.length ? colors : ['#e2e8f0'], borderColor: '#ffffff', borderWidth: 2 }] },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    cutout: '62%',
+                    responsive: true, maintainAspectRatio: false, cutout: '62%',
                     plugins: {
                         centerText: { display: true, title: centerTitle, value: centerValue },
                         legend: {
                             position: 'right',
                             labels: {
-                                font: { size: 11, weight: '600' },
-                                padding: 10,
+                                font: { size: 11, weight: '600' }, padding: 10,
                                 generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    if (!data.labels.length) return [];
+                                    const data = chart.data; if (!data.labels.length) return [];
                                     const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                                     return data.labels.map((label, i) => {
                                         const value = data.datasets[0].data[i];
                                         const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
-                                        return {
-                                            text: `${label} — ${pct}%`,
-                                            fillStyle: data.datasets[0].backgroundColor[i],
-                                            strokeStyle: data.datasets[0].backgroundColor[i],
-                                            lineWidth: 0,
-                                            index: i
-                                        };
+                                        return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i };
                                     });
                                 }
                             }
                         },
-                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a,b)=>a+b,0); return `${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(1):0}%)`; } } }
+                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
                     },
                     onClick: (evt, elements) => {
                         if (chartType === 'doughnut' && elements.length > 0 && operatorChartLevel === 'area') {
                             const label = labels[elements[0].index];
-                            if (label === 'Chapa' || label === 'Pintura') {
-                                operatorChartLevel = 'operator';
-                                operatorChartArea = label === 'Chapa' ? 'chapa' : 'pintura';
-                                renderBossDashboardStats();
-                            }
+                            if (label === 'Chapa' || label === 'Pintura') { operatorChartLevel = 'operator'; operatorChartArea = label === 'Chapa' ? 'chapa' : 'pintura'; renderBossDashboardStats(); }
                         }
                     }
                 }
@@ -2050,101 +1547,69 @@
 
         function renderInsuranceChart(periodOrders) {
             const insCounts = {};
-            periodOrders.forEach(o => {
-                const ins = (o.insurance && o.insurance.trim()) ? o.insurance.trim() : 'Sin asignar';
-                insCounts[ins] = (insCounts[ins] || 0) + 1;
-            });
-            const insLabels = Object.keys(insCounts);
-            const insData = Object.values(insCounts);
+            periodOrders.forEach(o => { const ins = (o.insurance && o.insurance.trim()) ? o.insurance.trim() : 'Sin asignar'; insCounts[ins] = (insCounts[ins] || 0) + 1; });
+            const insLabels = Object.keys(insCounts); const insData = Object.values(insCounts);
             const colors = insLabels.map((l, i) => l === 'Sin asignar' ? '#94a3b8' : COLOR_PALETTE[i % COLOR_PALETTE.length]);
 
             if (charts.insurance) charts.insurance.destroy();
             charts.insurance = new Chart(document.getElementById('chart-insurance'), {
                 type: 'doughnut',
-                data: {
-                    labels: insLabels.length ? insLabels : ['Sin datos'],
-                    datasets: [{
-                        data: insData.length ? insData : [1],
-                        backgroundColor: insLabels.length ? colors : ['#e2e8f0'],
-                        borderColor: '#ffffff',
-                        borderWidth: 2
-                    }]
-                },
+                data: { labels: insLabels.length ? insLabels : ['Sin datos'], datasets: [{ data: insData.length ? insData : [1], backgroundColor: insLabels.length ? colors : ['#e2e8f0'], borderColor: '#ffffff', borderWidth: 2 }] },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    cutout: '62%',
+                    responsive: true, maintainAspectRatio: false, cutout: '62%',
                     plugins: {
                         centerText: { display: true, title: 'TOTAL', value: String(periodOrders.length) },
                         legend: {
                             position: 'right',
                             labels: {
-                                font: { size: 11, weight: '600' },
-                                padding: 10,
+                                font: { size: 11, weight: '600' }, padding: 10,
                                 generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    if (!data.labels.length) return [];
+                                    const data = chart.data; if (!data.labels.length) return [];
                                     const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                                     return data.labels.map((label, i) => {
                                         const value = data.datasets[0].data[i];
                                         const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
-                                        return {
-                                            text: `${label} — ${pct}%`,
-                                            fillStyle: data.datasets[0].backgroundColor[i],
-                                            strokeStyle: data.datasets[0].backgroundColor[i],
-                                            lineWidth: 0,
-                                            index: i
-                                        };
+                                        return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i };
                                     });
                                 }
                             }
                         },
-                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a,b)=>a+b,0); return `${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(1):0}%)`; } } }
+                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
                     }
                 }
             });
         }
 
         function renderFasesChart(periodOrders) {
-            const faseLabels = ['Carga Chapa','Carga Pintura','Lunas','Reparación','Montaje','Paragolpes','Destajos','Pintura','Terminados'];
-            const faseKeys = ['cargachapa','cargapintura','lunas','reparacion','montaje','paragolpes','destajos','pintura','terminados'];
+            const faseLabels = ['Carga Chapa', 'Carga Pintura', 'Lunas', 'Reparación', 'Montaje', 'Paragolpes', 'Destajos', 'Pintura', 'Terminados'];
+            const faseKeys = ['cargachapa', 'cargapintura', 'lunas', 'reparacion', 'montaje', 'paragolpes', 'destajos', 'pintura', 'terminados'];
             const faseCounts = faseKeys.map(k => periodOrders.filter(o => (o.status || '') === k).length);
-            const faseColors = ['#2563eb','#f59e0b','#64748b','#1d4ed8','#059669','#1e293b','#0891b2','#fbbf24','#10b981'];
+            const faseColors = ['#2563eb', '#f59e0b', '#64748b', '#1d4ed8', '#059669', '#1e293b', '#0891b2', '#fbbf24', '#10b981'];
 
             if (charts.fases) charts.fases.destroy();
             charts.fases = new Chart(document.getElementById('chart-fases'), {
                 type: 'doughnut',
-                data: {
-                    labels: faseLabels,
-                    datasets: [{ data: faseCounts, backgroundColor: faseColors, borderColor: '#ffffff', borderWidth: 2 }]
-                },
+                data: { labels: faseLabels, datasets: [{ data: faseCounts, backgroundColor: faseColors, borderColor: '#ffffff', borderWidth: 2 }] },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    cutout: '62%',
+                    responsive: true, maintainAspectRatio: false, cutout: '62%',
                     plugins: {
                         centerText: { display: true, title: 'TOTAL', value: String(periodOrders.length) },
                         legend: {
                             position: 'right',
                             labels: {
-                                font: { size: 11, weight: '600' },
-                                padding: 10,
+                                font: { size: 11, weight: '600' }, padding: 10,
                                 generateLabels: function(chart) {
                                     const data = chart.data;
                                     const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                                     return data.labels.map((label, i) => {
                                         const value = data.datasets[0].data[i];
                                         const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0;
-                                        return {
-                                            text: `${label} — ${pct}%`,
-                                            fillStyle: data.datasets[0].backgroundColor[i],
-                                            strokeStyle: data.datasets[0].backgroundColor[i],
-                                            lineWidth: 0,
-                                            index: i
-                                        };
+                                        return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i };
                                     });
                                 }
                             }
                         },
-                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a,b)=>a+b,0); return `${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(1):0}%)`; } } }
+                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
                     }
                 }
             });
