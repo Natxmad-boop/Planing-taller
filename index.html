@@ -129,6 +129,8 @@
         .btn-fix-insurances { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; box-shadow: 0 4px 12px -2px rgba(124, 58, 237, 0.4); transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
         .btn-fix-insurances:hover { background: linear-gradient(135deg, #6d28d9, #5b21b6); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px -2px rgba(124, 58, 237, 0.5); }
         .btn-fix-insurances:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .badge-count-checked { background-color: #059669; color: #ffffff; font-size: 0.55rem; padding: 1px 4px; border-radius: 999px; margin-left: 3px; font-weight: 700; }
+        .badge-total-op { background-color: #2563eb; color: #ffffff; font-size: 0.7rem; padding: 3px 8px; border-radius: 999px; font-weight: 700; }
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
             .chapista-group-col { min-width: 240px; padding: 8px; }
@@ -630,7 +632,6 @@
 
         const COCHE_COMPLETO_PIEZAS = 12;
 
-        // ===== COMPAÑÍAS ASEGURADORAS OFICIALES =====
         const OFFICIAL_INSURANCES = [
             "Mapfre", "Mutua Madrileña", "AXA", "Allianz", "Generali", "Zurich",
             "Reale", "Pelayo", "Línea Directa", "Catalana Occidente", "Sanitas",
@@ -1123,8 +1124,6 @@
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
 
             let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
-            let chapaOpCounters = {}; getChapistasList().forEach(op => { chapaOpCounters[op.name] = { rep: 0, mon: 0 }; });
-            let pintorOpCounters = {}; getPintoresList().forEach(op => { pintorOpCounters[op.name] = 0; });
 
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
@@ -1132,10 +1131,10 @@
                 if (status === 'cargachapa') counts.cargachapa++;
                 else if (status === 'cargapintura') counts.cargapintura++;
                 else if (status === 'lunas') counts.lunas++;
-                else if (status === 'reparacion' || status === 'montaje') { if (order.isChecked) counts.chapaTotal++; if (chapaOpCounters[orderOp]) { if (status === 'reparacion') chapaOpCounters[orderOp].rep++; if (status === 'montaje') chapaOpCounters[orderOp].mon++; } }
+                else if (status === 'reparacion' || status === 'montaje') { if (order.isChecked) counts.chapaTotal++; }
                 else if (status === 'paragolpes') counts.paragolpes++;
                 else if (status === 'destajos') counts.destajos++;
-                else if (status === 'pintura' || status.startsWith('pintor')) { if (order.isChecked) counts.pintado++; if (pintorOpCounters[orderOp] !== undefined) pintorOpCounters[orderOp]++; }
+                else if (status === 'pintura' || status.startsWith('pintor')) { if (order.isChecked) counts.pintado++; }
                 else if (status === 'terminados') counts.terminados++;
                 let displayPlate = (order.plate || '').toUpperCase();
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
@@ -1202,12 +1201,40 @@
                 }
             });
 
+            // ===== Contadores de chapistas: total de coches + marcados =====
             getChapistasList().forEach(op => {
-                const counters = chapaOpCounters[op.name] || { rep: 0, mon: 0 };
-                const repEl = document.getElementById(`count-rep-${safeId(op.name)}`); const monEl = document.getElementById(`count-mon-${safeId(op.name)}`); const totalEl = document.getElementById(`count-total-${safeId(op.name)}`);
-                if (repEl) repEl.innerText = counters.rep; if (monEl) monEl.innerText = counters.mon; if (totalEl) totalEl.innerText = (counters.rep + counters.mon);
+                const opName = op.name;
+                const sid = safeId(opName);
+                const opOrders = orders.filter(o => (o.operator || '').trim() === opName && (o.status === 'reparacion' || o.status === 'montaje'));
+                const totalRep = opOrders.filter(o => o.status === 'reparacion').length;
+                const totalMon = opOrders.filter(o => o.status === 'montaje').length;
+                const totalAll = totalRep + totalMon;
+                const checkedRep = opOrders.filter(o => o.status === 'reparacion' && o.isChecked).length;
+                const checkedMon = opOrders.filter(o => o.status === 'montaje' && o.isChecked).length;
+                const totalEl = document.getElementById(`count-total-${sid}`);
+                const repEl = document.getElementById(`count-rep-${sid}`);
+                const monEl = document.getElementById(`count-mon-${sid}`);
+                const repCheckedEl = document.getElementById(`count-rep-checked-${sid}`);
+                const monCheckedEl = document.getElementById(`count-mon-checked-${sid}`);
+                if (totalEl) totalEl.innerText = totalAll;
+                if (repEl) repEl.innerText = totalRep;
+                if (monEl) monEl.innerText = totalMon;
+                if (repCheckedEl) repCheckedEl.innerText = `${checkedRep}✓`;
+                if (monCheckedEl) monCheckedEl.innerText = `${checkedMon}✓`;
             });
-            getPintoresList().forEach(op => { const el = document.getElementById(`count-total-pin-${safeId(op.name)}`); if (el) el.innerText = pintorOpCounters[op.name] || 0; });
+            // ===== Contadores de pintores: total + marcados =====
+            getPintoresList().forEach(op => {
+                const opName = op.name;
+                const sid = safeId(opName);
+                const opOrders = orders.filter(o => (o.operator || '').trim() === opName && (o.status === 'pintura' || (o.status || '').startsWith('pintor')));
+                const totalPin = opOrders.length;
+                const checkedPin = opOrders.filter(o => o.isChecked).length;
+                const el = document.getElementById(`count-total-pin-${sid}`);
+                const elChecked = document.getElementById(`count-total-pin-checked-${sid}`);
+                if (el) el.innerText = totalPin;
+                if (elChecked) elChecked.innerText = `${checkedPin}✓`;
+            });
+
             if (document.getElementById('count-cargachapa')) document.getElementById('count-cargachapa').innerText = counts.cargachapa;
             if (document.getElementById('count-cargapintura')) document.getElementById('count-cargapintura').innerText = counts.cargapintura;
             if (document.getElementById('count-lunas')) document.getElementById('count-lunas').innerText = counts.lunas;
@@ -1239,24 +1266,26 @@
                         <div class="chapista-group-header">
                             <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
                             <div class="d-flex align-items-center gap-1">
-                                <span class="badge bg-primary rounded-pill" style="font-size:0.7rem;" id="count-total-${sid}">0</span>
+                                <span class="badge-total-op" id="count-total-${sid}">0</span>
                                 <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
                             </div>
                         </div>
                         <div class="chapista-group-inner">
                             <div class="chapista-sub-box subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_reparacion')">
-                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;"><span class="fw-bold text-primary">Rep.</span>
+                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
+                                    <span class="fw-bold text-primary">Rep.</span>
                                     <div class="d-flex align-items-center gap-1">
-                                        <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;" id="count-rep-${sid}">0</span>
+                                        <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;"><span id="count-rep-${sid}">0</span><span class="badge-count-checked" id="count-rep-checked-${sid}">0✓</span></span>
                                         <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'reparacion')"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
                                 <div id="subcol-rep-${sid}" class="d-flex flex-column gap-2"></div>
                             </div>
                             <div class="chapista-sub-box subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_montaje')">
-                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;"><span class="fw-bold text-success">Mont.</span>
+                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
+                                    <span class="fw-bold text-success">Mont.</span>
                                     <div class="d-flex align-items-center gap-1">
-                                        <span class="badge bg-success rounded-pill" style="font-size:0.65rem;" id="count-mon-${sid}">0</span>
+                                        <span class="badge bg-success rounded-pill" style="font-size:0.65rem;"><span id="count-mon-${sid}">0</span><span class="badge-count-checked" id="count-mon-checked-${sid}">0✓</span></span>
                                         <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'montaje')"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
@@ -1301,7 +1330,7 @@
                         <div class="pintor-header">
                             <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
                             <div class="d-flex align-items-center gap-1">
-                                <span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;" id="count-total-pin-${sid}">0</span>
+                                <span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;"><span id="count-total-pin-${sid}">0</span><span class="badge-count-checked" id="count-total-pin-checked-${sid}">0✓</span></span>
                                 <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
                             </div>
                         </div>
@@ -1523,7 +1552,7 @@
             document.getElementById('kpi-detail-count').innerText = filtered.length;
             const tbody = document.getElementById('kpi-detail-body');
             if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="kpi-detail-empty">Sin órdenes en esta categoría.</td></tr>`; return; }
-            const statusLabelMap = { cargachapa: 'Carga Chapa', cargapintura: 'Carga Pintura', lunas: 'Lunas', reparacion: 'Reparación', montaje: 'Montaje', paragolpes: 'Paragolpes', destajos: 'Destajos', pintura: 'Pintura', terminados: 'Terminados' };
+            const statusLabelMap = { cargachapa: 'Carga Chapa', cargapintura: 'Carga Pintura', lunas: 'Lunas', reparacion: 'Reparación', montaje: 'Montaje', paragolpes: 'Paragolpes', destajos: 'Destajos', pintura: 'Pintura', termin: 'Terminados' };
             let html = '';
             filtered.forEach(o => {
                 const opBadge = o.operator ? `<span class="badge ${getOperatorBadgeClass(o.operator)}">${o.operator}</span>` : '<span class="text-muted small">Libre</span>';
