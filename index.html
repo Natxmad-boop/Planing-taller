@@ -126,6 +126,9 @@
         .piece-check-label { font-size: 0.78rem; }
         .coche-completo-box { background-color: #fff1f2; border: 2px dashed #fda4af; border-radius: 8px; padding: 12px; text-align: center; }
         .coche-completo-box .form-check-label { font-weight: 700; color: #be123c; font-size: 0.95rem; }
+        .btn-fix-insurances { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; box-shadow: 0 4px 12px -2px rgba(124, 58, 237, 0.4); transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-fix-insurances:hover { background: linear-gradient(135deg, #6d28d9, #5b21b6); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px -2px rgba(124, 58, 237, 0.5); }
+        .btn-fix-insurances:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
             .chapista-group-col { min-width: 240px; padding: 8px; }
@@ -209,6 +212,9 @@
                         <button data-period="year" onclick="setBossPeriod('year')">Este Año</button>
                         <button data-period="all" onclick="setBossPeriod('all')">Todo</button>
                     </div>
+                    <button class="btn-fix-insurances" onclick="fixAllInsurances()" id="btn-fix-insurances" title="Corrige y unifica los nombres de las compañías aseguradoras">
+                        <i class="fas fa-wrench"></i> Corregir compañías
+                    </button>
                     <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="toggleBossDashboard()"><i class="fas fa-times me-1"></i> Cerrar</button>
                 </div>
             </div>
@@ -497,6 +503,35 @@
                                     <option value="Reale">Reale</option>
                                     <option value="Zurich">Zurich</option>
                                     <option value="Línea Directa">Línea Directa</option>
+                                    <option value="Catalana Occidente">Catalana Occidente</option>
+                                    <option value="Sanitas">Sanitas</option>
+                                    <option value="Caser">Caser</option>
+                                    <option value="Liberty">Liberty</option>
+                                    <option value="Occident">Occident</option>
+                                    <option value="SegurCaixa Adeslas">SegurCaixa Adeslas</option>
+                                    <option value="Óptima">Óptima</option>
+                                    <option value="MGC Mutua">MGC Mutua</option>
+                                    <option value="Soliss">Soliss</option>
+                                    <option value="Divina Pastora">Divina Pastora</option>
+                                    <option value="Santa Lucía">Santa Lucía</option>
+                                    <option value="Asisa">Asisa</option>
+                                    <option value="DKV">DKV</option>
+                                    <option value="FIATC">FIATC</option>
+                                    <option value="Nortehispana">Nortehispana</option>
+                                    <option value="Previsión Mallorquina">Previsión Mallorquina</option>
+                                    <option value="Vivaz">Vivaz</option>
+                                    <option value="ARAG">ARAG</option>
+                                    <option value="Helvetia">Helvetia</option>
+                                    <option value="Génesis">Génesis</option>
+                                    <option value="MMT Seguros">MMT Seguros</option>
+                                    <option value="Fénix Directo">Fénix Directo</option>
+                                    <option value="Qualitas Auto">Qualitas Auto</option>
+                                    <option value="Admiral">Admiral</option>
+                                    <option value="Verti">Verti</option>
+                                    <option value="Balumba">Balumba</option>
+                                    <option value="Regal">Regal</option>
+                                    <option value="Direct Seguros">Direct Seguros</option>
+                                    <option value="Winthertur">Winthertur</option>
                                     <option value="Particular">Particular</option>
                                     <option value="OTRA">Otra (escribir manual...)</option>
                                 </select>
@@ -595,6 +630,69 @@
 
         const COCHE_COMPLETO_PIEZAS = 12;
 
+        // ===== COMPAÑÍAS ASEGURADORAS OFICIALES =====
+        const OFFICIAL_INSURANCES = [
+            "Mapfre", "Mutua Madrileña", "AXA", "Allianz", "Generali", "Zurich",
+            "Reale", "Pelayo", "Línea Directa", "Catalana Occidente", "Sanitas",
+            "Caser", "Liberty", "Occident", "SegurCaixa Adeslas", "Óptima",
+            "MGC Mutua", "Soliss", "Divina Pastora", "Santa Lucía", "Asisa",
+            "DKV", "FIATC", "Nortehispana", "Previsión Mallorquina", "Vivaz",
+            "ARAG", "Helvetia", "Génesis", "MMT Seguros", "Fénix Directo",
+            "Qualitas Auto", "Admiral", "Verti", "Balumba", "Regal",
+            "Direct Seguros", "Winthertur", "Particular"
+        ];
+
+        function normalizeText(str) {
+            if (!str) return '';
+            return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+        }
+
+        function normalizeInsurance(text) {
+            if (!text) return text;
+            const original = String(text).trim();
+            const lowerOriginal = normalizeText(original);
+            if (!lowerOriginal) return original;
+            for (const official of OFFICIAL_INSURANCES) {
+                if (normalizeText(official) === lowerOriginal) return official;
+            }
+            let bestMatch = null;
+            let bestScore = 0;
+            for (const official of OFFICIAL_INSURANCES) {
+                const lowerOfficial = normalizeText(official);
+                let score = 0;
+                if (lowerOfficial.includes(lowerOriginal)) score = lowerOriginal.length;
+                else if (lowerOriginal.includes(lowerOfficial)) score = lowerOfficial.length;
+                if (score > bestScore) { bestScore = score; bestMatch = official; }
+            }
+            if (bestMatch && bestScore >= 3) return bestMatch;
+            return original;
+        }
+
+        window.fixAllInsurances = async () => {
+            if (!confirm('Se van a revisar TODAS las órdenes y se corregirán los nombres de las compañías aseguradoras que coincidan con la lista oficial.\n\n¿Continuar?')) return;
+            const btn = document.getElementById('btn-fix-insurances');
+            const originalBtnHTML = btn ? btn.innerHTML : '';
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Corrigiendo...'; }
+            let corrected = 0; let unchanged = 0; let errors = 0;
+            try {
+                for (const order of orders) {
+                    const current = (order.insurance || '').trim();
+                    if (!current || current === 'Sin asignar') { unchanged++; continue; }
+                    const normalized = normalizeInsurance(current);
+                    if (normalized !== current) {
+                        try { await updateDoc(doc(db, "orders", order.id), { insurance: normalized }); corrected++; console.log(`✅ ${order.plate}: "${current}" → "${normalized}"`); }
+                        catch (err) { errors++; console.error(`❌ Error con ${order.plate}:`, err); }
+                    } else { unchanged++; }
+                }
+                alert(`✅ Corrección completada:\n\n• ${corrected} compañías corregidas\n• ${unchanged} sin cambios\n• ${errors} errores`);
+            } catch (err) {
+                console.error('Error general:', err);
+                alert('❌ Hubo un error durante la corrección. Revisa la consola (F12).');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = originalBtnHTML; }
+            }
+        };
+
         let orders = [];
         let operators = [];
         let privacyModeActive = true;
@@ -620,31 +718,22 @@
         function buildPiecesChecklistHtml(checkedPieces, prefixId) {
             let html = '';
             PIECES_ZONES.forEach((zone, zIdx) => {
-                html += `<div class="col-md-4">
-                    <div class="pieces-zone-card">
-                        <div class="pieces-zone-title ${zone.cls}">${zone.title}</div>`;
+                html += `<div class="col-md-4"><div class="pieces-zone-card"><div class="pieces-zone-title ${zone.cls}">${zone.title}</div>`;
                 zone.pieces.forEach((piece, pIdx) => {
                     const id = `${prefixId}-chk-${zIdx}-${pIdx}`;
                     const isChecked = checkedPieces.includes(piece);
-                    html += `<div class="form-check mb-1">
-                        <input class="form-check-input piece-check" type="checkbox" value="${piece}" id="${id}" ${isChecked ? 'checked' : ''}>
-                        <label class="form-check-label piece-check-label" for="${id}">${piece}</label>
-                    </div>`;
+                    html += `<div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="${piece}" id="${id}" ${isChecked ? 'checked' : ''}><label class="form-check-label piece-check-label" for="${id}">${piece}</label></div>`;
                 });
                 html += `</div></div>`;
             });
             const cocheCompletoChecked = checkedPieces.includes("COCHE COMPLETO");
-            html += `<div class="col-md-4">
-                <div class="coche-completo-box h-100 d-flex flex-column justify-content-center">
-                    <div class="form-check d-flex justify-content-center align-items-center">
-                        <input class="form-check-input piece-check coche-completo-check" type="checkbox" value="COCHE COMPLETO" id="${prefixId}-chk-coche-completo" ${cocheCompletoChecked ? 'checked' : ''}>
-                        <label class="form-check-label ms-2" for="${prefixId}-chk-coche-completo">
-                            <i class="fas fa-car-side me-1"></i> COCHE COMPLETO
-                        </label>
-                    </div>
-                    <div class="text-muted small text-center mt-2">Marca si es el coche entero (cuenta como ${COCHE_COMPLETO_PIEZAS} piezas).</div>
+            html += `<div class="col-md-4"><div class="coche-completo-box h-100 d-flex flex-column justify-content-center">
+                <div class="form-check d-flex justify-content-center align-items-center">
+                    <input class="form-check-input piece-check coche-completo-check" type="checkbox" value="COCHE COMPLETO" id="${prefixId}-chk-coche-completo" ${cocheCompletoChecked ? 'checked' : ''}>
+                    <label class="form-check-label ms-2" for="${prefixId}-chk-coche-completo"><i class="fas fa-car-side me-1"></i> COCHE COMPLETO</label>
                 </div>
-            </div>`;
+                <div class="text-muted small text-center mt-2">Marca si es el coche entero (cuenta como ${COCHE_COMPLETO_PIEZAS} piezas).</div>
+            </div></div>`;
             return html;
         }
 
@@ -655,9 +744,7 @@
             const allPieceChks = container.querySelectorAll('.piece-check:not(.coche-completo-check)');
             if (cocheCompletoChk) {
                 cocheCompletoChk.addEventListener('change', () => {
-                    if (cocheCompletoChk.checked) {
-                        allPieceChks.forEach(c => c.checked = false);
-                    }
+                    if (cocheCompletoChk.checked) allPieceChks.forEach(c => c.checked = false);
                 });
             }
             allPieceChks.forEach(chk => {
@@ -669,15 +756,7 @@
 
         function initNewOrderChecklist() {
             const container = document.getElementById('checklist-new-container');
-            if (container) {
-                container.innerHTML = buildPiecesChecklistHtml([], 'new');
-                setupCocheCompletoLogic('checklist-new-container');
-            }
-        }
-
-        function getPiecesCount(order) {
-            if (order.cocheCompleto) return COCHE_COMPLETO_PIEZAS;
-            return (order.pieces || []).length;
+            if (container) { container.innerHTML = buildPiecesChecklistHtml([], 'new'); setupCocheCompletoLogic('checklist-new-container'); }
         }
 
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
@@ -1312,7 +1391,7 @@
             const order = orders.find(o => o.id === orderId); if (!order) return;
             const newPlate = document.getElementById('edit-plate').value.toUpperCase().trim();
             const newModel = document.getElementById('edit-model').value.trim();
-            const newInsurance = document.getElementById('edit-insurance').value.trim();
+            const newInsurance = normalizeInsurance(document.getElementById('edit-insurance').value.trim());
             const newDateIn = document.getElementById('edit-date-in').value;
             const newDateOut = document.getElementById('edit-date-out').value;
             const newOperator = document.getElementById('edit-operator').value;
@@ -1321,13 +1400,9 @@
             const newNotes = document.getElementById('edit-notes').value;
             const newUrgent = document.getElementById('edit-urgent').checked;
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos') || (newStatus === 'destajos');
-            let selectedPieces = [];
-            let cocheCompleto = false;
+            let selectedPieces = []; let cocheCompleto = false;
             document.querySelectorAll('#edit-pieces-container .piece-check').forEach(chk => {
-                if (chk.checked) {
-                    if (chk.value === 'COCHE COMPLETO') cocheCompleto = true;
-                    else selectedPieces.push(chk.value);
-                }
+                if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
             });
             if (cocheCompleto) selectedPieces = [];
             let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator;
@@ -1345,6 +1420,7 @@
             const model = document.getElementById('car-model').value.trim();
             let insurance = document.getElementById('car-insurance').value;
             if (insurance === 'OTRA') insurance = document.getElementById('car-insurance-custom').value.trim() || 'Otra';
+            insurance = normalizeInsurance(insurance);
             const dateIn = document.getElementById('date-in').value;
             const dateOut = document.getElementById('date-out').value;
             const operator = document.getElementById('operator-select').value;
@@ -1355,13 +1431,9 @@
             if (!status && operator) { const op = operators.find(o => o.name === operator); if (op) { if (op.type === 'chapa') status = 'reparacion'; else if (op.type === 'pintura') status = 'pintura'; } }
             if (!status) status = 'cargachapa';
             let isDestajoFlag = (status === 'destajos');
-            let selectedPieces = [];
-            let cocheCompleto = false;
+            let selectedPieces = []; let cocheCompleto = false;
             document.querySelectorAll('#checklist-new-container .piece-check').forEach(chk => {
-                if (chk.checked) {
-                    if (chk.value === 'COCHE COMPLETO') cocheCompleto = true;
-                    else selectedPieces.push(chk.value);
-                }
+                if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
             });
             if (cocheCompleto) selectedPieces = [];
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString() }];
@@ -1575,7 +1647,6 @@
             });
         }
 
-        // Arrancar
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initNewOrderChecklist);
         } else {
