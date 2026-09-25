@@ -138,21 +138,21 @@
         .worktype-selector button.active { background: linear-gradient(135deg, #0d9488, #0f766e); color: #ffffff; box-shadow: 0 4px 10px -2px rgba(13, 148, 136, 0.4); }
         .worktype-selector button:hover:not(.active) { background: #f1f5f9; }
 
-        /* ===== NUEVO: Estilos para gráficos de barras horizontales ===== */
+        /* ===== Gráficos de barras horizontales COMPACTOS ===== */
         .hbar-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding: 8px 4px;
+            gap: 5px;
+            padding: 4px 2px;
         }
         .hbar-row {
             display: grid;
-            grid-template-columns: 160px 1fr 110px;
+            grid-template-columns: 120px 1fr 85px;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
         .hbar-label {
-            font-size: 0.82rem;
+            font-size: 0.72rem;
             font-weight: 600;
             color: #1e293b;
             text-align: right;
@@ -162,26 +162,26 @@
         }
         .hbar-track {
             background: #f1f5f9;
-            border-radius: 6px;
+            border-radius: 4px;
             overflow: hidden;
-            height: 22px;
+            height: 14px;
             position: relative;
         }
         .hbar-fill {
             height: 100%;
-            border-radius: 6px;
+            border-radius: 4px;
             transition: width 0.5s ease;
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 8px;
+            padding-right: 6px;
             color: #fff;
-            font-size: 0.7rem;
+            font-size: 0.62rem;
             font-weight: 700;
-            min-width: 26px;
+            min-width: 20px;
         }
         .hbar-value {
-            font-size: 0.78rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: #334155;
             text-align: right;
@@ -219,9 +219,9 @@
             .worktype-selector button { padding: 5px 10px; font-size: 0.75rem; }
             .boss-dashboard-title h3 { font-size: 1.15rem; }
             .boss-dashboard-title .boss-icon-circle { width: 40px; height: 40px; font-size: 1.15rem; }
-            .hbar-row { grid-template-columns: 110px 1fr 90px; gap: 8px; }
-            .hbar-label { font-size: 0.72rem; }
-            .hbar-value { font-size: 0.7rem; }
+            .hbar-row { grid-template-columns: 95px 1fr 75px; gap: 6px; }
+            .hbar-label { font-size: 0.68rem; }
+            .hbar-value { font-size: 0.66rem; }
         }
         @media (max-width: 900px) {
             .chapista-group-col { min-width: 210px; }
@@ -861,9 +861,7 @@
             return (order.pieces || []).length;
         }
 
-        // ===== Helper para gráficos de barras horizontales =====
-        function renderHorizontalBars(container, items, options = {}) {
-            // items: [{ label, value, pct, color }]
+        function renderHorizontalBars(container, items) {
             if (!items || items.length === 0) {
                 container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>';
                 return;
@@ -871,7 +869,6 @@
             const maxValue = Math.max(...items.map(i => i.value));
             let html = '';
             items.forEach(item => {
-                // El ancho se calcula sobre el valor máximo para que la barra más alta ocupe el 100% del track
                 const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
                 const pctText = item.pct !== undefined ? item.pct : 0;
                 html += `
@@ -1653,7 +1650,6 @@
             const pctRec = total > 0 ? Math.round((recambios / total) * 100) : 0;
             const pctExt = total > 0 ? Math.round((externas / total) * 100) : 0;
             const pctPas = total > 0 ? Math.round((pasados / total) * 100) : 0;
-            // Piezas totales
             let totalPiezas = 0;
             periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
             document.getElementById('kpi-activas').innerText = activas;
@@ -1755,7 +1751,6 @@
                 centerTitle = 'TOTAL'; centerValue = String(periodOrders.length);
                 if (titleEl) titleEl.innerText = '';
                 if (hintEl) { hintEl.innerText = 'Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.'; hintEl.classList.remove('active'); hintEl.onclick = null; }
-                // Render quesito
                 container.innerHTML = '<canvas id="chart-operators"></canvas>';
                 if (charts.operators) charts.operators.destroy();
                 charts.operators = new Chart(document.getElementById('chart-operators'), {
@@ -1869,9 +1864,7 @@
                     pct: total > 0 ? Math.round((insCounts[k] / total) * 100) : 0,
                     color: k === 'Sin asignar' ? '#94a3b8' : COLOR_PALETTE[i % COLOR_PALETTE.length]
                 }));
-            // Ordenar por valor descendente
             items.sort((a, b) => b.value - a.value);
-            // Agrupar las que tengan < 3% en "Otras"
             const smallItems = items.filter(i => i.pct < 3 && i.label !== 'Sin asignar');
             if (smallItems.length > 1) {
                 const bigItems = items.filter(i => i.pct >= 3 || i.label === 'Sin asignar');
@@ -1897,7 +1890,7 @@
                     pct: total > 0 ? Math.round((value / total) * 100) : 0,
                     color: faseColors[i]
                 };
-            }).filter(i => i.value > 0); // Ocultar los 0
+            }).filter(i => i.value > 0);
             renderHorizontalBars(container, items);
         }
 
