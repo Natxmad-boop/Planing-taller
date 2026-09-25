@@ -72,10 +72,12 @@
         .boss-dashboard-title .boss-icon-circle { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.5); }
         .boss-dashboard-title h3 { margin: 0; font-weight: 800; color: #0f172a; font-size: 1.4rem; letter-spacing: -0.3px; }
         .boss-dashboard-title .subtitle { margin: 0; color: #64748b; font-size: 0.85rem; font-weight: 500; }
+        .boss-period-label { display: inline-block; margin-top: 4px; font-size: 0.75rem; color: #2563eb; font-weight: 700; background: #eff6ff; padding: 3px 10px; border-radius: 999px; }
         .stat-card-boss { background: #ffffff; border: 1px solid #e8edf3; border-radius: 14px; padding: 20px; box-shadow: 0 4px 16px -8px rgba(0,0,0,0.06); height: 100%; transition: transform 0.2s, box-shadow 0.2s; }
         .stat-card-boss:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1); }
         .stat-card-boss h6 { font-weight: 700; color: #0f172a; margin-bottom: 16px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
         .stat-card-boss h6 .stat-title-icon { width: 28px; height: 28px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+        .stat-card-note { font-size: 0.7rem; color: #94a3b8; font-style: italic; margin-top: 4px; text-align: center; }
         .kpi-card { background: #ffffff; border-radius: 16px; padding: 18px 20px; box-shadow: 0 4px 20px -10px rgba(0,0,0,0.08); border: 1px solid #e8edf3; height: 100%; display: flex; align-items: center; gap: 14px; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; cursor: pointer; }
         .kpi-card::after { content: ''; position: absolute; right: -20px; top: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.08; }
         .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -14px rgba(0,0,0,0.12); }
@@ -147,7 +149,7 @@
         }
         .hbar-row {
             display: grid;
-            grid-template-columns: 120px 1fr 85px;
+            grid-template-columns: 120px 1fr 110px;
             align-items: center;
             gap: 8px;
         }
@@ -219,7 +221,7 @@
             .worktype-selector button { padding: 5px 10px; font-size: 0.75rem; }
             .boss-dashboard-title h3 { font-size: 1.15rem; }
             .boss-dashboard-title .boss-icon-circle { width: 40px; height: 40px; font-size: 1.15rem; }
-            .hbar-row { grid-template-columns: 95px 1fr 75px; gap: 6px; }
+            .hbar-row { grid-template-columns: 95px 1fr 90px; gap: 6px; }
             .hbar-label { font-size: 0.68rem; }
             .hbar-value { font-size: 0.66rem; }
         }
@@ -276,6 +278,7 @@
                     <div>
                         <h3>Panel 360 · Taller</h3>
                         <p class="subtitle">Visión ejecutiva del taller por periodo</p>
+                        <span class="boss-period-label" id="boss-period-label">Este Mes</span>
                     </div>
                 </div>
                 <div class="d-flex gap-2 align-items-center flex-wrap">
@@ -383,28 +386,32 @@
                 </div>
             </div>
 
+            <!-- Quesito 1: Coches por Área -->
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <div class="stat-card-boss">
-                        <h6><span class="stat-title-icon"><i class="fas fa-users"></i></span> Producción por Área <span id="chart-area-breadcrumb" class="text-secondary fw-normal" style="font-size:0.8rem;"></span></h6>
+                        <h6><span class="stat-title-icon"><i class="fas fa-car"></i></span> Coches por Área <span id="chart-area-breadcrumb" class="text-secondary fw-normal" style="font-size:0.8rem;"></span></h6>
                         <div id="chart-operators-container" class="chart-wrapper"><canvas id="chart-operators"></canvas></div>
-                        <div class="text-center"><span class="chart-nav-hint" id="chart-operators-hint">Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.</span></div>
+                        <div class="text-center"><span class="chart-nav-hint" id="chart-operators-hint">Coches únicos. Un coche puede contar en ambas áreas.</span></div>
+                        <div class="stat-card-note" id="chart-operators-note">Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.</div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="stat-card-boss">
-                        <h6><span class="stat-title-icon"><i class="fas fa-shield-alt"></i></span> Reparto por Compañía Aseguradora</h6>
-                        <div id="chart-insurance-container" class="hbar-container"></div>
+                        <h6><span class="stat-title-icon"><i class="fas fa-boxes"></i></span> Piezas por Área <span id="chart-pieces-breadcrumb" class="text-secondary fw-normal" style="font-size:0.8rem;"></span></h6>
+                        <div id="chart-pieces-container" class="chart-wrapper"><canvas id="chart-pieces"></canvas></div>
+                        <div class="text-center"><span class="chart-nav-hint" id="chart-pieces-hint">Piezas totales. Un coche puede contar en ambas áreas.</span></div>
+                        <div class="stat-card-note" id="chart-pieces-note">Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.</div>
                     </div>
                 </div>
             </div>
 
+            <!-- Compañías y Estados -->
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <div class="stat-card-boss">
-                        <h6><span class="stat-title-icon"><i class="fas fa-boxes"></i></span> Piezas por Operario <span id="pieces-chart-breadcrumb" class="text-secondary fw-normal" style="font-size:0.8rem;"></span></h6>
-                        <div id="chart-pieces-container" class="chart-wrapper"><canvas id="chart-pieces"></canvas></div>
-                        <div class="text-center"><span class="chart-nav-hint" id="chart-pieces-hint">Haz clic en "Chapa" o "Pintura" para ver las piezas por operario.</span></div>
+                        <h6><span class="stat-title-icon"><i class="fas fa-shield-alt"></i></span> Reparto por Compañía Aseguradora</h6>
+                        <div id="chart-insurance-container" class="hbar-container"></div>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -1280,7 +1287,6 @@
                 else if (order.substatus === 'Pendiente recambios') substatusBadge = `<div class="badge substatus-badge-recambios mb-1 small">${order.substatus}</div>`;
                 else if (order.substatus) substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
                 let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;">Destajo</span>` : '';
-                // ===== VARILLERO BADGE =====
                 const hasVarillero = (order.pieces && order.pieces.includes('Varillero'));
                 const varilleroBadge = hasVarillero ? `<span class="badge bg-info text-dark ms-1" style="font-size:0.7rem;">Varillero</span>` : '';
                 let piecesHtml = '';
@@ -1636,6 +1642,41 @@
             return null;
         }
 
+        // Helper: obtiene matrículas únicas por área
+        function getUniqueCarsByArea(list, area, operatorFilter = null) {
+            const statusChapa = ['cargachapa', 'reparacion', 'montaje'];
+            const statusPintura = ['cargapintura', 'pintura'];
+            const plates = new Set();
+            list.forEach(o => {
+                if (operatorFilter && (o.operator || '').trim() !== operatorFilter) return;
+                const status = o.status || 'reparacion';
+                let matches = false;
+                if (area === 'chapa') matches = statusChapa.includes(status);
+                else if (area === 'pintura') matches = statusPintura.includes(status);
+                if (matches) {
+                    const plate = (o.plate || '').trim().toUpperCase();
+                    if (plate) plates.add(plate);
+                }
+            });
+            return plates;
+        }
+
+        // Helper: suma piezas por área
+        function getPiecesByArea(list, area, operatorFilter = null) {
+            const statusChapa = ['cargachapa', 'reparacion', 'montaje'];
+            const statusPintura = ['cargapintura', 'pintura'];
+            let total = 0;
+            list.forEach(o => {
+                if (operatorFilter && (o.operator || '').trim() !== operatorFilter) return;
+                const status = o.status || 'reparacion';
+                let matches = false;
+                if (area === 'chapa') matches = statusChapa.includes(status);
+                else if (area === 'pintura') matches = statusPintura.includes(status);
+                if (matches) total += getPiecesCount(o);
+            });
+            return total;
+        }
+
         function renderBossDashboardStats() {
             let periodOrders = filterOrdersByBossPeriod(orders, bossPeriod);
             periodOrders = applyWorkTypeFilter(periodOrders, bossWorkType);
@@ -1665,7 +1706,9 @@
             document.getElementById('kpi-pasados-sub').innerText = `${pctPas}% del total`;
             document.getElementById('kpi-piezas').innerText = totalPiezas;
             const periodLabelsShort = { day: 'Hoy', month: 'Este mes', lastMonth: 'Mes anterior', year: 'Este año', all: 'Todo' };
+            const periodLabelFull = { day: 'Hoy', month: 'Este mes', lastMonth: 'Mes anterior', year: 'Este año', all: 'Todo el histórico' };
             document.getElementById('kpi-piezas-sub').innerText = periodLabelsShort[bossPeriod] || '';
+            document.getElementById('boss-period-label').innerText = periodLabelFull[bossPeriod] || '';
             renderOperatorChart(periodOrders);
             renderPiecesChart(periodOrders);
             renderInsuranceBars(periodOrders);
@@ -1740,18 +1783,33 @@
         };
         Chart.register(centerTextPlugin);
 
+        // ===== QUESITO 1: COCHES POR ÁREA =====
         function renderOperatorChart(periodOrders) {
             const container = document.getElementById('chart-operators-container');
             const titleEl = document.getElementById('chart-area-breadcrumb');
             const hintEl = document.getElementById('chart-operators-hint');
-            let labels, data, colors, centerTitle, centerValue;
+            const noteEl = document.getElementById('chart-operators-note');
+
             if (operatorChartLevel === 'area') {
-                const chapaCount = periodOrders.filter(o => o.status === 'reparacion' || o.status === 'montaje' || o.status === 'cargachapa').length;
-                const pinturaCount = periodOrders.filter(o => o.status === 'pintura' || o.status === 'cargapintura').length;
-                labels = ['Chapa', 'Pintura']; data = [chapaCount, pinturaCount]; colors = ['#2563eb', '#f59e0b'];
-                centerTitle = 'TOTAL'; centerValue = String(periodOrders.length);
+                // Nivel 1: matrículas únicas por área
+                const chapaSet = getUniqueCarsByArea(periodOrders, 'chapa');
+                const pinturaSet = getUniqueCarsByArea(periodOrders, 'pintura');
+                // Total coches únicos (unión de los dos)
+                const uniqueAllSet = new Set([...chapaSet, ...pinturaSet]);
+                const totalUnique = uniqueAllSet.size;
+                const chapaCount = chapaSet.size;
+                const pinturaCount = pinturaSet.size;
+                const totalCars = uniqueAllSet.size;
+                const labels = ['Chapa', 'Pintura'];
+                const data = [chapaCount, pinturaCount];
+                const colors = ['#2563eb', '#f59e0b'];
                 if (titleEl) titleEl.innerText = '';
-                if (hintEl) { hintEl.innerText = 'Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.'; hintEl.classList.remove('active'); hintEl.onclick = null; }
+                if (hintEl) {
+                    hintEl.innerText = `Coches únicos: ${totalUnique}. Un coche puede contar en ambas áreas.`;
+                    hintEl.classList.remove('active');
+                    hintEl.onclick = null;
+                }
+                if (noteEl) noteEl.innerText = 'Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.';
                 container.innerHTML = '<canvas id="chart-operators"></canvas>';
                 if (charts.operators) charts.operators.destroy();
                 charts.operators = new Chart(document.getElementById('chart-operators'), {
@@ -1760,9 +1818,9 @@
                     options: {
                         responsive: true, maintainAspectRatio: false, cutout: '62%',
                         plugins: {
-                            centerText: { display: true, title: centerTitle, value: centerValue },
-                            legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
-                            tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
+                            centerText: { display: true, title: 'COCHES', value: String(totalCars) },
+                            legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = uniqueAllSet.size; return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}% (${value} coches)`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
+                            tooltip: { callbacks: { label: ctx => { const total = uniqueAllSet.size; return `${ctx.label}: ${ctx.parsed} coches (${total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0}%)`; } } }
                         },
                         onClick: (evt, elements) => {
                             if (elements.length > 0 && operatorChartLevel === 'area') {
@@ -1773,41 +1831,68 @@
                     }
                 });
             } else {
+                // Nivel 2: desglose por operario. Mostrar coches únicos + piezas.
                 const area = operatorChartArea;
-                const filterFn = area === 'chapa' ? (o => (o.status === 'reparacion' || o.status === 'montaje')) : (o => o.status === 'pintura' || (o.status || '').startsWith('pintor'));
-                const opCounts = {};
-                periodOrders.filter(filterFn).forEach(o => { const opName = o.operator || 'Sin asignar'; opCounts[opName] = (opCounts[opName] || 0) + 1; });
-                const totalArea = Object.values(opCounts).reduce((a, b) => a + b, 0);
-                const items = Object.keys(opCounts)
-                    .sort((a, b) => opCounts[b] - opCounts[a])
-                    .map((name, i) => ({
-                        label: name,
-                        value: opCounts[name],
-                        pct: totalArea > 0 ? Math.round((opCounts[name] / totalArea) * 100) : 0,
-                        color: COLOR_PALETTE[i % COLOR_PALETTE.length]
-                    }));
+                const chOpsList = area === 'chapa' ? getChapistasList() : getPintoresList();
+                // Recopilar coches y piezas por operario
+                const opData = {};
+                chOpsList.forEach(op => { opData[op.name] = { cars: 0, pieces: 0 }; });
+                const statusChapa = ['cargachapa', 'reparacion', 'montaje'];
+                const statusPintura = ['cargapintura', 'pintura'];
+                const statusList = area === 'chapa' ? statusChapa : statusPintura;
+                // Agrupamos por operario, contando coches únicos y piezas
+                const byOperator = {};
+                periodOrders.forEach(o => {
+                    const status = o.status || 'reparacion';
+                    if (!statusList.includes(status)) return;
+                    const opName = (o.operator || '').trim();
+                    if (!opName) return;
+                    if (!chOpsList.find(op => op.name === opName)) return;
+                    if (!byOperator[opName]) byOperator[opName] = { plates: new Set(), pieces: 0 };
+                    const plate = (o.plate || '').trim().toUpperCase();
+                    if (plate) byOperator[opName].plates.add(plate);
+                    byOperator[opName].pieces += getPiecesCount(o);
+                });
+                // Construimos items
+                const items = Object.keys(byOperator).map((opName, i) => ({
+                    label: `${opName} (${byOperator[opName].plates.size}c / ${byOperator[opName].pieces}p)`,
+                    value: byOperator[opName].plates.size,
+                    pct: 0,
+                    color: COLOR_PALETTE[i % COLOR_PALETTE.length]
+                }));
+                // Calcular % sobre el total de coches únicos del área
+                const totalCarsArea = new Set();
+                Object.values(byOperator).forEach(d => d.plates.forEach(p => totalCarsArea.add(p)));
+                items.forEach(it => {
+                    const opName = it.label.split(' (')[0];
+                    const cars = byOperator[opName].plates.size;
+                    it.pct = totalCarsArea.size > 0 ? Math.round((cars / totalCarsArea.size) * 100) : 0;
+                });
                 if (titleEl) titleEl.innerText = `— ${area === 'chapa' ? 'Chapa' : 'Pintura'}`;
                 if (hintEl) { hintEl.innerText = '⬅ Pulsa aquí para volver a la vista general.'; hintEl.classList.add('active'); hintEl.onclick = () => { operatorChartLevel = 'area'; operatorChartArea = null; renderBossDashboardStats(); }; }
+                if (noteEl) noteEl.innerText = 'Coches únicos / Piezas por operario.';
                 renderHorizontalBars(container, items);
             }
         }
 
+        // ===== QUESITO 2: PIEZAS POR ÁREA =====
         function renderPiecesChart(periodOrders) {
             const container = document.getElementById('chart-pieces-container');
-            const titleEl = document.getElementById('pieces-chart-breadcrumb');
+            const titleEl = document.getElementById('chart-pieces-breadcrumb');
             const hintEl = document.getElementById('chart-pieces-hint');
+            const noteEl = document.getElementById('chart-pieces-note');
+
             if (piecesChartLevel === 'area') {
-                let chapaPiezas = 0, pinturaPiezas = 0;
-                periodOrders.forEach(o => {
-                    const pz = getPiecesCount(o);
-                    if (o.status === 'reparacion' || o.status === 'montaje' || o.status === 'cargachapa') chapaPiezas += pz;
-                    else if (o.status === 'pintura' || o.status === 'cargapintura' || (o.status || '').startsWith('pintor')) pinturaPiezas += pz;
-                });
+                const chapaPiezas = getPiecesByArea(periodOrders, 'chapa');
+                const pinturaPiezas = getPiecesByArea(periodOrders, 'pintura');
+                let totalPiezas = 0;
+                periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
                 const labels = ['Chapa', 'Pintura'];
                 const data = [chapaPiezas, pinturaPiezas];
                 const colors = ['#2563eb', '#f59e0b'];
                 if (titleEl) titleEl.innerText = '';
-                if (hintEl) { hintEl.innerText = 'Haz clic en "Chapa" o "Pintura" para ver las piezas por operario.'; hintEl.classList.remove('active'); hintEl.onclick = null; }
+                if (hintEl) { hintEl.innerText = `Piezas totales: ${totalPiezas}. Un coche puede contar en ambas áreas.`; hintEl.classList.remove('active'); hintEl.onclick = null; }
+                if (noteEl) noteEl.innerText = 'Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.';
                 container.innerHTML = '<canvas id="chart-pieces"></canvas>';
                 if (charts.pieces) charts.pieces.destroy();
                 charts.pieces = new Chart(document.getElementById('chart-pieces'), {
@@ -1816,9 +1901,9 @@
                     options: {
                         responsive: true, maintainAspectRatio: false, cutout: '62%',
                         plugins: {
-                            centerText: { display: true, title: 'PIEZAS', value: String(chapaPiezas + pinturaPiezas) },
-                            legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}% (${value} pzs)`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
-                            tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} piezas (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
+                            centerText: { display: true, title: 'PIEZAS', value: String(totalPiezas) },
+                            legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = totalPiezas; return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}% (${value} pzs)`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
+                            tooltip: { callbacks: { label: ctx => { const total = totalPiezas; return `${ctx.label}: ${ctx.parsed} piezas (${total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0}%)`; } } }
                         },
                         onClick: (evt, elements) => {
                             if (elements.length > 0 && piecesChartLevel === 'area') {
@@ -1830,24 +1915,34 @@
                 });
             } else {
                 const area = piecesChartArea;
-                const filterFn = area === 'chapa' ? (o => (o.status === 'reparacion' || o.status === 'montaje')) : (o => o.status === 'pintura' || (o.status || '').startsWith('pintor'));
-                const opPieces = {};
-                periodOrders.filter(filterFn).forEach(o => {
-                    const opName = o.operator || 'Sin asignar';
-                    const pz = getPiecesCount(o);
-                    opPieces[opName] = (opPieces[opName] || 0) + pz;
+                const chOpsList = area === 'chapa' ? getChapistasList() : getPintoresList();
+                const statusChapa = ['cargachapa', 'reparacion', 'montaje'];
+                const statusPintura = ['cargapintura', 'pintura'];
+                const statusList = area === 'chapa' ? statusChapa : statusPintura;
+                const byOperator = {};
+                periodOrders.forEach(o => {
+                    const status = o.status || 'reparacion';
+                    if (!statusList.includes(status)) return;
+                    const opName = (o.operator || '').trim();
+                    if (!opName) return;
+                    if (!chOpsList.find(op => op.name === opName)) return;
+                    if (!byOperator[opName]) byOperator[opName] = { plates: new Set(), pieces: 0 };
+                    const plate = (o.plate || '').trim().toUpperCase();
+                    if (plate) byOperator[opName].plates.add(plate);
+                    byOperator[opName].pieces += getPiecesCount(o);
                 });
-                const totalArea = Object.values(opPieces).reduce((a, b) => a + b, 0);
-                const items = Object.keys(opPieces)
-                    .sort((a, b) => opPieces[b] - opPieces[a])
-                    .map((name, i) => ({
-                        label: name,
-                        value: opPieces[name],
-                        pct: totalArea > 0 ? Math.round((opPieces[name] / totalArea) * 100) : 0,
+                const totalPiezasArea = Object.values(byOperator).reduce((a, b) => a + b.pieces, 0);
+                const items = Object.keys(byOperator)
+                    .sort((a, b) => byOperator[b].pieces - byOperator[a].pieces)
+                    .map((opName, i) => ({
+                        label: `${opName} (${byOperator[opName].plates.size}c / ${byOperator[opName].pieces}p)`,
+                        value: byOperator[opName].pieces,
+                        pct: totalPiezasArea > 0 ? Math.round((byOperator[opName].pieces / totalPiezasArea) * 100) : 0,
                         color: COLOR_PALETTE[i % COLOR_PALETTE.length]
                     }));
                 if (titleEl) titleEl.innerText = `— ${area === 'chapa' ? 'Chapa' : 'Pintura'}`;
                 if (hintEl) { hintEl.innerText = '⬅ Pulsa aquí para volver a la vista general.'; hintEl.classList.add('active'); hintEl.onclick = () => { piecesChartLevel = 'area'; piecesChartArea = null; renderBossDashboardStats(); }; }
+                if (noteEl) noteEl.innerText = 'Coches únicos / Piezas por operario.';
                 renderHorizontalBars(container, items);
             }
         }
