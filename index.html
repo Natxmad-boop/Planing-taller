@@ -137,6 +137,68 @@
         .worktype-selector button { border: none; background: transparent; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; color: #64748b; transition: all 0.15s; }
         .worktype-selector button.active { background: linear-gradient(135deg, #0d9488, #0f766e); color: #ffffff; box-shadow: 0 4px 10px -2px rgba(13, 148, 136, 0.4); }
         .worktype-selector button:hover:not(.active) { background: #f1f5f9; }
+
+        /* ===== NUEVO: Estilos para gráficos de barras horizontales ===== */
+        .hbar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 8px 4px;
+        }
+        .hbar-row {
+            display: grid;
+            grid-template-columns: 160px 1fr 110px;
+            align-items: center;
+            gap: 12px;
+        }
+        .hbar-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #1e293b;
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .hbar-track {
+            background: #f1f5f9;
+            border-radius: 6px;
+            overflow: hidden;
+            height: 22px;
+            position: relative;
+        }
+        .hbar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            min-width: 26px;
+        }
+        .hbar-value {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #334155;
+            text-align: right;
+            white-space: nowrap;
+        }
+        .hbar-value .pct {
+            color: #64748b;
+            font-weight: 600;
+        }
+        .hbar-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
             .chapista-group-col { min-width: 240px; padding: 8px; }
@@ -157,6 +219,9 @@
             .worktype-selector button { padding: 5px 10px; font-size: 0.75rem; }
             .boss-dashboard-title h3 { font-size: 1.15rem; }
             .boss-dashboard-title .boss-icon-circle { width: 40px; height: 40px; font-size: 1.15rem; }
+            .hbar-row { grid-template-columns: 110px 1fr 90px; gap: 8px; }
+            .hbar-label { font-size: 0.72rem; }
+            .hbar-value { font-size: 0.7rem; }
         }
         @media (max-width: 900px) {
             .chapista-group-col { min-width: 210px; }
@@ -240,7 +305,7 @@
                         <div class="kpi-body">
                             <div class="kpi-label">Activas</div>
                             <div class="kpi-value" id="kpi-activas">0</div>
-                            <div class="kpi-sub">En proceso</div>
+                            <div class="kpi-sub" id="kpi-activas-sub">En proceso</div>
                         </div>
                     </div>
                 </div>
@@ -280,7 +345,7 @@
                         <div class="kpi-body">
                             <div class="kpi-label">Pasados</div>
                             <div class="kpi-value" style="color:#7c3aed;" id="kpi-pasados">0</div>
-                            <div class="kpi-sub">Fuera de fecha</div>
+                            <div class="kpi-sub" id="kpi-pasados-sub">Fuera de fecha</div>
                         </div>
                     </div>
                 </div>
@@ -290,7 +355,7 @@
                         <div class="kpi-body">
                             <div class="kpi-label">Piezas</div>
                             <div class="kpi-value" style="color:#0f766e;" id="kpi-piezas">0</div>
-                            <div class="kpi-sub" id="kpi-piezas-sub">Totales</div>
+                            <div class="kpi-sub" id="kpi-piezas-sub">Este mes</div>
                         </div>
                     </div>
                 </div>
@@ -322,15 +387,14 @@
                 <div class="col-md-6">
                     <div class="stat-card-boss">
                         <h6><span class="stat-title-icon"><i class="fas fa-users"></i></span> Producción por Área <span id="chart-area-breadcrumb" class="text-secondary fw-normal" style="font-size:0.8rem;"></span></h6>
-                        <div class="chart-wrapper"><canvas id="chart-operators"></canvas></div>
+                        <div id="chart-operators-container" class="chart-wrapper"><canvas id="chart-operators"></canvas></div>
                         <div class="text-center"><span class="chart-nav-hint" id="chart-operators-hint">Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.</span></div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="stat-card-boss">
                         <h6><span class="stat-title-icon"><i class="fas fa-shield-alt"></i></span> Reparto por Compañía Aseguradora</h6>
-                        <div class="chart-wrapper"><canvas id="chart-insurance"></canvas></div>
-                        <div class="text-center"><span class="chart-nav-hint active">Porcentaje de trabajos por compañía.</span></div>
+                        <div id="chart-insurance-container" class="hbar-container"></div>
                     </div>
                 </div>
             </div>
@@ -339,14 +403,14 @@
                 <div class="col-md-6">
                     <div class="stat-card-boss">
                         <h6><span class="stat-title-icon"><i class="fas fa-boxes"></i></span> Piezas por Operario <span id="pieces-chart-breadcrumb" class="text-secondary fw-normal" style="font-size:0.8rem;"></span></h6>
-                        <div class="chart-wrapper"><canvas id="chart-pieces"></canvas></div>
+                        <div id="chart-pieces-container" class="chart-wrapper"><canvas id="chart-pieces"></canvas></div>
                         <div class="text-center"><span class="chart-nav-hint" id="chart-pieces-hint">Haz clic en "Chapa" o "Pintura" para ver las piezas por operario.</span></div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="stat-card-boss">
                         <h6><span class="stat-title-icon"><i class="fas fa-stream"></i></span> Distribución por Estado Actual</h6>
-                        <div class="chart-wrapper"><canvas id="chart-fases"></canvas></div>
+                        <div id="chart-fases-container" class="hbar-container"></div>
                     </div>
                 </div>
             </div>
@@ -737,7 +801,7 @@
         let bossDashboardActive = false;
         let bossPeriod = 'month';
         let bossWorkType = 'all';
-        let charts = { insurance: null, operators: null, fases: null, pieces: null };
+        let charts = { operators: null, pieces: null };
         let operatorChartLevel = 'area';
         let operatorChartArea = null;
         let piecesChartLevel = 'area';
@@ -795,6 +859,32 @@
         function getPiecesCount(order) {
             if (order.cocheCompleto) return COCHE_COMPLETO_PIEZAS;
             return (order.pieces || []).length;
+        }
+
+        // ===== Helper para gráficos de barras horizontales =====
+        function renderHorizontalBars(container, items, options = {}) {
+            // items: [{ label, value, pct, color }]
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>';
+                return;
+            }
+            const maxValue = Math.max(...items.map(i => i.value));
+            let html = '';
+            items.forEach(item => {
+                // El ancho se calcula sobre el valor máximo para que la barra más alta ocupe el 100% del track
+                const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
+                const pctText = item.pct !== undefined ? item.pct : 0;
+                html += `
+                    <div class="hbar-row">
+                        <div class="hbar-label" title="${item.label}">${item.label}</div>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div>
+                        </div>
+                        <div class="hbar-value">${item.value} <span class="pct">(${pctText}%)</span></div>
+                    </div>
+                `;
+            });
+            container.innerHTML = `<div class="hbar-container">${html}</div>`;
         }
 
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
@@ -1556,15 +1646,18 @@
             const terminados = periodOrders.filter(o => o.status === 'terminados').length;
             const activas = total - terminados;
             const pctT = total > 0 ? Math.round((terminados / total) * 100) : 0;
+            const pctA = total > 0 ? Math.round((activas / total) * 100) : 0;
             const recambios = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'recambios').length;
             const externas = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'externas').length;
             const pasados = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'pasados').length;
             const pctRec = total > 0 ? Math.round((recambios / total) * 100) : 0;
             const pctExt = total > 0 ? Math.round((externas / total) * 100) : 0;
+            const pctPas = total > 0 ? Math.round((pasados / total) * 100) : 0;
             // Piezas totales
             let totalPiezas = 0;
             periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
             document.getElementById('kpi-activas').innerText = activas;
+            document.getElementById('kpi-activas-sub').innerText = `${pctA}% del total`;
             document.getElementById('kpi-terminados').innerText = terminados;
             document.getElementById('kpi-porcentaje-terminados').innerText = `${pctT}% del total`;
             document.getElementById('kpi-retrasos').innerText = `${pctRec}%`;
@@ -1572,11 +1665,14 @@
             document.getElementById('kpi-externas').innerText = `${pctExt}%`;
             document.getElementById('kpi-externas-count').innerText = `${externas} afectados`;
             document.getElementById('kpi-pasados').innerText = pasados;
+            document.getElementById('kpi-pasados-sub').innerText = `${pctPas}% del total`;
             document.getElementById('kpi-piezas').innerText = totalPiezas;
+            const periodLabelsShort = { day: 'Hoy', month: 'Este mes', lastMonth: 'Mes anterior', year: 'Este año', all: 'Todo' };
+            document.getElementById('kpi-piezas-sub').innerText = periodLabelsShort[bossPeriod] || '';
             renderOperatorChart(periodOrders);
-            renderInsuranceChart(periodOrders);
-            renderFasesChart(periodOrders);
             renderPiecesChart(periodOrders);
+            renderInsuranceBars(periodOrders);
+            renderFasesBars(periodOrders);
             if (activeKpiDetail) renderKpiDetailTable(activeKpiDetail, periodOrders, todayStr);
         }
 
@@ -1648,108 +1744,94 @@
         Chart.register(centerTextPlugin);
 
         function renderOperatorChart(periodOrders) {
+            const container = document.getElementById('chart-operators-container');
             const titleEl = document.getElementById('chart-area-breadcrumb');
             const hintEl = document.getElementById('chart-operators-hint');
-            let labels, data, colors, chartType, centerTitle, centerValue;
+            let labels, data, colors, centerTitle, centerValue;
             if (operatorChartLevel === 'area') {
                 const chapaCount = periodOrders.filter(o => o.status === 'reparacion' || o.status === 'montaje' || o.status === 'cargachapa').length;
                 const pinturaCount = periodOrders.filter(o => o.status === 'pintura' || o.status === 'cargapintura').length;
-                labels = ['Chapa', 'Pintura']; data = [chapaCount, pinturaCount]; colors = ['#2563eb', '#f59e0b']; chartType = 'doughnut';
+                labels = ['Chapa', 'Pintura']; data = [chapaCount, pinturaCount]; colors = ['#2563eb', '#f59e0b'];
                 centerTitle = 'TOTAL'; centerValue = String(periodOrders.length);
                 if (titleEl) titleEl.innerText = '';
                 if (hintEl) { hintEl.innerText = 'Haz clic en "Chapa" o "Pintura" para ver el detalle por operario.'; hintEl.classList.remove('active'); hintEl.onclick = null; }
+                // Render quesito
+                container.innerHTML = '<canvas id="chart-operators"></canvas>';
+                if (charts.operators) charts.operators.destroy();
+                charts.operators = new Chart(document.getElementById('chart-operators'), {
+                    type: 'doughnut',
+                    data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }] },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, cutout: '62%',
+                        plugins: {
+                            centerText: { display: true, title: centerTitle, value: centerValue },
+                            legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
+                            tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
+                        },
+                        onClick: (evt, elements) => {
+                            if (elements.length > 0 && operatorChartLevel === 'area') {
+                                const label = labels[elements[0].index];
+                                if (label === 'Chapa' || label === 'Pintura') { operatorChartLevel = 'operator'; operatorChartArea = label === 'Chapa' ? 'chapa' : 'pintura'; renderBossDashboardStats(); }
+                            }
+                        }
+                    }
+                });
             } else {
                 const area = operatorChartArea;
                 const filterFn = area === 'chapa' ? (o => (o.status === 'reparacion' || o.status === 'montaje')) : (o => o.status === 'pintura' || (o.status || '').startsWith('pintor'));
                 const opCounts = {};
                 periodOrders.filter(filterFn).forEach(o => { const opName = o.operator || 'Sin asignar'; opCounts[opName] = (opCounts[opName] || 0) + 1; });
-                labels = Object.keys(opCounts); data = Object.values(opCounts);
-                colors = labels.map((l, i) => COLOR_PALETTE[i % COLOR_PALETTE.length]);
-                chartType = 'doughnut';
-                const totalArea = data.reduce((a, b) => a + b, 0);
-                const pctArea = periodOrders.length > 0 ? Math.round((totalArea / periodOrders.length) * 100) : 0;
-                centerTitle = area === 'chapa' ? 'CHAPA' : 'PINTURA';
-                centerValue = `${pctArea}%`;
+                const totalArea = Object.values(opCounts).reduce((a, b) => a + b, 0);
+                const items = Object.keys(opCounts)
+                    .sort((a, b) => opCounts[b] - opCounts[a])
+                    .map((name, i) => ({
+                        label: name,
+                        value: opCounts[name],
+                        pct: totalArea > 0 ? Math.round((opCounts[name] / totalArea) * 100) : 0,
+                        color: COLOR_PALETTE[i % COLOR_PALETTE.length]
+                    }));
                 if (titleEl) titleEl.innerText = `— ${area === 'chapa' ? 'Chapa' : 'Pintura'}`;
                 if (hintEl) { hintEl.innerText = '⬅ Pulsa aquí para volver a la vista general.'; hintEl.classList.add('active'); hintEl.onclick = () => { operatorChartLevel = 'area'; operatorChartArea = null; renderBossDashboardStats(); }; }
+                renderHorizontalBars(container, items);
             }
-            if (charts.operators) charts.operators.destroy();
-            charts.operators = new Chart(document.getElementById('chart-operators'), {
-                type: chartType,
-                data: { labels: labels.length ? labels : ['Sin datos'], datasets: [{ data: data.length ? data : [1], backgroundColor: labels.length ? colors : ['#e2e8f0'], borderColor: '#ffffff', borderWidth: 2 }] },
-                options: {
-                    responsive: true, maintainAspectRatio: false, cutout: '62%',
-                    plugins: {
-                        centerText: { display: true, title: centerTitle, value: centerValue },
-                        legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
-                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
-                    },
-                    onClick: (evt, elements) => {
-                        if (chartType === 'doughnut' && elements.length > 0 && operatorChartLevel === 'area') {
-                            const label = labels[elements[0].index];
-                            if (label === 'Chapa' || label === 'Pintura') { operatorChartLevel = 'operator'; operatorChartArea = label === 'Chapa' ? 'chapa' : 'pintura'; renderBossDashboardStats(); }
-                        }
-                    }
-                }
-            });
-        }
-
-        function renderInsuranceChart(periodOrders) {
-            const insCounts = {};
-            periodOrders.forEach(o => { const ins = (o.insurance && o.insurance.trim()) ? o.insurance.trim() : 'Sin asignar'; insCounts[ins] = (insCounts[ins] || 0) + 1; });
-            const insLabels = Object.keys(insCounts); const insData = Object.values(insCounts);
-            const colors = insLabels.map((l, i) => l === 'Sin asignar' ? '#94a3b8' : COLOR_PALETTE[i % COLOR_PALETTE.length]);
-            if (charts.insurance) charts.insurance.destroy();
-            charts.insurance = new Chart(document.getElementById('chart-insurance'), {
-                type: 'doughnut',
-                data: { labels: insLabels.length ? insLabels : ['Sin datos'], datasets: [{ data: insData.length ? insData : [1], backgroundColor: insLabels.length ? colors : ['#e2e8f0'], borderColor: '#ffffff', borderWidth: 2 }] },
-                options: {
-                    responsive: true, maintainAspectRatio: false, cutout: '62%',
-                    plugins: {
-                        centerText: { display: true, title: 'TOTAL', value: String(periodOrders.length) },
-                        legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
-                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
-                    }
-                }
-            });
-        }
-
-        function renderFasesChart(periodOrders) {
-            const faseLabels = ['Carga Chapa', 'Carga Pintura', 'Lunas', 'Reparación', 'Montaje', 'Paragolpes', 'Destajos', 'Pintura', 'Terminados'];
-            const faseKeys = ['cargachapa', 'cargapintura', 'lunas', 'reparacion', 'montaje', 'paragolpes', 'destajos', 'pintura', 'terminados'];
-            const faseCounts = faseKeys.map(k => periodOrders.filter(o => (o.status || '') === k).length);
-            const faseColors = ['#2563eb', '#f59e0b', '#64748b', '#1d4ed8', '#059669', '#1e293b', '#0891b2', '#fbbf24', '#10b981'];
-            if (charts.fases) charts.fases.destroy();
-            charts.fases = new Chart(document.getElementById('chart-fases'), {
-                type: 'doughnut',
-                data: { labels: faseLabels, datasets: [{ data: faseCounts, backgroundColor: faseColors, borderColor: '#ffffff', borderWidth: 2 }] },
-                options: {
-                    responsive: true, maintainAspectRatio: false, cutout: '62%',
-                    plugins: {
-                        centerText: { display: true, title: 'TOTAL', value: String(periodOrders.length) },
-                        legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}%`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
-                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
-                    }
-                }
-            });
         }
 
         function renderPiecesChart(periodOrders) {
+            const container = document.getElementById('chart-pieces-container');
             const titleEl = document.getElementById('pieces-chart-breadcrumb');
             const hintEl = document.getElementById('chart-pieces-hint');
-            let labels, data, colors, chartType, centerTitle, centerValue;
             if (piecesChartLevel === 'area') {
-                // Nivel 1: Chapa vs Pintura (piezas totales)
                 let chapaPiezas = 0, pinturaPiezas = 0;
                 periodOrders.forEach(o => {
                     const pz = getPiecesCount(o);
                     if (o.status === 'reparacion' || o.status === 'montaje' || o.status === 'cargachapa') chapaPiezas += pz;
                     else if (o.status === 'pintura' || o.status === 'cargapintura' || (o.status || '').startsWith('pintor')) pinturaPiezas += pz;
                 });
-                labels = ['Chapa', 'Pintura']; data = [chapaPiezas, pinturaPiezas]; colors = ['#2563eb', '#f59e0b']; chartType = 'doughnut';
-                centerTitle = 'PIEZAS'; centerValue = String(chapaPiezas + pinturaPiezas);
+                const labels = ['Chapa', 'Pintura'];
+                const data = [chapaPiezas, pinturaPiezas];
+                const colors = ['#2563eb', '#f59e0b'];
                 if (titleEl) titleEl.innerText = '';
                 if (hintEl) { hintEl.innerText = 'Haz clic en "Chapa" o "Pintura" para ver las piezas por operario.'; hintEl.classList.remove('active'); hintEl.onclick = null; }
+                container.innerHTML = '<canvas id="chart-pieces"></canvas>';
+                if (charts.pieces) charts.pieces.destroy();
+                charts.pieces = new Chart(document.getElementById('chart-pieces'), {
+                    type: 'doughnut',
+                    data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }] },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, cutout: '62%',
+                        plugins: {
+                            centerText: { display: true, title: 'PIEZAS', value: String(chapaPiezas + pinturaPiezas) },
+                            legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}% (${value} pzs)`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
+                            tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} piezas (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
+                        },
+                        onClick: (evt, elements) => {
+                            if (elements.length > 0 && piecesChartLevel === 'area') {
+                                const label = labels[elements[0].index];
+                                if (label === 'Chapa' || label === 'Pintura') { piecesChartLevel = 'operator'; piecesChartArea = label === 'Chapa' ? 'chapa' : 'pintura'; renderBossDashboardStats(); }
+                            }
+                        }
+                    }
+                });
             } else {
                 const area = piecesChartArea;
                 const filterFn = area === 'chapa' ? (o => (o.status === 'reparacion' || o.status === 'montaje')) : (o => o.status === 'pintura' || (o.status || '').startsWith('pintor'));
@@ -1759,34 +1841,64 @@
                     const pz = getPiecesCount(o);
                     opPieces[opName] = (opPieces[opName] || 0) + pz;
                 });
-                labels = Object.keys(opPieces); data = Object.values(opPieces);
-                colors = labels.map((l, i) => COLOR_PALETTE[i % COLOR_PALETTE.length]);
-                chartType = 'doughnut';
-                const totalArea = data.reduce((a, b) => a + b, 0);
-                centerTitle = area === 'chapa' ? 'CHAPA' : 'PINTURA';
-                centerValue = String(totalArea);
+                const totalArea = Object.values(opPieces).reduce((a, b) => a + b, 0);
+                const items = Object.keys(opPieces)
+                    .sort((a, b) => opPieces[b] - opPieces[a])
+                    .map((name, i) => ({
+                        label: name,
+                        value: opPieces[name],
+                        pct: totalArea > 0 ? Math.round((opPieces[name] / totalArea) * 100) : 0,
+                        color: COLOR_PALETTE[i % COLOR_PALETTE.length]
+                    }));
                 if (titleEl) titleEl.innerText = `— ${area === 'chapa' ? 'Chapa' : 'Pintura'}`;
                 if (hintEl) { hintEl.innerText = '⬅ Pulsa aquí para volver a la vista general.'; hintEl.classList.add('active'); hintEl.onclick = () => { piecesChartLevel = 'area'; piecesChartArea = null; renderBossDashboardStats(); }; }
+                renderHorizontalBars(container, items);
             }
-            if (charts.pieces) charts.pieces.destroy();
-            charts.pieces = new Chart(document.getElementById('chart-pieces'), {
-                type: chartType,
-                data: { labels: labels.length ? labels : ['Sin datos'], datasets: [{ data: data.length ? data : [1], backgroundColor: labels.length ? colors : ['#e2e8f0'], borderColor: '#ffffff', borderWidth: 2 }] },
-                options: {
-                    responsive: true, maintainAspectRatio: false, cutout: '62%',
-                    plugins: {
-                        centerText: { display: true, title: centerTitle, value: centerValue },
-                        legend: { position: 'right', labels: { font: { size: 11, weight: '600' }, padding: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; const total = data.datasets[0].data.reduce((a, b) => a + b, 0); return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = total > 0 ? ((value / total) * 100).toFixed(0) : 0; return { text: `${label} — ${pct}% (${value} pzs)`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } } },
-                        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a, b) => a + b, 0); return `${ctx.label}: ${ctx.parsed} piezas (${t ? ((ctx.parsed / t) * 100).toFixed(1) : 0}%)`; } } }
-                    },
-                    onClick: (evt, elements) => {
-                        if (chartType === 'doughnut' && elements.length > 0 && piecesChartLevel === 'area') {
-                            const label = labels[elements[0].index];
-                            if (label === 'Chapa' || label === 'Pintura') { piecesChartLevel = 'operator'; piecesChartArea = label === 'Chapa' ? 'chapa' : 'pintura'; renderBossDashboardStats(); }
-                        }
-                    }
-                }
-            });
+        }
+
+        function renderInsuranceBars(periodOrders) {
+            const container = document.getElementById('chart-insurance-container');
+            const insCounts = {};
+            periodOrders.forEach(o => { const ins = (o.insurance && o.insurance.trim()) ? o.insurance.trim() : 'Sin asignar'; insCounts[ins] = (insCounts[ins] || 0) + 1; });
+            const total = periodOrders.length;
+            let items = Object.keys(insCounts)
+                .filter(k => insCounts[k] > 0)
+                .map((k, i) => ({
+                    label: k,
+                    value: insCounts[k],
+                    pct: total > 0 ? Math.round((insCounts[k] / total) * 100) : 0,
+                    color: k === 'Sin asignar' ? '#94a3b8' : COLOR_PALETTE[i % COLOR_PALETTE.length]
+                }));
+            // Ordenar por valor descendente
+            items.sort((a, b) => b.value - a.value);
+            // Agrupar las que tengan < 3% en "Otras"
+            const smallItems = items.filter(i => i.pct < 3 && i.label !== 'Sin asignar');
+            if (smallItems.length > 1) {
+                const bigItems = items.filter(i => i.pct >= 3 || i.label === 'Sin asignar');
+                const otrasValue = smallItems.reduce((a, b) => a + b.value, 0);
+                const otrasPct = smallItems.reduce((a, b) => a + b.pct, 0);
+                bigItems.push({ label: 'Otras', value: otrasValue, pct: otrasPct, color: '#cbd5e1' });
+                items = bigItems.sort((a, b) => b.value - a.value);
+            }
+            renderHorizontalBars(container, items);
+        }
+
+        function renderFasesBars(periodOrders) {
+            const container = document.getElementById('chart-fases-container');
+            const faseLabels = ['Carga Chapa', 'Carga Pintura', 'Lunas', 'Reparación', 'Montaje', 'Paragolpes', 'Destajos', 'Pintura', 'Terminados'];
+            const faseKeys = ['cargachapa', 'cargapintura', 'lunas', 'reparacion', 'montaje', 'paragolpes', 'destajos', 'pintura', 'terminados'];
+            const faseColors = ['#2563eb', '#f59e0b', '#64748b', '#1d4ed8', '#059669', '#1e293b', '#0891b2', '#fbbf24', '#10b981'];
+            const total = periodOrders.length;
+            let items = faseKeys.map((k, i) => {
+                const value = periodOrders.filter(o => (o.status || '') === k).length;
+                return {
+                    label: faseLabels[i],
+                    value: value,
+                    pct: total > 0 ? Math.round((value / total) * 100) : 0,
+                    color: faseColors[i]
+                };
+            }).filter(i => i.value > 0); // Ocultar los 0
+            renderHorizontalBars(container, items);
         }
 
         if (document.readyState === 'loading') {
