@@ -717,8 +717,8 @@
         const PIECES_ZONES = [
             { title: "Parte Delantera", cls: "", pieces: ["Paragolpes delantero","Spoiler delantero","Molduras negras","Capó","Luna delantera","Faro izquierdo","Faro derecho"] },
             { title: "Parte Trasera", cls: "zone-trasera", pieces: ["Paragolpes trasero","Spoiler trasero","Moldura negra","Portón","Luna trasera","Piloto izquierdo","Piloto derecho"] },
-            { title: "Lateral Izquierdo", cls: "zone-lat-izq", pieces: ["Aleta delantera izquierda","Puerta delantera izquierda","Puerta trasera izquierda","Aleta trasera izquierda","Estribo izquierdo","Llanta delantera izquierda","Llanta trasera izquierda","Retrovisor izquierdo"] },
-            { title: "Lateral Derecho", cls: "zone-lat-der", pieces: ["Aleta delantera derecha","Puerta delantera derecha","Puerta trasera derecha","Aleta trasera derecha","Estribo derecho","Llanta delantera derecha","Llanta trasera derecha","Retrovisor derecho"] },
+            { title: "Lateral Izquierdo", cls: "zone-lat-izq", pieces: ["Aleta delantera izquierda","Puerta delantera izquierda","Puerta trasera izquierda","Aleta trasera izquierda","Estribo izquierdo","Llanta delantera izquierda","Llanta trasera izquierda","Retrovisor izquierdo","Tapa de carga/combustible izq."] },
+            { title: "Lateral Derecho", cls: "zone-lat-der", pieces: ["Aleta delantera derecha","Puerta delantera derecha","Puerta trasera derecha","Aleta trasera derecha","Estribo derecho","Llanta delantera derecha","Llanta trasera derecha","Retrovisor derecho","Tapa de carga/combustible der."] },
             { title: "Molduras Pase de Aleta", cls: "zone-molduras", pieces: ["Moldura pase aleta delantera izq.","Moldura pase aleta delantera der.","Moldura pase aleta trasera izq.","Moldura pase aleta trasera der."] },
             { title: "Techo", cls: "zone-techo", pieces: ["Techo"] }
         ];
@@ -1333,7 +1333,6 @@
                 }
             });
 
-            // Contadores de chapistas
             getChapistasList().forEach(op => {
                 const opName = op.name;
                 const sid = safeId(opName);
@@ -1354,7 +1353,6 @@
                 if (repCheckedEl) repCheckedEl.innerText = `${checkedRep}✓`;
                 if (monCheckedEl) monCheckedEl.innerText = `${checkedMon}✓`;
             });
-            // Contadores de pintores
             getPintoresList().forEach(op => {
                 const opName = op.name;
                 const sid = safeId(opName);
