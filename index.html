@@ -805,20 +805,17 @@
 
         function safeId(str) { return String(str).replace(/[^a-zA-Z0-9]/g, '_'); }
 
-        // ¿Una orden pasó por un área? Mira historial + status actual (respaldo)
+        // ¿Una orden pasó por un área? Mira historial + status actual (sin fallback)
         function pasoPorArea(order, areaKey) {
             const def = AREA_DEFS[areaKey];
             if (!def) return false;
             const statuses = def.statuses;
-            // 1. Status actual (sin fallback a 'reparacion')
             if (statuses.includes(order.status)) return true;
-            // 2. Historial (respaldo)
             if (Array.isArray(order.history)) {
                 for (const h of order.history) {
                     if (h && statuses.includes(h.status)) return true;
                 }
             }
-            // 3. Destajos: también por flag isDestajo
             if (areaKey === 'destajos' && order.isDestajo === true) return true;
             return false;
         }
@@ -1925,7 +1922,7 @@
             renderHorizontalBars(container, items);
         }
 
-        // ===== DISTRIBUCIÓN POR ESTADO ACTUAL (con etiquetas legibles) =====
+        // ===== DISTRIBUCIÓN POR ESTADO ACTUAL (etiquetas legibles) =====
         function renderFasesBars(periodOrders) {
             const container = document.getElementById('chart-fases-container');
             if (!container) return;
