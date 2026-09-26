@@ -892,7 +892,8 @@
         }
 
         // ===== RENDER BARRAS CON DESGLOSE POR OPERARIO =====
-        function renderBarsWithOperators(container, items, areaKey) {
+        // Cada item lleva su propio areaKey (chapa, pintura, paragolpes...)
+        function renderBarsWithOperators(container, items) {
             if (!items || items.length === 0) {
                 container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>';
                 return;
@@ -912,12 +913,13 @@
                     </div>
                 `;
                 if (item.operators && item.operators.length > 0) {
+                    const itemAreaKey = item.areaKey || '';
                     html += `<div class="hbar-operators">
                         <div class="hbar-operators-title">Por operario</div>`;
                     item.operators.forEach((op) => {
                         if (op.name === 'Sin asignar') return;
-                        const opId = `${container.id}-${areaKey}-${itemIdx}-${op.name}`.replace(/[^a-zA-Z0-9_-]/g, '_');
-                        html += `<div class="hbar-op-row clickable" onclick="toggleOperatorDrilldown('${opId}', '${op.name}', '${areaKey}')">
+                        const opId = `${container.id}-${itemAreaKey}-${itemIdx}-${op.name}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+                        html += `<div class="hbar-op-row clickable" onclick="toggleOperatorDrilldown('${opId}', '${op.name}', '${itemAreaKey}')">
                             <span class="op-name"><span class="arrow" id="arrow-${opId}">▶</span> ${op.name}</span>
                             <span class="op-counts"><span class="c">${op.coches} coche${op.coches !== 1 ? 's' : ''}</span> · <span class="p">${op.piezas} pzs</span></span>
                         </div>
@@ -1950,24 +1952,7 @@
         };
         Chart.register(centerTextPlugin);
 
-        function renderPiezasArea(periodOrders) {
-            renderPiezasDonut('chart-piezas-chapa-donut', periodOrders, 'chapa', 'chapa');
-            renderPiezasDonut('chart-piezas-pintura-donut', periodOrders, 'pintura', 'pintura');
-            const containerParagolpes = document.getElementById('chart-piezas-paragolpes-bar');
-            if (containerParagolpes) {
-                const piezas = sumPiezasByArea(periodOrders, 'paragolpes');
-                const totalPiezas = periodOrders.reduce((acc, o) => acc + getPiecesCount(o), 0);
-                const items = [{
-                    label: 'Paragolpes',
-                    value: piezas,
-                    pct: totalPiezas > 0 ? Math.round((piezas / totalPiezas) * 100) : 0,
-                    color: AREA_DEFS.paragolpes.color,
-                    operators: getOperatorsForArea(periodOrders, 'paragolpes', 'coches')
-                }];
-                renderBarsWithOperators(containerParagolpes, items, 'paragolpes');
-            }
-        }
-
+        // ===== COCHES POR ÁREA (cada barra con su areaKey real) =====
         function renderCochesArea(periodOrders) {
             const container = document.getElementById('chart-coches-area-container');
             if (!container) return;
@@ -1981,12 +1966,34 @@
                     value: coches,
                     pct: totalCoches > 0 ? Math.round((coches / totalCoches) * 100) : 0,
                     color: def.color,
+                    areaKey: areaKey,
                     operators: getOperatorsForArea(periodOrders, areaKey, 'coches')
                 };
             });
-            renderBarsWithOperators(container, items, 'cochesArea');
+            renderBarsWithOperators(container, items);
         }
 
+        // ===== PIEZAS POR ÁREA =====
+        function renderPiezasArea(periodOrders) {
+            renderPiezasDonut('chart-piezas-chapa-donut', periodOrders, 'chapa', 'chapa');
+            renderPiezasDonut('chart-piezas-pintura-donut', periodOrders, 'pintura', 'pintura');
+            const containerParagolpes = document.getElementById('chart-piezas-paragolpes-bar');
+            if (containerParagolpes) {
+                const piezas = sumPiezasByArea(periodOrders, 'paragolpes');
+                const totalPiezas = periodOrders.reduce((acc, o) => acc + getPiecesCount(o), 0);
+                const items = [{
+                    label: 'Paragolpes',
+                    value: piezas,
+                    pct: totalPiezas > 0 ? Math.round((piezas / totalPiezas) * 100) : 0,
+                    color: AREA_DEFS.paragolpes.color,
+                    areaKey: 'paragolpes',
+                    operators: getOperatorsForArea(periodOrders, 'paragolpes', 'coches')
+                }];
+                renderBarsWithOperators(containerParagolpes, items);
+            }
+        }
+
+        // ===== DESTAJOS =====
         function renderDestajos(periodOrders) {
             const container = document.getElementById('chart-destajos-container');
             if (!container) return;
@@ -1999,14 +2006,16 @@
                 value: coches,
                 pct: total > 0 ? Math.round((coches / total) * 100) : 0,
                 color: def.color,
+                areaKey: 'destajos',
                 operators: getOperatorsForArea(periodOrders, 'destajos', 'coches')
             }];
             if (coches > 0) {
-                items.push({ label: 'Piezas destajo', value: piezas, pct: 0, color: '#06b6d4', operators: [] });
+                items.push({ label: 'Piezas destajo', value: piezas, pct: 0, color: '#06b6d4', areaKey: 'destajos', operators: [] });
             }
-            renderBarsWithOperators(container, items, 'destajos');
+            renderBarsWithOperators(container, items);
         }
 
+        // ===== LUNAS =====
         function renderLunas(periodOrders) {
             const container = document.getElementById('chart-lunas-container');
             if (!container) return;
@@ -2019,12 +2028,13 @@
                 value: coches,
                 pct: total > 0 ? Math.round((coches / total) * 100) : 0,
                 color: def.color,
+                areaKey: 'lunas',
                 operators: getOperatorsForArea(periodOrders, 'lunas', 'coches')
             }];
             if (coches > 0) {
-                items.push({ label: 'Piezas lunas', value: piezas, pct: 0, color: '#94a3b8', operators: [] });
+                items.push({ label: 'Piezas lunas', value: piezas, pct: 0, color: '#94a3b8', areaKey: 'lunas', operators: [] });
             }
-            renderBarsWithOperators(container, items, 'lunas');
+            renderBarsWithOperators(container, items);
         }
 
         function renderBossDashboardStats() {
