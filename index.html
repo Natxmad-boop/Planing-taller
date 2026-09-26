@@ -147,12 +147,21 @@
         .hbar-empty { padding: 40px 20px; text-align: center; color: #94a3b8; font-style: italic; font-size: 0.85rem; }
         .hbar-operators { margin: 4px 0 10px 122px; padding: 6px 10px; background: #f8fafc; border-left: 3px solid #cbd5e1; border-radius: 6px; }
         .hbar-operators-title { font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .hbar-op-row { display: flex; justify-content: space-between; font-size: 0.72rem; padding: 2px 0; color: #334155; }
-        .hbar-op-row .op-name { font-weight: 600; }
+        .hbar-op-row { display: flex; justify-content: space-between; font-size: 0.72rem; padding: 4px 6px; color: #334155; border-radius: 4px; transition: background 0.15s; }
+        .hbar-op-row.clickable { cursor: pointer; }
+        .hbar-op-row.clickable:hover { background: #eff6ff; }
+        .hbar-op-row .op-name { font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .hbar-op-row .op-name .arrow { font-size: 0.6rem; color: #64748b; }
         .hbar-op-row .op-counts { color: #64748b; font-weight: 600; }
         .hbar-op-row .op-counts .c { color: #2563eb; }
         .hbar-op-row .op-counts .p { color: #0d9488; }
         .hbar-op-empty { font-size: 0.68rem; color: #94a3b8; font-style: italic; }
+        .op-drilldown { margin: 2px 0 6px 0; padding: 6px 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.7rem; }
+        .op-drilldown-row { display: flex; justify-content: space-between; padding: 3px 4px; border-radius: 4px; cursor: pointer; }
+        .op-drilldown-row:hover { background: #eff6ff; }
+        .op-drilldown-row .plate { font-family: 'Courier New', monospace; font-weight: 700; color: #0f172a; }
+        .op-drilldown-row .estado { color: #64748b; font-size: 0.68rem; }
+        .op-drilldown-empty { color: #94a3b8; font-style: italic; text-align: center; padding: 4px; }
 
         .donut-container { position: relative; height: 200px; margin-bottom: 10px; }
         .donut-title { font-size: 0.78rem; font-weight: 700; color: #1e293b; margin-bottom: 6px; text-align: left; }
@@ -809,7 +818,6 @@
             lunas: { label: 'Lunas', color: '#64748b', statuses: ['lunas'] }
         };
 
-        // Mapa de etiquetas legibles para estados
         const STATUS_LABELS = {
             cargachapa: 'Carga Chapa',
             cargapintura: 'Carga Pintura',
@@ -824,7 +832,6 @@
 
         function safeId(str) { return String(str).replace(/[^a-zA-Z0-9]/g, '_'); }
 
-        // ¿Una orden pasó por un área? Mira historial + status actual (sin fallback)
         function pasoPorArea(order, areaKey) {
             const def = AREA_DEFS[areaKey];
             if (!def) return false;
@@ -889,14 +896,19 @@
         }
 
         // ===== RENDER BARRAS CON DESGLOSE POR OPERARIO =====
-        function renderBarsWithOperators(container, items) {
+        // Ahora cada fila de operario es pinchable, y muestra un drill-down con matrícula+estado.
+        // Parámetros:
+        //   container: el div donde se pinta
+        //   items: array de { label, value, pct, color, operators: [{name, coches, piezas}] }
+        //   areaKey: 'chapa' | 'pintura' | 'paragolpes' | 'destajos' | 'lunas' (para filtrar los coches del drill-down)
+        function renderBarsWithOperators(container, items, areaKey) {
             if (!items || items.length === 0) {
                 container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>';
                 return;
             }
             const maxValue = Math.max(...items.map(i => i.value), 1);
             let html = '';
-            items.forEach(item => {
+            items.forEach((item, itemIdx) => {
                 const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
                 const pctText = item.pct !== undefined ? item.pct : 0;
                 html += `
@@ -911,11 +923,15 @@
                 if (item.operators && item.operators.length > 0) {
                     html += `<div class="hbar-operators">
                         <div class="hbar-operators-title">Por operario</div>`;
-                    item.operators.forEach(op => {
-                        html += `<div class="hbar-op-row">
-                            <span class="op-name">${op.name}</span>
+                    item.operators.forEach((op, opIdx) => {
+                        // Sin asignar NO se muestra
+                        if (op.name === 'Sin asignar') return;
+                        const opId = `${container.id}-${areaKey}-${itemIdx}-${opIdx}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+                        html += `<div class="hbar-op-row clickable" onclick="toggleOperatorDrilldown('${opId}')">
+                            <span class="op-name"><span class="arrow" id="arrow-${opId}">▶</span> ${op.name}</span>
                             <span class="op-counts"><span class="c">${op.coches} coche${op.coches !== 1 ? 's' : ''}</span> · <span class="p">${op.piezas} pzs</span></span>
-                        </div>`;
+                        </div>
+                        <div id="drilldown-${opId}" style="display:none;"></div>`;
                     });
                     html += `</div>`;
                 } else if (item.operators && item.operators.length === 0) {
@@ -923,6 +939,72 @@
                 }
             });
             container.innerHTML = html;
+        }
+
+        // Drill-down de un operario: muestra matrícula + estado de sus coches en esa área
+        window.toggleOperatorDrilldown = (opId) => {
+            const panel = document.getElementById(`drilldown-${opId}`);
+            const arrow = document.getElementById(`arrow-${opId}`);
+            if (!panel) return;
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+                if (arrow) arrow.innerText = '▶';
+                return;
+            }
+            // Reconstruir los datos: opId tiene formato "<containerId>-<areaKey>-<itemIdx>-<opIdx>"
+            const parts = opId.split('-');
+            // El último bloque es opIdx, el anterior itemIdx, el anterior areaKey, y el resto containerId
+            const opIdx = parseInt(parts.pop(), 10);
+            const itemIdx = parseInt(parts.pop(), 10);
+            const areaKey = parts.pop();
+            const containerId = parts.join('-');
+
+            // Recalcular los coches de ese operario en esa área
+            const periodOrders = getCurrentPeriodOrders();
+            const opName = getOperatorNameByIndex(containerId, areaKey, itemIdx, opIdx);
+            if (!opName) { panel.innerHTML = '<div class="op-drilldown-empty">Sin datos</div>'; panel.style.display = 'block'; return; }
+
+            const coches = periodOrders.filter(o => {
+                if (!pasoPorArea(o, areaKey)) return false;
+                const op = (o.operator || '').trim();
+                return op === opName;
+            }).sort((a, b) => (a.plate || '').localeCompare(b.plate || ''));
+
+            if (coches.length === 0) {
+                panel.innerHTML = '<div class="op-drilldown-empty">Sin coches</div>';
+            } else {
+                let h = '<div class="op-drilldown">';
+                coches.forEach(c => {
+                    const estado = STATUS_LABELS[c.status] || c.status || '-';
+                    const plate = c.plate || '-';
+                    h += `<div class="op-drilldown-row" onclick="event.stopPropagation(); openDetailModal('${c.id}')">
+                        <span class="plate">${plate}</span>
+                        <span class="estado">${estado}</span>
+                    </div>`;
+                });
+                h += '</div>';
+                panel.innerHTML = h;
+            }
+            panel.style.display = 'block';
+            if (arrow) arrow.innerText = '▼';
+        };
+
+        // Cache para poder resolver el nombre del operario a partir del opId
+        let currentPeriodOrdersCache = null;
+        function getCurrentPeriodOrders() {
+            if (currentPeriodOrdersCache) return currentPeriodOrdersCache;
+            let p = filterOrdersByBossPeriod(orders, bossPeriod);
+            p = applyWorkTypeFilter(p, bossWorkType);
+            return p;
+        }
+
+        // Necesitamos saber el nombre del operario. Guardamos una referencia global por opId.
+        let operatorNameMap = {};
+        function getOperatorNameByIndex(containerId, areaKey, itemIdx, opIdx) {
+            return operatorNameMap[`${containerId}-${areaKey}-${itemIdx}-${opIdx}`] || null;
+        }
+        function registerOperatorName(containerId, areaKey, itemIdx, opIdx, name) {
+            operatorNameMap[`${containerId}-${areaKey}-${itemIdx}-${opIdx}`] = name;
         }
 
         // ===== RENDER SIMPLE (sin operarios) =====
@@ -963,6 +1045,7 @@
 
         window.setBossPeriod = (period) => {
             bossPeriod = period;
+            currentPeriodOrdersCache = null;
             document.querySelectorAll('#period-selector button').forEach(b => b.classList.toggle('active', b.dataset.period === period));
             activeKpiDetail = null;
             const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none';
@@ -971,6 +1054,7 @@
 
         window.setBossWorkType = (wt) => {
             bossWorkType = wt;
+            currentPeriodOrdersCache = null;
             document.querySelectorAll('#worktype-selector button').forEach(b => b.classList.toggle('active', b.dataset.worktype === wt));
             activeKpiDetail = null;
             const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none';
@@ -1728,17 +1812,16 @@
         // ===== OPERARIOS POR ÁREA (con filtrado y modo) =====
         function getOperatorsForArea(list, areaKey, mode = 'coches') {
             const opMap = {};
-            // Determinar qué operarios son válidos según el área
             let validOps = null;
             if (areaKey === 'chapa') validOps = getChapistasList().map(o => o.name);
             else if (areaKey === 'pintura') validOps = getPintoresList().map(o => o.name);
-            // paragolpes, destajos, lunas → mixto (validOps = null)
 
             list.forEach(o => {
                 if (!pasoPorArea(o, areaKey)) return;
-                const opName = (o.operator || '').trim() || 'Sin asignar';
-                // Filtrar por tipo si aplica
-                if (validOps && opName !== 'Sin asignar' && !validOps.includes(opName)) return;
+                const opName = (o.operator || '').trim();
+                // Excluir "sin asignar" completamente
+                if (!opName) return;
+                if (validOps && !validOps.includes(opName)) return;
                 if (!opMap[opName]) opMap[opName] = { coches: 0, piezas: 0 };
                 opMap[opName].coches += 1;
                 opMap[opName].piezas += getPiecesCount(o);
@@ -1750,15 +1833,14 @@
             return arr;
         }
 
-        // ===== CHARTS: DONUTS PIEZAS =====
+        // ===== DONUTS PIEZAS =====
         let chartsPiezas = { chapa: null, pintura: null };
 
         function renderPiezasDonut(containerId, periodOrders, areaKey, chartKey) {
             const container = document.getElementById(containerId);
             if (!container) return;
 
-            const mode = 'piezas';
-            const operators = getOperatorsForArea(periodOrders, areaKey, mode);
+            const operators = getOperatorsForArea(periodOrders, areaKey, 'piezas');
             const totalPiezasArea = operators.reduce((acc, op) => acc + op.piezas, 0);
 
             if (operators.length === 0 || totalPiezasArea === 0) {
@@ -1767,38 +1849,34 @@
                 return;
             }
 
-            // Agrupar "Otros" si hay más de 6 operarios
+            // Top 6 + Otros
             let opsToShow = operators;
             if (operators.length > 6) {
                 const top5 = operators.slice(0, 5);
                 const resto = operators.slice(5);
                 const otrasPiezas = resto.reduce((acc, o) => acc + o.piezas, 0);
-                opsToShow = [...top5, { name: `Otros (${resto.length})`, coches: 0, piezas: otrasPiezas }];
+                opsToShow = [...top5, { name: `Otros (${resto.length})`, coches: 0, piezas: otrasPiezas, isOtros: true }];
             }
 
             const labels = opsToShow.map(o => o.name);
             const data = opsToShow.map(o => o.piezas);
             const colors = opsToShow.map((o, i) => {
-                if (o.name.startsWith('Otros')) return '#cbd5e1';
-                if (o.name === 'Sin asignar') return '#94a3b8';
+                if (o.isOtros) return '#cbd5e1';
                 return COLOR_PALETTE[i % COLOR_PALETTE.length];
             });
 
             if (chartsPiezas[chartKey]) chartsPiezas[chartKey].destroy();
-
             container.innerHTML = '<canvas></canvas>';
             const canvas = container.querySelector('canvas');
+
+            // Guardamos referencia a los operarios mostrados para el drill-down
+            const opsRef = opsToShow;
 
             chartsPiezas[chartKey] = new Chart(canvas, {
                 type: 'doughnut',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: colors,
-                        borderColor: '#ffffff',
-                        borderWidth: 2
-                    }]
+                    datasets: [{ data: data, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }]
                 },
                 options: {
                     responsive: true,
@@ -1826,6 +1904,14 @@
                                         };
                                     });
                                 }
+                            },
+                            onClick: (e, legendItem, legend) => {
+                                const idx = legendItem.index;
+                                const opName = labels[idx];
+                                if (!opName || opName.startsWith('Otros')) return;
+                                // Abrir drill-down: mostrar coches de ese operario en esa área
+                                const areaLabel = areaKey === 'chapa' ? 'Chapa' : 'Pintura';
+                                openOperatorCarsPopup(opName, areaKey, areaLabel);
                             }
                         },
                         tooltip: {
@@ -1847,7 +1933,43 @@
             });
         }
 
-        // Plugin para pintar el texto en el centro del donut
+        // Popup simple con los coches de un operario en un área (usado al pinchar leyenda de donut)
+        window.openOperatorCarsPopup = (opName, areaKey, areaLabel) => {
+            const periodOrders = getCurrentPeriodOrders();
+            const coches = periodOrders.filter(o => {
+                if (!pasoPorArea(o, areaKey)) return false;
+                return (o.operator || '').trim() === opName;
+            }).sort((a, b) => (a.plate || '').localeCompare(b.plate || ''));
+
+            let html = `<div class="modal-header bg-light"><h5 class="modal-title fw-bold"><i class="fas fa-car me-2 text-primary"></i> ${opName} · ${areaLabel} (${coches.length})</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body p-3">`;
+            if (coches.length === 0) {
+                html += '<p class="text-muted text-center">Sin coches en esta área.</p>';
+            } else {
+                html += '<div class="d-flex flex-column gap-1">';
+                coches.forEach(c => {
+                    const estado = STATUS_LABELS[c.status] || c.status || '-';
+                    html += `<div class="d-flex justify-content-between align-items-center p-2 rounded" style="cursor:pointer; background:#f8fafc;" onclick="bootstrap.Modal.getInstance(document.getElementById('operatorCarsModal')).hide(); openDetailModal('${c.id}')">
+                        <span style="font-family:'Courier New', monospace; font-weight:700;">${c.plate || '-'}</span>
+                        <span class="text-muted small">${estado}</span>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+            html += '</div>';
+
+            let modalEl = document.getElementById('operatorCarsModal');
+            if (!modalEl) {
+                modalEl = document.createElement('div');
+                modalEl.className = 'modal fade';
+                modalEl.id = 'operatorCarsModal';
+                modalEl.tabIndex = -1;
+                modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered"><div class="modal-content shadow" id="operatorCarsModalContent"></div></div>';
+                document.body.appendChild(modalEl);
+            }
+            document.getElementById('operatorCarsModalContent').innerHTML = html;
+            new bootstrap.Modal(modalEl).show();
+        };
+
         const centerTextPlugin = {
             id: 'centerText',
             afterDraw: (chart) => {
@@ -1871,13 +1993,10 @@
         };
         Chart.register(centerTextPlugin);
 
-        // ===== PIEZAS POR ÁREA: 2 donuts + 1 barra =====
+        // ===== PIEZAS POR ÁREA =====
         function renderPiezasArea(periodOrders) {
-            // --- CHAPA (donut, solo chapistas) ---
             renderPiezasDonut('chart-piezas-chapa-donut', periodOrders, 'chapa', 'chapa');
-            // --- PINTURA (donut, solo pintores) ---
             renderPiezasDonut('chart-piezas-pintura-donut', periodOrders, 'pintura', 'pintura');
-            // --- PARAGOLPES (barra, mixto) ---
             const containerParagolpes = document.getElementById('chart-piezas-paragolpes-bar');
             if (containerParagolpes) {
                 const piezas = sumPiezasByArea(periodOrders, 'paragolpes');
@@ -1889,11 +2008,11 @@
                     color: AREA_DEFS.paragolpes.color,
                     operators: getOperatorsForArea(periodOrders, 'paragolpes', 'coches')
                 }];
-                renderBarsWithOperators(containerParagolpes, items);
+                renderBarsWithOperators(containerParagolpes, items, 'paragolpes');
             }
         }
 
-        // ===== COCHES POR ÁREA (barras, mixto sin filtrar) =====
+        // ===== COCHES POR ÁREA =====
         function renderCochesArea(periodOrders) {
             const container = document.getElementById('chart-coches-area-container');
             if (!container) return;
@@ -1910,7 +2029,7 @@
                     operators: getOperatorsForArea(periodOrders, areaKey, 'coches')
                 };
             });
-            renderBarsWithOperators(container, items);
+            renderBarsWithOperators(container, items, 'cochesArea');
         }
 
         // ===== DESTAJOS =====
@@ -1931,7 +2050,7 @@
             if (coches > 0) {
                 items.push({ label: 'Piezas destajo', value: piezas, pct: 0, color: '#06b6d4', operators: [] });
             }
-            renderBarsWithOperators(container, items);
+            renderBarsWithOperators(container, items, 'destajos');
         }
 
         // ===== LUNAS =====
@@ -1952,13 +2071,13 @@
             if (coches > 0) {
                 items.push({ label: 'Piezas lunas', value: piezas, pct: 0, color: '#94a3b8', operators: [] });
             }
-            renderBarsWithOperators(container, items);
+            renderBarsWithOperators(container, items, 'lunas');
         }
 
-        // ===== RENDER GLOBAL PANEL 360 =====
         function renderBossDashboardStats() {
             let periodOrders = filterOrdersByBossPeriod(orders, bossPeriod);
             periodOrders = applyWorkTypeFilter(periodOrders, bossWorkType);
+            currentPeriodOrdersCache = periodOrders;
             const todayStr = new Date().toISOString().split('T')[0];
             const total = periodOrders.length;
             const terminados = periodOrders.filter(o => o.status === 'terminados').length;
