@@ -141,7 +141,7 @@
         .hbar-row { display: grid; grid-template-columns: 120px 1fr 110px; align-items: center; gap: 8px; }
         .hbar-label { font-size: 0.72rem; font-weight: 600; color: #1e293b; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .hbar-track { background: #f1f5f9; border-radius: 4px; overflow: hidden; height: 14px; position: relative; }
-        .hbar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; color: #fff; font-size: 0.62rem; font-weight: 700; min-width: 20px; }
+        .hbar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; color: #fff; font-size: 0.62rem; font-weight: 700; min-width: 6px; }
         .hbar-value { font-size: 0.7rem; font-weight: 700; color: #334155; text-align: right; white-space: nowrap; }
         .hbar-value .pct { color: #64748b; font-weight: 600; }
         .hbar-empty { padding: 40px 20px; text-align: center; color: #94a3b8; font-style: italic; font-size: 0.85rem; }
@@ -678,12 +678,12 @@
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAqzUFL_4PBhpIND_CFIg8...",
+            apiKey: "TU_API_KEY_REAL",
             authDomain: "planning-taller-23a87.firebaseapp.com",
             projectId: "planning-taller-23a87",
             storageBucket: "planning-taller-23a87.appspot.com",
             messagingSenderId: "1094366720962",
-            appId: "1:1094366720962:web:860ecb...",
+            appId: "TU_APP_ID_REAL",
             measurementId: "G-8B760E9RBP"
         };
 
@@ -790,6 +790,19 @@
             lunas: { label: 'Lunas', color: '#64748b', statuses: ['lunas'] }
         };
 
+        // Mapa de etiquetas legibles para estados
+        const STATUS_LABELS = {
+            cargachapa: 'Carga Chapa',
+            cargapintura: 'Carga Pintura',
+            lunas: 'Lunas',
+            reparacion: 'Reparación',
+            montaje: 'Montaje',
+            paragolpes: 'Paragolpes',
+            destajos: 'Destajos',
+            pintura: 'Pintura',
+            terminados: 'Terminados'
+        };
+
         function safeId(str) { return String(str).replace(/[^a-zA-Z0-9]/g, '_'); }
 
         // ¿Una orden pasó por un área? Mira historial + status actual (respaldo)
@@ -797,8 +810,8 @@
             const def = AREA_DEFS[areaKey];
             if (!def) return false;
             const statuses = def.statuses;
-            // 1. Status actual
-            if (statuses.includes(order.status || 'reparacion')) return true;
+            // 1. Status actual (sin fallback a 'reparacion')
+            if (statuses.includes(order.status)) return true;
             // 2. Historial (respaldo)
             if (Array.isArray(order.history)) {
                 for (const h of order.history) {
@@ -896,7 +909,7 @@
             container.innerHTML = html;
         }
 
-        // ===== RENDER SIMPLE (sin operarios) para Compañías y Estados =====
+        // ===== RENDER SIMPLE (sin operarios) =====
         function renderHorizontalBars(container, items) {
             if (!items || items.length === 0) {
                 container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>';
@@ -1685,7 +1698,7 @@
             return null;
         }
 
-        // ===== CÁLCULOS DE ÁREA (por historial + status actual) =====
+        // ===== CÁLCULOS DE ÁREA =====
         function countCochesByArea(list, areaKey) {
             return list.filter(o => pasoPorArea(o, areaKey)).length;
         }
@@ -1769,7 +1782,7 @@
                     color: def.color,
                     operators: getOperatorsForArea(periodOrders, areaKey)
                 };
-            }).filter(i => i.value > 0 || true); // mostramos siempre las 3
+            });
             renderBarsWithOperators(container, items);
         }
 
@@ -1810,13 +1823,7 @@
                 operators: getOperatorsForArea(periodOrders, 'destajos')
             }];
             if (coches > 0) {
-                items.push({
-                    label: 'Piezas destajo',
-                    value: piezas,
-                    pct: 0,
-                    color: '#06b6d4',
-                    operators: []
-                });
+                items.push({ label: 'Piezas destajo', value: piezas, pct: 0, color: '#06b6d4', operators: [] });
             }
             renderBarsWithOperators(container, items);
         }
@@ -1837,13 +1844,7 @@
                 operators: getOperatorsForArea(periodOrders, 'lunas')
             }];
             if (coches > 0) {
-                items.push({
-                    label: 'Piezas lunas',
-                    value: piezas,
-                    pct: 0,
-                    color: '#94a3b8',
-                    operators: []
-                });
+                items.push({ label: 'Piezas lunas', value: piezas, pct: 0, color: '#94a3b8', operators: [] });
             }
             renderBarsWithOperators(container, items);
         }
@@ -1878,12 +1879,11 @@
             document.getElementById('kpi-detail-count').innerText = filtered.length;
             const tbody = document.getElementById('kpi-detail-body');
             if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="kpi-detail-empty">Sin órdenes en esta categoría.</td></tr>`; return; }
-            const statusLabelMap = { cargachapa: 'Carga Chapa', cargapintura: 'Carga Pintura', lunas: 'Lunas', reparacion: 'Reparación', montaje: 'Montaje', paragolpes: 'Paragolpes', destajos: 'Destajos', pintura: 'Pintura', terminados: 'Terminados' };
             let html = '';
             filtered.forEach(o => {
                 const opBadge = o.operator ? `<span class="badge ${getOperatorBadgeClass(o.operator)}">${o.operator}</span>` : '<span class="text-muted small">Libre</span>';
                 const isOverdue = o.dateOut && o.dateOut < todayStr && o.status !== 'terminados';
-                let estadoLabel = statusLabelMap[o.status] || o.status || '-';
+                let estadoLabel = STATUS_LABELS[o.status] || o.status || '-';
                 if (o.substatus) estadoLabel = `${estadoLabel} · ${o.substatus}`;
                 html += `
                     <tr onclick="openDetailModal('${o.id}')">
@@ -1918,24 +1918,24 @@
             if (smallItems.length > 1) {
                 const bigItems = items.filter(i => i.pct >= 3 || i.label === 'Sin asignar');
                 const otrasValue = smallItems.reduce((a, b) => a + b.value, 0);
-                const otrasPct = smallItems.reduce((a, b) => a + b.pct, 0);
+                const otrasPct = total > 0 ? Math.round((otrasValue / total) * 100) : 0;
                 bigItems.push({ label: 'Otras', value: otrasValue, pct: otrasPct, color: '#cbd5e1' });
                 items = bigItems.sort((a, b) => b.value - a.value);
             }
             renderHorizontalBars(container, items);
         }
 
+        // ===== DISTRIBUCIÓN POR ESTADO ACTUAL (con etiquetas legibles) =====
         function renderFasesBars(periodOrders) {
             const container = document.getElementById('chart-fases-container');
             if (!container) return;
-            const faseLabels = ['Carga Chapa', 'Carga Pintura', 'Lunas', 'Reparación', 'Montaje', 'Paragolpes', 'Destajos', 'Pintura', 'Terminados'];
             const faseKeys = ['cargachapa', 'cargapintura', 'lunas', 'reparacion', 'montaje', 'paragolpes', 'destajos', 'pintura', 'terminados'];
             const faseColors = ['#2563eb', '#f59e0b', '#64748b', '#1d4ed8', '#059669', '#1e293b', '#0891b2', '#fbbf24', '#10b981'];
             const total = periodOrders.length;
             let items = faseKeys.map((k, i) => {
                 const value = periodOrders.filter(o => (o.status || '') === k).length;
                 return {
-                    label: faseLabels[i],
+                    label: STATUS_LABELS[k] || k,
                     value: value,
                     pct: total > 0 ? Math.round((value / total) * 100) : 0,
                     color: faseColors[i]
