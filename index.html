@@ -24,6 +24,10 @@
         .subcol-montaje { background-color: #f0fdf4; border: 1px dashed #86efac; }
         .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
         .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
+        .subcol-pendiente-factura { background-color: #fffbeb; border: 1px dashed #fcd34d; }
+        .subcol-facturado { background-color: #f0fdf4; border: 1px dashed #86efac; }
+        .subcol-pendiente-factura.drag-over { background-color: #fef3c7 !important; }
+        .subcol-facturado.drag-over { background-color: #dcfce7 !important; }
         .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; }
         .chapista-group-col { flex: 1; min-width: 280px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.3s ease; }
         .chapista-group-col.vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
@@ -546,7 +550,20 @@
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button>
                     </div>
                 </div>
-                <div id="list-terminados" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados')"></div>
+                <div class="chapa-split-container" style="min-height: 60vh;">
+                    <div class="chapa-subcol subcol-pendiente-factura" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_pendiente')">
+                        <div class="text-center fw-bold text-warning small mb-2 border-bottom pb-1">
+                            ⏳ Pendiente facturar <span id="count-terminados-pendiente" class="badge bg-warning text-dark rounded-pill">0</span>
+                        </div>
+                        <div id="list-terminados-pendiente" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="chapa-subcol subcol-facturado" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_facturado')">
+                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1">
+                            ✓ Facturados <span id="count-terminados-facturado" class="badge bg-success rounded-pill">0</span>
+                        </div>
+                        <div id="list-terminados-facturado" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -891,8 +908,6 @@
             return (order.pieces || []).length;
         }
 
-        // ===== RENDER BARRAS CON DESGLOSE POR OPERARIO =====
-        // Cada item lleva su propio areaKey (chapa, pintura, paragolpes...)
         function renderBarsWithOperators(container, items) {
             if (!items || items.length === 0) {
                 container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>';
@@ -933,7 +948,6 @@
             container.innerHTML = html;
         }
 
-        // Drill-down: muestra matrícula + estado de los coches de un operario en un área
         window.toggleOperatorDrilldown = (opId, opName, areaKey) => {
             const panel = document.getElementById(`drilldown-${opId}`);
             const arrow = document.getElementById(`arrow-${opId}`);
@@ -1326,11 +1340,20 @@
             let newOperator = order.operator || "";
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
             let newStatus = targetStatus;
+            let newIsFacturado = order.isFacturado;
+
             if (targetStatus === 'destajos') isDestajoFlag = true;
             if (targetStatus.startsWith('op_')) { const parts = targetStatus.split('_'); newOperator = parts[1]; newStatus = parts.slice(2).join('_'); }
+
+            // Terminados → subcolumnas
+            if (targetStatus === 'terminados_pendiente') { newStatus = 'terminados'; newIsFacturado = false; }
+            else if (targetStatus === 'terminados_facturado') { newStatus = 'terminados'; newIsFacturado = true; }
+            // Al volver a terminados desde otra columna, por defecto "pendiente"
+            else if (newStatus === 'terminados') { newIsFacturado = false; }
+
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
-            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, history: updatedHistory }); }
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); }
             catch (err) { console.error(err); }
         }
 
@@ -1370,10 +1393,10 @@
             renderChapistasStructure();
             renderPintoresStructure();
 
-            let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminados: document.getElementById('list-terminados') };
+            let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminadosPendiente: document.getElementById('list-terminados-pendiente'), terminadosFacturado: document.getElementById('list-terminados-facturado') };
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
 
-            let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, chapaTotal: 0 };
+            let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, terminadosPendiente: 0, terminadosFacturado: 0, chapaTotal: 0 };
 
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
@@ -1385,7 +1408,11 @@
                 else if (status === 'paragolpes') counts.paragolpes++;
                 else if (status === 'destajos') counts.destajos++;
                 else if (status === 'pintura' || status.startsWith('pintor')) { if (order.isChecked) counts.pintado++; }
-                else if (status === 'terminados') counts.terminados++;
+                else if (status === 'terminados') {
+                    counts.terminados++;
+                    if (order.isFacturado) counts.terminadosFacturado++;
+                    else counts.terminadosPendiente++;
+                }
                 let displayPlate = (order.plate || '').toUpperCase();
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
@@ -1448,6 +1475,12 @@
                     if (orderOp && getPintoresList().some(o => o.name === orderOp)) targetId = `list-pintor-${safeId(orderOp)}`;
                     else targetId = 'list-pintor-general';
                     const target = document.getElementById(targetId); if (target) target.innerHTML += cardHtml;
+                } else if (status === 'terminados') {
+                    if (order.isFacturado) {
+                        if (containers.terminadosFacturado) containers.terminadosFacturado.innerHTML += cardHtml;
+                    } else {
+                        if (containers.terminadosPendiente) containers.terminadosPendiente.innerHTML += cardHtml;
+                    }
                 } else if (containers[status]) {
                     containers[status].innerHTML += cardHtml;
                 }
@@ -1493,6 +1526,8 @@
             if (document.getElementById('count-destajos')) document.getElementById('count-destajos').innerText = counts.destajos;
             if (document.getElementById('count-pintado')) document.getElementById('count-pintado').innerText = counts.pintado;
             if (document.getElementById('count-terminados')) document.getElementById('count-terminados').innerText = counts.terminados;
+            if (document.getElementById('count-terminados-pendiente')) document.getElementById('count-terminados-pendiente').innerText = counts.terminadosPendiente;
+            if (document.getElementById('count-terminados-facturado')) document.getElementById('count-terminados-facturado').innerText = counts.terminadosFacturado;
         }
 
         function renderChapistasStructure() {
@@ -1602,9 +1637,12 @@
             let newOperator = order.operator || "";
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
             if (newStatus === 'destajos') isDestajoFlag = true;
+            // Si se cambia el estado a terminados, poner isFacturado a false (pendiente)
+            let newIsFacturado = order.isFacturado;
+            if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
-            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, history: updatedHistory }); }
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); }
             catch (err) { console.error(err); }
         }
 
@@ -1687,8 +1725,11 @@
             let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator;
             let updatedHistory = order.history ? [...order.history] : [];
             if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() });
+            // Si pasa a terminados desde otra fase, isFacturado a false
+            let newIsFacturado = order.isFacturado;
+            if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             try {
-                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, history: updatedHistory });
+                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
                 const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
             } catch (err) { console.error("Error:", err); }
         }
@@ -1716,8 +1757,9 @@
             });
             if (cocheCompleto) selectedPieces = [];
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString() }];
+            // Al crear, isFacturado = false por defecto
             try {
-                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, history: initialHistory });
+                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
                 const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
@@ -1952,7 +1994,6 @@
         };
         Chart.register(centerTextPlugin);
 
-        // ===== COCHES POR ÁREA (cada barra con su areaKey real) =====
         function renderCochesArea(periodOrders) {
             const container = document.getElementById('chart-coches-area-container');
             if (!container) return;
@@ -1973,7 +2014,6 @@
             renderBarsWithOperators(container, items);
         }
 
-        // ===== PIEZAS POR ÁREA =====
         function renderPiezasArea(periodOrders) {
             renderPiezasDonut('chart-piezas-chapa-donut', periodOrders, 'chapa', 'chapa');
             renderPiezasDonut('chart-piezas-pintura-donut', periodOrders, 'pintura', 'pintura');
@@ -1993,7 +2033,6 @@
             }
         }
 
-        // ===== DESTAJOS =====
         function renderDestajos(periodOrders) {
             const container = document.getElementById('chart-destajos-container');
             if (!container) return;
@@ -2015,7 +2054,6 @@
             renderBarsWithOperators(container, items);
         }
 
-        // ===== LUNAS =====
         function renderLunas(periodOrders) {
             const container = document.getElementById('chart-lunas-container');
             if (!container) return;
