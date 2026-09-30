@@ -419,6 +419,17 @@
                     </div>
                 </div>
             </div>
+
+            <!-- NUEVO: Días medios por fase -->
+            <div class="row g-3 mb-3">
+                <div class="col-12">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-hourglass-half"></i></span> Días medios en cada fase</h6>
+                        <div id="chart-dias-fase-container" class="hbar-container"></div>
+                        <div class="stat-card-note">Cuenta solo los movimientos con hora registrada. Los registros antiguos sin hora no se cuentan.</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="row mb-3 align-items-center">
@@ -1327,7 +1338,17 @@
         }
 
         window.changeOperatorState = async (id, newState) => { try { await updateDoc(doc(db, "operators", id), { state: newState }); } catch (err) { console.error(err); } }
-        window.deleteOperator = async (id) => { if (confirm('¿Eliminar operario?')) { try { await deleteDoc(doc(db, "operators", id)); } catch (err) { console.error(err); } } }
+        window.deleteOperator = async (id) => {
+            const op = operators.find(o => o.id === id);
+            if (!op) return;
+            // Aviso: si tiene órdenes activas, no dejar borrar
+            const activas = orders.filter(o => (o.operator || '').trim() === op.name && (o.status || 'reparacion') !== 'terminados');
+            if (activas.length > 0) {
+                alert(`⚠️ No se puede eliminar a ${op.name}.\n\nTiene ${activas.length} orden${activas.length !== 1 ? 'es' : ''} activa${activas.length !== 1 ? 's' : ''}. Reasígnalas a otro operario antes de borrarlo.`);
+                return;
+            }
+            if (confirm(`¿Eliminar operario ${op.name}?`)) { try { await deleteDoc(doc(db, "operators", id)); } catch (err) { console.error(err); } }
+        }
 
         window.allowDrop = (ev) => { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
         window.removeDropStyle = (ev) => { ev.currentTarget.classList.remove('drag-over'); }
@@ -1352,7 +1373,7 @@
             // Al volver a terminados desde otra columna, por defecto "pendiente"
             else if (newStatus === 'terminados') { newIsFacturado = false; }
 
-            const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
+            const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
             try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); }
             catch (err) { console.error(err); }
@@ -1641,7 +1662,7 @@
             // FIX: nunca undefined
             let newIsFacturado = order.isFacturado === true;
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
-            const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() };
+            const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
             try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); }
             catch (err) { console.error(err); }
@@ -1725,7 +1746,7 @@
             if (cocheCompleto) selectedPieces = [];
             let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator;
             let updatedHistory = order.history ? [...order.history] : [];
-            if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString() });
+            if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() });
             // FIX: nunca undefined
             let newIsFacturado = order.isFacturado === true;
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
@@ -1757,7 +1778,7 @@
                 if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
             });
             if (cocheCompleto) selectedPieces = [];
-            const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString() }];
+            const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() }];
             try {
                 await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
                 const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
@@ -2075,6 +2096,69 @@
             renderBarsWithOperators(container, items);
         }
 
+        // ===== NUEVO: Días medios por fase =====
+        function renderDiasMediosFase(periodOrders) {
+            const container = document.getElementById('chart-dias-fase-container');
+            if (!container) return;
+
+            // Recopilar tiempos por fase usando el historial con ts
+            const tiempos = {}; // { fase: [dias1, dias2, ...] }
+            periodOrders.forEach(o => {
+                const h = (o.history || []).filter(x => x.ts).sort((a,b) => a.ts - b.ts);
+                if (h.length < 2) return;
+                for (let i = 0; i < h.length - 1; i++) {
+                    const fase = h[i].status;
+                    const fin = h[i+1].ts;
+                    const dias = (fin - h[i].ts) / (1000 * 60 * 60 * 24);
+                    if (!tiempos[fase]) tiempos[fase] = [];
+                    tiempos[fase].push(dias);
+                }
+                // Última fase: si no está terminado, contar hasta ahora
+                const ultima = h[h.length - 1];
+                if (ultima.status !== 'terminados' && o.status !== 'terminados') {
+                    const dias = (Date.now() - ultima.ts) / (1000 * 60 * 60 * 24);
+                    if (!tiempos[ultima.status]) tiempos[ultima.status] = [];
+                    tiempos[ultima.status].push(dias);
+                }
+            });
+
+            const items = Object.keys(tiempos).map(fase => {
+                const arr = tiempos[fase];
+                const media = arr.reduce((a,b) => a+b, 0) / arr.length;
+                let color = '#2563eb'; // azul normal
+                if (media > 5) color = '#dc2626'; // rojo
+                else if (media > 3) color = '#f59e0b'; // ámbar
+                return {
+                    label: STATUS_LABELS[fase] || fase,
+                    value: +media.toFixed(1),
+                    color: color,
+                    pct: undefined,
+                    unit: 'd'
+                };
+            }).sort((a,b) => b.value - a.value);
+
+            if (items.length === 0) {
+                container.innerHTML = '<div class="hbar-empty">Sin datos de tiempos. Los registros antiguos sin hora no cuentan.</div>';
+                return;
+            }
+
+            const maxValue = Math.max(...items.map(i => i.value), 1);
+            let html = '';
+            items.forEach(item => {
+                const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
+                html += `
+                    <div class="hbar-row">
+                        <div class="hbar-label" title="${item.label}">${item.label}</div>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div>
+                        </div>
+                        <div class="hbar-value">${item.value} d</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
         function renderBossDashboardStats() {
             let periodOrders = filterOrdersByBossPeriod(orders, bossPeriod);
             periodOrders = applyWorkTypeFilter(periodOrders, bossWorkType);
@@ -2093,10 +2177,30 @@
             const pctPas = total > 0 ? Math.round((pasados / total) * 100) : 0;
             let totalPiezas = 0;
             periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
+
+            // NUEVO: Calcular % a tiempo de las terminadas
+            const terminadosArr = periodOrders.filter(o => o.status === 'terminados');
+            const terminadosConFecha = terminadosArr.filter(o => o.dateOut);
+            const terminadosATiempo = terminadosConFecha.filter(o => {
+                // Buscar la fecha exacta en el historial con ts
+                const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts);
+                if (h.length === 0) return null; // sin dato exacto
+                const fechaFin = new Date(h[h.length-1].ts).toISOString().split('T')[0];
+                return fechaFin <= o.dateOut;
+            });
+            const pctATiempo = terminadosConFecha.length > 0
+                ? Math.round(terminadosATiempo.length / terminadosConFecha.length * 100)
+                : 0;
+
             document.getElementById('kpi-activas').innerText = activas;
             document.getElementById('kpi-activas-sub').innerText = `${pctA}% del total`;
             document.getElementById('kpi-terminados').innerText = terminados;
-            document.getElementById('kpi-porcentaje-terminados').innerText = `${pctT}% del total`;
+            // NUEVO: subtexto con % a tiempo
+            if (terminadosConFecha.length > 0) {
+                document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConFecha.length})`;
+            } else {
+                document.getElementById('kpi-porcentaje-terminados').innerText = `${pctT}% del total`;
+            }
             document.getElementById('kpi-retrasos').innerText = `${pctRec}%`;
             document.getElementById('kpi-retrasos-count').innerText = `${recambios} afectados`;
             document.getElementById('kpi-externas').innerText = `${pctExt}%`;
@@ -2116,6 +2220,7 @@
             renderLunas(periodOrders);
             renderInsuranceBars(periodOrders);
             renderFasesBars(periodOrders);
+            renderDiasMediosFase(periodOrders); // NUEVO
             if (activeKpiDetail) renderKpiDetailTable(activeKpiDetail, periodOrders, todayStr);
         }
 
