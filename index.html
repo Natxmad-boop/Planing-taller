@@ -420,7 +420,6 @@
                 </div>
             </div>
 
-            <!-- NUEVO: Días medios por fase -->
             <div class="row g-3 mb-3">
                 <div class="col-12">
                     <div class="stat-card-boss">
@@ -1805,9 +1804,36 @@
             el.innerText = `${formatDateShort(range.start)} — ${formatDateShort(range.end)}`;
         }
 
+        // ===== FILTRO DE PERIODO (por ACTIVIDAD, no solo por dateIn) =====
         function filterOrdersByBossPeriod(list, period) {
-            const range = getBossPeriodRange(period); if (!range) return list;
-            return list.filter(o => { const dateRef = o.dateIn || o.dateOut; if (!dateRef) return false; const d = new Date(dateRef + 'T12:00:00'); return d >= range.start && d <= range.end; });
+            const range = getBossPeriodRange(period);
+            if (!range) return list;
+            return list.filter(o => {
+                // 1. ¿La entrada (dateIn) cae dentro del periodo?
+                if (o.dateIn) {
+                    const d = new Date(o.dateIn + 'T12:00:00');
+                    if (d >= range.start && d <= range.end) return true;
+                }
+                // 2. ¿La salida (dateOut) cae dentro del periodo?
+                if (o.dateOut) {
+                    const d = new Date(o.dateOut + 'T12:00:00');
+                    if (d >= range.start && d <= range.end) return true;
+                }
+                // 3. ¿Algún movimiento del historial cae dentro del periodo?
+                if (Array.isArray(o.history)) {
+                    for (const h of o.history) {
+                        if (h && h.ts) {
+                            const d = new Date(h.ts);
+                            if (d >= range.start && d <= range.end) return true;
+                        }
+                    }
+                }
+                // 4. ¿El coche está activo AHORA? (siempre cuenta)
+                const status = o.status || 'reparacion';
+                if (status !== 'terminados') return true;
+                // 5. Si nada de lo anterior coincide, fuera del periodo
+                return false;
+            });
         }
 
         function applyWorkTypeFilter(list, wt) {
@@ -2168,7 +2194,6 @@
             let totalPiezas = 0;
             periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
 
-            // ===== CÁLCULO DE "% A TIEMPO" (SOLO CON ts) =====
             const terminadosArr = periodOrders.filter(o => o.status === 'terminados');
             const terminadosConTs = terminadosArr.filter(o => {
                 const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts);
@@ -2186,14 +2211,11 @@
             document.getElementById('kpi-activas').innerText = activas;
             document.getElementById('kpi-activas-sub').innerText = `${pctA}% del total`;
             document.getElementById('kpi-terminados').innerText = terminados;
-
-            // Subtexto de Terminadas
             if (pctATiempo === null) {
                 document.getElementById('kpi-porcentaje-terminados').innerText = `Sin datos exactos (${terminados} sin hora)`;
             } else {
                 document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConTs.length})`;
             }
-
             document.getElementById('kpi-retrasos').innerText = `${pctRec}%`;
             document.getElementById('kpi-retrasos-count').innerText = `${recambios} afectados`;
             document.getElementById('kpi-externas').innerText = `${pctExt}%`;
