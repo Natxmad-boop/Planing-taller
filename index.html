@@ -1341,7 +1341,6 @@
         window.deleteOperator = async (id) => {
             const op = operators.find(o => o.id === id);
             if (!op) return;
-            // Aviso: si tiene órdenes activas, no dejar borrar
             const activas = orders.filter(o => (o.operator || '').trim() === op.name && (o.status || 'reparacion') !== 'terminados');
             if (activas.length > 0) {
                 alert(`⚠️ No se puede eliminar a ${op.name}.\n\nTiene ${activas.length} orden${activas.length !== 1 ? 'es' : ''} activa${activas.length !== 1 ? 's' : ''}. Reasígnalas a otro operario antes de borrarlo.`);
@@ -1361,16 +1360,13 @@
             let newOperator = order.operator || "";
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
             let newStatus = targetStatus;
-            // FIX: nunca undefined
             let newIsFacturado = order.isFacturado === true;
 
             if (targetStatus === 'destajos') isDestajoFlag = true;
             if (targetStatus.startsWith('op_')) { const parts = targetStatus.split('_'); newOperator = parts[1]; newStatus = parts.slice(2).join('_'); }
 
-            // Terminados → subcolumnas
             if (targetStatus === 'terminados_pendiente') { newStatus = 'terminados'; newIsFacturado = false; }
             else if (targetStatus === 'terminados_facturado') { newStatus = 'terminados'; newIsFacturado = true; }
-            // Al volver a terminados desde otra columna, por defecto "pendiente"
             else if (newStatus === 'terminados') { newIsFacturado = false; }
 
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() };
@@ -1659,7 +1655,6 @@
             let newOperator = order.operator || "";
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
             if (newStatus === 'destajos') isDestajoFlag = true;
-            // FIX: nunca undefined
             let newIsFacturado = order.isFacturado === true;
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() };
@@ -1747,7 +1742,6 @@
             let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator;
             let updatedHistory = order.history ? [...order.history] : [];
             if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() });
-            // FIX: nunca undefined
             let newIsFacturado = order.isFacturado === true;
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             try {
@@ -2096,13 +2090,12 @@
             renderBarsWithOperators(container, items);
         }
 
-        // ===== NUEVO: Días medios por fase =====
+        // ===== DÍAS MEDIOS POR FASE =====
         function renderDiasMediosFase(periodOrders) {
             const container = document.getElementById('chart-dias-fase-container');
             if (!container) return;
 
-            // Recopilar tiempos por fase usando el historial con ts
-            const tiempos = {}; // { fase: [dias1, dias2, ...] }
+            const tiempos = {};
             periodOrders.forEach(o => {
                 const h = (o.history || []).filter(x => x.ts).sort((a,b) => a.ts - b.ts);
                 if (h.length < 2) return;
@@ -2113,7 +2106,6 @@
                     if (!tiempos[fase]) tiempos[fase] = [];
                     tiempos[fase].push(dias);
                 }
-                // Última fase: si no está terminado, contar hasta ahora
                 const ultima = h[h.length - 1];
                 if (ultima.status !== 'terminados' && o.status !== 'terminados') {
                     const dias = (Date.now() - ultima.ts) / (1000 * 60 * 60 * 24);
@@ -2125,15 +2117,13 @@
             const items = Object.keys(tiempos).map(fase => {
                 const arr = tiempos[fase];
                 const media = arr.reduce((a,b) => a+b, 0) / arr.length;
-                let color = '#2563eb'; // azul normal
-                if (media > 5) color = '#dc2626'; // rojo
-                else if (media > 3) color = '#f59e0b'; // ámbar
+                let color = '#2563eb';
+                if (media > 5) color = '#dc2626';
+                else if (media > 3) color = '#f59e0b';
                 return {
                     label: STATUS_LABELS[fase] || fase,
                     value: +media.toFixed(1),
-                    color: color,
-                    pct: undefined,
-                    unit: 'd'
+                    color: color
                 };
             }).sort((a,b) => b.value - a.value);
 
@@ -2178,29 +2168,32 @@
             let totalPiezas = 0;
             periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
 
-            // NUEVO: Calcular % a tiempo de las terminadas
+            // ===== CÁLCULO DE "% A TIEMPO" (SOLO CON ts) =====
             const terminadosArr = periodOrders.filter(o => o.status === 'terminados');
-            const terminadosConFecha = terminadosArr.filter(o => o.dateOut);
-            const terminadosATiempo = terminadosConFecha.filter(o => {
-                // Buscar la fecha exacta en el historial con ts
+            const terminadosConTs = terminadosArr.filter(o => {
                 const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts);
-                if (h.length === 0) return null; // sin dato exacto
-                const fechaFin = new Date(h[h.length-1].ts).toISOString().split('T')[0];
+                return h.length > 0 && o.dateOut;
+            });
+            const terminadosATiempo = terminadosConTs.filter(o => {
+                const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts);
+                const fechaFin = new Date(h[h.length - 1].ts).toISOString().split('T')[0];
                 return fechaFin <= o.dateOut;
             });
-            const pctATiempo = terminadosConFecha.length > 0
-                ? Math.round(terminadosATiempo.length / terminadosConFecha.length * 100)
-                : 0;
+            const pctATiempo = terminadosConTs.length > 0
+                ? Math.round(terminadosATiempo.length / terminadosConTs.length * 100)
+                : null;
 
             document.getElementById('kpi-activas').innerText = activas;
             document.getElementById('kpi-activas-sub').innerText = `${pctA}% del total`;
             document.getElementById('kpi-terminados').innerText = terminados;
-            // NUEVO: subtexto con % a tiempo
-            if (terminadosConFecha.length > 0) {
-                document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConFecha.length})`;
+
+            // Subtexto de Terminadas
+            if (pctATiempo === null) {
+                document.getElementById('kpi-porcentaje-terminados').innerText = `Sin datos exactos (${terminados} sin hora)`;
             } else {
-                document.getElementById('kpi-porcentaje-terminados').innerText = `${pctT}% del total`;
+                document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConTs.length})`;
             }
+
             document.getElementById('kpi-retrasos').innerText = `${pctRec}%`;
             document.getElementById('kpi-retrasos-count').innerText = `${recambios} afectados`;
             document.getElementById('kpi-externas').innerText = `${pctExt}%`;
@@ -2220,7 +2213,7 @@
             renderLunas(periodOrders);
             renderInsuranceBars(periodOrders);
             renderFasesBars(periodOrders);
-            renderDiasMediosFase(periodOrders); // NUEVO
+            renderDiasMediosFase(periodOrders);
             if (activeKpiDetail) renderKpiDetailTable(activeKpiDetail, periodOrders, todayStr);
         }
 
