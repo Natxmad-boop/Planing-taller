@@ -28,132 +28,22 @@
         .subcol-facturado { background-color: #f0fdf4; border: 1px dashed #86efac; }
         .subcol-pendiente-factura.drag-over { background-color: #fef3c7 !important; }
         .subcol-facturado.drag-over { background-color: #dcfce7 !important; }
-
-        /* ============================================================
-           CHAPISTAS - AHORA EN FILAS HORIZONTALES (scroll vertical)
-           ============================================================ */
-        .chapa-four-columns-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            min-height: 0;
-            width: 100%;
-            overflow-x: hidden;
-        }
-        .chapista-group-col {
-            flex: none;
-            width: 100%;
-            min-width: 0;
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
-            gap: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: all 0.3s ease;
-        }
+        .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; }
+        .chapista-group-col { flex: 1; min-width: 280px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.3s ease; }
         .chapista-group-col.vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .chapista-group-col.baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
-
-        .chapista-group-header {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-            gap: 6px;
-            width: 170px;
-            flex-shrink: 0;
-            margin-bottom: 0;
-            padding: 6px 10px;
-            border-bottom: none;
-            border-right: 2px solid rgba(0,0,0,0.08);
-            font-size: 0.85rem;
-            font-weight: 700;
-        }
-        .chapista-group-inner {
-            display: flex;
-            gap: 6px;
-            flex: 1;
-            min-width: 0;
-        }
-        .chapista-sub-box {
-            flex: 1;
-            min-width: 0;
-            background-color: #ffffff;
-            border: 1px dashed #94a3b8;
-            border-radius: 6px;
-            padding: 6px;
-            min-height: 120px;
-            transition: background-color 0.2s;
-        }
+        .chapista-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 8px; border-bottom: 2px solid rgba(0,0,0,0.08); font-size: 0.85rem; font-weight: 700; }
+        .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
+        .chapista-sub-box { flex: 1; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
         .chapista-group-col.vacaciones .chapista-sub-box { background-color: #fdf4ff; }
         .chapista-group-col.baja .chapista-sub-box { background-color: #f1f5f9; }
         .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
-
-        /* Lista interna de cada subcolumna con scroll propio y altura razonable */
-        .chapista-sub-box > div[id^="subcol-"] {
-            max-height: 45vh;
-            overflow-y: auto;
-            padding-right: 2px;
-        }
-
-        /* ============================================================
-           PINTORES - AHORA EN FILAS HORIZONTALES (scroll vertical)
-           ============================================================ */
-        .pintura-split-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            min-height: 0;
-            overflow-x: hidden;
-        }
-        .pintor-subcol {
-            flex: none;
-            width: 100%;
-            min-width: 0;
-            background-color: #fffbeb;
-            border: 1px dashed #fcd34d;
-            border-radius: 8px;
-            padding: 8px;
-            min-height: 100px;
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
-            gap: 10px;
-            transition: all 0.2s;
-        }
+        .pintura-split-container { display: flex; gap: 0.5rem; min-height: 60vh; overflow-x: auto; }
+        .pintor-subcol { flex: 1; min-width: 180px; background-color: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 8px; min-height: 55vh; transition: all 0.2s; }
         .pintor-subcol.pintor-vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .pintor-subcol.pintor-baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
         .pintor-subcol.drag-over { background-color: #fef3c7 !important; }
-
-        .pintor-header {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-            gap: 6px;
-            width: 150px;
-            flex-shrink: 0;
-            margin-bottom: 0;
-            padding: 6px 10px;
-            border-bottom: none;
-            border-right: 2px solid rgba(0,0,0,0.08);
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-        .pintor-subcol > div:last-child {
-            flex: 1;
-            min-width: 0;
-        }
-        .pintor-subcol > div[id^="list-pintor-"] {
-            max-height: 45vh;
-            overflow-y: auto;
-            padding-right: 2px;
-        }
-
+        .pintor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 4px 6px; border-bottom: 2px solid rgba(0,0,0,0.08); font-size: 0.8rem; font-weight: 700; }
         .badge-estado { font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
         .badge-estado.badge-vacaciones { background-color: #c084fc; color: #ffffff; }
         .badge-estado.badge-baja { background-color: #94a3b8; color: #ffffff; }
@@ -285,10 +175,10 @@
 
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
-            .chapista-group-col { padding: 8px; }
-            .chapista-group-header { width: 130px; font-size: 0.78rem; padding: 4px 8px; }
-            .pintor-subcol { padding: 6px; }
-            .pintor-header { width: 120px; font-size: 0.72rem; }
+            .chapista-group-col { min-width: 240px; padding: 8px; }
+            .chapista-group-header { font-size: 0.78rem; padding: 4px 6px; }
+            .pintor-subcol { min-width: 140px; padding: 6px; }
+            .pintor-header { font-size: 0.72rem; }
             .task-card h6 { font-size: 0.82rem !important; }
             .task-card .small { font-size: 0.72rem; }
             .kpi-card { padding: 14px 16px; gap: 12px; }
@@ -309,8 +199,8 @@
             .donut-container { height: 180px; }
         }
         @media (max-width: 900px) {
-            .chapista-group-header { width: 110px; }
-            .pintor-header { width: 100px; }
+            .chapista-group-col { min-width: 210px; }
+            .pintor-subcol { min-width: 120px; }
             .task-card { padding: 0.5rem !important; }
         }
     </style>
@@ -1914,18 +1804,22 @@
             el.innerText = `${formatDateShort(range.start)} — ${formatDateShort(range.end)}`;
         }
 
+        // ===== FILTRO DE PERIODO (por ACTIVIDAD, no solo por dateIn) =====
         function filterOrdersByBossPeriod(list, period) {
             const range = getBossPeriodRange(period);
             if (!range) return list;
             return list.filter(o => {
+                // 1. ¿La entrada (dateIn) cae dentro del periodo?
                 if (o.dateIn) {
                     const d = new Date(o.dateIn + 'T12:00:00');
                     if (d >= range.start && d <= range.end) return true;
                 }
+                // 2. ¿La salida (dateOut) cae dentro del periodo?
                 if (o.dateOut) {
                     const d = new Date(o.dateOut + 'T12:00:00');
                     if (d >= range.start && d <= range.end) return true;
                 }
+                // 3. ¿Algún movimiento del historial cae dentro del periodo?
                 if (Array.isArray(o.history)) {
                     for (const h of o.history) {
                         if (h && h.ts) {
@@ -1934,8 +1828,10 @@
                         }
                     }
                 }
+                // 4. ¿El coche está activo AHORA? (siempre cuenta)
                 const status = o.status || 'reparacion';
                 if (status !== 'terminados') return true;
+                // 5. Si nada de lo anterior coincide, fuera del periodo
                 return false;
             });
         }
@@ -2220,6 +2116,7 @@
             renderBarsWithOperators(container, items);
         }
 
+        // ===== DÍAS MEDIOS POR FASE =====
         function renderDiasMediosFase(periodOrders) {
             const container = document.getElementById('chart-dias-fase-container');
             if (!container) return;
@@ -2308,7 +2205,6 @@
                 return fechaFin <= o.dateOut;
             });
             const pctATiempo = terminadosConTs.length > 0
-);
                 ? Math.round(terminadosATiempo.length / terminadosConTs.length * 100)
                 : null;
 
@@ -2334,7 +2230,8 @@
             updatePeriodRangeLabel();
 
             renderCochesArea(periodOrders);
-            renderPiezasArea(periodOrders            renderDestajos(periodOrders);
+            renderPiezasArea(periodOrders);
+            renderDestajos(periodOrders);
             renderLunas(periodOrders);
             renderInsuranceBars(periodOrders);
             renderFasesBars(periodOrders);
