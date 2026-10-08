@@ -28,26 +28,16 @@
         .subcol-facturado { background-color: #f0fdf4; border: 1px dashed #86efac; }
         .subcol-pendiente-factura.drag-over { background-color: #fef3c7 !important; }
         .subcol-facturado.drag-over { background-color: #dcfce7 !important; }
-
-        /* ===== CHAPISTAS EN MODO ACORDEÓN VERTICAL ===== */
-        .chapa-four-columns-container { display: flex; flex-direction: column; gap: 0.75rem; width: 100%; min-height: auto; overflow-x: visible; }
-        .chapista-group-col { width: 100%; min-width: 100%; flex: none; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.3s ease; }
+        .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; }
+        .chapista-group-col { flex: 1; min-width: 280px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.3s ease; }
         .chapista-group-col.vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .chapista-group-col.baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
-        .chapista-group-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px 12px; border-radius: 6px; background-color: #e2e8f0; font-size: 0.9rem; font-weight: 700; transition: background-color 0.2s; border-bottom: none; margin-bottom: 0; }
-        .chapista-group-header:hover { background-color: #d1d9e6; }
-        .chapista-group-col.vacaciones .chapista-group-header { background-color: #e9d5ff; }
-        .chapista-group-col.baja .chapista-group-header { background-color: #cbd5e1; }
-        .chapista-group-col.open .chapista-group-header { border-radius: 6px 6px 0 0; border-bottom: 1px dashed #cbd5e1; }
-        .accordion-arrow { transition: transform 0.3s ease; margin-right: 8px; color: #64748b; font-size: 0.85rem; }
-        .chapista-group-col.open .accordion-arrow { transform: rotate(180deg); }
-        .chapista-group-inner { display: none; gap: 6px; flex: 1; margin-top: 12px; padding-top: 4px; }
-        .chapista-group-col.open .chapista-group-inner { display: flex; }
-        .chapista-sub-box { flex: 1; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 120px; transition: background-color 0.2s; }
+        .chapista-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 8px; border-bottom: 2px solid rgba(0,0,0,0.08); font-size: 0.85rem; font-weight: 700; }
+        .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
+        .chapista-sub-box { flex: 1; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
         .chapista-group-col.vacaciones .chapista-sub-box { background-color: #fdf4ff; }
         .chapista-group-col.baja .chapista-sub-box { background-color: #f1f5f9; }
         .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
-
         .pintura-split-container { display: flex; gap: 0.5rem; min-height: 60vh; overflow-x: auto; }
         .pintor-subcol { flex: 1; min-width: 180px; background-color: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 8px; min-height: 55vh; transition: all 0.2s; }
         .pintor-subcol.pintor-vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
@@ -185,7 +175,8 @@
 
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
-            .chapista-group-header { font-size: 0.82rem; padding: 8px 10px; }
+            .chapista-group-col { min-width: 240px; padding: 8px; }
+            .chapista-group-header { font-size: 0.78rem; padding: 4px 6px; }
             .pintor-subcol { min-width: 140px; padding: 6px; }
             .pintor-header { font-size: 0.72rem; }
             .task-card h6 { font-size: 0.82rem !important; }
@@ -208,9 +199,9 @@
             .donut-container { height: 180px; }
         }
         @media (max-width: 900px) {
+            .chapista-group-col { min-width: 210px; }
             .pintor-subcol { min-width: 120px; }
             .task-card { padding: 0.5rem !important; }
-            .chapista-group-inner { flex-direction: column; }
         }
     </style>
 </head>
@@ -839,7 +830,6 @@
         let bossPeriod = 'month';
         let bossWorkType = 'all';
         let activeKpiDetail = null;
-        let openChapistaAccordions = new Set();
 
         const COLOR_PALETTE = ['#2563eb','#059669','#f59e0b','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c','#4338ca','#0d9488','#9333ea','#ca8a04','#e11d48','#0284c7','#a16207','#0f766e','#c026d3','#64748b','#db2777'];
 
@@ -1101,13 +1091,6 @@
             if (icon) icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
         }
 
-        window.toggleChapistaAccordion = (sid) => {
-            const col = document.getElementById(`acc-col-${sid}`);
-            if (!col) return;
-            if (col.classList.contains('open')) { col.classList.remove('open'); openChapistaAccordions.delete(sid); }
-            else { col.classList.add('open'); openChapistaAccordions.add(sid); }
-        }
-
         window.toggleChapistasFullscreen = () => {
             chapistasFullscreenMode = !chapistasFullscreenMode;
             const btn = document.getElementById('fullscreen-chapa-toggle-btn');
@@ -1159,10 +1142,6 @@
                 else if (status === 'paragolpes') toggleColumnVisibility('paragolpes', true);
                 else if (status === 'destajos') toggleColumnVisibility('destajos', true);
                 else if (status === 'terminados') toggleColumnVisibility('terminados', true);
-                if ((status === 'reparacion' || status === 'montaje') && targetOrder.operator) {
-                    const sid = safeId(targetOrder.operator);
-                    openChapistaAccordions.add(sid);
-                }
                 renderOrders();
                 setTimeout(() => {
                     document.querySelectorAll('.task-card').forEach(c => c.classList.remove('resaltado-busqueda'));
@@ -1343,11 +1322,6 @@
             const allBtn = document.getElementById('filter-btn-all'); if (allBtn) allBtn.classList.add('active-filter');
             const searchInput = document.getElementById('search-input'); if (searchInput) searchInput.value = val;
             const labelEl = document.getElementById('smart-filter-label'); if (labelEl) labelEl.innerText = labelText;
-            if (val.startsWith('op:')) {
-                const opName = val.replace('op:', '').trim();
-                const sid = safeId(opName);
-                openChapistaAccordions.add(sid);
-            }
             renderOrders();
         }
 
@@ -1586,20 +1560,16 @@
                 const state = op.state || 'activo';
                 let colClass = 'chapista-group-col';
                 if (state === 'vacaciones') colClass += ' vacaciones'; else if (state === 'baja') colClass += ' baja';
-                const isOpen = openChapistaAccordions.has(sid) ? 'open' : '';
                 let badgeEstado = '';
                 if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴 Vacaciones</span>';
                 else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔ Baja</span>';
                 html += `
-                    <div class="${colClass} ${isOpen}" id="acc-col-${sid}">
-                        <div class="chapista-group-header" onclick="toggleChapistaAccordion('${sid}')">
-                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                <i class="fas fa-chevron-down accordion-arrow"></i>
-                                <span>${op.name}</span>${badgeEstado}
-                            </div>
+                    <div class="${colClass}">
+                        <div class="chapista-group-header">
+                            <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
                             <div class="d-flex align-items-center gap-1">
                                 <span class="badge-total-op" id="count-total-${sid}">0</span>
-                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
+                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
                             </div>
                         </div>
                         <div class="chapista-group-inner">
@@ -1763,11 +1733,11 @@
             const newNotes = document.getElementById('edit-notes').value;
             const newUrgent = document.getElementById('edit-urgent').checked;
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos') || (newStatus === 'destajos');
-           ajo let selectedPieces: = []; let cocheCompleto = false;
+            let selectedPieces = []; let cocheCompleto = false;
             document.querySelectorAll('#edit-pieces-container .piece-check').forEach(chk => {
-                if (chk.checked) { if (chk.value === 'COCHE COMPLETO is') cocheCompleto = true; else selectedPieces.push(chk.value); }
+                if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
             });
-            if (DestajoFlagcocheCompleto) selectedPieces = [];
+            if (cocheCompleto) selectedPieces = [];
             let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator;
             let updatedHistory = order.history ? [...order.history] : [];
             if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() });
@@ -1803,7 +1773,7 @@
             if (cocheCompleto) selectedPieces = [];
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() }];
             try {
-                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDest, isFacturado: false, history: initialHistory });
+                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
                 const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
@@ -1834,15 +1804,34 @@
             el.innerText = `${formatDateShort(range.start)} — ${formatDateShort(range.end)}`;
         }
 
+        // ===== FILTRO DE PERIODO (por ACTIVIDAD, no solo por dateIn) =====
         function filterOrdersByBossPeriod(list, period) {
             const range = getBossPeriodRange(period);
             if (!range) return list;
             return list.filter(o => {
-                if (o.dateIn) { const d = new Date(o.dateIn + 'T12:00:00'); if (d >= range.start && d <= range.end) return true; }
-                if (o.dateOut) { const d = new Date(o.dateOut + 'T12:00:00'); if (d >= range.start && d <= range.end) return true; }
-                if (Array.isArray(o.history)) { for (const h of o.history) { if (h && h.ts) { const d = new Date(h.ts); if (d >= range.start && d <= range.end) return true; } } }
+                // 1. ¿La entrada (dateIn) cae dentro del periodo?
+                if (o.dateIn) {
+                    const d = new Date(o.dateIn + 'T12:00:00');
+                    if (d >= range.start && d <= range.end) return true;
+                }
+                // 2. ¿La salida (dateOut) cae dentro del periodo?
+                if (o.dateOut) {
+                    const d = new Date(o.dateOut + 'T12:00:00');
+                    if (d >= range.start && d <= range.end) return true;
+                }
+                // 3. ¿Algún movimiento del historial cae dentro del periodo?
+                if (Array.isArray(o.history)) {
+                    for (const h of o.history) {
+                        if (h && h.ts) {
+                            const d = new Date(h.ts);
+                            if (d >= range.start && d <= range.end) return true;
+                        }
+                    }
+                }
+                // 4. ¿El coche está activo AHORA? (siempre cuenta)
                 const status = o.status || 'reparacion';
                 if (status !== 'terminados') return true;
+                // 5. Si nada de lo anterior coincide, fuera del periodo
                 return false;
             });
         }
@@ -1861,14 +1850,22 @@
             return null;
         }
 
-        function countCochesByArea(list, areaKey) { return list.filter(o => pasoPorArea(o, areaKey)).length; }
-        function sumPiezasByArea(list, areaKey) { let total = 0; list.forEach(o => { if (pasoPorArea(o, areaKey)) total += getPiecesCount(o); }); return total; }
+        function countCochesByArea(list, areaKey) {
+            return list.filter(o => pasoPorArea(o, areaKey)).length;
+        }
+
+        function sumPiezasByArea(list, areaKey) {
+            let total = 0;
+            list.forEach(o => { if (pasoPorArea(o, areaKey)) total += getPiecesCount(o); });
+            return total;
+        }
 
         function getOperatorsForArea(list, areaKey, mode = 'coches') {
             const opMap = {};
             let validOps = null;
             if (areaKey === 'chapa') validOps = getChapistasList().map(o => o.name);
             else if (areaKey === 'pintura') validOps = getPintoresList().map(o => o.name);
+
             list.forEach(o => {
                 if (!pasoPorArea(o, areaKey)) return;
                 const opName = (o.operator || '').trim();
@@ -1878,6 +1875,7 @@
                 opMap[opName].coches += 1;
                 opMap[opName].piezas += getPiecesCount(o);
             });
+
             const arr = Object.keys(opMap).map(name => ({ name, coches: opMap[name].coches, piezas: opMap[name].piezas }));
             if (mode === 'piezas') arr.sort((a, b) => b.piezas - a.piezas);
             else arr.sort((a, b) => b.coches - a.coches || b.piezas - a.piezas);
@@ -1889,13 +1887,16 @@
         function renderPiezasDonut(containerId, periodOrders, areaKey, chartKey) {
             const container = document.getElementById(containerId);
             if (!container) return;
+
             const operators = getOperatorsForArea(periodOrders, areaKey, 'piezas');
             const totalPiezasArea = operators.reduce((acc, op) => acc + op.piezas, 0);
+
             if (operators.length === 0 || totalPiezasArea === 0) {
                 container.innerHTML = '<div class="donut-empty">Sin datos</div>';
                 if (chartsPiezas[chartKey]) { chartsPiezas[chartKey].destroy(); chartsPiezas[chartKey] = null; }
                 return;
             }
+
             let opsToShow = operators;
             if (operators.length > 6) {
                 const top5 = operators.slice(0, 5);
@@ -1903,23 +1904,73 @@
                 const otrasPiezas = resto.reduce((acc, o) => acc + o.piezas, 0);
                 opsToShow = [...top5, { name: `Otros (${resto.length})`, coches: 0, piezas: otrasPiezas, isOtros: true }];
             }
+
             const labels = opsToShow.map(o => o.name);
             const data = opsToShow.map(o => o.piezas);
-            const colors = opsToShow.map((o, i) => { if (o.isOtros) return '#cbd5e1'; return COLOR_PALETTE[i % COLOR_PALETTE.length]; });
+            const colors = opsToShow.map((o, i) => {
+                if (o.isOtros) return '#cbd5e1';
+                return COLOR_PALETTE[i % COLOR_PALETTE.length];
+            });
+
             if (chartsPiezas[chartKey]) chartsPiezas[chartKey].destroy();
             container.innerHTML = '<canvas></canvas>';
             const canvas = container.querySelector('canvas');
+
             chartsPiezas[chartKey] = new Chart(canvas, {
                 type: 'doughnut',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }] },
+                data: {
+                    labels: labels,
+                    datasets: [{ data: data, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }]
+                },
                 options: {
-                    responsive: true, maintainAspectRatio: false, cutout: '60%',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
                     plugins: {
-                        legend: { position: 'right', labels: { font: { size: 10, weight: '600' }, padding: 6, boxWidth: 10, generateLabels: function(chart) { const data = chart.data; if (!data.labels.length) return []; return data.labels.map((label, i) => { const value = data.datasets[0].data[i]; const pct = totalPiezasArea > 0 ? Math.round((value / totalPiezasArea) * 100) : 0; return { text: `${label} · ${value} pzs (${pct}%)`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i }; }); } },
-                            onClick: (e, legendItem) => { const idx = legendItem.index; const opName = labels[idx]; if (!opName || opName.startsWith('Otros')) return; const areaLabel = areaKey === 'chapa' ? 'Chapa' : 'Pintura'; openOperatorCarsPopup(opName, areaKey, areaLabel); }
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: { size: 10, weight: '600' },
+                                padding: 6,
+                                boxWidth: 10,
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (!data.labels.length) return [];
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        const pct = totalPiezasArea > 0 ? Math.round((value / totalPiezasArea) * 100) : 0;
+                                        return {
+                                            text: `${label} · ${value} pzs (${pct}%)`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            strokeStyle: data.datasets[0].backgroundColor[i],
+                                            lineWidth: 0,
+                                            index: i
+                                        };
+                                    });
+                                }
+                            },
+                            onClick: (e, legendItem) => {
+                                const idx = legendItem.index;
+                                const opName = labels[idx];
+                                if (!opName || opName.startsWith('Otros')) return;
+                                const areaLabel = areaKey === 'chapa' ? 'Chapa' : 'Pintura';
+                                openOperatorCarsPopup(opName, areaKey, areaLabel);
+                            }
                         },
-                        tooltip: { callbacks: { label: ctx => { const value = ctx.parsed; const pct = totalPiezasArea > 0 ? ((value / totalPiezasArea) * 100).toFixed(1) : 0; return `${ctx.label}: ${value} piezas (${pct}%)`; } } },
-                        centerText: { display: true, title: 'PIEZAS', value: String(totalPiezasArea) }
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => {
+                                    const value = ctx.parsed;
+                                    const pct = totalPiezasArea > 0 ? ((value / totalPiezasArea) * 100).toFixed(1) : 0;
+                                    return `${ctx.label}: ${value} piezas (${pct}%)`;
+                                }
+                            }
+                        },
+                        centerText: {
+                            display: true,
+                            title: 'PIEZAS',
+                            value: String(totalPiezasArea)
+                        }
                     }
                 }
             });
@@ -1927,13 +1978,36 @@
 
         window.openOperatorCarsPopup = (opName, areaKey, areaLabel) => {
             const periodOrders = getCurrentPeriodOrders();
-            const coches = periodOrders.filter(o => { if (!pasoPorArea(o, areaKey)) return false; return (o.operator || '').trim() === opName; }).sort((a, b) => (a.plate || '').localeCompare(b.plate || ''));
+            const coches = periodOrders.filter(o => {
+                if (!pasoPorArea(o, areaKey)) return false;
+                return (o.operator || '').trim() === opName;
+            }).sort((a, b) => (a.plate || '').localeCompare(b.plate || ''));
+
             let html = `<div class="modal-header bg-light"><h5 class="modal-title fw-bold"><i class="fas fa-car me-2 text-primary"></i> ${opName} · ${areaLabel} (${coches.length})</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body p-3">`;
-            if (coches.length === 0) { html += '<p class="text-muted text-center">Sin coches en esta área.</p>'; }
-            else { html += '<div class="d-flex flex-column gap-1">'; coches.forEach(c => { const estado = STATUS_LABELS[c.status] || c.status || '-'; html += `<div class="d-flex justify-content-between align-items-center p-2 rounded" style="cursor:pointer; background:#f8fafc;" onclick="bootstrap.Modal.getInstance(document.getElementById('operatorCarsModal')).hide(); openDetailModal('${c.id}')"><span style="font-family:'Courier New', monospace; font-weight:700;">${c.plate || '-'}</span><span class="text-muted small">${estado}</span></div>`; }); html += '</div>'; }
+            if (coches.length === 0) {
+                html += '<p class="text-muted text-center">Sin coches en esta área.</p>';
+            } else {
+                html += '<div class="d-flex flex-column gap-1">';
+                coches.forEach(c => {
+                    const estado = STATUS_LABELS[c.status] || c.status || '-';
+                    html += `<div class="d-flex justify-content-between align-items-center p-2 rounded" style="cursor:pointer; background:#f8fafc;" onclick="bootstrap.Modal.getInstance(document.getElementById('operatorCarsModal')).hide(); openDetailModal('${c.id}')">
+                        <span style="font-family:'Courier New', monospace; font-weight:700;">${c.plate || '-'}</span>
+                        <span class="text-muted small">${estado}</span>
+                    </div>`;
+                });
+                html += '</div>';
+            }
             html += '</div>';
+
             let modalEl = document.getElementById('operatorCarsModal');
-            if (!modalEl) { modalEl = document.createElement('div'); modalEl.className = 'modal fade'; modalEl.id = 'operatorCarsModal'; modalEl.tabIndex = -1; modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered"><div class="modal-content shadow" id="operatorCarsModalContent"></div></div>'; document.body.appendChild(modalEl); }
+            if (!modalEl) {
+                modalEl = document.createElement('div');
+                modalEl.className = 'modal fade';
+                modalEl.id = 'operatorCarsModal';
+                modalEl.tabIndex = -1;
+                modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered"><div class="modal-content shadow" id="operatorCarsModalContent"></div></div>';
+                document.body.appendChild(modalEl);
+            }
             document.getElementById('operatorCarsModalContent').innerHTML = html;
             new bootstrap.Modal(modalEl).show();
         };
@@ -1966,7 +2040,18 @@
             if (!container) return;
             const totalCoches = periodOrders.length;
             const areas = ['chapa', 'pintura', 'paragolpes'];
-            const items = areas.map(areaKey => { const def = AREA_DEFS[areaKey]; const coches = countCochesByArea(periodOrders, areaKey); return { label: def.label, value: coches, pct: totalCoches > 0 ? Math.round((coches / totalCoches) * 100) : 0, color: def.color, areaKey: areaKey, operators: getOperatorsForArea(periodOrders, areaKey, 'coches') }; });
+            const items = areas.map(areaKey => {
+                const def = AREA_DEFS[areaKey];
+                const coches = countCochesByArea(periodOrders, areaKey);
+                return {
+                    label: def.label,
+                    value: coches,
+                    pct: totalCoches > 0 ? Math.round((coches / totalCoches) * 100) : 0,
+                    color: def.color,
+                    areaKey: areaKey,
+                    operators: getOperatorsForArea(periodOrders, areaKey, 'coches')
+                };
+            });
             renderBarsWithOperators(container, items);
         }
 
@@ -1977,48 +2062,116 @@
             if (containerParagolpes) {
                 const piezas = sumPiezasByArea(periodOrders, 'paragolpes');
                 const totalPiezas = periodOrders.reduce((acc, o) => acc + getPiecesCount(o), 0);
-                const items = [{ label: 'Paragolpes', value: piezas, pct: totalPiezas > 0 ? Math.round((piezas / totalPiezas) * 100) : 0, color: AREA_DEFS.paragolpes.color, areaKey: 'paragolpes', operators: getOperatorsForArea(periodOrders, 'paragolpes', 'coches') }];
+                const items = [{
+                    label: 'Paragolpes',
+                    value: piezas,
+                    pct: totalPiezas > 0 ? Math.round((piezas / totalPiezas) * 100) : 0,
+                    color: AREA_DEFS.paragolpes.color,
+                    areaKey: 'paragolpes',
+                    operators: getOperatorsForArea(periodOrders, 'paragolpes', 'coches')
+                }];
                 renderBarsWithOperators(containerParagolpes, items);
             }
         }
 
         function renderDestajos(periodOrders) {
-            const container = document.getElementById('chart-destajos-container'); if (!container) return;
+            const container = document.getElementById('chart-destajos-container');
+            if (!container) return;
             const def = AREA_DEFS.destajos;
             const coches = countCochesByArea(periodOrders, 'destajos');
             const piezas = sumPiezasByArea(periodOrders, 'destajos');
             const total = periodOrders.length;
-            const items = [{ label: 'Destajos', value: coches, pct: total > 0 ? Math.round((coches / total) * 100) : 0, color: def.color, areaKey: 'destajos', operators: getOperatorsForArea(periodOrders, 'destajos', 'coches') }];
-            if (coches > 0) { items.push({ label: 'Piezas destajo', value: piezas, pct: 0, color: '#06b6d4', areaKey: 'destajos', operators: [] }); }
+            const items = [{
+                label: 'Destajos',
+                value: coches,
+                pct: total > 0 ? Math.round((coches / total) * 100) : 0,
+                color: def.color,
+                areaKey: 'destajos',
+                operators: getOperatorsForArea(periodOrders, 'destajos', 'coches')
+            }];
+            if (coches > 0) {
+                items.push({ label: 'Piezas destajo', value: piezas, pct: 0, color: '#06b6d4', areaKey: 'destajos', operators: [] });
+            }
             renderBarsWithOperators(container, items);
         }
 
         function renderLunas(periodOrders) {
-            const container = document.getElementById('chart-lunas-container'); if (!container) return;
+            const container = document.getElementById('chart-lunas-container');
+            if (!container) return;
             const def = AREA_DEFS.lunas;
             const coches = countCochesByArea(periodOrders, 'lunas');
             const piezas = sumPiezasByArea(periodOrders, 'lunas');
             const total = periodOrders.length;
-            const items = [{ label: 'Lunas', value: coches, pct: total > 0 ? Math.round((coches / total) * 100) : 0, color: def.color, areaKey: 'lunas', operators: getOperatorsForArea(periodOrders, 'lunas', 'coches') }];
-            if (coches > 0) { items.push({ label: 'Piezas lunas', value: piezas, pct: 0, color: '#94a3b8', areaKey: 'lunas', operators: [] }); }
+            const items = [{
+                label: 'Lunas',
+                value: coches,
+                pct: total > 0 ? Math.round((coches / total) * 100) : 0,
+                color: def.color,
+                areaKey: 'lunas',
+                operators: getOperatorsForArea(periodOrders, 'lunas', 'coches')
+            }];
+            if (coches > 0) {
+                items.push({ label: 'Piezas lunas', value: piezas, pct: 0, color: '#94a3b8', areaKey: 'lunas', operators: [] });
+            }
             renderBarsWithOperators(container, items);
         }
 
+        // ===== DÍAS MEDIOS POR FASE =====
         function renderDiasMediosFase(periodOrders) {
-            const container = document.getElementById('chart-dias-fase-container'); if (!container) return;
+            const container = document.getElementById('chart-dias-fase-container');
+            if (!container) return;
+
             const tiempos = {};
             periodOrders.forEach(o => {
                 const h = (o.history || []).filter(x => x.ts).sort((a,b) => a.ts - b.ts);
                 if (h.length < 2) return;
-                for (let i = 0; i < h.length - 1; i++) { const fase = h[i].status; const fin = h[i+1].ts; const dias = (fin - h[i].ts) / (1000 * 60 * 60 * 24); if (!tiempos[fase]) tiempos[fase] = []; tiempos[fase].push(dias); }
+                for (let i = 0; i < h.length - 1; i++) {
+                    const fase = h[i].status;
+                    const fin = h[i+1].ts;
+                    const dias = (fin - h[i].ts) / (1000 * 60 * 60 * 24);
+                    if (!tiempos[fase]) tiempos[fase] = [];
+                    tiempos[fase].push(dias);
+                }
                 const ultima = h[h.length - 1];
-                if (ultima.status !== 'terminados' && o.status !== 'terminados') { const dias = (Date.now() - ultima.ts) / (1000 * 60 * 60 * 24); if (!tiempos[ultima.status]) tiempos[ultima.status] = []; tiempos[ultima.status].push(dias); }
+                if (ultima.status !== 'terminados' && o.status !== 'terminados') {
+                    const dias = (Date.now() - ultima.ts) / (1000 * 60 * 60 * 24);
+                    if (!tiempos[ultima.status]) tiempos[ultima.status] = [];
+                    tiempos[ultima.status].push(dias);
+                }
             });
-            const items = Object.keys(tiempos).map(fase => { const arr = tiempos[fase]; const media = arr.reduce((a,b) => a+b, 0) / arr.length; let color = '#2563eb'; if (media > 5) color = '#dc2626'; else if (media > 3) color = '#f59e0b'; return { label: STATUS_LABELS[fase] || fase, value: +media.toFixed(1), color: color }; }).sort((a,b) => b.value - a.value);
-            if (items.length === 0) { container.innerHTML = '<div class="hbar-empty">Sin datos de tiempos. Los registros antiguos sin hora no cuentan.</div>'; return; }
+
+            const items = Object.keys(tiempos).map(fase => {
+                const arr = tiempos[fase];
+                const media = arr.reduce((a,b) => a+b, 0) / arr.length;
+                let color = '#2563eb';
+                if (media > 5) color = '#dc2626';
+                else if (media > 3) color = '#f59e0b';
+                return {
+                    label: STATUS_LABELS[fase] || fase,
+                    value: +media.toFixed(1),
+                    color: color
+                };
+            }).sort((a,b) => b.value - a.value);
+
+            if (items.length === 0) {
+                container.innerHTML = '<div class="hbar-empty">Sin datos de tiempos. Los registros antiguos sin hora no cuentan.</div>';
+                return;
+            }
+
             const maxValue = Math.max(...items.map(i => i.value), 1);
             let html = '';
-            items.forEach(item => { const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0; html += `<div class="hbar-row"><div class="hbar-label" title="${item.label}">${item.label}</div><div class="hbar-track"><div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div></div><div class="hbar-value">${item.value} d</div></div>`; });
+            items.forEach(item => {
+                const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
+                html += `
+                    <div class="hbar-row">
+                        <div class="hbar-label" title="${item.label}">${item.label}</div>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div>
+                        </div>
+                        <div class="hbar-value">${item.value} d</div>
+                    </div>
+                `;
+            });
             container.innerHTML = html;
         }
 
@@ -2030,6 +2183,7 @@
             const total = periodOrders.length;
             const terminados = periodOrders.filter(o => o.status === 'terminados').length;
             const activas = total - terminados;
+            const pctT = total > 0 ? Math.round((terminados / total) * 100) : 0;
             const pctA = total > 0 ? Math.round((activas / total) * 100) : 0;
             const recambios = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'recambios').length;
             const externas = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'externas').length;
@@ -2037,16 +2191,31 @@
             const pctRec = total > 0 ? Math.round((recambios / total) * 100) : 0;
             const pctExt = total > 0 ? Math.round((externas / total) * 100) : 0;
             const pctPas = total > 0 ? Math.round((pasados / total) * 100) : 0;
-            let totalPiezas = 0; periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
+            let totalPiezas = 0;
+            periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
+
             const terminadosArr = periodOrders.filter(o => o.status === 'terminados');
-            const terminadosConTs = terminadosArr.filter(o => { const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts); return h.length > 0 && o.dateOut; });
-            const terminadosATiempo = terminadosConTs.filter(o => { const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts); const fechaFin = new Date(h[h.length - 1].ts).toISOString().split('T')[0]; return fechaFin <= o.dateOut; });
-            const pctATiempo = terminadosConTs.length > 0 ? Math.round(terminadosATiempo.length / terminadosConTs.length * 100) : null;
+            const terminadosConTs = terminadosArr.filter(o => {
+                const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts);
+                return h.length > 0 && o.dateOut;
+            });
+            const terminadosATiempo = terminadosConTs.filter(o => {
+                const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts);
+                const fechaFin = new Date(h[h.length - 1].ts).toISOString().split('T')[0];
+                return fechaFin <= o.dateOut;
+            });
+            const pctATiempo = terminadosConTs.length > 0
+                ? Math.round(terminadosATiempo.length / terminadosConTs.length * 100)
+                : null;
+
             document.getElementById('kpi-activas').innerText = activas;
             document.getElementById('kpi-activas-sub').innerText = `${pctA}% del total`;
             document.getElementById('kpi-terminados').innerText = terminados;
-            if (pctATiempo === null) { document.getElementById('kpi-porcentaje-terminados').innerText = `Sin datos exactos (${terminados} sin hora)`; }
-            else { document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConTs.length})`; }
+            if (pctATiempo === null) {
+                document.getElementById('kpi-porcentaje-terminados').innerText = `Sin datos exactos (${terminados} sin hora)`;
+            } else {
+                document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConTs.length})`;
+            }
             document.getElementById('kpi-retrasos').innerText = `${pctRec}%`;
             document.getElementById('kpi-retrasos-count').innerText = `${recambios} afectados`;
             document.getElementById('kpi-externas').innerText = `${pctExt}%`;
@@ -2059,6 +2228,7 @@
             document.getElementById('kpi-piezas-sub').innerText = periodLabelsShort[bossPeriod] || '';
             document.getElementById('boss-period-label').innerText = periodLabelFull[bossPeriod] || '';
             updatePeriodRangeLabel();
+
             renderCochesArea(periodOrders);
             renderPiezasArea(periodOrders);
             renderDestajos(periodOrders);
@@ -2098,24 +2268,41 @@
             document.getElementById('kpi-detail-title').innerText = titles[kpi] || 'Detalle';
             document.getElementById('kpi-detail-count').innerText = filtered.length;
             const tbody = document.getElementById('kpi-detail-body');
-            if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="kpi-detail-empty">Sin ór_Ldenes en esta categoría.</td></tr>`; return; }
+            if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="kpi-detail-empty">Sin órdenes en esta categoría.</td></tr>`; return; }
             let html = '';
             filtered.forEach(o => {
                 const opBadge = o.operator ? `<span class="badge ${getOperatorBadgeClass(o.operator)}">${o.operator}</span>` : '<span class="text-muted small">Libre</span>';
                 const isOverdue = o.dateOut && o.dateOut < todayStr && o.status !== 'terminados';
                 let estadoLabel = STATUS_LABELS[o.status] || o.status || '-';
                 if (o.substatus) estadoLabel = `${estadoLabel} · ${o.substatus}`;
-                html += `<tr onclick="openDetailModal('${o.id}')"><td class="plate-cell">${o.plate || '-'}</td><td>${o.model || '-'}</td><td>${opBadge}</td><td class="text-muted small">${o.dateIn || '-'}</td><td class="date-cell ${isOverdue ? 'overdue' : ''}">${o.dateOut || '-'}</td><td class="small">${estadoLabel}</td></tr>`;
+                html += `
+                    <tr onclick="openDetailModal('${o.id}')">
+                        <td class="plate-cell">${o.plate || '-'}</td>
+                        <td>${o.model || '-'}</td>
+                        <td>${opBadge}</td>
+                        <td class="text-muted small">${o.dateIn || '-'}</td>
+                        <td class="date-cell ${isOverdue ? 'overdue' : ''}">${o.dateOut || '-'}</td>
+                        <td class="small">${estadoLabel}</td>
+                    </tr>
+                `;
             });
             tbody.innerHTML = html;
         }
 
         function renderInsuranceBars(periodOrders) {
-            const container = document.getElementById('chart-insurance-container'); if (!container) return;
+            const container = document.getElementById('chart-insurance-container');
+            if (!container) return;
             const insCounts = {};
             periodOrders.forEach(o => { const ins = (o.insurance && o.insurance.trim()) ? o.insurance.trim() : 'Sin asignar'; insCounts[ins] = (insCounts[ins] || 0) + 1; });
             const total = periodOrders.length;
-            let items = Object.keys(insCounts).filter(k => insCounts[k] > 0).map((k, i) => ({ label: k, value: insCounts[k], pct: total > 0 ? Math.round((insCounts[k] / total) * 100) : 0, color: k === 'Sin asignar' ? '#94a3b8' : COLOR_PALETTE[i % COLOR_PALETTE.length] }));
+            let items = Object.keys(insCounts)
+                .filter(k => insCounts[k] > 0)
+                .map((k, i) => ({
+                    label: k,
+                    value: insCounts[k],
+                    pct: total > 0 ? Math.round((insCounts[k] / total) * 100) : 0,
+                    color: k === 'Sin asignar' ? '#94a3b8' : COLOR_PALETTE[i % COLOR_PALETTE.length]
+                }));
             items.sort((a, b) => b.value - a.value);
             const smallItems = items.filter(i => i.pct < 3 && i.label !== 'Sin asignar');
             if (smallItems.length > 1) {
@@ -2129,11 +2316,20 @@
         }
 
         function renderFasesBars(periodOrders) {
-            const container = document.getElementById('chart-fases-container'); if (!container) return;
+            const container = document.getElementById('chart-fases-container');
+            if (!container) return;
             const faseKeys = ['cargachapa', 'cargapintura', 'lunas', 'reparacion', 'montaje', 'paragolpes', 'destajos', 'pintura', 'terminados'];
             const faseColors = ['#2563eb', '#f59e0b', '#64748b', '#1d4ed8', '#059669', '#1e293b', '#0891b2', '#fbbf24', '#10b981'];
             const total = periodOrders.length;
-            let items = faseKeys.map((k, i) => { const value = periodOrders.filter(o => (o.status || '') === k).length; return { label: STATUSABELS[k] || k, value: value, pct: total > 0 ? Math.round((value / total) * 100) : 0, color: faseColors[i] }; }).filter(i => i.value > 0);
+            let items = faseKeys.map((k, i) => {
+                const value = periodOrders.filter(o => (o.status || '') === k).length;
+                return {
+                    label: STATUS_LABELS[k] || k,
+                    value: value,
+                    pct: total > 0 ? Math.round((value / total) * 100) : 0,
+                    color: faseColors[i]
+                };
+            }).filter(i => i.value > 0);
             renderHorizontalBars(container, items);
         }
 
