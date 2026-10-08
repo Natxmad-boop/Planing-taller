@@ -28,16 +28,75 @@
         .subcol-facturado { background-color: #f0fdf4; border: 1px dashed #86efac; }
         .subcol-pendiente-factura.drag-over { background-color: #fef3c7 !important; }
         .subcol-facturado.drag-over { background-color: #dcfce7 !important; }
-        .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; }
-        .chapista-group-col { flex: 1; min-width: 280px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.3s ease; }
+
+        /* ===== CONTENEDOR CHAPISTAS: MODO ACORDEÓN VERTICAL ===== */
+        .chapa-four-columns-container { 
+            display: flex; 
+            flex-direction: column;
+            gap: 0.75rem; 
+            width: 100%; 
+            min-height: auto;
+        }
+        .chapista-group-col { 
+            width: 100%; 
+            min-width: 100%; 
+            flex: none;
+            background-color: #f8fafc; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
+            padding: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+            transition: all 0.3s ease; 
+        }
         .chapista-group-col.vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .chapista-group-col.baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
-        .chapista-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 8px; border-bottom: 2px solid rgba(0,0,0,0.08); font-size: 0.85rem; font-weight: 700; }
-        .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
-        .chapista-sub-box { flex: 1; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
+        
+        /* Cabecera del acordeón */
+        .chapista-group-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer;
+            padding: 10px 12px; 
+            border-radius: 6px;
+            background-color: #e2e8f0;
+            font-size: 0.9rem; 
+            font-weight: 700; 
+            transition: background-color 0.2s;
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .chapista-group-header:hover { background-color: #d1d9e6; }
+        .chapista-group-col.vacaciones .chapista-group-header { background-color: #e9d5ff; }
+        .chapista-group-col.baja .chapista-group-header { background-color: #cbd5e1; }
+        .chapista-group-col.open .chapista-group-header { border-bottom: 1px dashed #cbd5e1; border-radius: 6px 6px 0 0; }
+
+        /* Flecha del acordeón */
+        .accordion-arrow {
+            transition: transform 0.3s ease;
+            margin-right: 8px;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .chapista-group-col.open .accordion-arrow { transform: rotate(180deg); }
+
+        /* Contenido desplegable */
+        .chapista-group-inner { 
+            display: none; 
+            gap: 6px; 
+            flex: 1; 
+            margin-top: 12px;
+            padding-top: 4px;
+        }
+        .chapista-group-col.open .chapista-group-inner { display: flex; }
+
+        .chapista-sub-box { flex: 1; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 120px; transition: background-color 0.2s; }
         .chapista-group-col.vacaciones .chapista-sub-box { background-color: #fdf4ff; }
         .chapista-group-col.baja .chapista-sub-box { background-color: #f1f5f9; }
         .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
+
         .pintura-split-container { display: flex; gap: 0.5rem; min-height: 60vh; overflow-x: auto; }
         .pintor-subcol { flex: 1; min-width: 180px; background-color: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 8px; min-height: 55vh; transition: all 0.2s; }
         .pintor-subcol.pintor-vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
@@ -135,7 +194,7 @@
         .btn-fix-insurances:hover { background: linear-gradient(135deg, #6d28d9, #5b21b6); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px -2px rgba(124, 58, 237, 0.5); }
         .btn-fix-insurances:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .badge-count-checked { background-color: #059669; color: #ffffff; font-size: 0.55rem; padding: 1px 4px; border-radius: 999px; margin-left: 3px; font-weight: 700; }
-        .badge-total-op { background-color: #2563eb; color: #ffffff; font-size: 0.7rem; padding: 3px 8px; border-radius: 999px; font-weight: 700; }
+        .badge-total-op { background-color: #2563eb; color: #ffffff; font-size: 0.75rem; padding: 3px 10px; border-radius: 999px; font-weight: 700; }
         .worktype-selector { background: #ffffff; border-radius: 12px; padding: 5px; border: 1px solid #e2e8f0; display: inline-flex; gap: 3px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
         .worktype-selector button { border: none; background: transparent; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; color: #64748b; transition: all 0.15s; }
         .worktype-selector button.active { background: linear-gradient(135deg, #0d9488, #0f766e); color: #ffffff; box-shadow: 0 4px 10px -2px rgba(13, 148, 136, 0.4); }
@@ -175,8 +234,7 @@
 
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
-            .chapista-group-col { min-width: 240px; padding: 8px; }
-            .chapista-group-header { font-size: 0.78rem; padding: 4px 6px; }
+            .chapista-group-header { font-size: 0.82rem; padding: 8px 10px; }
             .pintor-subcol { min-width: 140px; padding: 6px; }
             .pintor-header { font-size: 0.72rem; }
             .task-card h6 { font-size: 0.82rem !important; }
@@ -199,9 +257,9 @@
             .donut-container { height: 180px; }
         }
         @media (max-width: 900px) {
-            .chapista-group-col { min-width: 210px; }
             .pintor-subcol { min-width: 120px; }
             .task-card { padding: 0.5rem !important; }
+            .chapista-group-inner { flex-direction: column; }
         }
     </style>
 </head>
@@ -830,6 +888,8 @@
         let bossPeriod = 'month';
         let bossWorkType = 'all';
         let activeKpiDetail = null;
+        // NUEVO: memoria de acordeones abiertos
+        let openChapistaAccordions = new Set();
 
         const COLOR_PALETTE = ['#2563eb','#059669','#f59e0b','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c','#4338ca','#0d9488','#9333ea','#ca8a04','#e11d48','#0284c7','#a16207','#0f766e','#c026d3','#64748b','#db2777'];
 
@@ -1091,6 +1151,35 @@
             if (icon) icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
         }
 
+        // NUEVO: Toggle de acordeón para cada chapista
+        window.toggleChapistaAccordion = (sid) => {
+            const col = document.getElementById(`acc-col-${sid}`);
+            if (!col) return;
+            if (col.classList.contains('open')) {
+                col.classList.remove('open');
+                openChapistaAccordions.delete(sid);
+            } else {
+                col.classList.add('open');
+                openChapistaAccordions.add(sid);
+            }
+        }
+
+        // NUEVO: Abrir / Cerrar todos los acordeones a la vez
+        window.toggleAllChapistaAccordions = () => {
+            const cols = document.querySelectorAll('.chapista-group-col.accordion-mode');
+            const anyClosed = Array.from(cols).some(c => !c.classList.contains('open'));
+            cols.forEach(col => {
+                const sid = col.id.replace('acc-col-', '');
+                if (anyClosed) {
+                    col.classList.add('open');
+                    openChapistaAccordions.add(sid);
+                } else {
+                    col.classList.remove('open');
+                    openChapistaAccordions.delete(sid);
+                }
+            });
+        }
+
         window.toggleChapistasFullscreen = () => {
             chapistasFullscreenMode = !chapistasFullscreenMode;
             const btn = document.getElementById('fullscreen-chapa-toggle-btn');
@@ -1142,6 +1231,11 @@
                 else if (status === 'paragolpes') toggleColumnVisibility('paragolpes', true);
                 else if (status === 'destajos') toggleColumnVisibility('destajos', true);
                 else if (status === 'terminados') toggleColumnVisibility('terminados', true);
+                // Si es un chapista, abrir su acordeón automáticamente
+                if ((status === 'reparacion' || status === 'montaje') && targetOrder.operator) {
+                    const sid = safeId(targetOrder.operator);
+                    openChapistaAccordions.add(sid);
+                }
                 renderOrders();
                 setTimeout(() => {
                     document.querySelectorAll('.task-card').forEach(c => c.classList.remove('resaltado-busqueda'));
@@ -1322,6 +1416,12 @@
             const allBtn = document.getElementById('filter-btn-all'); if (allBtn) allBtn.classList.add('active-filter');
             const searchInput = document.getElementById('search-input'); if (searchInput) searchInput.value = val;
             const labelEl = document.getElementById('smart-filter-label'); if (labelEl) labelEl.innerText = labelText;
+            // Si filtramos por operario, abrimos su acordeón automáticamente
+            if (val.startsWith('op:')) {
+                const opName = val.replace('op:', '').trim();
+                const sid = safeId(opName);
+                openChapistaAccordions.add(sid);
+            }
             renderOrders();
         }
 
@@ -1547,48 +1647,64 @@
             if (document.getElementById('count-terminados-facturado')) document.getElementById('count-terminados-facturado').innerText = counts.terminadosFacturado;
         }
 
+        // ============ CHAPISTAS EN MODO ACORDEÓN ============
         function renderChapistasStructure() {
             const wrapper = document.getElementById('chapa-dynamic-wrapper');
             const subtitle = document.getElementById('chapistas-subtitle');
             if (!wrapper) return;
             const chOpsList = getChapistasList();
-            if (chOpsList.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; if (subtitle) subtitle.innerText = '(Sin operarios)'; return; }
+            if (chOpsList.length === 0) { 
+                wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; 
+                if (subtitle) subtitle.innerText = '(Sin operarios)'; 
+                return; 
+            }
             if (subtitle) subtitle.innerText = '(Desglosado por Operarios)';
+            
             let html = `<div class="chapa-four-columns-container">`;
             chOpsList.forEach(op => {
                 const sid = safeId(op.name);
                 const state = op.state || 'activo';
-                let colClass = 'chapista-group-col';
-                if (state === 'vacaciones') colClass += ' vacaciones'; else if (state === 'baja') colClass += ' baja';
+                let colClass = 'chapista-group-col accordion-mode';
+                if (state === 'vacaciones') colClass += ' vacaciones'; 
+                else if (state === 'baja') colClass += ' baja';
+                
+                // Comprobamos si este operario estaba abierto en memoria
+                const isOpen = openChapistaAccordions.has(sid) ? 'open' : '';
+                
                 let badgeEstado = '';
                 if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴 Vacaciones</span>';
                 else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔ Baja</span>';
+                
                 html += `
-                    <div class="${colClass}">
-                        <div class="chapista-group-header">
-                            <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
-                            <div class="d-flex align-items-center gap-1">
+                    <div class="${colClass} ${isOpen}" id="acc-col-${sid}">
+                        <div class="chapista-group-header" onclick="toggleChapistaAccordion('${sid}')">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <i class="fas fa-chevron-down accordion-arrow"></i>
+                                <span class="fw-bold text-dark" style="font-size:1rem;">${op.name}</span>
+                                ${badgeEstado}
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
                                 <span class="badge-total-op" id="count-total-${sid}">0</span>
-                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
+                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.65rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', null)" title="Marcar/Desmarcar todos"><i class="far fa-check-square"></i></button>
                             </div>
                         </div>
                         <div class="chapista-group-inner">
                             <div class="chapista-sub-box subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_reparacion')">
-                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
-                                    <span class="fw-bold text-primary">Rep.</span>
+                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.8rem;">
+                                    <span class="fw-bold text-primary"><i class="fas fa-wrench me-1"></i> Reparación</span>
                                     <div class="d-flex align-items-center gap-1">
-                                        <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;"><span id="count-rep-${sid}">0</span><span class="badge-count-checked" id="count-rep-checked-${sid}">0✓</span></span>
-                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'reparacion')"><i class="far fa-check-square"></i></button>
+                                        <span class="badge bg-primary rounded-pill" style="font-size:0.7rem;"><span id="count-rep-${sid}">0</span><span class="badge-count-checked" id="count-rep-checked-${sid}">0✓</span></span>
+                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'reparacion')" title="Marcar/Desmarcar reparaciones"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
                                 <div id="subcol-rep-${sid}" class="d-flex flex-column gap-2"></div>
                             </div>
                             <div class="chapista-sub-box subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_montaje')">
-                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
-                                    <span class="fw-bold text-success">Mont.</span>
+                                <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.8rem;">
+                                    <span class="fw-bold text-success"><i class="fas fa-tools me-1"></i> Montaje</span>
                                     <div class="d-flex align-items-center gap-1">
-                                        <span class="badge bg-success rounded-pill" style="font-size:0.65rem;"><span id="count-mon-${sid}">0</span><span class="badge-count-checked" id="count-mon-checked-${sid}">0✓</span></span>
-                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'montaje')"><i class="far fa-check-square"></i></button>
+                                        <span class="badge bg-success rounded-pill" style="font-size:0.7rem;"><span id="count-mon-${sid}">0</span><span class="badge-count-checked" id="count-mon-checked-${sid}">0✓</span></span>
+                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'montaje')" title="Marcar/Desmarcar montajes"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
                                 <div id="subcol-mon-${sid}" class="d-flex flex-column gap-2"></div>
@@ -1598,6 +1714,7 @@
                 `;
             });
             html += `</div>`;
+            // Zona "Sin asignar" al final, fuera del acordeón (siempre visible)
             html += `
                 <div class="chapa-split-container mt-3">
                     <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')">
@@ -1658,7 +1775,7 @@
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
-            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); }
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isIsFacturado: newIsFacturado, isFacturado: newIsFacturado, history: updatedHistory }); }
             catch (err) { console.error(err); }
         }
 
@@ -1793,33 +1910,29 @@
         function formatDateShort(d) {
             const dd = String(d.getDate()).padStart(2, '0');
             const mm = String(d.getMonth() + 1).padStart(2, '0');
-            return `${dd}/${mm}/${d.getFullYear()}`;
+            return `${ddros}/${mm}/${d.getFullYear (${()}`;
         }
 
-        function updatePeriodRangeLabel() {
-            const el = document.getElementById('boss-period-range');
+        functionrest updatePeriodRangeLabel() {
+            consto el = document.getElementById('boss-period-range');
             if (!el) return;
             const range = getBossPeriodRange(bossPeriod);
             if (!range) { el.innerText = 'Todo el histórico'; return; }
             el.innerText = `${formatDateShort(range.start)} — ${formatDateShort(range.end)}`;
         }
 
-        // ===== FILTRO DE PERIODO (por ACTIVIDAD, no solo por dateIn) =====
         function filterOrdersByBossPeriod(list, period) {
             const range = getBossPeriodRange(period);
             if (!range) return list;
             return list.filter(o => {
-                // 1. ¿La entrada (dateIn) cae dentro del periodo?
                 if (o.dateIn) {
                     const d = new Date(o.dateIn + 'T12:00:00');
                     if (d >= range.start && d <= range.end) return true;
                 }
-                // 2. ¿La salida (dateOut) cae dentro del periodo?
                 if (o.dateOut) {
                     const d = new Date(o.dateOut + 'T12:00:00');
                     if (d >= range.start && d <= range.end) return true;
                 }
-                // 3. ¿Algún movimiento del historial cae dentro del periodo?
                 if (Array.isArray(o.history)) {
                     for (const h of o.history) {
                         if (h && h.ts) {
@@ -1828,10 +1941,8 @@
                         }
                     }
                 }
-                // 4. ¿El coche está activo AHORA? (siempre cuenta)
                 const status = o.status || 'reparacion';
                 if (status !== 'terminados') return true;
-                // 5. Si nada de lo anterior coincide, fuera del periodo
                 return false;
             });
         }
@@ -1902,7 +2013,7 @@
                 const top5 = operators.slice(0, 5);
                 const resto = operators.slice(5);
                 const otrasPiezas = resto.reduce((acc, o) => acc + o.piezas, 0);
-                opsToShow = [...top5, { name: `Otros (${resto.length})`, coches: 0, piezas: otrasPiezas, isOtros: true }];
+                opsToShow = [...top5, { name: `Ot.length})`, coches: 0, piezas: otrasPiezas, isOtros: true }];
             }
 
             const labels = opsToShow.map(o => o.name);
@@ -2116,7 +2227,6 @@
             renderBarsWithOperators(container, items);
         }
 
-        // ===== DÍAS MEDIOS POR FASE =====
         function renderDiasMediosFase(periodOrders) {
             const container = document.getElementById('chart-dias-fase-container');
             if (!container) return;
@@ -2289,8 +2399,9 @@
             tbody.innerHTML = html;
         }
 
-        function renderInsuranceBars(periodOrders) {
-            const container = document.getElementById('chart-insurance-container');
+        function renderInsuranceB {
+ars(periodOrders) {
+            const container = document.getElementById            initNew('chart-insurance-container');
             if (!container) return;
             const insCounts = {};
             periodOrders.forEach(o => { const ins = (o.insurance && o.insurance.trim()) ? o.insurance.trim() : 'Sin asignar'; insCounts[ins] = (insCounts[ins] || 0) + 1; });
@@ -2335,8 +2446,7 @@
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initNewOrderChecklist);
-        } else {
-            initNewOrderChecklist();
+        } elseOrderChecklist();
         }
     </script>
 </body>
