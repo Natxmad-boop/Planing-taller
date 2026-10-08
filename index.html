@@ -173,6 +173,20 @@
         .piezas-area-block { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
         .piezas-area-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
+        /* ===================================================
+           MODO CHAPISTAS FULLSCREEN
+           Oculta todas las columnas salvo Chapistas, y hace
+           que Chapistas ocupe el 100% del ancho disponible.
+           =================================================== */
+        .kanban-container.chapistas-fullscreen > .kanban-col:not(#kanban-col-chapistas) {
+            display: none !important;
+        }
+        .kanban-container.chapistas-fullscreen > #kanban-col-chapistas {
+            flex: 1 1 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+        }
+
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
             .chapista-group-col { flex: 0 0 300px; width: 300px; min-width: 300px; max-width: 300px; padding: 8px; }
@@ -445,8 +459,8 @@
                 </div>
             </div>
             <div class="col-md-7 text-md-end d-flex gap-1 justify-content-md-end align-items-center flex-wrap">
-                <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" id="fullscreen-chapa-toggle-btn" onclick="toggleChapistasFullscreen()">
-                    <i class="fas fa-expand me-1" id="fullscreen-icon"></i> <span id="fullscreen-btn-text">Vista General Chapa</span>
+                <button type="button" class="btn btn-success btn-sm fw-bold shadow-sm" id="fullscreen-chapa-toggle-btn" onclick="toggleChapistasFullscreen()">
+                    <i class="fas fa-th-large me-1" id="fullscreen-icon"></i> <span id="fullscreen-btn-text">Ver todas las columnas</span>
                 </button>
                 <div class="btn-group shadow-sm" role="group">
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-cargachapa-btn" onclick="toggleColumnVisibility('cargachapa')"><i class="fas fa-eye me-1"></i> Carga Chapa</button>
@@ -481,7 +495,7 @@
             <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
         </div>
 
-        <div class="kanban-container" id="main-kanban-container">
+        <div class="kanban-container chapistas-fullscreen" id="main-kanban-container">
             <div id="col-cargachapa-wrapper" class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="display: none;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-primary"></i> Carga Chapa</h6>
@@ -1091,20 +1105,33 @@
             if (icon) icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
         }
 
-        window.toggleChapistasFullscreen = () => {
-            chapistasFullscreenMode = !chapistasFullscreenMode;
+        // ============================================================
+        // TOGGLE MODO CHAPISTAS FULLSCREEN
+        // ============================================================
+        function applyChapistasFullscreenMode() {
+            const container = document.getElementById('main-kanban-container');
+            if (container) {
+                if (chapistasFullscreenMode) container.classList.add('chapistas-fullscreen');
+                else container.classList.remove('chapistas-fullscreen');
+            }
             const btn = document.getElementById('fullscreen-chapa-toggle-btn');
             const icon = document.getElementById('fullscreen-icon');
             const btnText = document.getElementById('fullscreen-btn-text');
             if (chapistasFullscreenMode) {
                 if (btn) btn.className = "btn btn-success btn-sm fw-bold shadow-sm";
                 if (icon) icon.className = "fas fa-th-large me-1";
-                if (btnText) btnText.innerText = "Vista General Chapa";
+                if (btnText) btnText.innerText = "Ver todas las columnas";
             } else {
                 if (btn) btn.className = "btn btn-primary btn-sm fw-bold shadow-sm";
                 if (icon) icon.className = "fas fa-expand me-1";
-                if (btnText) btnText.innerText = "Vista por Operarios";
+                if (btnText) btnText.innerText = "Solo Chapistas";
             }
+        }
+        window.applyChapistasFullscreenMode = applyChapistasFullscreenMode;
+
+        window.toggleChapistasFullscreen = () => {
+            chapistasFullscreenMode = !chapistasFullscreenMode;
+            applyChapistasFullscreenMode();
             renderOrders();
         }
 
@@ -1136,6 +1163,12 @@
                 if (matchingOrders.length === 0) { alert('No se ha encontrado ningún vehículo o pieza.'); return; }
                 let targetOrder = matchingOrders[0];
                 const status = targetOrder.status || 'reparacion';
+                // Si estamos en modo "solo chapistas" y el coche está en otra columna, salimos del modo
+                const needsOtherCol = ['cargachapa','cargapintura','lunas','paragolpes','destajos','terminados'].includes(status);
+                if (needsOtherCol && chapistasFullscreenMode) {
+                    chapistasFullscreenMode = false;
+                    applyChapistasFullscreenMode();
+                }
                 if (status === 'cargachapa') toggleColumnVisibility('cargachapa', true);
                 else if (status === 'cargapintura') toggleColumnVisibility('cargapintura', true);
                 else if (status === 'lunas') toggleColumnVisibility('lunas', true);
@@ -1229,6 +1262,7 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-screen').style.display = 'block';
                 document.getElementById('user-display').innerHTML = `<i class="fas fa-user-circle me-1"></i> ${email}`;
+                applyChapistasFullscreenMode();
                 initRealtimeSync();
             } else { alert('Correo o contraseña incorrectos.'); }
         }
@@ -1804,34 +1838,15 @@
             el.innerText = `${formatDateShort(range.start)} — ${formatDateShort(range.end)}`;
         }
 
-        // ===== FILTRO DE PERIODO (por ACTIVIDAD, no solo por dateIn) =====
         function filterOrdersByBossPeriod(list, period) {
             const range = getBossPeriodRange(period);
             if (!range) return list;
             return list.filter(o => {
-                // 1. ¿La entrada (dateIn) cae dentro del periodo?
-                if (o.dateIn) {
-                    const d = new Date(o.dateIn + 'T12:00:00');
-                    if (d >= range.start && d <= range.end) return true;
-                }
-                // 2. ¿La salida (dateOut) cae dentro del periodo?
-                if (o.dateOut) {
-                    const d = new Date(o.dateOut + 'T12:00:00');
-                    if (d >= range.start && d <= range.end) return true;
-                }
-                // 3. ¿Algún movimiento del historial cae dentro del periodo?
-                if (Array.isArray(o.history)) {
-                    for (const h of o.history) {
-                        if (h && h.ts) {
-                            const d = new Date(h.ts);
-                            if (d >= range.start && d <= range.end) return true;
-                        }
-                    }
-                }
-                // 4. ¿El coche está activo AHORA? (siempre cuenta)
+                if (o.dateIn) { const d = new Date(o.dateIn + 'T12:00:00'); if (d >= range.start && d <= range.end) return true; }
+                if (o.dateOut) { const d = new Date(o.dateOut + 'T12:00:00'); if (d >= range.start && d <= range.end) return true; }
+                if (Array.isArray(o.history)) { for (const h of o.history) { if (h && h.ts) { const d = new Date(h.ts); if (d >= range.start && d <= range.end) return true; } } }
                 const status = o.status || 'reparacion';
                 if (status !== 'terminados') return true;
-                // 5. Si nada de lo anterior coincide, fuera del periodo
                 return false;
             });
         }
@@ -2116,7 +2131,6 @@
             renderBarsWithOperators(container, items);
         }
 
-        // ===== DÍAS MEDIOS POR FASE =====
         function renderDiasMediosFase(periodOrders) {
             const container = document.getElementById('chart-dias-fase-container');
             if (!container) return;
@@ -2334,9 +2348,13 @@
         }
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initNewOrderChecklist);
+            document.addEventListener('DOMContentLoaded', () => {
+                initNewOrderChecklist();
+                applyChapistasFullscreenMode();
+            });
         } else {
             initNewOrderChecklist();
+            applyChapistasFullscreenMode();
         }
     </script>
 </body>
