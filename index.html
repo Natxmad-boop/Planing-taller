@@ -28,76 +28,18 @@
         .subcol-facturado { background-color: #f0fdf4; border: 1px dashed #86efac; }
         .subcol-pendiente-factura.drag-over { background-color: #fef3c7 !important; }
         .subcol-facturado.drag-over { background-color: #dcfce7 !important; }
-
-        /* =====================================================
-           CHAPISTAS · VISTA COMPACTA EXPANDIBLE
-           ===================================================== */
-        .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; align-items: flex-start; }
-
-        .chapista-group-col {
-            flex: 0 0 115px; width: 115px; min-width: 115px; max-width: 115px;
-            background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;
-            padding: 6px; display: flex; flex-direction: column;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.25s ease;
-            cursor: pointer; overflow: hidden;
-        }
-        .chapista-group-col:hover { border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
-        .chapista-group-col.expanded {
-            flex: 0 0 340px; width: 340px; min-width: 340px; max-width: 340px;
-            padding: 10px; cursor: default;
-            border-color: #2563eb;
-            box-shadow: 0 6px 16px rgba(37,99,235,0.18);
-        }
+        .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; }
+        .chapista-group-col { flex: 1; min-width: 280px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.3s ease; }
         .chapista-group-col.vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .chapista-group-col.baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
-
-        /* Cabecera común */
-        .chapista-group-header {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 6px 4px; margin-bottom: 0;
-            border-bottom: none;
-            font-size: 0.85rem; font-weight: 700;
-            position: relative;
-        }
-        .chapista-group-header .chapista-name { font-size: 1rem; font-weight: 800; letter-spacing: 0.3px; text-align: center; }
-        .chapista-group-header .chapista-chevron { margin-top: 6px; font-size: 0.7rem; color: #64748b; transition: transform 0.2s; }
-        .chapista-group-header .header-info { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .chapista-group-header .header-total { margin-top: 6px; }
-        .chapista-group-header .header-actions { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 6px; }
-
-        /* Cabecera cuando está EXPANDIDO: horizontal */
-        .chapista-group-col.expanded .chapista-group-header {
-            flex-direction: row; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; padding: 6px 8px;
-            border-bottom: 2px solid rgba(0,0,0,0.08); cursor: pointer;
-        }
-        .chapista-group-col.expanded .chapista-group-header .header-info { flex-direction: row; gap: 8px; }
-        .chapista-group-col.expanded .chapista-group-header .header-total { margin-top: 0; }
-        .chapista-group-col.expanded .chapista-group-header .header-actions { margin-top: 0; }
-        .chapista-group-col.expanded .chapista-group-header .chapista-name { font-size: 0.85rem; }
-        .chapista-group-col.expanded .chapista-group-header .chapista-chevron { margin-top: 0; margin-left: 6px; }
-        .chapista-group-col.expanded .chapista-group-header:hover { background-color: #f1f5f9; border-radius: 4px; }
-
-        /* Contenido interno: oculto por defecto, visible si expandido */
-        .chapista-group-inner { display: none; }
-        .chapista-group-col.expanded .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
-
-        .chapista-sub-box { flex: 1; min-width: 0; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
+        .chapista-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 8px; border-bottom: 2px solid rgba(0,0,0,0.08); font-size: 0.85rem; font-weight: 700; }
+        .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
+        .chapista-sub-box { flex: 1; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
         .chapista-group-col.vacaciones .chapista-sub-box { background-color: #fdf4ff; }
         .chapista-group-col.baja .chapista-sub-box { background-color: #f1f5f9; }
         .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
-
-        /* MODO DRAG: todos expandidos temporalmente */
-        .chapa-four-columns-container.dragging-active .chapista-group-col {
-            flex: 0 0 340px; width: 340px; min-width: 340px; max-width: 340px; padding: 10px;
-        }
-        .chapa-four-columns-container.dragging-active .chapista-group-col .chapista-group-inner { display: flex !important; }
-
-        /* ============================================
-           PINTORES (ancho fijo, sin cambios funcionales)
-           ============================================ */
         .pintura-split-container { display: flex; gap: 0.5rem; min-height: 60vh; overflow-x: auto; }
-        .pintor-subcol { flex: 0 0 220px; width: 220px; min-width: 220px; max-width: 220px; background-color: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 8px; min-height: 55vh; transition: all 0.2s; }
+        .pintor-subcol { flex: 1; min-width: 180px; background-color: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 8px; min-height: 55vh; transition: all 0.2s; }
         .pintor-subcol.pintor-vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .pintor-subcol.pintor-baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
         .pintor-subcol.drag-over { background-color: #fef3c7 !important; }
@@ -233,9 +175,9 @@
 
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
-            .chapista-group-col { flex: 0 0 100px; width: 100px; min-width: 100px; max-width: 100px; padding: 6px; }
-            .chapista-group-col.expanded { flex: 0 0 300px; width: 300px; min-width: 300px; max-width: 300px; padding: 8px; }
-            .pintor-subcol { flex: 0 0 190px; width: 190px; min-width: 190px; max-width: 190px; padding: 6px; }
+            .chapista-group-col { min-width: 240px; padding: 8px; }
+            .chapista-group-header { font-size: 0.78rem; padding: 4px 6px; }
+            .pintor-subcol { min-width: 140px; padding: 6px; }
             .pintor-header { font-size: 0.72rem; }
             .task-card h6 { font-size: 0.82rem !important; }
             .task-card .small { font-size: 0.72rem; }
@@ -257,9 +199,8 @@
             .donut-container { height: 180px; }
         }
         @media (max-width: 900px) {
-            .chapista-group-col { flex: 0 0 95px; width: 95px; min-width: 95px; max-width: 95px; }
-            .chapista-group-col.expanded { flex: 0 0 270px; width: 270px; min-width: 270px; max-width: 270px; }
-            .pintor-subcol { flex: 0 0 170px; width: 170px; min-width: 170px; max-width: 170px; }
+            .chapista-group-col { min-width: 210px; }
+            .pintor-subcol { min-width: 120px; }
             .task-card { padding: 0.5rem !important; }
         }
     </style>
@@ -335,12 +276,66 @@
             </div>
 
             <div class="row g-3 mb-4">
-                <div class="col"><div class="kpi-card kpi-blue" data-kpi="activas" onclick="toggleKpiDetail('activas')"><div class="kpi-icon-circle"><i class="fas fa-play-circle"></i></div><div class="kpi-body"><div class="kpi-label">Activas</div><div class="kpi-value" id="kpi-activas">0</div><div class="kpi-sub" id="kpi-activas-sub">En proceso</div></div></div></div>
-                <div class="col"><div class="kpi-card kpi-green" data-kpi="terminados" onclick="toggleKpiDetail('terminados')"><div class="kpi-icon-circle"><i class="fas fa-check-circle"></i></div><div class="kpi-body"><div class="kpi-label">Terminadas</div><div class="kpi-value text-success" id="kpi-terminados">0</div><div class="kpi-sub" id="kpi-porcentaje-terminados">0% del total</div></div></div></div>
-                <div class="col"><div class="kpi-card kpi-amber" data-kpi="recambios" onclick="toggleKpiDetail('recambios')"><div class="kpi-icon-circle"><i class="fas fa-clock"></i></div><div class="kpi-body"><div class="kpi-label">Recambios</div><div class="kpi-value text-warning" id="kpi-retrasos">0%</div><div class="kpi-sub" id="kpi-retrasos-count">0 afectados</div></div></div></div>
-                <div class="col"><div class="kpi-card kpi-red" data-kpi="externas" onclick="toggleKpiDetail('externas')"><div class="kpi-icon-circle"><i class="fas fa-external-link-alt"></i></div><div class="kpi-body"><div class="kpi-label">Externas</div><div class="kpi-value text-danger" id="kpi-externas">0%</div><div class="kpi-sub" id="kpi-externas-count">0 afectados</div></div></div></div>
-                <div class="col"><div class="kpi-card kpi-purple" data-kpi="pasados" onclick="toggleKpiDetail('pasados')"><div class="kpi-icon-circle"><i class="fas fa-hourglass-end"></i></div><div class="kpi-body"><div class="kpi-label">Pasados</div><div class="kpi-value" style="color:#7c3aed;" id="kpi-pasados">0</div><div class="kpi-sub" id="kpi-pasados-sub">Fuera de fecha</div></div></div></div>
-                <div class="col"><div class="kpi-card kpi-teal"><div class="kpi-icon-circle"><i class="fas fa-boxes"></i></div><div class="kpi-body"><div class="kpi-label">Piezas</div><div class="kpi-value" style="color:#0f766e;" id="kpi-piezas">0</div><div class="kpi-sub" id="kpi-piezas-sub">Este mes</div></div></div></div>
+                <div class="col">
+                    <div class="kpi-card kpi-blue" data-kpi="activas" onclick="toggleKpiDetail('activas')">
+                        <div class="kpi-icon-circle"><i class="fas fa-play-circle"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Activas</div>
+                            <div class="kpi-value" id="kpi-activas">0</div>
+                            <div class="kpi-sub" id="kpi-activas-sub">En proceso</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="kpi-card kpi-green" data-kpi="terminados" onclick="toggleKpiDetail('terminados')">
+                        <div class="kpi-icon-circle"><i class="fas fa-check-circle"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Terminadas</div>
+                            <div class="kpi-value text-success" id="kpi-terminados">0</div>
+                            <div class="kpi-sub" id="kpi-porcentaje-terminados">0% del total</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="kpi-card kpi-amber" data-kpi="recambios" onclick="toggleKpiDetail('recambios')">
+                        <div class="kpi-icon-circle"><i class="fas fa-clock"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Recambios</div>
+                            <div class="kpi-value text-warning" id="kpi-retrasos">0%</div>
+                            <div class="kpi-sub" id="kpi-retrasos-count">0 afectados</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="kpi-card kpi-red" data-kpi="externas" onclick="toggleKpiDetail('externas')">
+                        <div class="kpi-icon-circle"><i class="fas fa-external-link-alt"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Externas</div>
+                            <div class="kpi-value text-danger" id="kpi-externas">0%</div>
+                            <div class="kpi-sub" id="kpi-externas-count">0 afectados</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="kpi-card kpi-purple" data-kpi="pasados" onclick="toggleKpiDetail('pasados')">
+                        <div class="kpi-icon-circle"><i class="fas fa-hourglass-end"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Pasados</div>
+                            <div class="kpi-value" style="color:#7c3aed;" id="kpi-pasados">0</div>
+                            <div class="kpi-sub" id="kpi-pasados-sub">Fuera de fecha</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="kpi-card kpi-teal">
+                        <div class="kpi-icon-circle"><i class="fas fa-boxes"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Piezas</div>
+                            <div class="kpi-value" style="color:#0f766e;" id="kpi-piezas">0</div>
+                            <div class="kpi-sub" id="kpi-piezas-sub">Este mes</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="kpi-detail-panel" class="kpi-detail-panel" style="display:none;">
@@ -350,29 +345,89 @@
                 </div>
                 <div class="table-responsive">
                     <table class="table kpi-detail-table">
-                        <thead><tr><th>Matrícula</th><th>Modelo</th><th>Operario</th><th>Entrada</th><th>Salida</th><th>Estado</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Matrícula</th>
+                                <th>Modelo</th>
+                                <th>Operario</th>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
                         <tbody id="kpi-detail-body"></tbody>
                     </table>
                 </div>
             </div>
 
             <div class="row g-3 mb-3">
-                <div class="col-md-6"><div class="stat-card-boss"><h6><span class="stat-title-icon"><i class="fas fa-car"></i></span> Coches por Área</h6><div id="chart-coches-area-container" class="hbar-container"></div><div class="stat-card-note">Cada orden cuenta 1 vez por área. Un coche puede contar en varias áreas.</div></div></div>
-                <div class="col-md-6"><div class="stat-card-boss"><h6><span class="stat-title-icon"><i class="fas fa-boxes"></i></span> Piezas por Área</h6><div class="piezas-area-block"><div class="donut-title">Chapa</div><div id="chart-piezas-chapa-donut" class="donut-container"></div></div><div class="piezas-area-block"><div class="donut-title">Pintura</div><div id="chart-piezas-pintura-donut" class="donut-container"></div></div><div class="piezas-area-block"><div class="donut-title">Paragolpes</div><div id="chart-piezas-paragolpes-bar" class="hbar-container"></div></div><div class="stat-card-note">Piezas totales. Un coche puede contar en varias áreas.</div></div></div>
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-car"></i></span> Coches por Área</h6>
+                        <div id="chart-coches-area-container" class="hbar-container"></div>
+                        <div class="stat-card-note">Cada orden cuenta 1 vez por área. Un coche puede contar en varias áreas.</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-boxes"></i></span> Piezas por Área</h6>
+                        <div class="piezas-area-block">
+                            <div class="donut-title">Chapa</div>
+                            <div id="chart-piezas-chapa-donut" class="donut-container"></div>
+                        </div>
+                        <div class="piezas-area-block">
+                            <div class="donut-title">Pintura</div>
+                            <div id="chart-piezas-pintura-donut" class="donut-container"></div>
+                        </div>
+                        <div class="piezas-area-block">
+                            <div class="donut-title">Paragolpes</div>
+                            <div id="chart-piezas-paragolpes-bar" class="hbar-container"></div>
+                        </div>
+                        <div class="stat-card-note">Piezas totales. Un coche puede contar en varias áreas.</div>
+                    </div>
+                </div>
             </div>
 
             <div class="row g-3 mb-3">
-                <div class="col-md-6"><div class="stat-card-boss"><h6><span class="stat-title-icon"><i class="fas fa-file-invoice-dollar"></i></span> Destajos</h6><div id="chart-destajos-container" class="hbar-container"></div><div class="stat-card-note">Órdenes marcadas como destajo. Se cuentan 1 vez por orden.</div></div></div>
-                <div class="col-md-6"><div class="stat-card-boss"><h6><span class="stat-title-icon"><i class="fas fa-car-crash"></i></span> Lunas</h6><div id="chart-lunas-container" class="hbar-container"></div><div class="stat-card-note">Órdenes en fase de lunas. Se cuentan 1 vez por orden.</div></div></div>
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-file-invoice-dollar"></i></span> Destajos</h6>
+                        <div id="chart-destajos-container" class="hbar-container"></div>
+                        <div class="stat-card-note">Órdenes marcadas como destajo. Se cuentan 1 vez por orden.</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-car-crash"></i></span> Lunas</h6>
+                        <div id="chart-lunas-container" class="hbar-container"></div>
+                        <div class="stat-card-note">Órdenes en fase de lunas. Se cuentan 1 vez por orden.</div>
+                    </div>
+                </div>
             </div>
 
             <div class="row g-3 mb-3">
-                <div class="col-md-6"><div class="stat-card-boss"><h6><span class="stat-title-icon"><i class="fas fa-shield-alt"></i></span> Reparto por Compañía Aseguradora</h6><div id="chart-insurance-container" class="hbar-container"></div></div></div>
-                <div class="col-md-6"><div class="stat-card-boss"><h6><span class="stat-title-icon"><i class="fas fa-stream"></i></span> Distribución por Estado Actual</h6><div id="chart-fases-container" class="hbar-container"></div></div></div>
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-shield-alt"></i></span> Reparto por Compañía Aseguradora</h6>
+                        <div id="chart-insurance-container" class="hbar-container"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-stream"></i></span> Distribución por Estado Actual</h6>
+                        <div id="chart-fases-container" class="hbar-container"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="row g-3 mb-3">
-                <div class="col-12"><div class="stat-card-boss"><h6><span class="stat-title-icon"><i class="fas fa-hourglass-half"></i></span> Días medios en cada fase</h6><div id="chart-dias-fase-container" class="hbar-container"></div><div class="stat-card-note">Cuenta solo los movimientos con hora registrada. Los registros antiguos sin hora no se cuentan.</div></div></div>
+                <div class="col-12">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-hourglass-half"></i></span> Días medios en cada fase</h6>
+                        <div id="chart-dias-fase-container" class="hbar-container"></div>
+                        <div class="stat-card-note">Cuenta solo los movimientos con hora registrada. Los registros antiguos sin hora no se cuentan.</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -390,8 +445,8 @@
                 </div>
             </div>
             <div class="col-md-7 text-md-end d-flex gap-1 justify-content-md-end align-items-center flex-wrap">
-                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm bg-white" id="expand-all-chapistas-btn" onclick="toggleExpandAllChapistas()">
-                    <i class="fas fa-expand-alt me-1"></i> <span id="expand-all-btn-text">Expandir todos</span>
+                <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" id="fullscreen-chapa-toggle-btn" onclick="toggleChapistasFullscreen()">
+                    <i class="fas fa-expand me-1" id="fullscreen-icon"></i> <span id="fullscreen-btn-text">Vista General Chapa</span>
                 </button>
                 <div class="btn-group shadow-sm" role="group">
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-cargachapa-btn" onclick="toggleColumnVisibility('cargachapa')"><i class="fas fa-eye me-1"></i> Carga Chapa</button>
@@ -428,20 +483,38 @@
 
         <div class="kanban-container" id="main-kanban-container">
             <div id="col-cargachapa-wrapper" class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="display: none;">
-                <div class="d-flex justify-content-between align-items-center mb-3"><h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-primary"></i> Carga Chapa</h6><div class="d-flex align-items-center gap-2"><span id="count-cargachapa" class="badge bg-primary rounded-pill">0</span><button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargachapa-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargachapa-wrapper"></i></button></div></div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-primary"></i> Carga Chapa</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-cargachapa" class="badge bg-primary rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargachapa-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargachapa-wrapper"></i></button>
+                    </div>
+                </div>
                 <div id="list-cargachapa" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargachapa')"></div>
             </div>
             <div id="col-cargapintura-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="display: none;">
-                <div class="d-flex justify-content-between align-items-center mb-3"><h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-warning"></i> Carga Pintura</h6><div class="d-flex align-items-center gap-2"><span id="count-cargapintura" class="badge bg-warning text-dark rounded-pill">0</span><button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargapintura-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargapintura-wrapper"></i></button></div></div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-warning"></i> Carga Pintura</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-cargapintura" class="badge bg-warning text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargapintura-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargapintura-wrapper"></i></button>
+                    </div>
+                </div>
                 <div id="list-cargapintura" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargapintura')"></div>
             </div>
             <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
-                <div class="d-flex justify-content-between align-items-center mb-3"><h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6><div class="d-flex align-items-center gap-2"><span id="count-lunas" class="badge bg-secondary rounded-pill">0</span><button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-lunas-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-lunas-wrapper"></i></button></div></div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-lunas-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-lunas-wrapper"></i></button>
+                    </div>
+                </div>
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha en uno para expandir)</span></h6>
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('kanban-col-chapistas')"><i class="fas fa-compress-alt" id="min-icon-kanban-col-chapistas"></i></button>
@@ -450,11 +523,23 @@
                 <div id="chapa-dynamic-wrapper"></div>
             </div>
             <div id="col-paragolpes-wrapper" class="kanban-col p-3 border-top border-dark border-4 shadow-sm" style="display: block;">
-                <div class="d-flex justify-content-between align-items-center mb-3"><h6 class="text-dark fw-bold m-0"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes</h6><div class="d-flex align-items-center gap-2"><span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span><button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-paragolpes-wrapper"></i></button></div></div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-paragolpes-wrapper"></i></button>
+                    </div>
+                </div>
                 <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
             </div>
             <div id="col-destajos-wrapper" class="kanban-col p-3 border-top border-info border-4 shadow-sm" style="display: none;">
-                <div class="d-flex justify-content-between align-items-center mb-3"><h6 class="text-dark fw-bold m-0"><i class="fas fa-file-invoice-dollar me-1 text-info"></i> Destajos</h6><div class="d-flex align-items-center gap-2"><span id="count-destajos" class="badge bg-info text-dark rounded-pill">0</span><button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-destajos-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-destajos-wrapper"></i></button></div></div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-file-invoice-dollar me-1 text-info"></i> Destajos</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-destajos" class="badge bg-info text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-destajos-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-destajos-wrapper"></i></button>
+                    </div>
+                </div>
                 <div id="list-destajos" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'destajos')"></div>
             </div>
             <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
@@ -468,14 +553,24 @@
                 <div id="pintores-dynamic-wrapper" class="pintura-split-container"></div>
             </div>
             <div id="col-terminados-wrapper" class="kanban-col p-3 border-top border-success border-4 shadow-sm" style="display: none;">
-                <div class="d-flex justify-content-between align-items-center mb-3"><h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6><div class="d-flex align-items-center gap-2"><span id="count-terminados" class="badge bg-success rounded-pill">0</span><button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button></div></div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button>
+                    </div>
+                </div>
                 <div class="chapa-split-container" style="min-height: 60vh;">
                     <div class="chapa-subcol subcol-pendiente-factura" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_pendiente')">
-                        <div class="text-center fw-bold text-warning small mb-2 border-bottom pb-1">⏳ Pendiente facturar <span id="count-terminados-pendiente" class="badge bg-warning text-dark rounded-pill">0</span></div>
+                        <div class="text-center fw-bold text-warning small mb-2 border-bottom pb-1">
+                            ⏳ Pendiente facturar <span id="count-terminados-pendiente" class="badge bg-warning text-dark rounded-pill">0</span>
+                        </div>
                         <div id="list-terminados-pendiente" class="d-flex flex-column gap-2"></div>
                     </div>
                     <div class="chapa-subcol subcol-facturado" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_facturado')">
-                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1">✓ Facturados <span id="count-terminados-facturado" class="badge bg-success rounded-pill">0</span></div>
+                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1">
+                            ✓ Facturados <span id="count-terminados-facturado" class="badge bg-success rounded-pill">0</span>
+                        </div>
                         <div id="list-terminados-facturado" class="d-flex flex-column gap-2"></div>
                     </div>
                 </div>
@@ -484,78 +579,148 @@
     </div>
 
     <div class="modal fade" id="operatorsModal" tabindex="-1">
-        <div class="modal-dialog modal-lg"><div class="modal-content shadow">
-            <div class="modal-header"><h5 class="modal-title fw-bold text-dark"><i class="fas fa-users-cog me-2"></i> Administrar Operarios</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body">
-                <form onsubmit="handleAddOperator(event)" class="mb-4 p-3 bg-light border rounded">
-                    <div class="row g-2 align-items-end">
-                        <div class="col-md-5"><label class="form-label small fw-bold">Nombre</label><input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. AE, Rubén, PO..."></div>
-                        <div class="col-md-3"><label class="form-label small fw-bold">Tipo</label><select id="new-operator-type" class="form-select" required><option value="chapa">Chapa</option><option value="pintura">Pintura</option></select></div>
-                        <div class="col-md-2"><label class="form-label small fw-bold">Estado</label><select id="new-operator-state" class="form-select"><option value="activo">Activo</option><option value="vacaciones">Vacaciones</option><option value="baja">Baja</option></select></div>
-                        <div class="col-md-2"><button type="submit" class="btn btn-primary fw-bold w-100">Añadir</button></div>
-                    </div>
-                </form>
-                <h6 class="fw-bold text-secondary mb-2">Listado de operarios</h6>
-                <div id="operators-list" class="d-flex flex-column gap-2" style="max-height: 400px; overflow-y: auto;"></div>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-users-cog me-2"></i> Administrar Operarios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="handleAddOperator(event)" class="mb-4 p-3 bg-light border rounded">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-5"><label class="form-label small fw-bold">Nombre</label><input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. AE, Rubén, PO..."></div>
+                            <div class="col-md-3"><label class="form-label small fw-bold">Tipo</label><select id="new-operator-type" class="form-select" required><option value="chapa">Chapa</option><option value="pintura">Pintura</option></select></div>
+                            <div class="col-md-2"><label class="form-label small fw-bold">Estado</label><select id="new-operator-state" class="form-select"><option value="activo">Activo</option><option value="vacaciones">Vacaciones</option><option value="baja">Baja</option></select></div>
+                            <div class="col-md-2"><button type="submit" class="btn btn-primary fw-bold w-100">Añadir</button></div>
+                        </div>
+                    </form>
+                    <h6 class="fw-bold text-secondary mb-2">Listado de operarios</h6>
+                    <div id="operators-list" class="d-flex flex-column gap-2" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
             </div>
-        </div></div>
+        </div>
     </div>
 
     <div class="modal fade" id="newOrderModal" tabindex="-1">
-        <div class="modal-dialog modal-lg"><div class="modal-content shadow">
-            <div class="modal-header"><h5 class="modal-title fw-bold text-dark">Registrar Nuevo Vehículo / Pieza</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body">
-                <form id="order-form" onsubmit="handleAddOrder(event)">
-                    <div class="row mb-3">
-                        <div class="col-md-4"><label class="form-label small text-secondary fw-bold">Matrícula</label><input type="text" id="car-plate" class="form-control text-uppercase" required placeholder="Ej. 4523XYZ"></div>
-                        <div class="col-md-4"><label class="form-label small text-secondary fw-bold">Modelo / Descripción</label><input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León"></div>
-                        <div class="col-md-4">
-                            <label class="form-label small text-secondary fw-bold"><i class="fas fa-shield-alt text-primary me-1"></i> Compañía Aseguradora</label>
-                            <select id="car-insurance" class="form-select" onchange="checkCustomInsurance(this)">
-                                <option value="" selected>— Sin asignar —</option>
-                                <option value="Mapfre">Mapfre</option><option value="Allianz">Allianz</option><option value="Mutua Madrileña">Mutua Madrileña</option><option value="AXA">AXA</option><option value="Pelayo">Pelayo</option><option value="Generali">Generali</option><option value="Reale">Reale</option><option value="Zurich">Zurich</option><option value="Línea Directa">Línea Directa</option><option value="Catalana Occidente">Catalana Occidente</option><option value="Sanitas">Sanitas</option><option value="Caser">Caser</option><option value="Liberty">Liberty</option><option value="Occident">Occident</option><option value="SegurCaixa Adeslas">SegurCaixa Adeslas</option><option value="Óptima">Óptima</option><option value="MGC Mutua">MGC Mutua</option><option value="Soliss">Soliss</option><option value="Divina Pastora">Divina Pastora</option><option value="Santa Lucía">Santa Lucía</option><option value="Asisa">Asisa</option><option value="DKV">DKV</option><option value="FIATC">FIATC</option><option value="Nortehispana">Nortehispana</option><option value="Previsión Mallorquina">Previsión Mallorquina</option><option value="Vivaz">Vivaz</option><option value="ARAG">ARAG</option><option value="Helvetia">Helvetia</option><option value="Génesis">Génesis</option><option value="MMT Seguros">MMT Seguros</option><option value="Fénix Directo">Fénix Directo</option><option value="Qualitas Auto">Qualitas Auto</option><option value="Admiral">Admiral</option><option value="Verti">Verti</option><option value="Balumba">Balumba</option><option value="Regal">Regal</option><option value="Direct Seguros">Direct Seguros</option><option value="Winthertur">Winthertur</option><option value="Particular">Particular</option><option value="OTRA">Otra (escribir manual...)</option>
-                            </select>
-                            <input type="text" id="car-insurance-custom" class="form-control mt-2" style="display:none;" placeholder="Escribe el nombre...">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark">Registrar Nuevo Vehículo / Pieza</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="order-form" onsubmit="handleAddOrder(event)">
+                        <div class="row mb-3">
+                            <div class="col-md-4"><label class="form-label small text-secondary fw-bold">Matrícula</label><input type="text" id="car-plate" class="form-control text-uppercase" required placeholder="Ej. 4523XYZ"></div>
+                            <div class="col-md-4"><label class="form-label small text-secondary fw-bold">Modelo / Descripción</label><input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León"></div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-bold"><i class="fas fa-shield-alt text-primary me-1"></i> Compañía Aseguradora</label>
+                                <select id="car-insurance" class="form-select" onchange="checkCustomInsurance(this)">
+                                    <option value="" selected>— Sin asignar —</option>
+                                    <option value="Mapfre">Mapfre</option>
+                                    <option value="Allianz">Allianz</option>
+                                    <option value="Mutua Madrileña">Mutua Madrileña</option>
+                                    <option value="AXA">AXA</option>
+                                    <option value="Pelayo">Pelayo</option>
+                                    <option value="Generali">Generali</option>
+                                    <option value="Reale">Reale</option>
+                                    <option value="Zurich">Zurich</option>
+                                    <option value="Línea Directa">Línea Directa</option>
+                                    <option value="Catalana Occidente">Catalana Occidente</option>
+                                    <option value="Sanitas">Sanitas</option>
+                                    <option value="Caser">Caser</option>
+                                    <option value="Liberty">Liberty</option>
+                                    <option value="Occident">Occident</option>
+                                    <option value="SegurCaixa Adeslas">SegurCaixa Adeslas</option>
+                                    <option value="Óptima">Óptima</option>
+                                    <option value="MGC Mutua">MGC Mutua</option>
+                                    <option value="Soliss">Soliss</option>
+                                    <option value="Divina Pastora">Divina Pastora</option>
+                                    <option value="Santa Lucía">Santa Lucía</option>
+                                    <option value="Asisa">Asisa</option>
+                                    <option value="DKV">DKV</option>
+                                    <option value="FIATC">FIATC</option>
+                                    <option value="Nortehispana">Nortehispana</option>
+                                    <option value="Previsión Mallorquina">Previsión Mallorquina</option>
+                                    <option value="Vivaz">Vivaz</option>
+                                    <option value="ARAG">ARAG</option>
+                                    <option value="Helvetia">Helvetia</option>
+                                    <option value="Génesis">Génesis</option>
+                                    <option value="MMT Seguros">MMT Seguros</option>
+                                    <option value="Fénix Directo">Fénix Directo</option>
+                                    <option value="Qualitas Auto">Qualitas Auto</option>
+                                    <option value="Admiral">Admiral</option>
+                                    <option value="Verti">Verti</option>
+                                    <option value="Balumba">Balumba</option>
+                                    <option value="Regal">Regal</option>
+                                    <option value="Direct Seguros">Direct Seguros</option>
+                                    <option value="Winthertur">Winthertur</option>
+                                    <option value="Particular">Particular</option>
+                                    <option value="OTRA">Otra (escribir manual...)</option>
+                                </select>
+                                <input type="text" id="car-insurance-custom" class="form-control mt-2" style="display:none;" placeholder="Escribe el nombre...">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Entrada</label><input type="date" id="date-in" class="form-control" required></div>
-                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Salida Prevista</label><input type="date" id="date-out" class="form-control" required></div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Operario</label><select id="operator-select" class="form-select" onchange="autoSuggestStatusFromOperator()"><option value="">Sin asignar (Libre)</option></select></div>
-                        <div class="col-md-6">
-                            <label class="form-label small text-secondary fw-bold">Subestado</label>
-                            <select id="car-substatus" class="form-select">
-                                <option value="">Ninguno / Normal</option>
-                                <option value="Ampliación">Ampliación</option><option value="Pendiente recambios">Pendiente recambios</option><option value="Paragolpes fuera">Paragolpes fuera</option><option value="Faro izquierdo / piloto reparándose">Faro izq. / piloto reparándose</option><option value="Faro derecho / piloto reparándose">Faro dcho. / piloto reparándose</option><option value="Luna aquí">Luna aquí</option><option value="Luna pendiente">Luna pendiente</option><option value="Golpe taller">Golpe taller</option><option value="Llanta reparándose fuera">Llanta reparándose fuera</option>
+                        <div class="row mb-3">
+                            <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Entrada</label><input type="date" id="date-in" class="form-control" required></div>
+                            <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Salida Prevista</label><input type="date" id="date-out" class="form-control" required></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Operario</label><select id="operator-select" class="form-select" onchange="autoSuggestStatusFromOperator()"><option value="">Sin asignar (Libre)</option></select></div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-secondary fw-bold">Subestado</label>
+                                <select id="car-substatus" class="form-select">
+                                    <option value="">Ninguno / Normal</option>
+                                    <option value="Ampliación">Ampliación</option>
+                                    <option value="Pendiente recambios">Pendiente recambios</option>
+                                    <option value="Paragolpes fuera">Paragolpes fuera</option>
+                                    <option value="Faro izquierdo / piloto reparándose">Faro izq. / piloto reparándose</option>
+                                    <option value="Faro derecho / piloto reparándose">Faro dcho. / piloto reparándose</option>
+                                    <option value="Luna aquí">Luna aquí</option>
+                                    <option value="Luna pendiente">Luna pendiente</option>
+                                    <option value="Golpe taller">Golpe taller</option>
+                                    <option value="Llanta reparándose fuera">Llanta reparándose fuera</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary fw-bold">Estado Inicial</label>
+                            <select id="car-status" class="form-select">
+                                <option value="" selected>— Selecciona estado —</option>
+                                <option value="cargachapa">Carga Chapa</option>
+                                <option value="cargapintura">Carga Pintura</option>
+                                <option value="lunas">1. Lunas</option>
+                                <option value="reparacion">2. Reparación</option>
+                                <option value="montaje">3. Montaje</option>
+                                <option value="paragolpes">4. Paragolpes</option>
+                                <option value="destajos">Destajos</option>
+                                <option value="pintura">5. Pintura</option>
+                                <option value="terminados">6. Terminados</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small text-secondary fw-bold">Estado Inicial</label>
-                        <select id="car-status" class="form-select">
-                            <option value="" selected>— Selecciona estado —</option>
-                            <option value="cargachapa">Carga Chapa</option><option value="cargapintura">Carga Pintura</option><option value="lunas">1. Lunas</option><option value="reparacion">2. Reparación</option><option value="montaje">3. Montaje</option><option value="paragolpes">4. Paragolpes</option><option value="destajos">Destajos</option><option value="pintura">5. Pintura</option><option value="terminados">6. Terminados</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 p-3 bg-light border rounded">
-                        <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos</label>
-                        <div class="row g-2" id="checklist-new-container"></div>
-                    </div>
-                    <div class="mb-3"><label class="form-label small text-secondary fw-bold">Notas</label><textarea id="car-notes" class="form-control" rows="2"></textarea></div>
-                    <div class="mb-3 form-check"><input type="checkbox" class="form-check-input" id="car-urgent"><label class="form-check-label text-danger fw-bold" for="car-urgent">Urgente</label></div>
-                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Orden</button>
-                </form>
+                        <div class="mb-3 p-3 bg-light border rounded">
+                            <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos</label>
+                            <div class="row g-2" id="checklist-new-container"></div>
+                        </div>
+                        <div class="mb-3"><label class="form-label small text-secondary fw-bold">Notas</label><textarea id="car-notes" class="form-control" rows="2"></textarea></div>
+                        <div class="mb-3 form-check"><input type="checkbox" class="form-check-input" id="car-urgent"><label class="form-check-label text-danger fw-bold" for="car-urgent">Urgente</label></div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Orden</button>
+                    </form>
+                </div>
             </div>
-        </div></div>
+        </div>
     </div>
 
     <div class="modal fade" id="detailModal" tabindex="-1">
-        <div class="modal-dialog modal-lg"><div class="modal-content shadow">
-            <div class="modal-header bg-light"><h5 class="modal-title fw-bold text-dark"><i class="fas fa-edit me-2 text-primary"></i> Ficha, Edición y Trazabilidad</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body p-4" id="detail-modal-body"></div>
-        </div></div>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-edit me-2 text-primary"></i> Ficha, Edición y Trazabilidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="detail-modal-body"></div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -599,14 +764,21 @@
             "Direct Seguros", "Winthertur", "Particular"
         ];
 
-        function normalizeText(str) { if (!str) return ''; return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim(); }
+        function normalizeText(str) {
+            if (!str) return '';
+            return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+        }
+
         function normalizeInsurance(text) {
             if (!text) return text;
             const original = String(text).trim();
             const lowerOriginal = normalizeText(original);
             if (!lowerOriginal) return original;
-            for (const official of OFFICIAL_INSURANCES) { if (normalizeText(official) === lowerOriginal) return official; }
-            let bestMatch = null; let bestScore = 0;
+            for (const official of OFFICIAL_INSURANCES) {
+                if (normalizeText(official) === lowerOriginal) return official;
+            }
+            let bestMatch = null;
+            let bestScore = 0;
             for (const official of OFFICIAL_INSURANCES) {
                 const lowerOfficial = normalizeText(official);
                 let score = 0;
@@ -629,12 +801,18 @@
                     const current = (order.insurance || '').trim();
                     if (!current || current === 'Sin asignar') { unchanged++; continue; }
                     const normalized = normalizeInsurance(current);
-                    if (normalized !== current) { try { await updateDoc(doc(db, "orders", order.id), { insurance: normalized }); corrected++; } catch (err) { errors++; console.error(err); } }
-                    else { unchanged++; }
+                    if (normalized !== current) {
+                        try { await updateDoc(doc(db, "orders", order.id), { insurance: normalized }); corrected++; }
+                        catch (err) { errors++; console.error(err); }
+                    } else { unchanged++; }
                 }
                 alert(`✅ Corrección completada:\n\n• ${corrected} compañías corregidas\n• ${unchanged} sin cambios\n• ${errors} errores`);
-            } catch (err) { console.error('Error general:', err); alert('❌ Hubo un error durante la corrección. Revisa la consola (F12).'); }
-            finally { if (btn) { btn.disabled = false; btn.innerHTML = originalBtnHTML; } }
+            } catch (err) {
+                console.error('Error general:', err);
+                alert('❌ Hubo un error durante la corrección. Revisa la consola (F12).');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = originalBtnHTML; }
+            }
         };
 
         let orders = [];
@@ -647,11 +825,11 @@
         let showParagolpesCol = true;
         let showDestajosCol = false;
         let showTerminadosCol = false;
+        let chapistasFullscreenMode = true;
         let bossDashboardActive = false;
         let bossPeriod = 'month';
         let bossWorkType = 'all';
         let activeKpiDetail = null;
-        let expandedChapistas = new Set(); // nombres de chapistas expandidos
 
         const COLOR_PALETTE = ['#2563eb','#059669','#f59e0b','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c','#4338ca','#0d9488','#9333ea','#ca8a04','#e11d48','#0284c7','#a16207','#0f766e','#c026d3','#64748b','#db2777'];
 
@@ -663,7 +841,17 @@
             lunas: { label: 'Lunas', color: '#64748b', statuses: ['lunas'] }
         };
 
-        const STATUS_LABELS = { cargachapa:'Carga Chapa', cargapintura:'Carga Pintura', lunas:'Lunas', reparacion:'Reparación', montaje:'Montaje', paragolpes:'Paragolpes', destajos:'Destajos', pintura:'Pintura', terminados:'Terminados' };
+        const STATUS_LABELS = {
+            cargachapa: 'Carga Chapa',
+            cargapintura: 'Carga Pintura',
+            lunas: 'Lunas',
+            reparacion: 'Reparación',
+            montaje: 'Montaje',
+            paragolpes: 'Paragolpes',
+            destajos: 'Destajos',
+            pintura: 'Pintura',
+            terminados: 'Terminados'
+        };
 
         function safeId(str) { return String(str).replace(/[^a-zA-Z0-9]/g, '_'); }
 
@@ -672,7 +860,11 @@
             if (!def) return false;
             const statuses = def.statuses;
             if (statuses.includes(order.status)) return true;
-            if (Array.isArray(order.history)) { for (const h of order.history) { if (h && statuses.includes(h.status)) return true; } }
+            if (Array.isArray(order.history)) {
+                for (const h of order.history) {
+                    if (h && statuses.includes(h.status)) return true;
+                }
+            }
             if (areaKey === 'destajos' && order.isDestajo === true) return true;
             return false;
         }
@@ -689,7 +881,13 @@
                 html += `</div></div>`;
             });
             const cocheCompletoChecked = checkedPieces.includes("COCHE COMPLETO");
-            html += `<div class="col-md-4"><div class="coche-completo-box h-100 d-flex flex-column justify-content-center"><div class="form-check d-flex justify-content-center align-items-center"><input class="form-check-input piece-check coche-completo-check" type="checkbox" value="COCHE COMPLETO" id="${prefixId}-chk-coche-completo" ${cocheCompletoChecked ? 'checked' : ''}><label class="form-check-label ms-2" for="${prefixId}-chk-coche-completo"><i class="fas fa-car-side me-1"></i> COCHE COMPLETO</label></div><div class="text-muted small text-center mt-2">Marca si es el coche entero (cuenta como ${COCHE_COMPLETO_PIEZAS} piezas).</div></div></div>`;
+            html += `<div class="col-md-4"><div class="coche-completo-box h-100 d-flex flex-column justify-content-center">
+                <div class="form-check d-flex justify-content-center align-items-center">
+                    <input class="form-check-input piece-check coche-completo-check" type="checkbox" value="COCHE COMPLETO" id="${prefixId}-chk-coche-completo" ${cocheCompletoChecked ? 'checked' : ''}>
+                    <label class="form-check-label ms-2" for="${prefixId}-chk-coche-completo"><i class="fas fa-car-side me-1"></i> COCHE COMPLETO</label>
+                </div>
+                <div class="text-muted small text-center mt-2">Marca si es el coche entero (cuenta como ${COCHE_COMPLETO_PIEZAS} piezas).</div>
+            </div></div>`;
             return html;
         }
 
@@ -698,8 +896,16 @@
             if (!container) return;
             const cocheCompletoChk = container.querySelector('.coche-completo-check');
             const allPieceChks = container.querySelectorAll('.piece-check:not(.coche-completo-check)');
-            if (cocheCompletoChk) { cocheCompletoChk.addEventListener('change', () => { if (cocheCompletoChk.checked) allPieceChks.forEach(c => c.checked = false); }); }
-            allPieceChks.forEach(chk => { chk.addEventListener('change', () => { if (chk.checked && cocheCompletoChk) cocheCompletoChk.checked = false; }); });
+            if (cocheCompletoChk) {
+                cocheCompletoChk.addEventListener('change', () => {
+                    if (cocheCompletoChk.checked) allPieceChks.forEach(c => c.checked = false);
+                });
+            }
+            allPieceChks.forEach(chk => {
+                chk.addEventListener('change', () => {
+                    if (chk.checked && cocheCompletoChk) cocheCompletoChk.checked = false;
+                });
+            });
         }
 
         function initNewOrderChecklist() {
@@ -707,26 +913,47 @@
             if (container) { container.innerHTML = buildPiecesChecklistHtml([], 'new'); setupCocheCompletoLogic('checklist-new-container'); }
         }
 
-        function getPiecesCount(order) { if (order.cocheCompleto) return COCHE_COMPLETO_PIEZAS; return (order.pieces || []).length; }
+        function getPiecesCount(order) {
+            if (order.cocheCompleto) return COCHE_COMPLETO_PIEZAS;
+            return (order.pieces || []).length;
+        }
 
         function renderBarsWithOperators(container, items) {
-            if (!items || items.length === 0) { container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>'; return; }
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>';
+                return;
+            }
             const maxValue = Math.max(...items.map(i => i.value), 1);
             let html = '';
             items.forEach((item, itemIdx) => {
                 const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
                 const pctText = item.pct !== undefined ? item.pct : 0;
-                html += `<div class="hbar-row"><div class="hbar-label" title="${item.label}">${item.label}</div><div class="hbar-track"><div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div></div><div class="hbar-value">${item.value} <span class="pct">(${pctText}%)</span></div></div>`;
+                html += `
+                    <div class="hbar-row">
+                        <div class="hbar-label" title="${item.label}">${item.label}</div>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div>
+                        </div>
+                        <div class="hbar-value">${item.value} <span class="pct">(${pctText}%)</span></div>
+                    </div>
+                `;
                 if (item.operators && item.operators.length > 0) {
                     const itemAreaKey = item.areaKey || '';
-                    html += `<div class="hbar-operators"><div class="hbar-operators-title">Por operario</div>`;
+                    html += `<div class="hbar-operators">
+                        <div class="hbar-operators-title">Por operario</div>`;
                     item.operators.forEach((op) => {
                         if (op.name === 'Sin asignar') return;
                         const opId = `${container.id}-${itemAreaKey}-${itemIdx}-${op.name}`.replace(/[^a-zA-Z0-9_-]/g, '_');
-                        html += `<div class="hbar-op-row clickable" onclick="toggleOperatorDrilldown('${opId}', '${op.name}', '${itemAreaKey}')"><span class="op-name"><span class="arrow" id="arrow-${opId}">▶</span> ${op.name}</span><span class="op-counts"><span class="c">${op.coches} coche${op.coches !== 1 ? 's' : ''}</span> · <span class="p">${op.piezas} pzs</span></span></div><div id="drilldown-${opId}" style="display:none;"></div>`;
+                        html += `<div class="hbar-op-row clickable" onclick="toggleOperatorDrilldown('${opId}', '${op.name}', '${itemAreaKey}')">
+                            <span class="op-name"><span class="arrow" id="arrow-${opId}">▶</span> ${op.name}</span>
+                            <span class="op-counts"><span class="c">${op.coches} coche${op.coches !== 1 ? 's' : ''}</span> · <span class="p">${op.piezas} pzs</span></span>
+                        </div>
+                        <div id="drilldown-${opId}" style="display:none;"></div>`;
                     });
                     html += `</div>`;
-                } else if (item.operators && item.operators.length === 0) { html += `<div class="hbar-operators"><div class="hbar-op-empty">Sin operarios asignados</div></div>`; }
+                } else if (item.operators && item.operators.length === 0) {
+                    html += `<div class="hbar-operators"><div class="hbar-op-empty">Sin operarios asignados</div></div>`;
+                }
             });
             container.innerHTML = html;
         }
@@ -735,13 +962,30 @@
             const panel = document.getElementById(`drilldown-${opId}`);
             const arrow = document.getElementById(`arrow-${opId}`);
             if (!panel) return;
-            if (panel.style.display === 'block') { panel.style.display = 'none'; if (arrow) arrow.innerText = '▶'; return; }
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+                if (arrow) arrow.innerText = '▶';
+                return;
+            }
             const periodOrders = getCurrentPeriodOrders();
-            const coches = periodOrders.filter(o => { if (!pasoPorArea(o, areaKey)) return false; const op = (o.operator || '').trim(); return op === opName; }).sort((a, b) => (a.plate || '').localeCompare(b.plate || ''));
-            if (coches.length === 0) { panel.innerHTML = '<div class="op-drilldown-empty">Sin coches</div>'; }
-            else {
+            const coches = periodOrders.filter(o => {
+                if (!pasoPorArea(o, areaKey)) return false;
+                const op = (o.operator || '').trim();
+                return op === opName;
+            }).sort((a, b) => (a.plate || '').localeCompare(b.plate || ''));
+
+            if (coches.length === 0) {
+                panel.innerHTML = '<div class="op-drilldown-empty">Sin coches</div>';
+            } else {
                 let h = '<div class="op-drilldown">';
-                coches.forEach(c => { const estado = STATUS_LABELS[c.status] || c.status || '-'; const plate = c.plate || '-'; h += `<div class="op-drilldown-row" onclick="event.stopPropagation(); openDetailModal('${c.id}')"><span class="plate">${plate}</span><span class="estado">${estado}</span></div>`; });
+                coches.forEach(c => {
+                    const estado = STATUS_LABELS[c.status] || c.status || '-';
+                    const plate = c.plate || '-';
+                    h += `<div class="op-drilldown-row" onclick="event.stopPropagation(); openDetailModal('${c.id}')">
+                        <span class="plate">${plate}</span>
+                        <span class="estado">${estado}</span>
+                    </div>`;
+                });
                 h += '</div>';
                 panel.innerHTML = h;
             }
@@ -750,21 +994,38 @@
         };
 
         let currentPeriodOrdersCache = null;
-        function getCurrentPeriodOrders() { if (currentPeriodOrdersCache) return currentPeriodOrdersCache; let p = filterOrdersByBossPeriod(orders, bossPeriod); p = applyWorkTypeFilter(p, bossWorkType); return p; }
+        function getCurrentPeriodOrders() {
+            if (currentPeriodOrdersCache) return currentPeriodOrdersCache;
+            let p = filterOrdersByBossPeriod(orders, bossPeriod);
+            p = applyWorkTypeFilter(p, bossWorkType);
+            return p;
+        }
 
         function renderHorizontalBars(container, items) {
-            if (!items || items.length === 0) { container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>'; return; }
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="hbar-empty">Sin datos disponibles</div>';
+                return;
+            }
             const maxValue = Math.max(...items.map(i => i.value), 1);
             let html = '';
             items.forEach(item => {
                 const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
                 const pctText = item.pct !== undefined ? item.pct : 0;
-                html += `<div class="hbar-row"><div class="hbar-label" title="${item.label}">${item.label}</div><div class="hbar-track"><div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div></div><div class="hbar-value">${item.value} <span class="pct">(${pctText}%)</span></div></div>`;
+                html += `
+                    <div class="hbar-row">
+                        <div class="hbar-label" title="${item.label}">${item.label}</div>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div>
+                        </div>
+                        <div class="hbar-value">${item.value} <span class="pct">(${pctText}%)</span></div>
+                    </div>
+                `;
             });
             container.innerHTML = html;
         }
 
         window.togglePrivacyMode = () => { privacyModeActive = !privacyModeActive; renderOrders(); }
+
         window.toggleBossDashboard = () => {
             bossDashboardActive = !bossDashboardActive;
             const container = document.getElementById('boss-dashboard-section');
@@ -774,40 +1035,54 @@
             if (bossDashboardActive) { activeKpiDetail = null; renderBossDashboardStats(); }
             else { activeKpiDetail = null; const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none'; }
         }
+
         window.setBossPeriod = (period) => {
-            bossPeriod = period; currentPeriodOrdersCache = null;
+            bossPeriod = period;
+            currentPeriodOrdersCache = null;
             document.querySelectorAll('#period-selector button').forEach(b => b.classList.toggle('active', b.dataset.period === period));
-            activeKpiDetail = null; const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none';
+            activeKpiDetail = null;
+            const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none';
             renderBossDashboardStats();
         }
+
         window.setBossWorkType = (wt) => {
-            bossWorkType = wt; currentPeriodOrdersCache = null;
+            bossWorkType = wt;
+            currentPeriodOrdersCache = null;
             document.querySelectorAll('#worktype-selector button').forEach(b => b.classList.toggle('active', b.dataset.worktype === wt));
-            activeKpiDetail = null; const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none';
+            activeKpiDetail = null;
+            const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none';
             renderBossDashboardStats();
         }
+
         window.setDefaultDates = () => {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date-in').value = today; document.getElementById('date-out').value = today;
+            document.getElementById('date-in').value = today;
+            document.getElementById('date-out').value = today;
             document.querySelectorAll('#checklist-new-container .piece-check').forEach(chk => chk.checked = false);
             document.getElementById('car-insurance').value = '';
-            document.getElementById('car-insurance-custom').style.display = 'none'; document.getElementById('car-insurance-custom').value = '';
-            document.getElementById('car-status').value = ''; document.getElementById('operator-select').value = '';
+            document.getElementById('car-insurance-custom').style.display = 'none';
+            document.getElementById('car-insurance-custom').value = '';
+            document.getElementById('car-status').value = '';
+            document.getElementById('operator-select').value = '';
         }
+
         window.checkCustomInsurance = (selectEl) => {
             const customInput = document.getElementById('car-insurance-custom');
             if (selectEl.value === 'OTRA') { customInput.style.display = 'block'; customInput.required = true; }
             else { customInput.style.display = 'none'; customInput.required = false; customInput.value = ''; }
         }
+
         window.autoSuggestStatusFromOperator = () => {
             const operatorVal = document.getElementById('operator-select').value;
             const statusSelect = document.getElementById('car-status');
             if (!operatorVal) return;
-            const op = operators.find(o => o.name === operatorVal); if (!op) return;
+            const op = operators.find(o => o.name === operatorVal);
+            if (!op) return;
             const currentStatus = statusSelect.value;
             if (op.type === 'chapa') { if (!currentStatus || currentStatus === 'cargachapa' || currentStatus === 'cargapintura') statusSelect.value = 'reparacion'; }
             else if (op.type === 'pintura') { statusSelect.value = 'pintura'; }
         }
+
         window.toggleMinimizeColumn = (columnId) => {
             const col = document.getElementById(columnId);
             const icon = document.getElementById(`min-icon-${columnId}`);
@@ -816,44 +1091,21 @@
             if (icon) icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
         }
 
-        // ============================================================
-        // EXPANDIR / CONTRAER CHAPISTAS
-        // ============================================================
-        window.toggleChapistaExpand = (opName) => {
-            const sid = safeId(opName);
-            const col = document.getElementById(`chapista-col-${sid}`);
-            if (!col) return;
-            const isExpanded = col.classList.contains('expanded');
-            if (isExpanded) {
-                col.classList.remove('expanded');
-                expandedChapistas.delete(opName);
+        window.toggleChapistasFullscreen = () => {
+            chapistasFullscreenMode = !chapistasFullscreenMode;
+            const btn = document.getElementById('fullscreen-chapa-toggle-btn');
+            const icon = document.getElementById('fullscreen-icon');
+            const btnText = document.getElementById('fullscreen-btn-text');
+            if (chapistasFullscreenMode) {
+                if (btn) btn.className = "btn btn-success btn-sm fw-bold shadow-sm";
+                if (icon) icon.className = "fas fa-th-large me-1";
+                if (btnText) btnText.innerText = "Vista General Chapa";
             } else {
-                col.classList.add('expanded');
-                expandedChapistas.add(opName);
-            }
-            const chevron = col.querySelector('.chapista-chevron');
-            if (chevron) chevron.className = `fas ${isExpanded ? 'fa-chevron-down' : 'fa-chevron-up'} chapista-chevron`;
-        };
-
-        window.toggleExpandAllChapistas = () => {
-            const chOpsList = getChapistasList();
-            const allExpanded = chOpsList.every(op => expandedChapistas.has(op.name));
-            if (allExpanded) {
-                expandedChapistas.clear();
-            } else {
-                chOpsList.forEach(op => expandedChapistas.add(op.name));
+                if (btn) btn.className = "btn btn-primary btn-sm fw-bold shadow-sm";
+                if (icon) icon.className = "fas fa-expand me-1";
+                if (btnText) btnText.innerText = "Vista por Operarios";
             }
             renderOrders();
-            updateExpandAllButtonText();
-        };
-
-        function updateExpandAllButtonText() {
-            const btnText = document.getElementById('expand-all-btn-text');
-            const chOpsList = getChapistasList();
-            if (!btnText) return;
-            if (chOpsList.length === 0) { btnText.innerText = 'Expandir todos'; return; }
-            const allExpanded = chOpsList.every(op => expandedChapistas.has(op.name));
-            btnText.innerText = allExpanded ? 'Contraer todos' : 'Expandir todos';
         }
 
         window.toggleColumnVisibility = (colName, forceState = null) => {
@@ -864,6 +1116,7 @@
             else if (colName === 'destajos') { showDestajosCol = forceState !== null ? forceState : !showDestajosCol; const w = document.getElementById('col-destajos-wrapper'); if (w) w.style.display = showDestajosCol ? 'block' : 'none'; }
             else if (colName === 'terminados') { showTerminadosCol = forceState !== null ? forceState : !showTerminadosCol; const w = document.getElementById('col-terminados-wrapper'); if (w) w.style.display = showTerminadosCol ? 'block' : 'none'; }
         }
+
         window.setQuickFilter = (filterType) => {
             activeQuickFilter = filterType;
             document.getElementById('search-input').value = '';
@@ -873,6 +1126,7 @@
             if (targetBtn) targetBtn.classList.add('active-filter');
             renderOrders();
         }
+
         window.handleSearchKeydown = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -888,12 +1142,6 @@
                 else if (status === 'paragolpes') toggleColumnVisibility('paragolpes', true);
                 else if (status === 'destajos') toggleColumnVisibility('destajos', true);
                 else if (status === 'terminados') toggleColumnVisibility('terminados', true);
-                // Si es de un chapista, expandirlo
-                if ((status === 'reparacion' || status === 'montaje') && targetOrder.operator) {
-                    if (!expandedChapistas.has(targetOrder.operator)) {
-                        expandedChapistas.add(targetOrder.operator);
-                    }
-                }
                 renderOrders();
                 setTimeout(() => {
                     document.querySelectorAll('.task-card').forEach(c => c.classList.remove('resaltado-busqueda'));
@@ -902,6 +1150,7 @@
                 }, 150);
             }
         }
+
         function getOperatorBadgeClass(opName) {
             if (!opName) return 'badge-none';
             const op = operators.find(o => o.name === opName);
@@ -912,28 +1161,66 @@
             return 'badge-none';
         }
         window.getOperatorBadgeClass = getOperatorBadgeClass;
+
         function getChapistasList() {
-            return operators.filter(op => { if (op.type) return op.type === 'chapa'; const upper = (op.name || '').toUpperCase(); return upper.startsWith('CH') || (!upper.startsWith('PIN') && !upper.startsWith('PUN')); });
+            return operators.filter(op => {
+                if (op.type) return op.type === 'chapa';
+                const upper = (op.name || '').toUpperCase();
+                return upper.startsWith('CH') || (!upper.startsWith('PIN') && !upper.startsWith('PUN'));
+            });
         }
         function getPintoresList() {
-            return operators.filter(op => { if (op.type) return op.type === 'pintura'; const upper = (op.name || '').toUpperCase(); return upper.startsWith('PIN') || upper.startsWith('PUN'); });
+            return operators.filter(op => {
+                if (op.type) return op.type === 'pintura';
+                const upper = (op.name || '').toUpperCase();
+                return upper.startsWith('PIN') || upper.startsWith('PUN');
+            });
         }
+
         window.toggleAllByOperator = async (operarioNombre, statusFilter = null) => {
-            let affectedOrders = orders.filter(o => { if ((o.operator || '').trim().toLowerCase() !== operarioNombre.toLowerCase()) return false; if (statusFilter && o.status !== statusFilter) return false; return true; });
+            let affectedOrders = orders.filter(o => {
+                if ((o.operator || '').trim().toLowerCase() !== operarioNombre.toLowerCase()) return false;
+                if (statusFilter && o.status !== statusFilter) return false;
+                return true;
+            });
             if (affectedOrders.length === 0) return;
-            let allChecked = affectedOrders.every(o => o.isChecked); let newState = !allChecked;
-            try { for (let order of affectedOrders) { await updateDoc(doc(db, "orders", order.id), { isChecked: newState }); } } catch (err) { console.error("Error al actualizar en bloque:", err); }
+            let allChecked = affectedOrders.every(o => o.isChecked);
+            let newState = !allChecked;
+            try { for (let order of affectedOrders) { await updateDoc(doc(db, "orders", order.id), { isChecked: newState }); } }
+            catch (err) { console.error("Error al actualizar en bloque:", err); }
         }
+
         function buildStatusSelectOptions(currentStatus) {
-            return `<option value="cargachapa" ${currentStatus === 'cargachapa' ? 'selected' : ''}>Carga Chapa</option><option value="cargapintura" ${currentStatus === 'cargapintura' ? 'selected' : ''}>Carga Pintura</option><option value="lunas" ${currentStatus === 'lunas' ? 'selected' : ''}>1. Lunas</option><option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación</option><option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje</option><option value="paragolpes" ${currentStatus === 'paragolpes' ? 'selected' : ''}>4. Paragolpes</option><option value="destajos" ${currentStatus === 'destajos' ? 'selected' : ''}>Destajos</option><option value="pintura" ${currentStatus === 'pintura' ? 'selected' : ''}>5. Pintura</option><option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>6. Terminados</option>`;
+            return `
+                <option value="cargachapa" ${currentStatus === 'cargachapa' ? 'selected' : ''}>Carga Chapa</option>
+                <option value="cargapintura" ${currentStatus === 'cargapintura' ? 'selected' : ''}>Carga Pintura</option>
+                <option value="lunas" ${currentStatus === 'lunas' ? 'selected' : ''}>1. Lunas</option>
+                <option value="reparacion" ${currentStatus === 'reparacion' ? 'selected' : ''}>2. Reparación</option>
+                <option value="montaje" ${currentStatus === 'montaje' ? 'selected' : ''}>3. Montaje</option>
+                <option value="paragolpes" ${currentStatus === 'paragolpes' ? 'selected' : ''}>4. Paragolpes</option>
+                <option value="destajos" ${currentStatus === 'destajos' ? 'selected' : ''}>Destajos</option>
+                <option value="pintura" ${currentStatus === 'pintura' ? 'selected' : ''}>5. Pintura</option>
+                <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>6. Terminados</option>
+            `;
         }
+
         function buildGroupedOperatorOptions(selectedVal = "") {
-            let chOps = getChapistasList(); let pinOps = getPintoresList();
+            let chOps = getChapistasList();
+            let pinOps = getPintoresList();
             let html = `<option value="">Sin asignar (Libre)</option>`;
-            if (chOps.length > 0) { html += `<optgroup label="--- Chapa ---">`; chOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`; }); html += `</optgroup>`; }
-            if (pinOps.length > 0) { html += `<optgroup label="--- Pintura ---">`; pinOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`; }); html += `</optgroup>`; }
+            if (chOps.length > 0) {
+                html += `<optgroup label="--- Chapa ---">`;
+                chOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`; });
+                html += `</optgroup>`;
+            }
+            if (pinOps.length > 0) {
+                html += `<optgroup label="--- Pintura ---">`;
+                pinOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`; });
+                html += `</optgroup>`;
+            }
             return html;
         }
+
         window.handleLogin = (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -945,10 +1232,14 @@
                 initRealtimeSync();
             } else { alert('Correo o contraseña incorrectos.'); }
         }
+
         window.handleLogout = () => {
-            document.getElementById('login-email').value = ''; document.getElementById('login-password').value = '';
-            document.getElementById('app-screen').style.display = 'none'; document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('app-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
         }
+
         function initRealtimeSync() {
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 orders = [];
@@ -964,6 +1255,7 @@
                 renderOperatorsUI();
             }, (error) => { console.error("Error operarios:", error); });
         }
+
         function renderOperatorsUI() {
             const listContainer = document.getElementById('operators-list');
             const selectContainer = document.getElementById('operator-select');
@@ -979,70 +1271,86 @@
                 if (state === 'vacaciones') stateBadge = '<span class="badge badge-estado badge-vacaciones">🌴 Vacaciones</span>';
                 else if (state === 'baja') stateBadge = '<span class="badge badge-estado badge-baja">⛔ Baja</span>';
                 else stateBadge = '<span class="badge bg-success" style="font-size:0.6rem;">Activo</span>';
-                listContainer.innerHTML += `<div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border flex-wrap gap-2"><div class="d-flex align-items-center gap-2"><span class="fw-bold">${op.name}</span>${typeBadge}${stateBadge}</div><div class="d-flex gap-1 align-items-center"><select class="form-select form-select-sm" style="width:auto; font-size:0.8rem;" onchange="changeOperatorState('${op.id}', this.value)"><option value="activo" ${state === 'activo' ? 'selected' : ''}>Activo</option><option value="vacaciones" ${state === 'vacaciones' ? 'selected' : ''}>Vacaciones</option><option value="baja" ${state === 'baja' ? 'selected' : ''}>Baja</option></select><button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button></div></div>`;
+                listContainer.innerHTML += `
+                    <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2"><span class="fw-bold">${op.name}</span>${typeBadge}${stateBadge}</div>
+                        <div class="d-flex gap-1 align-items-center">
+                            <select class="form-select form-select-sm" style="width:auto; font-size:0.8rem;" onchange="changeOperatorState('${op.id}', this.value)">
+                                <option value="activo" ${state === 'activo' ? 'selected' : ''}>Activo</option>
+                                <option value="vacaciones" ${state === 'vacaciones' ? 'selected' : ''}>Vacaciones</option>
+                                <option value="baja" ${state === 'baja' ? 'selected' : ''}>Baja</option>
+                            </select>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
             });
             selectContainer.innerHTML = buildGroupedOperatorOptions(currentSelectedOp);
             updateSmartFilterDropdown();
             renderOrders();
         }
+
         function updateSmartFilterDropdown() {
             const dropdownMenu = document.getElementById('smart-filter-dropdown');
             if (!dropdownMenu) return;
             let chOps = getChapistasList(); let pinOps = getPintoresList();
             let html = `<li><a class="dropdown-item fw-bold text-secondary" href="#" onclick="handleSmartFilterSelect('', '🔍 Filtrar...')">🔍 Todos / Limpiar filtro</a></li><li><hr class="dropdown-divider"></li><li><a class="dropdown-item fw-bold text-info" href="#" onclick="handleSmartFilterSelect('destajo:true', '🛠️ Destajos')">🛠️ Ver Destajos (Historial)</a></li><li><hr class="dropdown-divider"></li><li><h6 class="dropdown-header text-dark fw-bold">--- Operarios ---</h6></li>`;
-            if (chOps.length > 0) { html += `<li><h6 class="dropdown-header text-primary fw-bold ps-4">--- Chapa (CH) ---</h6></li>`; chOps.forEach(op => { let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-ch px-2 py-1">${op.name}${suffix}</span><span class="badge bg-primary rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`; }); }
-            if (pinOps.length > 0) { html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores ---</h6></li>`; pinOps.forEach(op => { let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-pun px-2 py-1">${op.name}${suffix}</span><span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`; }); }
-            html += `<li><hr class="dropdown-divider"></li><li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li><li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Ampliación', 'Ampliación')"><div class="badge substatus-badge-ampliacion">Ampliación</div></a></li><li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente recambios', 'Pendiente recambios')"><div class="badge substatus-badge-recambios">Pendiente recambios</div></a></li><li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li><li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo / piloto reparándose', 'Faro izq. reparándose')"><div class="badge bg-light text-dark border small">Faro izq. reparándose</div></a></li><li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho / piloto reparándose', 'Faro dcho. reparándose')"><div class="badge bg-light text-dark border small">Faro dcho. reparándose</div></a></li><li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')"><div class="badge bg-light text-dark border small">Luna aquí</div></a></li><li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')"><div class="badge bg-light text-dark border small">Luna pendiente</div></a></li><li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')"><div class="badge bg-light text-dark border small">Golpe taller</div></a></li><li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Llanta reparándose fuera', 'Llanta reparándose fuera')"><div class="badge bg-light text-dark border small">Llanta reparándose fuera</div></a></li>`;
+            if (chOps.length > 0) {
+                html += `<li><h6 class="dropdown-header text-primary fw-bold ps-4">--- Chapa (CH) ---</h6></li>`;
+                chOps.forEach(op => { let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-ch px-2 py-1">${op.name}${suffix}</span><span class="badge bg-primary rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`; });
+            }
+            if (pinOps.length > 0) {
+                html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores ---</h6></li>`;
+                pinOps.forEach(op => { let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-pun px-2 py-1">${op.name}${suffix}</span><span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`; });
+            }
+            html += `<li><hr class="dropdown-divider"></li><li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Ampliación', 'Ampliación')"><div class="badge substatus-badge-ampliacion">Ampliación</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente recambios', 'Pendiente recambios')"><div class="badge substatus-badge-recambios">Pendiente recambios</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo / piloto reparándose', 'Faro izq. reparándose')"><div class="badge bg-light text-dark border small">Faro izq. reparándose</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho / piloto reparándose', 'Faro dcho. reparándose')"><div class="badge bg-light text-dark border small">Faro dcho. reparándose</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')"><div class="badge bg-light text-dark border small">Luna aquí</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')"><div class="badge bg-light text-dark border small">Luna pendiente</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')"><div class="badge bg-light text-dark border small">Golpe taller</div></a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Llanta reparándose fuera', 'Llanta reparándose fuera')"><div class="badge bg-light text-dark border small">Llanta reparándose fuera</div></a></li>`;
             dropdownMenu.innerHTML = html;
         }
+
         window.handleSmartFilterSelect = (val, labelText) => {
             activeQuickFilter = 'all';
             document.querySelectorAll('.btn-quick-filter').forEach(btn => btn.classList.remove('active-filter'));
             const allBtn = document.getElementById('filter-btn-all'); if (allBtn) allBtn.classList.add('active-filter');
             const searchInput = document.getElementById('search-input'); if (searchInput) searchInput.value = val;
             const labelEl = document.getElementById('smart-filter-label'); if (labelEl) labelEl.innerText = labelText;
-            // Si el filtro es de un chapista, expandirlo
-            if (val.startsWith('op:')) {
-                const opName = val.replace('op:', '').trim();
-                const chOps = getChapistasList();
-                if (chOps.some(o => o.name === opName)) {
-                    expandedChapistas.add(opName);
-                }
-            }
             renderOrders();
         }
+
         window.handleAddOperator = async (e) => {
             e.preventDefault();
             const nameInput = document.getElementById('new-operator-name');
             const typeInput = document.getElementById('new-operator-type');
             const stateInput = document.getElementById('new-operator-state');
-            const name = nameInput.value.trim(); if (!name) return;
-            try { await addDoc(collection(db, "operators"), { name, type: typeInput.value, state: stateInput.value }); nameInput.value = ''; typeInput.value = 'chapa'; stateInput.value = 'activo'; } catch (err) { console.error(err); }
+            const name = nameInput.value.trim();
+            if (!name) return;
+            try { await addDoc(collection(db, "operators"), { name, type: typeInput.value, state: stateInput.value }); nameInput.value = ''; typeInput.value = 'chapa'; stateInput.value = 'activo'; }
+            catch (err) { console.error(err); }
         }
+
         window.changeOperatorState = async (id, newState) => { try { await updateDoc(doc(db, "operators", id), { state: newState }); } catch (err) { console.error(err); } }
         window.deleteOperator = async (id) => {
-            const op = operators.find(o => o.id === id); if (!op) return;
+            const op = operators.find(o => o.id === id);
+            if (!op) return;
             const activas = orders.filter(o => (o.operator || '').trim() === op.name && (o.status || 'reparacion') !== 'terminados');
-            if (activas.length > 0) { alert(`⚠️ No se puede eliminar a ${op.name}.\n\nTiene ${activas.length} orden${activas.length !== 1 ? 'es' : ''} activa${activas.length !== 1 ? 's' : ''}. Reasígnalas a otro operario antes de borrarlo.`); return; }
+            if (activas.length > 0) {
+                alert(`⚠️ No se puede eliminar a ${op.name}.\n\nTiene ${activas.length} orden${activas.length !== 1 ? 'es' : ''} activa${activas.length !== 1 ? 's' : ''}. Reasígnalas a otro operario antes de borrarlo.`);
+                return;
+            }
             if (confirm(`¿Eliminar operario ${op.name}?`)) { try { await deleteDoc(doc(db, "operators", id)); } catch (err) { console.error(err); } }
         }
+
         window.allowDrop = (ev) => { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
         window.removeDropStyle = (ev) => { ev.currentTarget.classList.remove('drag-over'); }
-        window.drag = (ev, id) => {
-            ev.dataTransfer.setData("text/plain", id);
-            // Activar modo "todos expandidos" temporalmente
-            const container = document.querySelector('.chapa-four-columns-container');
-            if (container) container.classList.add('dragging-active');
-        }
-        // Al soltar/cancelar el drag, quitar el modo expandido temporal
-        document.addEventListener('dragend', () => {
-            const container = document.querySelector('.chapa-four-columns-container');
-            if (container) container.classList.remove('dragging-active');
-        });
-        document.addEventListener('drop', () => {
-            const container = document.querySelector('.chapa-four-columns-container');
-            if (container) container.classList.remove('dragging-active');
-        });
+        window.drag = (ev, id) => { ev.dataTransfer.setData("text/plain", id); }
 
         window.dropOrder = async (ev, targetStatus) => {
             ev.preventDefault(); ev.currentTarget.classList.remove('drag-over');
@@ -1052,21 +1360,28 @@
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
             let newStatus = targetStatus;
             let newIsFacturado = order.isFacturado === true;
+
             if (targetStatus === 'destajos') isDestajoFlag = true;
             if (targetStatus.startsWith('op_')) { const parts = targetStatus.split('_'); newOperator = parts[1]; newStatus = parts.slice(2).join('_'); }
+
             if (targetStatus === 'terminados_pendiente') { newStatus = 'terminados'; newIsFacturado = false; }
             else if (targetStatus === 'terminados_facturado') { newStatus = 'terminados'; newIsFacturado = true; }
             else if (newStatus === 'terminados') { newIsFacturado = false; }
+
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
-            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); } catch (err) { console.error(err); }
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); }
+            catch (err) { console.error(err); }
         }
+
         window.toggleCardCheck = async (e, orderId) => {
             e.stopPropagation();
             const order = orders.find(o => o.id === orderId); if (!order) return;
             const newCheckedState = !order.isChecked;
-            try { await updateDoc(doc(db, "orders", orderId), { isChecked: newCheckedState }); } catch (err) { console.error(err); }
+            try { await updateDoc(doc(db, "orders", orderId), { isChecked: newCheckedState }); }
+            catch (err) { console.error(err); }
         }
+
         window.renderOrders = () => {
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -1084,7 +1399,8 @@
                 let orderOp = (order.operator || '').trim();
                 let orderSub = (order.substatus || '').trim();
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
-                if (activeQuickFilter === 'urgent') { if (!order.urgent) return false; } else if (activeQuickFilter === 'overdue') { if (!isOverdue) return false; }
+                if (activeQuickFilter === 'urgent') { if (!order.urgent) return false; }
+                else if (activeQuickFilter === 'overdue') { if (!isOverdue) return false; }
                 if (filterVal === 'destajo:true') return order.isDestajo === true;
                 if (filterVal.startsWith('sub:')) { let targetSub = filterVal.replace('sub:', '').trim(); return orderSub.toLowerCase() === targetSub.toLowerCase(); }
                 if (filterVal.startsWith('op:')) { let targetOp = filterVal.replace('op:', '').trim(); if (targetOp.toLowerCase() === 'sin asignar') return orderOp === ""; if (orderOp === "") return false; return orderOp.toLowerCase() === targetOp.toLowerCase(); }
@@ -1093,7 +1409,6 @@
 
             renderChapistasStructure();
             renderPintoresStructure();
-            updateExpandAllButtonText();
 
             let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminadosPendiente: document.getElementById('list-terminados-pendiente'), terminadosFacturado: document.getElementById('list-terminados-facturado') };
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
@@ -1110,7 +1425,11 @@
                 else if (status === 'paragolpes') counts.paragolpes++;
                 else if (status === 'destajos') counts.destajos++;
                 else if (status === 'pintura' || status.startsWith('pintor')) { if (order.isChecked) counts.pintado++; }
-                else if (status === 'terminados') { counts.terminados++; if (order.isFacturado === true) counts.terminadosFacturado++; else counts.terminadosPendiente++; }
+                else if (status === 'terminados') {
+                    counts.terminados++;
+                    if (order.isFacturado === true) counts.terminadosFacturado++;
+                    else counts.terminadosPendiente++;
+                }
                 let displayPlate = (order.plate || '').toUpperCase();
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
@@ -1122,12 +1441,17 @@
                 if (order.substatus === 'Ampliación') substatusBadge = `<div class="badge substatus-badge-ampliacion mb-1 small">${order.substatus}</div>`;
                 else if (order.substatus === 'Pendiente recambios') substatusBadge = `<div class="badge substatus-badge-recambios mb-1 small">${order.substatus}</div>`;
                 else if (order.substatus) substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
-                let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;">1Destajo</span>` : '';
-               ">< const hasVarillero =span (order.pieces && order.p classieces.includes('Varill="ero'));
+                let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;">Destajo</span>` : '';
+                const hasVarillero = (order.pieces && order.pieces.includes('Varillero'));
                 const varilleroBadge = hasVarillero ? `<span class="badge bg-info text-dark ms-1" style="font-size:0.7rem;">Varillero</span>` : '';
                 let piecesHtml = '';
-                if (order.cocheCompleto) { piecesHtml = `<div class="mb-1"><span class="badge bg-danger text-white" style="font-size:0.7rem;"><i class="fas fa-car-side me-1"></i> COCHE COMPLETO</span>${varilleroBadge}</div>`; }
-                else if (order.pieces && order.pieces.length > 0) { let totalPieces = order.pieces.length; let piecesListTooltip = order.pieces.join(', '); piecesHtml = `<div class="mb-badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span>${varilleroBadge}</div>`; }
+                if (order.cocheCompleto) {
+                    piecesHtml = `<div class="mb-1"><span class="badge bg-danger text-white" style="font-size:0.7rem;"><i class="fas fa-car-side me-1"></i> COCHE COMPLETO</span>${varilleroBadge}</div>`;
+                } else if (order.pieces && order.pieces.length > 0) {
+                    let totalPieces = order.pieces.length;
+                    let piecesListTooltip = order.pieces.join(', ');
+                    piecesHtml = `<div class="mb-1"><span class="badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span>${varilleroBadge}</div>`;
+                }
                 let insuranceBadge = '';
                 const insVal = (order.insurance || '').trim();
                 if (insVal && insVal !== 'Sin asignar') insuranceBadge = `<span class="badge bg-info-subtle text-info-emphasis border border-info" style="font-size:0.65rem;"><i class="fas fa-building me-1"></i> ${insVal}</span>`;
@@ -1138,7 +1462,26 @@
                 let statusSelectOptions = buildStatusSelectOptions(status);
                 let checkBtnColor = order.isChecked ? 'btn-success' : 'btn-outline-secondary';
                 let checkIconClass = order.isChecked ? 'fas fa-check-square' : 'far fa-square';
-                let cardHtml = `<div class="task-card p-2 ${cardClass}" id="card-${order.id}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">${urgentBanner}<div class="d-flex justify-content-between align-items-start mb-1"><h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">${displayPlate} - ${order.model}</h6><div class="d-flex gap-1 align-items-center"><button class="btn btn-sm ${checkBtnColor} py-0 px-1" onclick="toggleCardCheck(event, '${order.id}')"><i class="${checkIconClass}"></i></button><button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button></div></div><div>${substatusBadge}${destajoBadge}</div><div class="mb-1">${insuranceBadge}</div>${piecesHtml}<div class="small text-secondary mb-1"><div class="d-flex align-items-center gap-1"><strong>Op:</strong> ${operatorDisplay}</div><div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'}</div></div><select class="form-select form-select-sm mt-1" style="font-size: 0.75rem; padding: 2px 5px;" onclick="event.stopPropagation()" onchange="changeOrderStatusDirect('${order.id}', this.value)">${statusSelectOptions}</select></div>`;
+                let cardHtml = `
+                    <div class="task-card p-2 ${cardClass}" id="card-${order.id}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
+                        ${urgentBanner}
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">${displayPlate} - ${order.model}</h6>
+                            <div class="d-flex gap-1 align-items-center">
+                                <button class="btn btn-sm ${checkBtnColor} py-0 px-1" onclick="toggleCardCheck(event, '${order.id}')"><i class="${checkIconClass}"></i></button>
+                                <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div>${substatusBadge}${destajoBadge}</div>
+                        <div class="mb-1">${insuranceBadge}</div>
+                        ${piecesHtml}
+                        <div class="small text-secondary mb-1">
+                            <div class="d-flex align-items-center gap-1"><strong>Op:</strong> ${operatorDisplay}</div>
+                            <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'}</div>
+                        </div>
+                        <select class="form-select form-select-sm mt-1" style="font-size: 0.75rem; padding: 2px 5px;" onclick="event.stopPropagation()" onchange="changeOrderStatusDirect('${order.id}', this.value)">${statusSelectOptions}</select>
+                    </div>
+                `;
                 if (status === 'reparacion' || status === 'montaje') {
                     let subId;
                     if (orderOp && getChapistasList().some(o => o.name === orderOp)) subId = status === 'reparacion' ? `subcol-rep-${safeId(orderOp)}` : `subcol-mon-${safeId(orderOp)}`;
@@ -1150,13 +1493,19 @@
                     else targetId = 'list-pintor-general';
                     const target = document.getElementById(targetId); if (target) target.innerHTML += cardHtml;
                 } else if (status === 'terminados') {
-                    if (order.isFacturado === true) { if (containers.terminadosFacturado) containers.terminadosFacturado.innerHTML += cardHtml; }
-                    else { if (containers.terminadosPendiente) containers.terminadosPendiente.innerHTML += cardHtml; }
-                } else if (containers[status]) { containers[status].innerHTML += cardHtml; }
+                    if (order.isFacturado === true) {
+                        if (containers.terminadosFacturado) containers.terminadosFacturado.innerHTML += cardHtml;
+                    } else {
+                        if (containers.terminadosPendiente) containers.terminadosPendiente.innerHTML += cardHtml;
+                    }
+                } else if (containers[status]) {
+                    containers[status].innerHTML += cardHtml;
+                }
             });
 
             getChapistasList().forEach(op => {
-                const opName = op.name; const sid = safeId(opName);
+                const opName = op.name;
+                const sid = safeId(opName);
                 const opOrders = orders.filter(o => (o.operator || '').trim() === opName && (o.status === 'reparacion' || o.status === 'montaje'));
                 const totalRep = opOrders.filter(o => o.status === 'reparacion').length;
                 const totalMon = opOrders.filter(o => o.status === 'montaje').length;
@@ -1175,7 +1524,8 @@
                 if (monCheckedEl) monCheckedEl.innerText = `${checkedMon}✓`;
             });
             getPintoresList().forEach(op => {
-                const opName = op.name; const sid = safeId(opName);
+                const opName = op.name;
+                const sid = safeId(opName);
                 const opOrders = orders.filter(o => (o.operator || '').trim() === opName && (o.status === 'pintura' || (o.status || '').startsWith('pintor')));
                 const totalPin = opOrders.length;
                 const checkedPin = opOrders.filter(o => o.isChecked).length;
@@ -1203,50 +1553,42 @@
             if (!wrapper) return;
             const chOpsList = getChapistasList();
             if (chOpsList.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; if (subtitle) subtitle.innerText = '(Sin operarios)'; return; }
-            if (subtitle) subtitle.innerText = '(Pincha en uno para expandir)';
+            if (subtitle) subtitle.innerText = '(Desglosado por Operarios)';
             let html = `<div class="chapa-four-columns-container">`;
             chOpsList.forEach(op => {
                 const sid = safeId(op.name);
                 const state = op.state || 'activo';
-                const isExpanded = expandedChapistas.has(op.name);
                 let colClass = 'chapista-group-col';
-                if (isExpanded) colClass += ' expanded';
-                if (state === 'vacaciones') colClass += ' vacaciones';
-                else if (state === 'baja') colClass += ' baja';
+                if (state === 'vacaciones') colClass += ' vacaciones'; else if (state === 'baja') colClass += ' baja';
                 let badgeEstado = '';
-                if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴</span>';
-                else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔</span>';
-                const opEscaped = String(op.name).replace(/'/g, "\\'");
+                if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴 Vacaciones</span>';
+                else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔ Baja</span>';
                 html += `
-                    <div class="${colClass}" id="chapista-col-${sid}">
-                        <div class="chapista-group-header" onclick="toggleChapistaExpand('${opEscaped}')">
-                            <div class="header-info">
-                                <span class="chapista-name">${op.name}</span>
-                                ${badgeEstado}
-                            </div>
-                            <div class="header-actions">
+                    <div class="${colClass}">
+                        <div class="chapista-group-header">
+                            <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
+                            <div class="d-flex align-items-center gap-1">
                                 <span class="badge-total-op" id="count-total-${sid}">0</span>
-                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem; display:none;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', null)"><i class="far fa-check-square"></i></button>
+                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
                             </div>
-                            <i class="fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} chapista-chevron"></i>
                         </div>
                         <div class="chapista-group-inner">
-                            <div class="chapista-sub-box subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${opEscaped}_reparacion')">
+                            <div class="chapista-sub-box subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_reparacion')">
                                 <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
                                     <span class="fw-bold text-primary">Rep.</span>
                                     <div class="d-flex align-items-center gap-1">
                                         <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;"><span id="count-rep-${sid}">0</span><span class="badge-count-checked" id="count-rep-checked-${sid}">0✓</span></span>
-                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', 'reparacion')"><i class="far fa-check-square"></i></button>
+                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'reparacion')"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
                                 <div id="subcol-rep-${sid}" class="d-flex flex-column gap-2"></div>
                             </div>
-                            <div class="chapista-sub-box subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${opEscaped}_montaje')">
+                            <div class="chapista-sub-box subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_montaje')">
                                 <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
                                     <span class="fw-bold text-success">Mont.</span>
                                     <div class="d-flex align-items-center gap-1">
                                         <span class="badge bg-success rounded-pill" style="font-size:0.65rem;"><span id="count-mon-${sid}">0</span><span class="badge-count-checked" id="count-mon-checked-${sid}">0✓</span></span>
-                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', 'montaje')"><i class="far fa-check-square"></i></button>
+                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'montaje')"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
                                 <div id="subcol-mon-${sid}" class="d-flex flex-column gap-2"></div>
@@ -1256,17 +1598,19 @@
                 `;
             });
             html += `</div>`;
-            html += `<div class="chapa-split-container mt-3"><div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')"><div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1">Sin asignar - Reparación</div><div id="subcol-rep-general" class="d-flex flex-column gap-2"></div></div><div class="chapa-subcol subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'montaje')"><div class="text-center fw-bold text-success small mb-2 border-bottom pb-1">Sin asignar - Montaje</div><div id="subcol-mon-general" class="d-flex flex-column gap-2"></div></div></div>`;
+            html += `
+                <div class="chapa-split-container mt-3">
+                    <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')">
+                        <div class="text-center fw-bold text-primary small mb-2 border-bottom pb-1">Sin asignar - Reparación</div>
+                        <div id="subcol-rep-general" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="chapa-subcol subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'montaje')">
+                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1">Sin asignar - Montaje</div>
+                        <div id="subcol-mon-general" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
+            `;
             wrapper.innerHTML = html;
-            // Después de renderizar, si hay chapistas expandidos, mostrar el botón "marcar todos"
-            chOpsList.forEach(op => {
-                if (expandedChapistas.has(op.name)) {
-                    const sid = safeId(op.name);
-                    const col = document.getElementById(`chapista-col-${sid}`);
-                    const btn = col?.querySelector('.header-actions button');
-                    if (btn) btn.style.display = '';
-                }
-            });
         }
 
         function renderPintoresStructure() {
@@ -1283,9 +1627,25 @@
                 let badgeEstado = '';
                 if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴</span>';
                 else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔</span>';
-                html += `<div class="${colClass}" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_pintura')"><div class="pintor-header"><div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div><div class="d-flex align-items-center gap-1"><span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;"><span id="count-total-pin-${sid}">0</span><span class="badge-count-checked" id="count-total-pin-checked-${sid}">0✓</span></span><button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button></div></div><div id="list-pintor-${sid}" class="d-flex flex-column gap-2"></div></div>`;
+                html += `
+                    <div class="${colClass}" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_pintura')">
+                        <div class="pintor-header">
+                            <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;"><span id="count-total-pin-${sid}">0</span><span class="badge-count-checked" id="count-total-pin-checked-${sid}">0✓</span></span>
+                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
+                            </div>
+                        </div>
+                        <div id="list-pintor-${sid}" class="d-flex flex-column gap-2"></div>
+                    </div>
+                `;
             });
-            html += `<div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintura')"><div class="text-center fw-bold text-secondary small mb-2 border-bottom pb-1">Sin asignar</div><div id="list-pintor-general" class="d-flex flex-column gap-2"></div></div>`;
+            html += `
+                <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintura')">
+                    <div class="text-center fw-bold text-secondary small mb-2 border-bottom pb-1">Sin asignar</div>
+                    <div id="list-pintor-general" class="d-flex flex-column gap-2"></div>
+                </div>
+            `;
             wrapper.innerHTML = html;
         }
 
@@ -1298,19 +1658,67 @@
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             const historyEntry = { status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
-            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); } catch (err) { console.error(err); }
+            try { await updateDoc(doc(db, "orders", orderId), { status: newStatus, operator: newOperator, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); }
+            catch (err) { console.error(err); }
         }
+
         window.deleteOrder = async (id) => { if (confirm('¿Eliminar orden?')) { try { await deleteDoc(doc(db, "orders", id)); } catch (err) { console.error(err); } } }
+
         window.openDetailModal = (orderId) => {
             const order = orders.find(o => o.id === orderId); if (!order) return;
             let historyHtml = '';
-            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); } else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
+            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
+            else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
             const piecesChecklistHtml = buildPiecesChecklistHtml(order.pieces || (order.cocheCompleto ? ['COCHE COMPLETO'] : []), 'edit');
             const body = document.getElementById('detail-modal-body');
-            body.innerHTML = `<form onsubmit="handleUpdateOrder(event, '${order.id}')"><div class="row mb-3"><div class="col-md-6"><label class="form-label small text-secondary fw-bold">Matrícula</label><input type="text" id="edit-plate" class="form-control text-uppercase" value="${order.plate || ''}" required></div><div class="col-md-6"><label class="form-label small text-secondary fw-bold">Modelo / Descripción</label><input type="text" id="edit-model" class="form-control" value="${order.model || ''}" required></div></div><div class="row mb-3"><div class="col-md-6"><label class="form-label small text-secondary fw-bold">Compañía Aseguradora</label><input type="text" id="edit-insurance" class="form-control" value="${order.insurance || ''}" placeholder="Sin asignar"></div><div class="col-md-6"><label class="form-label small text-secondary fw-bold">Operario</label><select id="edit-operator" class="form-select">${buildGroupedOperatorOptions(order.operator || '')}</select></div></div><div class="row mb-3"><div class="col-md-6"><label class="form-label small text-secondary fw-bold">Entrada</label><input type="date" id="edit-date-in" class="form-control" value="${order.dateIn || ''}" required></div><div class="col-md-6"><label class="form-label small text-secondary fw-bold">Salida Prevista</label><input type="date" id="edit-date-out" class="form-control" value="${order.dateOut || ''}" required></div></div><div class="row mb-3"><div class="col-md-6"><label class="form-label small text-secondary fw-bold">Subestado</label><select id="edit-substatus" class="form-select"><option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option><option value="Ampliación" ${order.substatus === 'Ampliación' ? 'selected' : ''}>Ampliación</option><option value="Pendiente recambios" ${order.substatus === 'Pendiente recambios' ? 'selected' : ''}>Pendiente recambios</option><option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option><option value="Faro izquierdo / piloto reparándose" ${order.substatus === 'Faro izquierdo / piloto reparándose' ? 'selected' : ''}>Faro izq. reparándose</option><option value="Faro derecho / piloto reparándose" ${order.substatus === 'Faro derecho / piloto reparándose' ? 'selected' : ''}>Faro dcho. reparándose</option><option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option><option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option><option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option><option value="Llanta reparándose fuera" ${order.substatus === 'Llanta reparándose fuera' ? 'selected' : ''}>Llanta reparándose fuera</option></select></div><div class="col-md-6"><label class="form-label small text-secondary fw-bold">Estado Actual</label><select id="edit-status" class="form-select">${buildStatusSelectOptions(order.status)}</select></div></div><div class="mb-3 p-3 bg-light border rounded"><label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Modificar Piezas</label><div class="row g-2" id="edit-pieces-container">${piecesChecklistHtml}</div></div><div class="mb-3"><label class="form-label small text-secondary fw-bold">Notas</label><textarea id="edit-notes" class="form-control" rows="2">${order.notes || ''}</textarea></div><div class="mb-3 form-check"><input type="checkbox" class="form-check-input" id="edit-urgent" ${order.urgent ? 'checked' : ''}><label class="form-check-label text-danger fw-bold" for="edit-urgent">Urgente</label></div><hr class="my-4"><h6 class="fw-bold text-dark mb-3"><i class="fas fa-history me-1 text-primary"></i> Trazabilidad</h6><div class="history-timeline mb-4" style="max-height: 180px; overflow-y: auto;">${historyHtml}</div><button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Cambios</button></form>`;
+            body.innerHTML = `
+                <form onsubmit="handleUpdateOrder(event, '${order.id}')">
+                    <div class="row mb-3">
+                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Matrícula</label><input type="text" id="edit-plate" class="form-control text-uppercase" value="${order.plate || ''}" required></div>
+                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Modelo / Descripción</label><input type="text" id="edit-model" class="form-control" value="${order.model || ''}" required></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Compañía Aseguradora</label><input type="text" id="edit-insurance" class="form-control" value="${order.insurance || ''}" placeholder="Sin asignar"></div>
+                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Operario</label><select id="edit-operator" class="form-select">${buildGroupedOperatorOptions(order.operator || '')}</select></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Entrada</label><input type="date" id="edit-date-in" class="form-control" value="${order.dateIn || ''}" required></div>
+                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Salida Prevista</label><input type="date" id="edit-date-out" class="form-control" value="${order.dateOut || ''}" required></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-bold">Subestado</label>
+                            <select id="edit-substatus" class="form-select">
+                                <option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option>
+                                <option value="Ampliación" ${order.substatus === 'Ampliación' ? 'selected' : ''}>Ampliación</option>
+                                <option value="Pendiente recambios" ${order.substatus === 'Pendiente recambios' ? 'selected' : ''}>Pendiente recambios</option>
+                                <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
+                                <option value="Faro izquierdo / piloto reparándose" ${order.substatus === 'Faro izquierdo / piloto reparándose' ? 'selected' : ''}>Faro izq. reparándose</option>
+                                <option value="Faro derecho / piloto reparándose" ${order.substatus === 'Faro derecho / piloto reparándose' ? 'selected' : ''}>Faro dcho. reparándose</option>
+                                <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
+                                <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
+                                <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
+                                <option value="Llanta reparándose fuera" ${order.substatus === 'Llanta reparándose fuera' ? 'selected' : ''}>Llanta reparándose fuera</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Estado Actual</label><select id="edit-status" class="form-select">${buildStatusSelectOptions(order.status)}</select></div>
+                    </div>
+                    <div class="mb-3 p-3 bg-light border rounded">
+                        <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Modificar Piezas</label>
+                        <div class="row g-2" id="edit-pieces-container">${piecesChecklistHtml}</div>
+                    </div>
+                    <div class="mb-3"><label class="form-label small text-secondary fw-bold">Notas</label><textarea id="edit-notes" class="form-control" rows="2">${order.notes || ''}</textarea></div>
+                    <div class="mb-3 form-check"><input type="checkbox" class="form-check-input" id="edit-urgent" ${order.urgent ? 'checked' : ''}><label class="form-check-label text-danger fw-bold" for="edit-urgent">Urgente</label></div>
+                    <hr class="my-4">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fas fa-history me-1 text-primary"></i> Trazabilidad</h6>
+                    <div class="history-timeline mb-4" style="max-height: 180px; overflow-y: auto;">${historyHtml}</div>
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Cambios</button>
+                </form>
+            `;
             setupCocheCompletoLogic('edit-pieces-container');
             const modal = new bootstrap.Modal(document.getElementById('detailModal')); modal.show();
         }
+
         window.handleUpdateOrder = async (e, orderId) => {
             e.preventDefault();
             const order = orders.find(o => o.id === orderId); if (!order) return;
@@ -1326,15 +1734,21 @@
             const newUrgent = document.getElementById('edit-urgent').checked;
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos') || (newStatus === 'destajos');
             let selectedPieces = []; let cocheCompleto = false;
-            document.querySelectorAll('#edit-pieces-container .piece-check').forEach(chk => { if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); } });
+            document.querySelectorAll('#edit-pieces-container .piece-check').forEach(chk => {
+                if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
+            });
             if (cocheCompleto) selectedPieces = [];
             let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator;
             let updatedHistory = order.history ? [...order.history] : [];
             if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() });
             let newIsFacturado = order.isFacturado === true;
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
-            try { await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory }); const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide(); } catch (err) { console.error("Error:", err); }
+            try {
+                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
+                const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
+            } catch (err) { console.error("Error:", err); }
         }
+
         window.handleAddOrder = async (e) => {
             e.preventDefault();
             const plate = document.getElementById('car-plate').value.toUpperCase().trim();
@@ -1353,12 +1767,19 @@
             if (!status) status = 'cargachapa';
             let isDestajoFlag = (status === 'destajos');
             let selectedPieces = []; let cocheCompleto = false;
-            document.querySelectorAll('#checklist-new-container .piece-check').forEach(chk => { if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); } });
+            document.querySelectorAll('#checklist-new-container .piece-check').forEach(chk => {
+                if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
+            });
             if (cocheCompleto) selectedPieces = [];
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() }];
-            try { await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory }); const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide(); document.getElementById('order-form').reset(); } catch (err) { console.error("Error:", err); }
+            try {
+                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
+                const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
+                document.getElementById('order-form').reset();
+            } catch (err) { console.error("Error:", err); }
         }
 
+        // ===== PANEL 360 =====
         function getBossPeriodRange(period) {
             const now = new Date(); let start, end;
             if (period === 'day') { start = new Date(now.getFullYear(), now.getMonth(), now.getDate()); end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59); }
@@ -1368,26 +1789,59 @@
             else return null;
             return { start, end };
         }
-        function formatDateShort(d) { const dd = String(d.getDate()).padStart(2, '0'); const mm = String(d.getMonth() + 1).padStart(2, '0'); return `${dd}/${mm}/${d.getFullYear()}`; }
+
+        function formatDateShort(d) {
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            return `${dd}/${mm}/${d.getFullYear()}`;
+        }
+
         function updatePeriodRangeLabel() {
-            const el = document.getElementById('boss-period-range'); if (!el) return;
+            const el = document.getElementById('boss-period-range');
+            if (!el) return;
             const range = getBossPeriodRange(bossPeriod);
             if (!range) { el.innerText = 'Todo el histórico'; return; }
             el.innerText = `${formatDateShort(range.start)} — ${formatDateShort(range.end)}`;
         }
+
+        // ===== FILTRO DE PERIODO (por ACTIVIDAD, no solo por dateIn) =====
         function filterOrdersByBossPeriod(list, period) {
             const range = getBossPeriodRange(period);
             if (!range) return list;
             return list.filter(o => {
-                if (o.dateIn) { const d = new Date(o.dateIn + 'T12:00:00'); if (d >= range.start && d <= range.end) return true; }
-                if (o.dateOut) { const d = new Date(o.dateOut + 'T12:00:00'); if (d >= range.start && d <= range.end) return true; }
-                if (Array.isArray(o.history)) { for (const h of o.history) { if (h && h.ts) { const d = new Date(h.ts); if (d >= range.start && d <= range.end) return true; } } }
+                // 1. ¿La entrada (dateIn) cae dentro del periodo?
+                if (o.dateIn) {
+                    const d = new Date(o.dateIn + 'T12:00:00');
+                    if (d >= range.start && d <= range.end) return true;
+                }
+                // 2. ¿La salida (dateOut) cae dentro del periodo?
+                if (o.dateOut) {
+                    const d = new Date(o.dateOut + 'T12:00:00');
+                    if (d >= range.start && d <= range.end) return true;
+                }
+                // 3. ¿Algún movimiento del historial cae dentro del periodo?
+                if (Array.isArray(o.history)) {
+                    for (const h of o.history) {
+                        if (h && h.ts) {
+                            const d = new Date(h.ts);
+                            if (d >= range.start && d <= range.end) return true;
+                        }
+                    }
+                }
+                // 4. ¿El coche está activo AHORA? (siempre cuenta)
                 const status = o.status || 'reparacion';
                 if (status !== 'terminados') return true;
+                // 5. Si nada de lo anterior coincide, fuera del periodo
                 return false;
             });
         }
-        function applyWorkTypeFilter(list, wt) { if (wt === 'activos') return list.filter(o => o.status !== 'terminados'); if (wt === 'terminados') return list.filter(o => o.status === 'terminados'); return list; }
+
+        function applyWorkTypeFilter(list, wt) {
+            if (wt === 'activos') return list.filter(o => o.status !== 'terminados');
+            if (wt === 'terminados') return list.filter(o => o.status === 'terminados');
+            return list;
+        }
+
         function categorizeOrderForKpi(o, todayStr) {
             const sub = (o.substatus || '').toLowerCase();
             if (sub.includes('recambio')) return 'recambios';
@@ -1395,13 +1849,23 @@
             if (o.dateOut && o.dateOut < todayStr && (o.status || 'reparacion') !== 'terminados') return 'pasados';
             return null;
         }
-        function countCochesByArea(list, areaKey) { return list.filter(o => pasoPorArea(o, areaKey)).length; }
-        function sumPiezasByArea(list, areaKey) { let total = 0; list.forEach(o => { if (pasoPorArea(o, areaKey)) total += getPiecesCount(o); }); return total; }
+
+        function countCochesByArea(list, areaKey) {
+            return list.filter(o => pasoPorArea(o, areaKey)).length;
+        }
+
+        function sumPiezasByArea(list, areaKey) {
+            let total = 0;
+            list.forEach(o => { if (pasoPorArea(o, areaKey)) total += getPiecesCount(o); });
+            return total;
+        }
+
         function getOperatorsForArea(list, areaKey, mode = 'coches') {
             const opMap = {};
             let validOps = null;
             if (areaKey === 'chapa') validOps = getChapistasList().map(o => o.name);
             else if (areaKey === 'pintura') validOps = getPintoresList().map(o => o.name);
+
             list.forEach(o => {
                 if (!pasoPorArea(o, areaKey)) return;
                 const opName = (o.operator || '').trim();
@@ -1411,44 +1875,77 @@
                 opMap[opName].coches += 1;
                 opMap[opName].piezas += getPiecesCount(o);
             });
+
             const arr = Object.keys(opMap).map(name => ({ name, coches: opMap[name].coches, piezas: opMap[name].piezas }));
             if (mode === 'piezas') arr.sort((a, b) => b.piezas - a.piezas);
             else arr.sort((a, b) => b.coches - a.coches || b.piezas - a.piezas);
             return arr;
         }
+
         let chartsPiezas = { chapa: null, pintura: null };
+
         function renderPiezasDonut(containerId, periodOrders, areaKey, chartKey) {
-            const container = document.getElementById(containerId); if (!container) return;
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
             const operators = getOperatorsForArea(periodOrders, areaKey, 'piezas');
             const totalPiezasArea = operators.reduce((acc, op) => acc + op.piezas, 0);
+
             if (operators.length === 0 || totalPiezasArea === 0) {
                 container.innerHTML = '<div class="donut-empty">Sin datos</div>';
                 if (chartsPiezas[chartKey]) { chartsPiezas[chartKey].destroy(); chartsPiezas[chartKey] = null; }
                 return;
             }
+
             let opsToShow = operators;
-            if (operators.length > 6) { const top5 = operators.slice(0, 5); const resto = operators.slice(5); const otrasPiezas = resto.reduce((acc, o) => acc + o.piezas, 0); opsToShow = [...top5, { name: `Otros (${resto.length})`, coches: 0, piezas: otrasPiezas, isOtros: true }]; }
+            if (operators.length > 6) {
+                const top5 = operators.slice(0, 5);
+                const resto = operators.slice(5);
+                const otrasPiezas = resto.reduce((acc, o) => acc + o.piezas, 0);
+                opsToShow = [...top5, { name: `Otros (${resto.length})`, coches: 0, piezas: otrasPiezas, isOtros: true }];
+            }
+
             const labels = opsToShow.map(o => o.name);
             const data = opsToShow.map(o => o.piezas);
-            const colors = opsToShow.map((o, i) => { if (o.isOtros) return '#cbd5e1'; return COLOR_PALETTE[i % COLOR_PALETTE.length]; });
+            const colors = opsToShow.map((o, i) => {
+                if (o.isOtros) return '#cbd5e1';
+                return COLOR_PALETTE[i % COLOR_PALETTE.length];
+            });
+
             if (chartsPiezas[chartKey]) chartsPiezas[chartKey].destroy();
             container.innerHTML = '<canvas></canvas>';
             const canvas = container.querySelector('canvas');
+
             chartsPiezas[chartKey] = new Chart(canvas, {
                 type: 'doughnut',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }] },
+                data: {
+                    labels: labels,
+                    datasets: [{ data: data, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }]
+                },
                 options: {
-                    responsive: true, maintainAspectRatio: false, cutout: '60%',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
                     plugins: {
                         legend: {
                             position: 'right',
-                            labels: { font: { size: 10, weight: '600' }, padding: 6, boxWidth: 10,
+                            labels: {
+                                font: { size: 10, weight: '600' },
+                                padding: 6,
+                                boxWidth: 10,
                                 generateLabels: function(chart) {
-                                    const data = chart.data; if (!data.labels.length) return [];
+                                    const data = chart.data;
+                                    if (!data.labels.length) return [];
                                     return data.labels.map((label, i) => {
                                         const value = data.datasets[0].data[i];
                                         const pct = totalPiezasArea > 0 ? Math.round((value / totalPiezasArea) * 100) : 0;
-                                        return { text: `${label} · ${value} pzs (${pct}%)`, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], lineWidth: 0, index: i };
+                                        return {
+                                            text: `${label} · ${value} pzs (${pct}%)`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            strokeStyle: data.datasets[0].backgroundColor[i],
+                                            lineWidth: 0,
+                                            index: i
+                                        };
                                     });
                                 }
                             },
@@ -1460,28 +1957,61 @@
                                 openOperatorCarsPopup(opName, areaKey, areaLabel);
                             }
                         },
-                        tooltip: { callbacks: { label: ctx => { const value = ctx.parsed; const pct = totalPiezasArea > 0 ? ((value / totalPiezasArea) * 100).toFixed(1) : 0; return `${ctx.label}: ${value} piezas (${pct}%)`; } } },
-                        centerText: { display: true, title: 'PIEZAS', value: String(totalPiezasArea) }
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => {
+                                    const value = ctx.parsed;
+                                    const pct = totalPiezasArea > 0 ? ((value / totalPiezasArea) * 100).toFixed(1) : 0;
+                                    return `${ctx.label}: ${value} piezas (${pct}%)`;
+                                }
+                            }
+                        },
+                        centerText: {
+                            display: true,
+                            title: 'PIEZAS',
+                            value: String(totalPiezasArea)
+                        }
                     }
                 }
             });
         }
+
         window.openOperatorCarsPopup = (opName, areaKey, areaLabel) => {
             const periodOrders = getCurrentPeriodOrders();
-            const coches = periodOrders.filter(o => { if (!pasoPorArea(o, areaKey)) return false; return (o.operator || '').trim() === opName; }).sort((a, b) => (a.plate || '').localeCompare(b.plate || ''));
+            const coches = periodOrders.filter(o => {
+                if (!pasoPorArea(o, areaKey)) return false;
+                return (o.operator || '').trim() === opName;
+            }).sort((a, b) => (a.plate || '').localeCompare(b.plate || ''));
+
             let html = `<div class="modal-header bg-light"><h5 class="modal-title fw-bold"><i class="fas fa-car me-2 text-primary"></i> ${opName} · ${areaLabel} (${coches.length})</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body p-3">`;
-            if (coches.length === 0) { html += '<p class="text-muted text-center">Sin coches en esta área.</p>'; }
-            else {
+            if (coches.length === 0) {
+                html += '<p class="text-muted text-center">Sin coches en esta área.</p>';
+            } else {
                 html += '<div class="d-flex flex-column gap-1">';
-                coches.forEach(c => { const estado = STATUS_LABELS[c.status] || c.status || '-'; html += `<div class="d-flex justify-content-between align-items-center p-2 rounded" style="cursor:pointer; background:#f8fafc;" onclick="bootstrap.Modal.getInstance(document.getElementById('operatorCarsModal')).hide(); openDetailModal('${c.id}')"><span style="font-family:'Courier New', monospace; font-weight:700;">${c.plate || '-'}</span><span class="text-muted small">${estado}</span></div>`; });
+                coches.forEach(c => {
+                    const estado = STATUS_LABELS[c.status] || c.status || '-';
+                    html += `<div class="d-flex justify-content-between align-items-center p-2 rounded" style="cursor:pointer; background:#f8fafc;" onclick="bootstrap.Modal.getInstance(document.getElementById('operatorCarsModal')).hide(); openDetailModal('${c.id}')">
+                        <span style="font-family:'Courier New', monospace; font-weight:700;">${c.plate || '-'}</span>
+                        <span class="text-muted small">${estado}</span>
+                    </div>`;
+                });
                 html += '</div>';
             }
             html += '</div>';
+
             let modalEl = document.getElementById('operatorCarsModal');
-            if (!modalEl) { modalEl = document.createElement('div'); modalEl.className = 'modal fade'; modalEl.id = 'operatorCarsModal'; modalEl.tabIndex = -1; modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered"><div class="modal-content shadow" id="operatorCarsModalContent"></div></div>'; document.body.appendChild(modalEl); }
+            if (!modalEl) {
+                modalEl = document.createElement('div');
+                modalEl.className = 'modal fade';
+                modalEl.id = 'operatorCarsModal';
+                modalEl.tabIndex = -1;
+                modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered"><div class="modal-content shadow" id="operatorCarsModalContent"></div></div>';
+                document.body.appendChild(modalEl);
+            }
             document.getElementById('operatorCarsModalContent').innerHTML = html;
             new bootstrap.Modal(modalEl).show();
         };
+
         const centerTextPlugin = {
             id: 'centerText',
             afterDraw: (chart) => {
@@ -1489,25 +2019,42 @@
                 const centerInfo = chart.config.options.plugins.centerText;
                 if (!centerInfo || !centerInfo.display) return;
                 const { ctx, chartArea: { top, bottom, left, right } } = chart;
-                const centerX = (left + right) / 2; const centerY = (top + bottom) / 2;
-                ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.font = '800 10px Segoe UI, Tahoma, sans-serif'; ctx.fillStyle = '#64748b'; ctx.fillText(centerInfo.title || '', centerX, centerY - 10);
-                ctx.font = '800 22px Segoe UI, Tahoma, sans-serif'; ctx.fillStyle = '#0f172a'; ctx.fillText(centerInfo.value || '', centerX, centerY + 10);
+                const centerX = (left + right) / 2;
+                const centerY = (top + bottom) / 2;
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '800 10px Segoe UI, Tahoma, sans-serif';
+                ctx.fillStyle = '#64748b';
+                ctx.fillText(centerInfo.title || '', centerX, centerY - 10);
+                ctx.font = '800 22px Segoe UI, Tahoma, sans-serif';
+                ctx.fillStyle = '#0f172a';
+                ctx.fillText(centerInfo.value || '', centerX, centerY + 10);
                 ctx.restore();
             }
         };
         Chart.register(centerTextPlugin);
+
         function renderCochesArea(periodOrders) {
-            const container = document.getElementById('chart-coches-area-container'); if (!container) return;
+            const container = document.getElementById('chart-coches-area-container');
+            if (!container) return;
             const totalCoches = periodOrders.length;
             const areas = ['chapa', 'pintura', 'paragolpes'];
             const items = areas.map(areaKey => {
                 const def = AREA_DEFS[areaKey];
                 const coches = countCochesByArea(periodOrders, areaKey);
-                return { label: def.label, value: coches, pct: totalCoches > 0 ? Math.round((coches / totalCoches) * 100) : 0, color: def.color, areaKey: areaKey, operators: getOperatorsForArea(periodOrders, areaKey, 'coches') };
+                return {
+                    label: def.label,
+                    value: coches,
+                    pct: totalCoches > 0 ? Math.round((coches / totalCoches) * 100) : 0,
+                    color: def.color,
+                    areaKey: areaKey,
+                    operators: getOperatorsForArea(periodOrders, areaKey, 'coches')
+                };
             });
             renderBarsWithOperators(container, items);
         }
+
         function renderPiezasArea(periodOrders) {
             renderPiezasDonut('chart-piezas-chapa-donut', periodOrders, 'chapa', 'chapa');
             renderPiezasDonut('chart-piezas-pintura-donut', periodOrders, 'pintura', 'pintura');
@@ -1515,52 +2062,119 @@
             if (containerParagolpes) {
                 const piezas = sumPiezasByArea(periodOrders, 'paragolpes');
                 const totalPiezas = periodOrders.reduce((acc, o) => acc + getPiecesCount(o), 0);
-                const items = [{ label: 'Paragolpes', value: piezas, pct: totalPiezas > 0 ? Math.round((piezas / totalPiezas) * 100) : 0, color: AREA_DEFS.paragolpes.color, areaKey: 'paragolpes', operators: getOperatorsForArea(periodOrders, 'paragolpes', 'coches') }];
+                const items = [{
+                    label: 'Paragolpes',
+                    value: piezas,
+                    pct: totalPiezas > 0 ? Math.round((piezas / totalPiezas) * 100) : 0,
+                    color: AREA_DEFS.paragolpes.color,
+                    areaKey: 'paragolpes',
+                    operators: getOperatorsForArea(periodOrders, 'paragolpes', 'coches')
+                }];
                 renderBarsWithOperators(containerParagolpes, items);
             }
         }
+
         function renderDestajos(periodOrders) {
-            const container = document.getElementById('chart-destajos-container'); if (!container) return;
+            const container = document.getElementById('chart-destajos-container');
+            if (!container) return;
             const def = AREA_DEFS.destajos;
             const coches = countCochesByArea(periodOrders, 'destajos');
             const piezas = sumPiezasByArea(periodOrders, 'destajos');
             const total = periodOrders.length;
-            const items = [{ label: 'Destajos', value: coches, pct: total > 0 ? Math.round((coches / total) * 100) : 0, color: def.color, areaKey: 'destajos', operators: getOperatorsForArea(periodOrders, 'destajos', 'coches') }];
-            if (coches > 0) { items.push({ label: 'Piezas destajo', value: piezas, pct: 0, color: '#06b6d4', areaKey: 'destajos', operators: [] }); }
+            const items = [{
+                label: 'Destajos',
+                value: coches,
+                pct: total > 0 ? Math.round((coches / total) * 100) : 0,
+                color: def.color,
+                areaKey: 'destajos',
+                operators: getOperatorsForArea(periodOrders, 'destajos', 'coches')
+            }];
+            if (coches > 0) {
+                items.push({ label: 'Piezas destajo', value: piezas, pct: 0, color: '#06b6d4', areaKey: 'destajos', operators: [] });
+            }
             renderBarsWithOperators(container, items);
         }
+
         function renderLunas(periodOrders) {
-            const container = document.getElementById('chart-lunas-container'); if (!container) return;
+            const container = document.getElementById('chart-lunas-container');
+            if (!container) return;
             const def = AREA_DEFS.lunas;
             const coches = countCochesByArea(periodOrders, 'lunas');
             const piezas = sumPiezasByArea(periodOrders, 'lunas');
             const total = periodOrders.length;
-            const items = [{ label: 'Lunas', value: coches, pct: total > 0 ? Math.round((coches / total) * 100) : 0, color: def.color, areaKey: 'lunas', operators: getOperatorsForArea(periodOrders, 'lunas', 'coches') }];
-            if (coches > 0) { items.push({ label: 'Piezas lunas', value: piezas, pct: 0, color: '#94a3b8', areaKey: 'lunas', operators: [] }); }
+            const items = [{
+                label: 'Lunas',
+                value: coches,
+                pct: total > 0 ? Math.round((coches / total) * 100) : 0,
+                color: def.color,
+                areaKey: 'lunas',
+                operators: getOperatorsForArea(periodOrders, 'lunas', 'coches')
+            }];
+            if (coches > 0) {
+                items.push({ label: 'Piezas lunas', value: piezas, pct: 0, color: '#94a3b8', areaKey: 'lunas', operators: [] });
+            }
             renderBarsWithOperators(container, items);
         }
+
+        // ===== DÍAS MEDIOS POR FASE =====
         function renderDiasMediosFase(periodOrders) {
-            const container = document.getElementById('chart-dias-fase-container'); if (!container) return;
+            const container = document.getElementById('chart-dias-fase-container');
+            if (!container) return;
+
             const tiempos = {};
             periodOrders.forEach(o => {
                 const h = (o.history || []).filter(x => x.ts).sort((a,b) => a.ts - b.ts);
                 if (h.length < 2) return;
-                for (let i = 0; i < h.length - 1; i++) { const fase = h[i].status; const fin = h[i+1].ts; const dias = (fin - h[i].ts) / (1000 * 60 * 60 * 24); if (!tiempos[fase]) tiempos[fase] = []; tiempos[fase].push(dias); }
+                for (let i = 0; i < h.length - 1; i++) {
+                    const fase = h[i].status;
+                    const fin = h[i+1].ts;
+                    const dias = (fin - h[i].ts) / (1000 * 60 * 60 * 24);
+                    if (!tiempos[fase]) tiempos[fase] = [];
+                    tiempos[fase].push(dias);
+                }
                 const ultima = h[h.length - 1];
-                if (ultima.status !== 'terminados' && o.status !== 'terminados') { const dias = (Date.now() - ultima.ts) / (1000 * 60 * 60 * 24); if (!tiempos[ultima.status]) tiempos[ultima.status] = []; tiempos[ultima.status].push(dias); }
+                if (ultima.status !== 'terminados' && o.status !== 'terminados') {
+                    const dias = (Date.now() - ultima.ts) / (1000 * 60 * 60 * 24);
+                    if (!tiempos[ultima.status]) tiempos[ultima.status] = [];
+                    tiempos[ultima.status].push(dias);
+                }
             });
+
             const items = Object.keys(tiempos).map(fase => {
                 const arr = tiempos[fase];
                 const media = arr.reduce((a,b) => a+b, 0) / arr.length;
-                let color = '#2563eb'; if (media > 5) color = '#dc2626'; else if (media > 3) color = '#f59e0b';
-                return { label: STATUS_LABELS[fase] || fase, value: +media.toFixed(1), color: color };
+                let color = '#2563eb';
+                if (media > 5) color = '#dc2626';
+                else if (media > 3) color = '#f59e0b';
+                return {
+                    label: STATUS_LABELS[fase] || fase,
+                    value: +media.toFixed(1),
+                    color: color
+                };
             }).sort((a,b) => b.value - a.value);
-            if (items.length === 0) { container.innerHTML = '<div class="hbar-empty">Sin datos de tiempos. Los registros antiguos sin hora no cuentan.</div>'; return; }
+
+            if (items.length === 0) {
+                container.innerHTML = '<div class="hbar-empty">Sin datos de tiempos. Los registros antiguos sin hora no cuentan.</div>';
+                return;
+            }
+
             const maxValue = Math.max(...items.map(i => i.value), 1);
             let html = '';
-            items.forEach(item => { const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0; html += `<div class="hbar-row"><div class="hbar-label" title="${item.label}">${item.label}</div><div class="hbar-track"><div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div></div><div class="hbar-value">${item.value} d</div></div>`; });
+            items.forEach(item => {
+                const widthPct = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
+                html += `
+                    <div class="hbar-row">
+                        <div class="hbar-label" title="${item.label}">${item.label}</div>
+                        <div class="hbar-track">
+                            <div class="hbar-fill" style="width: ${widthPct}%; background-color: ${item.color};"></div>
+                        </div>
+                        <div class="hbar-value">${item.value} d</div>
+                    </div>
+                `;
+            });
             container.innerHTML = html;
         }
+
         function renderBossDashboardStats() {
             let periodOrders = filterOrdersByBossPeriod(orders, bossPeriod);
             periodOrders = applyWorkTypeFilter(periodOrders, bossWorkType);
@@ -1569,6 +2183,7 @@
             const total = periodOrders.length;
             const terminados = periodOrders.filter(o => o.status === 'terminados').length;
             const activas = total - terminados;
+            const pctT = total > 0 ? Math.round((terminados / total) * 100) : 0;
             const pctA = total > 0 ? Math.round((activas / total) * 100) : 0;
             const recambios = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'recambios').length;
             const externas = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'externas').length;
@@ -1576,16 +2191,31 @@
             const pctRec = total > 0 ? Math.round((recambios / total) * 100) : 0;
             const pctExt = total > 0 ? Math.round((externas / total) * 100) : 0;
             const pctPas = total > 0 ? Math.round((pasados / total) * 100) : 0;
-            let totalPiezas = 0; periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
+            let totalPiezas = 0;
+            periodOrders.forEach(o => { totalPiezas += getPiecesCount(o); });
+
             const terminadosArr = periodOrders.filter(o => o.status === 'terminados');
-            const terminadosConTs = terminadosArr.filter(o => { const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts); return h.length > 0 && o.dateOut; });
-            const terminadosATiempo = terminadosConTs.filter(o => { const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts); const fechaFin = new Date(h[h.length - 1].ts).toISOString().split('T')[0]; return fechaFin <= o.dateOut; });
-            const pctATiempo = terminadosConTs.length > 0 ? Math.round(terminadosATiempo.length / terminadosConTs.length * 100) : null;
+            const terminadosConTs = terminadosArr.filter(o => {
+                const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts);
+                return h.length > 0 && o.dateOut;
+            });
+            const terminadosATiempo = terminadosConTs.filter(o => {
+                const h = (o.history || []).filter(x => x.status === 'terminados' && x.ts);
+                const fechaFin = new Date(h[h.length - 1].ts).toISOString().split('T')[0];
+                return fechaFin <= o.dateOut;
+            });
+            const pctATiempo = terminadosConTs.length > 0
+                ? Math.round(terminadosATiempo.length / terminadosConTs.length * 100)
+                : null;
+
             document.getElementById('kpi-activas').innerText = activas;
             document.getElementById('kpi-activas-sub').innerText = `${pctA}% del total`;
             document.getElementById('kpi-terminados').innerText = terminados;
-            if (pctATiempo === null) { document.getElementById('kpi-porcentaje-terminados').innerText = `Sin datos exactos (${terminados} sin hora)`; }
-            else { document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConTs.length})`; }
+            if (pctATiempo === null) {
+                document.getElementById('kpi-porcentaje-terminados').innerText = `Sin datos exactos (${terminados} sin hora)`;
+            } else {
+                document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConTs.length})`;
+            }
             document.getElementById('kpi-retrasos').innerText = `${pctRec}%`;
             document.getElementById('kpi-retrasos-count').innerText = `${recambios} afectados`;
             document.getElementById('kpi-externas').innerText = `${pctExt}%`;
@@ -1598,6 +2228,7 @@
             document.getElementById('kpi-piezas-sub').innerText = periodLabelsShort[bossPeriod] || '';
             document.getElementById('boss-period-label').innerText = periodLabelFull[bossPeriod] || '';
             updatePeriodRangeLabel();
+
             renderCochesArea(periodOrders);
             renderPiezasArea(periodOrders);
             renderDestajos(periodOrders);
@@ -1607,6 +2238,7 @@
             renderDiasMediosFase(periodOrders);
             if (activeKpiDetail) renderKpiDetailTable(activeKpiDetail, periodOrders, todayStr);
         }
+
         window.toggleKpiDetail = (kpi) => {
             if (activeKpiDetail === kpi) { closeKpiDetail(); return; }
             activeKpiDetail = kpi;
@@ -1618,11 +2250,13 @@
             renderKpiDetailTable(kpi, periodOrders, todayStr);
             const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'block';
         }
+
         window.closeKpiDetail = () => {
             activeKpiDetail = null;
             document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-tab'));
             const panel = document.getElementById('kpi-detail-panel'); if (panel) panel.style.display = 'none';
         }
+
         function renderKpiDetailTable(kpi, periodOrders, todayStr) {
             const titles = { activas: 'Órdenes Activas', terminados: 'Órdenes Terminadas', recambios: 'Órdenes con Recambios Pendientes', externas: 'Órdenes con Reparación Externa', pasados: 'Órdenes Pasadas de Fecha' };
             let filtered = [];
@@ -1641,16 +2275,34 @@
                 const isOverdue = o.dateOut && o.dateOut < todayStr && o.status !== 'terminados';
                 let estadoLabel = STATUS_LABELS[o.status] || o.status || '-';
                 if (o.substatus) estadoLabel = `${estadoLabel} · ${o.substatus}`;
-                html += `<tr onclick="openDetailModal('${o.id}')"><td class="plate-cell">${o.plate || '-'}</td><td>${o.model || '-'}</td><td>${opBadge}</td><td class="text-muted small">${o.dateIn || '-'}</td><td class="date-cell ${isOverdue ? 'overdue' : ''}">${o.dateOut || '-'}</td><td class="small">${estadoLabel}</td></tr>`;
+                html += `
+                    <tr onclick="openDetailModal('${o.id}')">
+                        <td class="plate-cell">${o.plate || '-'}</td>
+                        <td>${o.model || '-'}</td>
+                        <td>${opBadge}</td>
+                        <td class="text-muted small">${o.dateIn || '-'}</td>
+                        <td class="date-cell ${isOverdue ? 'overdue' : ''}">${o.dateOut || '-'}</td>
+                        <td class="small">${estadoLabel}</td>
+                    </tr>
+                `;
             });
             tbody.innerHTML = html;
         }
+
         function renderInsuranceBars(periodOrders) {
-            const container = document.getElementById('chart-insurance-container'); if (!container) return;
+            const container = document.getElementById('chart-insurance-container');
+            if (!container) return;
             const insCounts = {};
             periodOrders.forEach(o => { const ins = (o.insurance && o.insurance.trim()) ? o.insurance.trim() : 'Sin asignar'; insCounts[ins] = (insCounts[ins] || 0) + 1; });
             const total = periodOrders.length;
-            let items = Object.keys(insCounts).filter(k => insCounts[k] > 0).map((k, i) => ({ label: k, value: insCounts[k], pct: total > 0 ? Math.round((insCounts[k] / total) * 100) : 0, color: k === 'Sin asignar' ? '#94a3b8' : COLOR_PALETTE[i % COLOR_PALETTE.length] }));
+            let items = Object.keys(insCounts)
+                .filter(k => insCounts[k] > 0)
+                .map((k, i) => ({
+                    label: k,
+                    value: insCounts[k],
+                    pct: total > 0 ? Math.round((insCounts[k] / total) * 100) : 0,
+                    color: k === 'Sin asignar' ? '#94a3b8' : COLOR_PALETTE[i % COLOR_PALETTE.length]
+                }));
             items.sort((a, b) => b.value - a.value);
             const smallItems = items.filter(i => i.pct < 3 && i.label !== 'Sin asignar');
             if (smallItems.length > 1) {
@@ -1662,16 +2314,30 @@
             }
             renderHorizontalBars(container, items);
         }
+
         function renderFasesBars(periodOrders) {
-            const container = document.getElementById('chart-fases-container'); if (!container) return;
+            const container = document.getElementById('chart-fases-container');
+            if (!container) return;
             const faseKeys = ['cargachapa', 'cargapintura', 'lunas', 'reparacion', 'montaje', 'paragolpes', 'destajos', 'pintura', 'terminados'];
             const faseColors = ['#2563eb', '#f59e0b', '#64748b', '#1d4ed8', '#059669', '#1e293b', '#0891b2', '#fbbf24', '#10b981'];
             const total = periodOrders.length;
-            let items = faseKeys.map((k, i) => { const value = periodOrders.filter(o => (o.status || '') === k).length; return { label: STATUS_LABELS[k] || k, value: value, pct: total > 0 ? Math.round((value / total) * 100) : 0, color: faseColors[i] }; }).filter(i => i.value > 0);
+            let items = faseKeys.map((k, i) => {
+                const value = periodOrders.filter(o => (o.status || '') === k).length;
+                return {
+                    label: STATUS_LABELS[k] || k,
+                    value: value,
+                    pct: total > 0 ? Math.round((value / total) * 100) : 0,
+                    color: faseColors[i]
+                };
+            }).filter(i => i.value > 0);
             renderHorizontalBars(container, items);
         }
 
-        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initNewOrderChecklist); } else { initNewOrderChecklist(); }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initNewOrderChecklist);
+        } else {
+            initNewOrderChecklist();
+        }
     </script>
 </body>
 </html>
