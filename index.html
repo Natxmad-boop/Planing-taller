@@ -35,7 +35,7 @@
         .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; align-items: flex-start; }
 
         .chapista-group-col {
-            flex: 0 0 115px; width: 115px; min-width: 115px; max-width: 115px;
+            flex: 0 0 130px; width: 130px; min-width: 130px; max-width: 130px;
             background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;
             padding: 6px; display: flex; flex-direction: column;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
@@ -59,8 +59,13 @@
         .chapista-group-header .chapista-name { font-size: 1rem; font-weight: 800; letter-spacing: 0.3px; text-align: center; }
         .chapista-group-header .chapista-chevron { margin-top: 6px; font-size: 0.7rem; color: #64748b; transition: transform 0.2s; }
         .chapista-group-header .header-info { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .chapista-group-header .header-total { margin-top: 6px; }
         .chapista-group-header .header-actions { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 6px; }
+
+        /* NUEVO: badges R/M en la cabecera */
+        .chapista-group-header .header-counts { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+        .mini-badge { font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; line-height: 1.1; }
+        .mini-badge.mini-rep { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .mini-badge.mini-mon { background-color: #d1fae5; color: #047857; border: 1px solid #86efac; }
 
         .chapista-group-col.expanded .chapista-group-header {
             flex-direction: row; justify-content: space-between; align-items: center;
@@ -68,8 +73,8 @@
             border-bottom: 2px solid rgba(0,0,0,0.08); cursor: pointer;
         }
         .chapista-group-col.expanded .chapista-group-header .header-info { flex-direction: row; gap: 8px; }
-        .chapista-group-col.expanded .chapista-group-header .header-total { margin-top: 0; }
         .chapista-group-col.expanded .chapista-group-header .header-actions { margin-top: 0; }
+        .chapista-group-col.expanded .chapista-group-header .header-counts { margin-top: 0; }
         .chapista-group-col.expanded .chapista-group-header .chapista-name { font-size: 0.85rem; }
         .chapista-group-col.expanded .chapista-group-header .chapista-chevron { margin-top: 0; margin-left: 6px; }
         .chapista-group-col.expanded .chapista-group-header:hover { background-color: #f1f5f9; border-radius: 4px; }
@@ -82,7 +87,6 @@
         .chapista-group-col.baja .chapista-sub-box { background-color: #f1f5f9; }
         .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
 
-        /* Al arrastrar, expandir todos para poder soltar cómodamente */
         .chapa-four-columns-container.dragging-active .chapista-group-col {
             flex: 0 0 340px; width: 340px; min-width: 340px; max-width: 340px; padding: 10px;
         }
@@ -226,7 +230,7 @@
 
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
-            .chapista-group-col { flex: 0 0 100px; width: 100px; min-width: 100px; max-width: 100px; padding: 6px; }
+            .chapista-group-col { flex: 0 0 110px; width: 110px; min-width: 110px; max-width: 110px; padding: 6px; }
             .chapista-group-col.expanded { flex: 0 0 300px; width: 300px; min-width: 300px; max-width: 300px; padding: 8px; }
             .chapista-group-header { font-size: 0.78rem; padding: 4px 6px; }
             .pintor-subcol { min-width: 140px; padding: 6px; }
@@ -251,7 +255,7 @@
             .donut-container { height: 180px; }
         }
         @media (max-width: 900px) {
-            .chapista-group-col { flex: 0 0 95px; width: 95px; min-width: 95px; max-width: 95px; }
+            .chapista-group-col { flex: 0 0 100px; width: 100px; min-width: 100px; max-width: 100px; }
             .chapista-group-col.expanded { flex: 0 0 270px; width: 270px; min-width: 270px; max-width: 270px; }
             .pintor-subcol { min-width: 120px; }
             .task-card { padding: 0.5rem !important; }
@@ -1144,9 +1148,6 @@
             if (icon) icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
         }
 
-        // ============================================================
-        // EXPANDIR / CONTRAER CHAPISTAS
-        // ============================================================
         window.toggleChapistaExpand = (opName) => {
             const sid = safeId(opName);
             const col = document.getElementById(`chapista-col-${sid}`);
@@ -1216,7 +1217,6 @@
                 else if (status === 'paragolpes') toggleColumnVisibility('paragolpes', true);
                 else if (status === 'destajos') toggleColumnVisibility('destajos', true);
                 else if (status === 'terminados') toggleColumnVisibility('terminados', true);
-                // Si es de un chapista, expandirlo automáticamente
                 if ((status === 'reparacion' || status === 'montaje') && targetOrder.operator) {
                     expandedChapistas.add(targetOrder.operator);
                 }
@@ -1400,7 +1400,6 @@
             const allBtn = document.getElementById('filter-btn-all'); if (allBtn) allBtn.classList.add('active-filter');
             const searchInput = document.getElementById('search-input'); if (searchInput) searchInput.value = val;
             const labelEl = document.getElementById('smart-filter-label'); if (labelEl) labelEl.innerText = labelText;
-            // Si es un filtro por operario chapista, expandirlo
             if (val.startsWith('op:')) {
                 const opName = val.replace('op:', '').trim();
                 const chOps = getChapistasList();
@@ -1620,6 +1619,11 @@
                 if (monEl) monEl.innerText = totalMon;
                 if (repCheckedEl) repCheckedEl.innerText = `${checkedRep}✓`;
                 if (monCheckedEl) monCheckedEl.innerText = `${checkedMon}✓`;
+                // NUEVO: actualizar contadores en la cabecera
+                const headRepEl = document.getElementById(`head-rep-${sid}`);
+                const headMonEl = document.getElementById(`head-mon-${sid}`);
+                if (headRepEl) headRepEl.innerText = totalRep;
+                if (headMonEl) headMonEl.innerText = totalMon;
             });
             getPintoresList().forEach(op => {
                 const opName = op.name;
@@ -1670,6 +1674,10 @@
                             <div class="header-info">
                                 <span class="chapista-name">${op.name}</span>
                                 ${badgeEstado}
+                            </div>
+                            <div class="header-counts" title="Reparaciones y Montajes">
+                                <span class="mini-badge mini-rep" title="En Reparación">R <span id="head-rep-${sid}">0</span></span>
+                                <span class="mini-badge mini-mon" title="En Montaje">M <span id="head-mon-${sid}">0</span></span>
                             </div>
                             <div class="header-actions">
                                 <span class="badge-total-op" id="count-total-${sid}">0</span>
