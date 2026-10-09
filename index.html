@@ -28,16 +28,67 @@
         .subcol-facturado { background-color: #f0fdf4; border: 1px dashed #86efac; }
         .subcol-pendiente-factura.drag-over { background-color: #fef3c7 !important; }
         .subcol-facturado.drag-over { background-color: #dcfce7 !important; }
-        .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; }
-        .chapista-group-col { flex: 1; min-width: 280px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.3s ease; }
+
+        /* ========================================================
+           CHAPISTAS · COMPACTO + EXPANSIÓN AL PINCHAR
+           ======================================================== */
+        .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; align-items: flex-start; }
+
+        .chapista-group-col {
+            flex: 0 0 115px; width: 115px; min-width: 115px; max-width: 115px;
+            background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;
+            padding: 6px; display: flex; flex-direction: column;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.25s ease;
+            cursor: pointer; overflow: hidden;
+        }
+        .chapista-group-col:hover { border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
+        .chapista-group-col.expanded {
+            flex: 0 0 340px; width: 340px; min-width: 340px; max-width: 340px;
+            padding: 10px; cursor: default; border-color: #2563eb;
+            box-shadow: 0 6px 16px rgba(37,99,235,0.18);
+        }
         .chapista-group-col.vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .chapista-group-col.baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
-        .chapista-group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 8px; border-bottom: 2px solid rgba(0,0,0,0.08); font-size: 0.85rem; font-weight: 700; }
-        .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
-        .chapista-sub-box { flex: 1; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
+
+        .chapista-group-header {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 6px 4px; margin-bottom: 0; border-bottom: none;
+            font-size: 0.85rem; font-weight: 700; position: relative;
+        }
+        .chapista-group-header .chapista-name { font-size: 1rem; font-weight: 800; letter-spacing: 0.3px; text-align: center; }
+        .chapista-group-header .chapista-chevron { margin-top: 6px; font-size: 0.7rem; color: #64748b; transition: transform 0.2s; }
+        .chapista-group-header .header-info { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .chapista-group-header .header-total { margin-top: 6px; }
+        .chapista-group-header .header-actions { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 6px; }
+
+        .chapista-group-col.expanded .chapista-group-header {
+            flex-direction: row; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; padding: 6px 8px;
+            border-bottom: 2px solid rgba(0,0,0,0.08); cursor: pointer;
+        }
+        .chapista-group-col.expanded .chapista-group-header .header-info { flex-direction: row; gap: 8px; }
+        .chapista-group-col.expanded .chapista-group-header .header-total { margin-top: 0; }
+        .chapista-group-col.expanded .chapista-group-header .header-actions { margin-top: 0; }
+        .chapista-group-col.expanded .chapista-group-header .chapista-name { font-size: 0.85rem; }
+        .chapista-group-col.expanded .chapista-group-header .chapista-chevron { margin-top: 0; margin-left: 6px; }
+        .chapista-group-col.expanded .chapista-group-header:hover { background-color: #f1f5f9; border-radius: 4px; }
+
+        .chapista-group-inner { display: none; }
+        .chapista-group-col.expanded .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
+
+        .chapista-sub-box { flex: 1; min-width: 0; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
         .chapista-group-col.vacaciones .chapista-sub-box { background-color: #fdf4ff; }
         .chapista-group-col.baja .chapista-sub-box { background-color: #f1f5f9; }
         .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
+
+        /* Al arrastrar, expandir todos para poder soltar cómodamente */
+        .chapa-four-columns-container.dragging-active .chapista-group-col {
+            flex: 0 0 340px; width: 340px; min-width: 340px; max-width: 340px; padding: 10px;
+        }
+        .chapa-four-columns-container.dragging-active .chapista-group-col .chapista-group-inner { display: flex !important; }
+
+        /* ============================================ */
         .pintura-split-container { display: flex; gap: 0.5rem; min-height: 60vh; overflow-x: auto; }
         .pintor-subcol { flex: 1; min-width: 180px; background-color: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 8px; min-height: 55vh; transition: all 0.2s; }
         .pintor-subcol.pintor-vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
@@ -175,7 +226,8 @@
 
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
-            .chapista-group-col { min-width: 240px; padding: 8px; }
+            .chapista-group-col { flex: 0 0 100px; width: 100px; min-width: 100px; max-width: 100px; padding: 6px; }
+            .chapista-group-col.expanded { flex: 0 0 300px; width: 300px; min-width: 300px; max-width: 300px; padding: 8px; }
             .chapista-group-header { font-size: 0.78rem; padding: 4px 6px; }
             .pintor-subcol { min-width: 140px; padding: 6px; }
             .pintor-header { font-size: 0.72rem; }
@@ -199,7 +251,8 @@
             .donut-container { height: 180px; }
         }
         @media (max-width: 900px) {
-            .chapista-group-col { min-width: 210px; }
+            .chapista-group-col { flex: 0 0 95px; width: 95px; min-width: 95px; max-width: 95px; }
+            .chapista-group-col.expanded { flex: 0 0 270px; width: 270px; min-width: 270px; max-width: 270px; }
             .pintor-subcol { min-width: 120px; }
             .task-card { padding: 0.5rem !important; }
         }
@@ -445,8 +498,8 @@
                 </div>
             </div>
             <div class="col-md-7 text-md-end d-flex gap-1 justify-content-md-end align-items-center flex-wrap">
-                <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" id="fullscreen-chapa-toggle-btn" onclick="toggleChapistasFullscreen()">
-                    <i class="fas fa-expand me-1" id="fullscreen-icon"></i> <span id="fullscreen-btn-text">Vista General Chapa</span>
+                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm bg-white" id="expand-all-chapistas-btn" onclick="toggleExpandAllChapistas()">
+                    <i class="fas fa-expand-alt me-1"></i> <span id="expand-all-btn-text">Expandir todos</span>
                 </button>
                 <div class="btn-group shadow-sm" role="group">
                     <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-cargachapa-btn" onclick="toggleColumnVisibility('cargachapa')"><i class="fas fa-eye me-1"></i> Carga Chapa</button>
@@ -514,7 +567,7 @@
             </div>
             <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Reparación y Montaje)</span></h6>
+                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha en uno para expandir)</span></h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('kanban-col-chapistas')"><i class="fas fa-compress-alt" id="min-icon-kanban-col-chapistas"></i></button>
@@ -825,11 +878,11 @@
         let showParagolpesCol = true;
         let showDestajosCol = false;
         let showTerminadosCol = false;
-        let chapistasFullscreenMode = true;
         let bossDashboardActive = false;
         let bossPeriod = 'month';
         let bossWorkType = 'all';
         let activeKpiDetail = null;
+        let expandedChapistas = new Set();
 
         const COLOR_PALETTE = ['#2563eb','#059669','#f59e0b','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c','#4338ca','#0d9488','#9333ea','#ca8a04','#e11d48','#0284c7','#a16207','#0f766e','#c026d3','#64748b','#db2777'];
 
@@ -1091,21 +1144,42 @@
             if (icon) icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
         }
 
-        window.toggleChapistasFullscreen = () => {
-            chapistasFullscreenMode = !chapistasFullscreenMode;
-            const btn = document.getElementById('fullscreen-chapa-toggle-btn');
-            const icon = document.getElementById('fullscreen-icon');
-            const btnText = document.getElementById('fullscreen-btn-text');
-            if (chapistasFullscreenMode) {
-                if (btn) btn.className = "btn btn-success btn-sm fw-bold shadow-sm";
-                if (icon) icon.className = "fas fa-th-large me-1";
-                if (btnText) btnText.innerText = "Vista General Chapa";
+        // ============================================================
+        // EXPANDIR / CONTRAER CHAPISTAS
+        // ============================================================
+        window.toggleChapistaExpand = (opName) => {
+            const sid = safeId(opName);
+            const col = document.getElementById(`chapista-col-${sid}`);
+            if (!col) return;
+            const isExpanded = col.classList.contains('expanded');
+            if (isExpanded) {
+                col.classList.remove('expanded');
+                expandedChapistas.delete(opName);
             } else {
-                if (btn) btn.className = "btn btn-primary btn-sm fw-bold shadow-sm";
-                if (icon) icon.className = "fas fa-expand me-1";
-                if (btnText) btnText.innerText = "Vista por Operarios";
+                col.classList.add('expanded');
+                expandedChapistas.add(opName);
             }
+            const chevron = col.querySelector('.chapista-chevron');
+            if (chevron) chevron.className = `fas ${isExpanded ? 'fa-chevron-down' : 'fa-chevron-up'} chapista-chevron`;
+            updateExpandAllButtonText();
+        };
+
+        window.toggleExpandAllChapistas = () => {
+            const chOpsList = getChapistasList();
+            const allExpanded = chOpsList.every(op => expandedChapistas.has(op.name));
+            if (allExpanded) { expandedChapistas.clear(); }
+            else { chOpsList.forEach(op => expandedChapistas.add(op.name)); }
             renderOrders();
+            updateExpandAllButtonText();
+        };
+
+        function updateExpandAllButtonText() {
+            const btnText = document.getElementById('expand-all-btn-text');
+            const chOpsList = getChapistasList();
+            if (!btnText) return;
+            if (chOpsList.length === 0) { btnText.innerText = 'Expandir todos'; return; }
+            const allExpanded = chOpsList.every(op => expandedChapistas.has(op.name));
+            btnText.innerText = allExpanded ? 'Contraer todos' : 'Expandir todos';
         }
 
         window.toggleColumnVisibility = (colName, forceState = null) => {
@@ -1142,6 +1216,10 @@
                 else if (status === 'paragolpes') toggleColumnVisibility('paragolpes', true);
                 else if (status === 'destajos') toggleColumnVisibility('destajos', true);
                 else if (status === 'terminados') toggleColumnVisibility('terminados', true);
+                // Si es de un chapista, expandirlo automáticamente
+                if ((status === 'reparacion' || status === 'montaje') && targetOrder.operator) {
+                    expandedChapistas.add(targetOrder.operator);
+                }
                 renderOrders();
                 setTimeout(() => {
                     document.querySelectorAll('.task-card').forEach(c => c.classList.remove('resaltado-busqueda'));
@@ -1322,6 +1400,12 @@
             const allBtn = document.getElementById('filter-btn-all'); if (allBtn) allBtn.classList.add('active-filter');
             const searchInput = document.getElementById('search-input'); if (searchInput) searchInput.value = val;
             const labelEl = document.getElementById('smart-filter-label'); if (labelEl) labelEl.innerText = labelText;
+            // Si es un filtro por operario chapista, expandirlo
+            if (val.startsWith('op:')) {
+                const opName = val.replace('op:', '').trim();
+                const chOps = getChapistasList();
+                if (chOps.some(o => o.name === opName)) expandedChapistas.add(opName);
+            }
             renderOrders();
         }
 
@@ -1350,7 +1434,20 @@
 
         window.allowDrop = (ev) => { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
         window.removeDropStyle = (ev) => { ev.currentTarget.classList.remove('drag-over'); }
-        window.drag = (ev, id) => { ev.dataTransfer.setData("text/plain", id); }
+        window.drag = (ev, id) => {
+            ev.dataTransfer.setData("text/plain", id);
+            const container = document.querySelector('.chapa-four-columns-container');
+            if (container) container.classList.add('dragging-active');
+        }
+
+        document.addEventListener('dragend', () => {
+            const container = document.querySelector('.chapa-four-columns-container');
+            if (container) container.classList.remove('dragging-active');
+        });
+        document.addEventListener('drop', () => {
+            const container = document.querySelector('.chapa-four-columns-container');
+            if (container) container.classList.remove('dragging-active');
+        });
 
         window.dropOrder = async (ev, targetStatus) => {
             ev.preventDefault(); ev.currentTarget.classList.remove('drag-over');
@@ -1409,6 +1506,7 @@
 
             renderChapistasStructure();
             renderPintoresStructure();
+            updateExpandAllButtonText();
 
             let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminadosPendiente: document.getElementById('list-terminados-pendiente'), terminadosFacturado: document.getElementById('list-terminados-facturado') };
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
@@ -1553,42 +1651,49 @@
             if (!wrapper) return;
             const chOpsList = getChapistasList();
             if (chOpsList.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; if (subtitle) subtitle.innerText = '(Sin operarios)'; return; }
-            if (subtitle) subtitle.innerText = '(Desglosado por Operarios)';
+            if (subtitle) subtitle.innerText = '(Pincha en uno para expandir)';
             let html = `<div class="chapa-four-columns-container">`;
             chOpsList.forEach(op => {
                 const sid = safeId(op.name);
                 const state = op.state || 'activo';
+                const isExpanded = expandedChapistas.has(op.name);
                 let colClass = 'chapista-group-col';
+                if (isExpanded) colClass += ' expanded';
                 if (state === 'vacaciones') colClass += ' vacaciones'; else if (state === 'baja') colClass += ' baja';
                 let badgeEstado = '';
-                if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴 Vacaciones</span>';
-                else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔ Baja</span>';
+                if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴</span>';
+                else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔</span>';
+                const opEscaped = String(op.name).replace(/'/g, "\\'");
                 html += `
-                    <div class="${colClass}">
-                        <div class="chapista-group-header">
-                            <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
-                            <div class="d-flex align-items-center gap-1">
-                                <span class="badge-total-op" id="count-total-${sid}">0</span>
-                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
+                    <div class="${colClass}" id="chapista-col-${sid}">
+                        <div class="chapista-group-header" onclick="toggleChapistaExpand('${opEscaped}')">
+                            <div class="header-info">
+                                <span class="chapista-name">${op.name}</span>
+                                ${badgeEstado}
                             </div>
+                            <div class="header-actions">
+                                <span class="badge-total-op" id="count-total-${sid}">0</span>
+                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', null)"><i class="far fa-check-square"></i></button>
+                            </div>
+                            <i class="fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} chapista-chevron"></i>
                         </div>
                         <div class="chapista-group-inner">
-                            <div class="chapista-sub-box subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_reparacion')">
+                            <div class="chapista-sub-box subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${opEscaped}_reparacion')">
                                 <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
                                     <span class="fw-bold text-primary">Rep.</span>
                                     <div class="d-flex align-items-center gap-1">
                                         <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;"><span id="count-rep-${sid}">0</span><span class="badge-count-checked" id="count-rep-checked-${sid}">0✓</span></span>
-                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'reparacion')"><i class="far fa-check-square"></i></button>
+                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', 'reparacion')"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
                                 <div id="subcol-rep-${sid}" class="d-flex flex-column gap-2"></div>
                             </div>
-                            <div class="chapista-sub-box subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_montaje')">
+                            <div class="chapista-sub-box subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${opEscaped}_montaje')">
                                 <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
                                     <span class="fw-bold text-success">Mont.</span>
                                     <div class="d-flex align-items-center gap-1">
                                         <span class="badge bg-success rounded-pill" style="font-size:0.65rem;"><span id="count-mon-${sid}">0</span><span class="badge-count-checked" id="count-mon-checked-${sid}">0✓</span></span>
-                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', 'montaje')"><i class="far fa-check-square"></i></button>
+                                        <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', 'montaje')"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
                                 <div id="subcol-mon-${sid}" class="d-flex flex-column gap-2"></div>
@@ -1804,34 +1909,15 @@
             el.innerText = `${formatDateShort(range.start)} — ${formatDateShort(range.end)}`;
         }
 
-        // ===== FILTRO DE PERIODO (por ACTIVIDAD, no solo por dateIn) =====
         function filterOrdersByBossPeriod(list, period) {
             const range = getBossPeriodRange(period);
             if (!range) return list;
             return list.filter(o => {
-                // 1. ¿La entrada (dateIn) cae dentro del periodo?
-                if (o.dateIn) {
-                    const d = new Date(o.dateIn + 'T12:00:00');
-                    if (d >= range.start && d <= range.end) return true;
-                }
-                // 2. ¿La salida (dateOut) cae dentro del periodo?
-                if (o.dateOut) {
-                    const d = new Date(o.dateOut + 'T12:00:00');
-                    if (d >= range.start && d <= range.end) return true;
-                }
-                // 3. ¿Algún movimiento del historial cae dentro del periodo?
-                if (Array.isArray(o.history)) {
-                    for (const h of o.history) {
-                        if (h && h.ts) {
-                            const d = new Date(h.ts);
-                            if (d >= range.start && d <= range.end) return true;
-                        }
-                    }
-                }
-                // 4. ¿El coche está activo AHORA? (siempre cuenta)
+                if (o.dateIn) { const d = new Date(o.dateIn + 'T12:00:00'); if (d >= range.start && d <= range.end) return true; }
+                if (o.dateOut) { const d = new Date(o.dateOut + 'T12:00:00'); if (d >= range.start && d <= range.end) return true; }
+                if (Array.isArray(o.history)) { for (const h of o.history) { if (h && h.ts) { const d = new Date(h.ts); if (d >= range.start && d <= range.end) return true; } } }
                 const status = o.status || 'reparacion';
                 if (status !== 'terminados') return true;
-                // 5. Si nada de lo anterior coincide, fuera del periodo
                 return false;
             });
         }
@@ -1850,16 +1936,12 @@
             return null;
         }
 
-        function countCochesByArea(list, areaKey) {
-            return list.filter(o => pasoPorArea(o, areaKey)).length;
-        }
-
+        function countCochesByArea(list, areaKey) { return list.filter(o => pasoPorArea(o, areaKey)).length; }
         function sumPiezasByArea(list, areaKey) {
             let total = 0;
             list.forEach(o => { if (pasoPorArea(o, areaKey)) total += getPiecesCount(o); });
             return total;
         }
-
         function getOperatorsForArea(list, areaKey, mode = 'coches') {
             const opMap = {};
             let validOps = null;
@@ -2116,7 +2198,6 @@
             renderBarsWithOperators(container, items);
         }
 
-        // ===== DÍAS MEDIOS POR FASE =====
         function renderDiasMediosFase(periodOrders) {
             const container = document.getElementById('chart-dias-fase-container');
             if (!container) return;
@@ -2183,7 +2264,6 @@
             const total = periodOrders.length;
             const terminados = periodOrders.filter(o => o.status === 'terminados').length;
             const activas = total - terminados;
-            const pctT = total > 0 ? Math.round((terminados / total) * 100) : 0;
             const pctA = total > 0 ? Math.round((activas / total) * 100) : 0;
             const recambios = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'recambios').length;
             const externas = periodOrders.filter(o => categorizeOrderForKpi(o, todayStr) === 'externas').length;
