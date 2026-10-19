@@ -12,10 +12,57 @@
         .navbar { background-color: #ffffff; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .kanban-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
         .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; }
-        .kanban-col.minimized { min-width: 80px !important; flex: 0 0 80px !important; min-height: auto !important; }
-        .kanban-col.minimized .kanban-dropzone, .kanban-col.minimized .chapa-split-container, .kanban-col.minimized .pintura-split-container, .kanban-col.minimized .badge, .kanban-col.minimized .small { display: none !important; }
-        .kanban-col.minimized h6 { writing-mode: vertical-rl; transform: rotate(180deg); margin: 0 auto !important; padding: 10px 0; font-size: 0.85rem !important; text-align: center; }
-        .kanban-col.minimized .d-flex.justify-content-between { flex-direction: column; align-items: center; height: 100%; }
+        
+        /* ESTILO DE COLUMNA PLEGADA (Como Taller Flow) */
+        .kanban-col.minimized {
+            min-width: 75px !important;
+            flex: 0 0 75px !important;
+            min-height: 250px !important;
+            padding: 10px 5px !important;
+            cursor: pointer;
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .kanban-col.minimized:hover {
+            background-color: #e2e8f0;
+            border-color: #94a3b8;
+        }
+        .kanban-col.minimized .kanban-dropzone,
+        .kanban-col.minimized .chapa-split-container,
+        .kanban-col.minimized .pintura-split-container,
+        .kanban-col.minimized .small {
+            display: none !important;
+        }
+        .kanban-col.minimized .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            margin-bottom: 0 !important;
+            width: 100%;
+        }
+        .kanban-col.minimized h6 {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            margin: auto 0 !important;
+            padding: 10px 0 !important;
+            font-size: 0.85rem !important;
+            text-align: center;
+            letter-spacing: 1px;
+            color: #475569;
+        }
+        .kanban-col.minimized .badge {
+            display: inline-flex !important;
+            font-size: 0.8rem !important;
+            padding: 4px 8px !important;
+            margin-bottom: 8px !important;
+        }
+        .kanban-col.minimized .btn {
+            margin-top: auto !important;
+        }
+
         .kanban-dropzone { min-height: 60vh; border-radius: 8px; transition: background-color 0.2s; }
         .kanban-dropzone.drag-over { background-color: rgba(37, 99, 235, 0.15) !important; border: 2px dashed #2563eb; }
         .chapa-split-container { display: flex; gap: 0.5rem; min-height: 60vh; }
@@ -29,9 +76,6 @@
         .subcol-pendiente-factura.drag-over { background-color: #fef3c7 !important; }
         .subcol-facturado.drag-over { background-color: #dcfce7 !important; }
 
-        /* ========================================================
-           CHAPISTAS · COMPACTO + EXPANSIÓN AL PINCHAR
-           ======================================================== */
         .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; align-items: flex-start; }
 
         .chapista-group-col {
@@ -61,7 +105,6 @@
         .chapista-group-header .header-info { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .chapista-group-header .header-actions { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 6px; }
 
-        /* NUEVO: badges R/M en la cabecera */
         .chapista-group-header .header-counts { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
         .mini-badge { font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; line-height: 1.1; }
         .mini-badge.mini-rep { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
@@ -92,7 +135,6 @@
         }
         .chapa-four-columns-container.dragging-active .chapista-group-col .chapista-group-inner { display: flex !important; }
 
-        /* ============================================ */
         .pintura-split-container { display: flex; gap: 0.5rem; min-height: 60vh; overflow-x: auto; }
         .pintor-subcol { flex: 1; min-width: 180px; background-color: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 8px; min-height: 55vh; transition: all 0.2s; }
         .pintor-subcol.pintor-vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
@@ -125,6 +167,7 @@
         .history-item::before { content: ''; position: absolute; left: -1.35rem; top: 0.25rem; width: 10px; height: 10px; border-radius: 50%; background-color: #2563eb; }
         .legend-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 15px; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
         .btn-quick-filter.active-filter { background-color: #1e293b !important; color: #ffffff !important; border-color: #1e293b !important; box-shadow: 0 0 10px rgba(30, 41, 59, 0.4); }
+        
         .boss-dashboard-container { background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 40%, #f0f9ff 100%); border: 1px solid #c7d2fe; border-radius: 18px; padding: 24px; box-shadow: 0 20px 40px -20px rgba(37, 99, 235, 0.15), 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 2rem; }
         .boss-dashboard-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 18px; margin-bottom: 22px; border-bottom: 1px solid #e2e8f0; }
         .boss-dashboard-title { display: flex; align-items: center; gap: 12px; }
@@ -297,6 +340,10 @@
                 <span id="user-display" class="text-secondary small d-none d-md-inline"><i class="fas fa-user-circle me-1"></i> Usuario</span>
                 <button class="btn btn-outline-dark btn-sm fw-bold" onclick="toggleBossDashboard()"><i class="fas fa-chart-bar me-1"></i> <span id="boss-btn-text">Ver Panel 360</span></button>
                 <button class="btn btn-outline-primary btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#operatorsModal"><i class="fas fa-users-cog me-1"></i> Operarios</button>
+                
+                <!-- BOTÓN DE AJUSTES -->
+                <button class="btn btn-outline-dark btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#settingsModal"><i class="fas fa-sliders-h me-1"></i> Ajustes</button>
+                
                 <button class="btn btn-outline-secondary btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-1"></i> Salir</button>
             </div>
         </nav>
@@ -505,14 +552,7 @@
                 <button type="button" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm bg-white" id="expand-all-chapistas-btn" onclick="toggleExpandAllChapistas()">
                     <i class="fas fa-expand-alt me-1"></i> <span id="expand-all-btn-text">Expandir todos</span>
                 </button>
-                <div class="btn-group shadow-sm" role="group">
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-cargachapa-btn" onclick="toggleColumnVisibility('cargachapa')"><i class="fas fa-eye me-1"></i> Carga Chapa</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-cargapintura-btn" onclick="toggleColumnVisibility('cargapintura')"><i class="fas fa-eye me-1"></i> Carga Pintura</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-lunas-btn" onclick="toggleColumnVisibility('lunas')"><i class="fas fa-eye me-1"></i> Lunas</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-paragolpes-btn" onclick="toggleColumnVisibility('paragolpes')"><i class="fas fa-eye-slash me-1"></i> Paragolpes</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-destajos-btn" onclick="toggleColumnVisibility('destajos')"><i class="fas fa-eye-slash me-1"></i> Destajos</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white" id="toggle-terminados-btn" onclick="toggleColumnVisibility('terminados')"><i class="fas fa-eye me-1"></i> Terminados</button>
-                </div>
+                
                 <div class="btn-group shadow-sm" role="group" id="quick-filters-group">
                     <button type="button" class="btn btn-outline-danger btn-sm fw-bold bg-white btn-quick-filter" id="filter-btn-urgent" onclick="setQuickFilter('urgent')"><i class="fas fa-fire me-1"></i> Urgentes</button>
                     <button type="button" class="btn btn-outline-warning btn-sm fw-bold text-dark bg-white btn-quick-filter" id="filter-btn-overdue" onclick="setQuickFilter('overdue')"><i class="fas fa-exclamation-triangle me-1"></i> Vencidos</button>
@@ -635,6 +675,84 @@
         </div>
     </div>
 
+    <!-- MODAL DE AJUSTES -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-sliders-h me-2 text-primary"></i> Ajustes del taller</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    
+                    <!-- SECCIÓN: COLUMNAS DEL TABLERO -->
+                    <h6 class="fw-bold text-dark mb-1">Departamentos <span class="text-muted fw-normal small">(Columnas del tablero)</span></h6>
+                    <p class="text-muted small mb-3">Marca o desmarca para mostrar/ocultar columnas en el tablero principal.</p>
+                    <div class="d-flex flex-column gap-2 mb-4">
+                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
+                            <input class="form-check-input" type="checkbox" id="chk-col-cargachapa" checked onchange="toggleColumnVisibility('cargachapa', this.checked)">
+                            <label class="form-check-label fw-bold" for="chk-col-cargachapa">Carga Chapa</label>
+                        </div>
+                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
+                            <input class="form-check-input" type="checkbox" id="chk-col-cargapintura" checked onchange="toggleColumnVisibility('cargapintura', this.checked)">
+                            <label class="form-check-label fw-bold" for="chk-col-cargapintura">Carga Pintura</label>
+                        </div>
+                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
+                            <input class="form-check-input" type="checkbox" id="chk-col-lunas" checked onchange="toggleColumnVisibility('lunas', this.checked)">
+                            <label class="form-check-label fw-bold" for="chk-col-lunas">Lunas</label>
+                        </div>
+                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
+                            <input class="form-check-input" type="checkbox" id="chk-col-paragolpes" checked onchange="toggleColumnVisibility('paragolpes', this.checked)">
+                            <label class="form-check-label fw-bold" for="chk-col-paragolpes">Paragolpes</label>
+                        </div>
+                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
+                            <input class="form-check-input" type="checkbox" id="chk-col-destajos" checked onchange="toggleColumnVisibility('destajos', this.checked)">
+                            <label class="form-check-label fw-bold" for="chk-col-destajos">Destajos</label>
+                        </div>
+                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
+                            <input class="form-check-input" type="checkbox" id="chk-col-terminados" checked onchange="toggleColumnVisibility('terminados', this.checked)">
+                            <label class="form-check-label fw-bold" for="chk-col-terminados">Terminados</label>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN: SUBESTADOS -->
+                    <h6 class="fw-bold text-dark mb-1 mt-4">Subestados <span class="text-muted fw-normal small">(Avisos en las tarjetas)</span></h6>
+                    <p class="text-muted small mb-2">Añade avisos como "Pendiente de recambios" o "Pieza reparándose fuera".</p>
+                    <form onsubmit="handleAddSubstatus(event)" class="input-group input-group-sm mb-3">
+                        <input type="text" id="new-substatus-name" class="form-control" placeholder="Nuevo subestado..." required autocomplete="off">
+                        <button class="btn btn-primary fw-bold" type="submit">Añadir</button>
+                    </form>
+                    <div id="substatuses-list" class="d-flex flex-column gap-2 mb-2" style="max-height: 250px; overflow-y: auto;"></div>
+
+                    <!-- SECCIÓN: PIEZAS -->
+                    <h6 class="fw-bold text-dark mb-1 mt-4">Piezas del vehículo <span class="text-muted fw-normal small">(Checklist)</span></h6>
+                    <p class="text-muted small mb-2">Configura las zonas (ej. Mecánica) y las piezas que aparecen en la ficha.</p>
+                    
+                    <div class="row mb-3 g-2">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold mb-1">Añadir nueva Zona</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="new-zone-name" class="form-control" placeholder="Ej. Mecánica">
+                                <button class="btn btn-secondary fw-bold" onclick="handleAddZone()">Zona</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold mb-1">Añadir nueva Pieza</label>
+                            <div class="input-group input-group-sm">
+                                <select id="piece-zone-select" class="form-select" style="max-width: 120px;"></select>
+                                <input type="text" id="new-piece-name" class="form-control" placeholder="Ej. Filtro de aceite">
+                                <button class="btn btn-secondary fw-bold" onclick="handleAddPiece()">Pieza</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="pieces-management-list" class="mb-2" style="max-height: 300px; overflow-y:auto;"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="operatorsModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
@@ -726,18 +844,7 @@
                             <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Operario</label><select id="operator-select" class="form-select" onchange="autoSuggestStatusFromOperator()"><option value="">Sin asignar (Libre)</option></select></div>
                             <div class="col-md-6">
                                 <label class="form-label small text-secondary fw-bold">Subestado</label>
-                                <select id="car-substatus" class="form-select">
-                                    <option value="">Ninguno / Normal</option>
-                                    <option value="Ampliación">Ampliación</option>
-                                    <option value="Pendiente recambios">Pendiente recambios</option>
-                                    <option value="Paragolpes fuera">Paragolpes fuera</option>
-                                    <option value="Faro izquierdo / piloto reparándose">Faro izq. / piloto reparándose</option>
-                                    <option value="Faro derecho / piloto reparándose">Faro dcho. / piloto reparándose</option>
-                                    <option value="Luna aquí">Luna aquí</option>
-                                    <option value="Luna pendiente">Luna pendiente</option>
-                                    <option value="Golpe taller">Golpe taller</option>
-                                    <option value="Llanta reparándose fuera">Llanta reparándose fuera</option>
-                                </select>
+                                <select id="car-substatus" class="form-select"></select>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -799,14 +906,18 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const PIECES_ZONES = [
+        // Configuración de Piezas Dinámica
+        const DEFAULT_PIECES_ZONES = [
             { title: "Parte Delantera", cls: "", pieces: ["Paragolpes delantero","Spoiler delantero","Molduras negras","Capó","Luna delantera","Faro izquierdo","Faro derecho"] },
             { title: "Parte Trasera", cls: "zone-trasera", pieces: ["Paragolpes trasero","Spoiler trasero","Moldura negra","Portón","Luna trasera","Piloto izquierdo","Piloto derecho"] },
             { title: "Lateral Izquierdo", cls: "zone-lat-izq", pieces: ["Aleta delantera izquierda","Puerta delantera izquierda","Puerta trasera izquierda","Aleta trasera izquierda","Estribo izquierdo","Llanta delantera izquierda","Llanta trasera izquierda","Retrovisor izquierdo","Tapa de carga/combustible izq."] },
             { title: "Lateral Derecho", cls: "zone-lat-der", pieces: ["Aleta delantera derecha","Puerta delantera derecha","Puerta trasera derecha","Aleta trasera derecha","Estribo derecho","Llanta delantera derecha","Llanta trasera derecha","Retrovisor derecho","Tapa de carga/combustible der."] },
             { title: "Molduras Pase de Aleta", cls: "zone-molduras", pieces: ["Moldura pase aleta delantera izq.","Moldura pase aleta delantera der.","Moldura pase aleta trasera izq.","Moldura pase aleta trasera der."] },
-            { title: "Techo", cls: "zone-techo", pieces: ["Techo","Varillero"] }
+            { title: "Techo", cls: "zone-techo", pieces: ["Techo","Varillero"] },
+            { title: "Mecánica", cls: "zone-techo", pieces: ["Frenos","Suspensión","Distribución","Aceite y filtros","Embrague","Escape"] }
         ];
+
+        let piecesZonesData = JSON.parse(localStorage.getItem('planning360_pieces')) || DEFAULT_PIECES_ZONES;
 
         const COCHE_COMPLETO_PIEZAS = 12;
 
@@ -819,6 +930,12 @@
             "ARAG", "Helvetia", "Génesis", "MMT Seguros", "Fénix Directo",
             "Qualitas Auto", "Admiral", "Verti", "Balumba", "Regal",
             "Direct Seguros", "Winthertur", "Particular"
+        ];
+
+        let substatusesList = JSON.parse(localStorage.getItem('planning360_substatuses')) || [
+            "Ampliación", "Pendiente recambios", "Paragolpes fuera", 
+            "Faro izquierdo / piloto reparándose", "Faro derecho / piloto reparándose", 
+            "Luna aquí", "Luna pendiente", "Golpe taller", "Llanta reparándose fuera"
         ];
 
         function normalizeText(str) {
@@ -926,9 +1043,10 @@
             return false;
         }
 
+        // NUEVA FUNCIÓN PARA CONSTRUIR EL CHECKLIST DINÁMICO
         function buildPiecesChecklistHtml(checkedPieces, prefixId) {
             let html = '';
-            PIECES_ZONES.forEach((zone, zIdx) => {
+            piecesZonesData.forEach((zone, zIdx) => {
                 html += `<div class="col-md-4"><div class="pieces-zone-card"><div class="pieces-zone-title ${zone.cls}">${zone.title}</div>`;
                 zone.pieces.forEach((piece, pIdx) => {
                     const id = `${prefixId}-chk-${zIdx}-${pIdx}`;
@@ -1140,13 +1258,188 @@
             else if (op.type === 'pintura') { statusSelect.value = 'pintura'; }
         }
 
+        // ==========================================
+        // AJUSTES Y PLEGADO
+        // ==========================================
+
         window.toggleMinimizeColumn = (columnId) => {
             const col = document.getElementById(columnId);
             const icon = document.getElementById(`min-icon-${columnId}`);
             if (!col) return;
             col.classList.toggle('minimized');
             if (icon) icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
+            saveColumnStates();
+        };
+
+        function saveColumnStates() {
+            try {
+                const states = {};
+                document.querySelectorAll('.kanban-col').forEach(col => {
+                    if (col.id) states[col.id] = col.classList.contains('minimized');
+                });
+                localStorage.setItem('planning360_colStates', JSON.stringify(states));
+            } catch(e) {}
         }
+
+        function loadColumnStates() {
+            try {
+                const raw = localStorage.getItem('planning360_colStates');
+                if (!raw) return;
+                const states = JSON.parse(raw);
+                Object.keys(states).forEach(id => {
+                    const col = document.getElementById(id);
+                    const icon = document.getElementById(`min-icon-${id}`);
+                    if (col && states[id]) {
+                        col.classList.add('minimized');
+                        if (icon) icon.className = 'fas fa-expand-alt';
+                    }
+                });
+            } catch(e) {}
+        }
+
+        // GESTIÓN DE SUBESTADOS
+        window.handleAddSubstatus = (e) => {
+            e.preventDefault();
+            const inp = document.getElementById('new-substatus-name');
+            const val = inp.value.trim();
+            if (!val) return;
+            if (substatusesList.includes(val)) { alert('Ya existe'); return; }
+            
+            substatusesList.push(val);
+            localStorage.setItem('planning360_substatuses', JSON.stringify(substatusesList));
+            inp.value = '';
+            renderSubstatusesList();
+            updateSubstatusDropdowns();
+        };
+
+        window.deleteSubstatus = (name) => {
+            if (!confirm('¿Eliminar subestado?')) return;
+            substatusesList = substatusesList.filter(s => s !== name);
+            localStorage.setItem('planning360_substatuses', JSON.stringify(substatusesList));
+            renderSubstatusesList();
+            updateSubstatusDropdowns();
+        };
+
+        function renderSubstatusesList() {
+            const list = document.getElementById('substatuses-list');
+            if (!list) return;
+            list.innerHTML = substatusesList.map(s => `
+                <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border">
+                    <span class="fw-bold small"><i class="fas fa-tag text-warning me-2"></i>${s}</span>
+                    <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteSubstatus('${s}')"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function updateSubstatusDropdowns() {
+            const selNew = document.getElementById('car-substatus');
+            if (selNew) {
+                const current = selNew.value;
+                selNew.innerHTML = '<option value="">Ninguno / Normal</option>' + 
+                    substatusesList.map(s => `<option value="${s}">${s}</option>`).join('');
+                if (current) selNew.value = current;
+            }
+        }
+
+        // GESTIÓN DE PIEZAS
+        window.handleAddZone = () => {
+            const inp = document.getElementById('new-zone-name');
+            const val = inp.value.trim();
+            if (!val) return;
+            if (piecesZonesData.some(z => z.title.toLowerCase() === val.toLowerCase())) { alert('Ya existe esa zona'); return; }
+            
+            piecesZonesData.push({ title: val, cls: "", pieces: [] });
+            localStorage.setItem('planning360_pieces', JSON.stringify(piecesZonesData));
+            inp.value = '';
+            renderPiecesSettingsList();
+            updatePieceZoneSelect();
+            initNewOrderChecklist(); // Refrescar modal de nueva orden
+        };
+
+        window.handleAddPiece = () => {
+            const zoneIdx = document.getElementById('piece-zone-select').value;
+            const inp = document.getElementById('new-piece-name');
+            const val = inp.value.trim();
+            if (!val || zoneIdx === "") { alert('Escribe una pieza y selecciona una zona'); return; }
+            
+            const zone = piecesZonesData[zoneIdx];
+            if (zone.pieces.includes(val)) { alert('Ya existe esa pieza en la zona'); return; }
+            
+            zone.pieces.push(val);
+            localStorage.setItem('planning360_pieces', JSON.stringify(piecesZonesData));
+            inp.value = '';
+            renderPiecesSettingsList();
+            initNewOrderChecklist();
+        };
+
+        window.deleteZone = (zoneIdx) => {
+            if (!confirm('¿Eliminar toda la zona y sus piezas?')) return;
+            piecesZonesData.splice(zoneIdx, 1);
+            localStorage.setItem('planning360_pieces', JSON.stringify(piecesZonesData));
+            renderPiecesSettingsList();
+            updatePieceZoneSelect();
+            initNewOrderChecklist();
+        };
+
+        window.deletePiece = (zoneIdx, pieceIdx) => {
+            if (!confirm('¿Eliminar esta pieza?')) return;
+            piecesZonesData[zoneIdx].pieces.splice(pieceIdx, 1);
+            localStorage.setItem('planning360_pieces', JSON.stringify(piecesZonesData));
+            renderPiecesSettingsList();
+            initNewOrderChecklist();
+        };
+
+        function renderPiecesSettingsList() {
+            const list = document.getElementById('pieces-management-list');
+            if (!list) return;
+            if (piecesZonesData.length === 0) {
+                list.innerHTML = '<p class="text-muted small text-center py-2">No hay zonas configuradas</p>';
+                return;
+            }
+            let html = '';
+            piecesZonesData.forEach((zone, zIdx) => {
+                html += `<div class="border rounded p-2 mb-2 bg-light">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-2">
+                        <span class="fw-bold text-primary"><i class="fas fa-folder me-1"></i> ${zone.title}</span>
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteZone(${zIdx})" title="Eliminar zona"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">`;
+                if (zone.pieces.length === 0) {
+                    html += `<span class="text-muted small italic">Sin piezas</span>`;
+                } else {
+                    zone.pieces.forEach((piece, pIdx) => {
+                        html += `<span class="badge bg-white text-dark border shadow-sm p-2">
+                            ${piece} 
+                            <i class="fas fa-times ms-1 text-danger" style="cursor:pointer" onclick="deletePiece(${zIdx}, ${pIdx})"></i>
+                        </span>`;
+                    });
+                }
+                html += `</div></div>`;
+            });
+            list.innerHTML = html;
+        }
+
+        function updatePieceZoneSelect() {
+            const sel = document.getElementById('piece-zone-select');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Zona...</option>' + 
+                piecesZonesData.map((z, i) => `<option value="${i}">${z.title}</option>`).join('');
+        }
+
+        // Actualizar los checkboxes cuando se cambie la visibilidad desde el código
+        window.toggleColumnVisibility = (colName, forceState = null) => {
+            if (colName === 'cargachapa') { showCargaChapaCol = forceState !== null ? forceState : !showCargaChapaCol; const w = document.getElementById('col-cargachapa-wrapper'); if (w) w.style.display = showCargaChapaCol ? 'block' : 'none'; }
+            else if (colName === 'cargapintura') { showCargaPinturaCol = forceState !== null ? forceState : !showCargaPinturaCol; const w = document.getElementById('col-cargapintura-wrapper'); if (w) w.style.display = showCargaPinturaCol ? 'block' : 'none'; }
+            else if (colName === 'lunas') { showLunasCol = forceState !== null ? forceState : !showLunasCol; const w = document.getElementById('col-lunas-wrapper'); if (w) w.style.display = showLunasCol ? 'block' : 'none'; }
+            else if (colName === 'paragolpes') { showParagolpesCol = forceState !== null ? forceState : !showParagolpesCol; const w = document.getElementById('col-paragolpes-wrapper'); if (w) w.style.display = showParagolpesCol ? 'block' : 'none'; }
+            else if (colName === 'destajos') { showDestajosCol = forceState !== null ? forceState : !showDestajosCol; const w = document.getElementById('col-destajos-wrapper'); if (w) w.style.display = showDestajosCol ? 'block' : 'none'; }
+            else if (colName === 'terminados') { showTerminadosCol = forceState !== null ? forceState : !showTerminadosCol; const w = document.getElementById('col-terminados-wrapper'); if (w) w.style.display = showTerminadosCol ? 'block' : 'none'; }
+            
+            // Sincronizar checkbox del modal
+            const chk = document.getElementById(`chk-col-${colName}`);
+            if (chk) chk.checked = forceState !== null ? forceState : eval(`show${colName.charAt(0).toUpperCase() + colName.slice(1)}Col`);
+        };
+        // ==========================================
 
         window.toggleChapistaExpand = (opName) => {
             const sid = safeId(opName);
@@ -1181,15 +1474,6 @@
             if (chOpsList.length === 0) { btnText.innerText = 'Expandir todos'; return; }
             const allExpanded = chOpsList.every(op => expandedChapistas.has(op.name));
             btnText.innerText = allExpanded ? 'Contraer todos' : 'Expandir todos';
-        }
-
-        window.toggleColumnVisibility = (colName, forceState = null) => {
-            if (colName === 'cargachapa') { showCargaChapaCol = forceState !== null ? forceState : !showCargaChapaCol; const w = document.getElementById('col-cargachapa-wrapper'); if (w) w.style.display = showCargaChapaCol ? 'block' : 'none'; }
-            else if (colName === 'cargapintura') { showCargaPinturaCol = forceState !== null ? forceState : !showCargaPinturaCol; const w = document.getElementById('col-cargapintura-wrapper'); if (w) w.style.display = showCargaPinturaCol ? 'block' : 'none'; }
-            else if (colName === 'lunas') { showLunasCol = forceState !== null ? forceState : !showLunasCol; const w = document.getElementById('col-lunas-wrapper'); if (w) w.style.display = showLunasCol ? 'block' : 'none'; }
-            else if (colName === 'paragolpes') { showParagolpesCol = forceState !== null ? forceState : !showParagolpesCol; const w = document.getElementById('col-paragolpes-wrapper'); if (w) w.style.display = showParagolpesCol ? 'block' : 'none'; }
-            else if (colName === 'destajos') { showDestajosCol = forceState !== null ? forceState : !showDestajosCol; const w = document.getElementById('col-destajos-wrapper'); if (w) w.style.display = showDestajosCol ? 'block' : 'none'; }
-            else if (colName === 'terminados') { showTerminadosCol = forceState !== null ? forceState : !showTerminadosCol; const w = document.getElementById('col-terminados-wrapper'); if (w) w.style.display = showTerminadosCol ? 'block' : 'none'; }
         }
 
         window.setQuickFilter = (filterType) => {
@@ -1381,16 +1665,10 @@
                 html += `<li><h6 class="dropdown-header text-warning fw-bold ps-4">--- Pintores ---</h6></li>`;
                 pinOps.forEach(op => { let count = orders.filter(o => (o.operator || '').trim().toLowerCase() === op.name.toLowerCase() && o.status !== 'terminados').length; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<li><a class="dropdown-item ps-4 d-flex justify-content-between align-items-center" href="#" onclick="handleSmartFilterSelect('op:${op.name}', '${op.name}')"><span class="badge badge-pun px-2 py-1">${op.name}${suffix}</span><span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;">${count}</span></a></li>`; });
             }
-            html += `<li><hr class="dropdown-divider"></li><li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Ampliación', 'Ampliación')"><div class="badge substatus-badge-ampliacion">Ampliación</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Pendiente recambios', 'Pendiente recambios')"><div class="badge substatus-badge-recambios">Pendiente recambios</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Paragolpes fuera', 'Paragolpes fuera')"><div class="badge bg-light text-dark border small">Paragolpes fuera</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro izquierdo / piloto reparándose', 'Faro izq. reparándose')"><div class="badge bg-light text-dark border small">Faro izq. reparándose</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Faro derecho / piloto reparándose', 'Faro dcho. reparándose')"><div class="badge bg-light text-dark border small">Faro dcho. reparándose</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna aquí', 'Luna aquí')"><div class="badge bg-light text-dark border small">Luna aquí</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Luna pendiente', 'Luna pendiente')"><div class="badge bg-light text-dark border small">Luna pendiente</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Golpe taller', 'Golpe taller')"><div class="badge bg-light text-dark border small">Golpe taller</div></a></li>
-                <li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:Llanta reparándose fuera', 'Llanta reparándose fuera')"><div class="badge bg-light text-dark border small">Llanta reparándose fuera</div></a></li>`;
+            html += `<li><hr class="dropdown-divider"></li><li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>`;
+            substatusesList.forEach(s => {
+                html += `<li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:${s}', '${s}')"><div class="badge bg-light text-dark border small">${s}</div></a></li>`;
+            });
             dropdownMenu.innerHTML = html;
         }
 
@@ -1619,7 +1897,6 @@
                 if (monEl) monEl.innerText = totalMon;
                 if (repCheckedEl) repCheckedEl.innerText = `${checkedRep}✓`;
                 if (monCheckedEl) monCheckedEl.innerText = `${checkedMon}✓`;
-                // NUEVO: actualizar contadores en la cabecera
                 const headRepEl = document.getElementById(`head-rep-${sid}`);
                 const headMonEl = document.getElementById(`head-mon-${sid}`);
                 if (headRepEl) headRepEl.innerText = totalRep;
@@ -1784,6 +2061,12 @@
             else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
             const piecesChecklistHtml = buildPiecesChecklistHtml(order.pieces || (order.cocheCompleto ? ['COCHE COMPLETO'] : []), 'edit');
             const body = document.getElementById('detail-modal-body');
+            
+            let subStatusOptions = '<option value="">Ninguno / Normal</option>';
+            substatusesList.forEach(s => {
+                subStatusOptions += `<option value="${s}" ${order.substatus === s ? 'selected' : ''}>${s}</option>`;
+            });
+
             body.innerHTML = `
                 <form onsubmit="handleUpdateOrder(event, '${order.id}')">
                     <div class="row mb-3">
@@ -1802,16 +2085,7 @@
                         <div class="col-md-6">
                             <label class="form-label small text-secondary fw-bold">Subestado</label>
                             <select id="edit-substatus" class="form-select">
-                                <option value="" ${!order.substatus ? 'selected' : ''}>Ninguno / Normal</option>
-                                <option value="Ampliación" ${order.substatus === 'Ampliación' ? 'selected' : ''}>Ampliación</option>
-                                <option value="Pendiente recambios" ${order.substatus === 'Pendiente recambios' ? 'selected' : ''}>Pendiente recambios</option>
-                                <option value="Paragolpes fuera" ${order.substatus === 'Paragolpes fuera' ? 'selected' : ''}>Paragolpes fuera</option>
-                                <option value="Faro izquierdo / piloto reparándose" ${order.substatus === 'Faro izquierdo / piloto reparándose' ? 'selected' : ''}>Faro izq. reparándose</option>
-                                <option value="Faro derecho / piloto reparándose" ${order.substatus === 'Faro derecho / piloto reparándose' ? 'selected' : ''}>Faro dcho. reparándose</option>
-                                <option value="Luna aquí" ${order.substatus === 'Luna aquí' ? 'selected' : ''}>Luna aquí</option>
-                                <option value="Luna pendiente" ${order.substatus === 'Luna pendiente' ? 'selected' : ''}>Luna pendiente</option>
-                                <option value="Golpe taller" ${order.substatus === 'Golpe taller' ? 'selected' : ''}>Golpe taller</option>
-                                <option value="Llanta reparándose fuera" ${order.substatus === 'Llanta reparándose fuera' ? 'selected' : ''}>Llanta reparándose fuera</option>
+                                ${subStatusOptions}
                             </select>
                         </div>
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Estado Actual</label><select id="edit-status" class="form-select">${buildStatusSelectOptions(order.status)}</select></div>
@@ -2421,10 +2695,23 @@
             renderHorizontalBars(container, items);
         }
 
+        // INICIALIZACIÓN
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initNewOrderChecklist);
+            document.addEventListener('DOMContentLoaded', () => {
+                initNewOrderChecklist();
+                renderSubstatusesList();
+                updateSubstatusDropdowns();
+                renderPiecesSettingsList();
+                updatePieceZoneSelect();
+                loadColumnStates();
+            });
         } else {
             initNewOrderChecklist();
+            renderSubstatusesList();
+            updateSubstatusDropdowns();
+            renderPiecesSettingsList();
+            updatePieceZoneSelect();
+            loadColumnStates();
         }
     </script>
 </body>
