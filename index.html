@@ -13,7 +13,7 @@
         .kanban-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
         .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; }
         
-        /* ESTILO DE COLUMNA PLEGADA (Como Taller Flow) */
+        /* ESTILO DE COLUMNA PLEGADA */
         .kanban-col.minimized {
             min-width: 75px !important;
             flex: 0 0 75px !important;
@@ -30,7 +30,6 @@
             background-color: #e2e8f0;
             border-color: #94a3b8;
         }
-        /* Ocultar TODO el contenido interior cuando se minimiza */
         .kanban-col.minimized .kanban-dropzone,
         .kanban-col.minimized .chapa-split-container,
         .kanban-col.minimized .pintura-split-container,
@@ -63,7 +62,7 @@
             margin-bottom: 8px !important;
         }
         .kanban-col.minimized .btn-close-col {
-            display: none !important; /* Ocultar botón X cuando está minimizado */
+            display: none !important;
         }
         .kanban-col.minimized .btn {
             margin-top: auto !important;
@@ -698,7 +697,6 @@
                 </div>
                 <div class="modal-body p-4">
                     
-                    <!-- SECCIÓN: COLUMNAS DEL TABLERO -->
                     <h6 class="fw-bold text-dark mb-1">Departamentos <span class="text-muted fw-normal small">(Columnas del tablero)</span></h6>
                     <p class="text-muted small mb-3">Marca o desmarca para mostrar/ocultar columnas en el tablero principal.</p>
                     <div class="d-flex flex-column gap-2 mb-4">
@@ -736,7 +734,6 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN: SUBESTADOS -->
                     <h6 class="fw-bold text-dark mb-1 mt-4">Subestados <span class="text-muted fw-normal small">(Avisos en las tarjetas)</span></h6>
                     <p class="text-muted small mb-2">Añade avisos como "Pendiente de recambios" o "Pieza reparándose fuera".</p>
                     <form onsubmit="handleAddSubstatus(event)" class="input-group input-group-sm mb-3">
@@ -745,7 +742,6 @@
                     </form>
                     <div id="substatuses-list" class="d-flex flex-column gap-2 mb-2" style="max-height: 250px; overflow-y: auto;"></div>
 
-                    <!-- SECCIÓN: PIEZAS -->
                     <h6 class="fw-bold text-dark mb-1 mt-4">Piezas del vehículo <span class="text-muted fw-normal small">(Checklist)</span></h6>
                     <p class="text-muted small mb-2">Configura las zonas (ej. Mecánica) y las piezas que aparecen en la ficha.</p>
                     
@@ -754,7 +750,7 @@
                             <label class="form-label small fw-bold mb-1">Añadir nueva Zona</label>
                             <div class="input-group input-group-sm">
                                 <input type="text" id="new-zone-name" class="form-control" placeholder="Ej. Mecánica">
-                                <button class="btn btn-secondary fw-bold" onclick="handleAddZone()">Zona</button>
+                                <button class="btn btn-secondary fw-bold" type="button" onclick="handleAddZone()">Zona</button>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -762,7 +758,7 @@
                             <div class="input-group input-group-sm">
                                 <select id="piece-zone-select" class="form-select" style="max-width: 120px;"></select>
                                 <input type="text" id="new-piece-name" class="form-control" placeholder="Ej. Filtro de aceite">
-                                <button class="btn btn-secondary fw-bold" onclick="handleAddPiece()">Pieza</button>
+                                <button class="btn btn-secondary fw-bold" type="button" onclick="handleAddPiece()">Pieza</button>
                             </div>
                         </div>
                     </div>
@@ -1072,7 +1068,8 @@
                 zone.pieces.forEach((piece, pIdx) => {
                     const id = `${prefixId}-chk-${zIdx}-${pIdx}`;
                     const isChecked = checkedPieces.includes(piece);
-                    html += `<div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="${piece}" id="${id}" ${isChecked ? 'checked' : ''}><label class="form-check-label piece-check-label" for="${id}">${piece}</label></div>`;
+                    const safePiece = String(piece).replace(/"/g, '&quot;');
+                    html += `<div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="${safePiece}" id="${id}" ${isChecked ? 'checked' : ''}><label class="form-check-label piece-check-label" for="${id}">${safePiece}</label></div>`;
                 });
                 html += `</div></div>`;
             });
@@ -1140,7 +1137,8 @@
                     item.operators.forEach((op) => {
                         if (op.name === 'Sin asignar') return;
                         const opId = `${container.id}-${itemAreaKey}-${itemIdx}-${op.name}`.replace(/[^a-zA-Z0-9_-]/g, '_');
-                        html += `<div class="hbar-op-row clickable" onclick="toggleOperatorDrilldown('${opId}', '${op.name}', '${itemAreaKey}')">
+                        const safeOpName = String(op.name).replace(/'/g, "\\'");
+                        html += `<div class="hbar-op-row clickable" onclick="toggleOperatorDrilldown('${opId}', '${safeOpName}', '${itemAreaKey}')">
                             <span class="op-name"><span class="arrow" id="arrow-${opId}">▶</span> ${op.name}</span>
                             <span class="op-counts"><span class="c">${op.coches} coche${op.coches !== 1 ? 's' : ''}</span> · <span class="p">${op.piezas} pzs</span></span>
                         </div>
@@ -1279,10 +1277,6 @@
             else if (op.type === 'pintura') { statusSelect.value = 'pintura'; }
         }
 
-        // ==========================================
-        // AJUSTES Y PLEGADO
-        // ==========================================
-
         window.toggleMinimizeColumn = (columnId) => {
             const col = document.getElementById(columnId);
             const icon = document.getElementById(`min-icon-${columnId}`);
@@ -1419,9 +1413,10 @@
             }
             let html = '';
             piecesZonesData.forEach((zone, zIdx) => {
+                const safeZoneTitle = String(zone.title).replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 html += `<div class="border rounded p-2 mb-2 bg-light">
                     <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-2">
-                        <span class="fw-bold text-primary"><i class="fas fa-folder me-1"></i> ${zone.title}</span>
+                        <span class="fw-bold text-primary"><i class="fas fa-folder me-1"></i> ${safeZoneTitle}</span>
                         <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteZone(${zIdx})" title="Eliminar zona"><i class="fas fa-trash"></i></button>
                     </div>
                     <div class="d-flex flex-wrap gap-2">`;
@@ -1429,8 +1424,9 @@
                     html += `<span class="text-muted small italic">Sin piezas</span>`;
                 } else {
                     zone.pieces.forEach((piece, pIdx) => {
+                        const safePiece = String(piece).replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         html += `<span class="badge bg-white text-dark border shadow-sm p-2">
-                            ${piece} 
+                            ${safePiece} 
                             <i class="fas fa-times ms-1 text-danger" style="cursor:pointer" onclick="deletePiece(${zIdx}, ${pIdx})"></i>
                         </span>`;
                     });
@@ -1447,7 +1443,6 @@
                 piecesZonesData.map((z, i) => `<option value="${i}">${z.title}</option>`).join('');
         }
 
-        // Actualizar los checkboxes cuando se cambie la visibilidad desde el código
         window.toggleColumnVisibility = (colName, forceState = null) => {
             if (colName === 'cargachapa') { showCargaChapaCol = forceState !== null ? forceState : !showCargaChapaCol; const w = document.getElementById('col-cargachapa-wrapper'); if (w) w.style.display = showCargaChapaCol ? 'block' : 'none'; }
             else if (colName === 'cargapintura') { showCargaPinturaCol = forceState !== null ? forceState : !showCargaPinturaCol; const w = document.getElementById('col-cargapintura-wrapper'); if (w) w.style.display = showCargaPinturaCol ? 'block' : 'none'; }
@@ -1458,17 +1453,20 @@
             else if (colName === 'pintores') { showPintoresCol = forceState !== null ? forceState : !showPintoresCol; const w = document.getElementById('col-pintores-wrapper'); if (w) w.style.display = showPintoresCol ? 'block' : 'none'; }
             else if (colName === 'terminados') { showTerminadosCol = forceState !== null ? forceState : !showTerminadosCol; const w = document.getElementById('col-terminados-wrapper'); if (w) w.style.display = showTerminadosCol ? 'block' : 'none'; }
             
-            // Sincronizar checkbox del modal
             const chk = document.getElementById(`chk-col-${colName}`);
             if (chk) {
-                if (forceState !== null) chk.checked = forceState;
-                else {
-                    const varName = `show${colName.charAt(0).toUpperCase() + colName.slice(1)}Col`;
-                    chk.checked = window[varName] !== undefined ? window[varName] : eval(`show${colName.charAt(0).toUpperCase() + colName.slice(1)}Col`);
-                }
+                let isVisible = false;
+                if (colName === 'cargachapa') isVisible = showCargaChapaCol;
+                else if (colName === 'cargapintura') isVisible = showCargaPinturaCol;
+                else if (colName === 'lunas') isVisible = showLunasCol;
+                else if (colName === 'chapistas') isVisible = showChapistasCol;
+                else if (colName === 'paragolpes') isVisible = showParagolpesCol;
+                else if (colName === 'destajos') isVisible = showDestajosCol;
+                else if (colName === 'pintores') isVisible = showPintoresCol;
+                else if (colName === 'terminados') isVisible = showTerminadosCol;
+                chk.checked = isVisible;
             }
         };
-        // ==========================================
 
         window.toggleChapistaExpand = (opName) => {
             const sid = safeId(opName);
@@ -1601,12 +1599,12 @@
             let html = `<option value="">Sin asignar (Libre)</option>`;
             if (chOps.length > 0) {
                 html += `<optgroup label="--- Chapa ---">`;
-                chOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`; });
+                chOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; const safeName = String(op.name).replace(/"/g, '&quot;'); html += `<option value="${safeName}" ${sel}>${safeName}${suffix}</option>`; });
                 html += `</optgroup>`;
             }
             if (pinOps.length > 0) {
                 html += `<optgroup label="--- Pintura ---">`;
-                pinOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; html += `<option value="${op.name}" ${sel}>${op.name}${suffix}</option>`; });
+                pinOps.forEach(op => { let sel = (selectedVal === op.name) ? 'selected' : ''; let suffix = (op.state === 'vacaciones') ? ' 🌴' : (op.state === 'baja') ? ' ⛔' : ''; const safeName = String(op.name).replace(/"/g, '&quot;'); html += `<option value="${safeName}" ${sel}>${safeName}${suffix}</option>`; });
                 html += `</optgroup>`;
             }
             return html;
@@ -1765,7 +1763,11 @@
             let newIsFacturado = order.isFacturado === true;
 
             if (targetStatus === 'destajos') isDestajoFlag = true;
-            if (targetStatus.startsWith('op_')) { const parts = targetStatus.split('_'); newOperator = parts[1]; newStatus = parts.slice(2).join('_'); }
+            if (targetStatus.startsWith('op|')) {
+                const parts = targetStatus.split('|');
+                newOperator = parts[1];
+                newStatus = parts[2];
+            }
 
             if (targetStatus === 'terminados_pendiente') { newStatus = 'terminados'; newIsFacturado = false; }
             else if (targetStatus === 'terminados_facturado') { newStatus = 'terminados'; newIsFacturado = true; }
@@ -1790,7 +1792,6 @@
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
             
-            // Auto-mostrar columnas ocultas si se busca algo en concreto
             if (filterVal !== '') {
                 if (filterVal.includes('carga chapa') || filterVal === 'cargachapa') { if (!showCargaChapaCol) toggleColumnVisibility('cargachapa', true); }
                 if (filterVal.includes('carga pintura') || filterVal === 'cargapintura') { if (!showCargaPinturaCol) toggleColumnVisibility('cargapintura', true); }
@@ -1819,7 +1820,6 @@
                     let status = order.status || 'reparacion';
                     let orderOp = (order.operator || '').trim();
                     
-                    // Si el coche está en Reparación o Montaje, desplegamos la columna de su chapista
                     if ((status === 'reparacion' || status === 'montaje') && orderOp) {
                         if (getChapistasList().some(o => o.name === orderOp)) {
                             expandedChapistas.add(orderOp);
@@ -1871,7 +1871,7 @@
                     piecesHtml = `<div class="mb-1"><span class="badge bg-danger text-white" style="font-size:0.7rem;"><i class="fas fa-car-side me-1"></i> COCHE COMPLETO</span>${varilleroBadge}</div>`;
                 } else if (order.pieces && order.pieces.length > 0) {
                     let totalPieces = order.pieces.length;
-                    let piecesListTooltip = order.pieces.join(', ');
+                    let piecesListTooltip = order.pieces.join(', ').replace(/"/g, '&quot;');
                     piecesHtml = `<div class="mb-1"><span class="badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span>${varilleroBadge}</div>`;
                 }
                 let insuranceBadge = '';
@@ -2010,7 +2010,7 @@
                             <i class="fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} chapista-chevron"></i>
                         </div>
                         <div class="chapista-group-inner">
-                            <div class="chapista-sub-box subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${opEscaped}_reparacion')">
+                            <div class="chapista-sub-box subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op|${opEscaped}|reparacion')">
                                 <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
                                     <span class="fw-bold text-primary">Rep.</span>
                                     <div class="d-flex align-items-center gap-1">
@@ -2020,7 +2020,7 @@
                                 </div>
                                 <div id="subcol-rep-${sid}" class="d-flex flex-column gap-2"></div>
                             </div>
-                            <div class="chapista-sub-box subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${opEscaped}_montaje')">
+                            <div class="chapista-sub-box subcol-montaje" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op|${opEscaped}|montaje')">
                                 <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
                                     <span class="fw-bold text-success">Mont.</span>
                                     <div class="d-flex align-items-center gap-1">
@@ -2064,13 +2064,14 @@
                 let badgeEstado = '';
                 if (state === 'vacaciones') badgeEstado = '<span class="badge-estado badge-vacaciones">🌴</span>';
                 else if (state === 'baja') badgeEstado = '<span class="badge-estado badge-baja">⛔</span>';
+                const opEscaped = String(op.name).replace(/'/g, "\\'");
                 html += `
-                    <div class="${colClass}" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op_${op.name}_pintura')">
+                    <div class="${colClass}" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'op|${opEscaped}|pintura')">
                         <div class="pintor-header">
                             <div class="d-flex align-items-center gap-1 flex-wrap"><span>${op.name}</span>${badgeEstado}</div>
                             <div class="d-flex align-items-center gap-1">
                                 <span class="badge bg-warning text-dark rounded-pill" style="font-size:0.65rem;"><span id="count-total-pin-${sid}">0</span><span class="badge-count-checked" id="count-total-pin-checked-${sid}">0✓</span></span>
-                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${op.name}', null)"><i class="far fa-check-square"></i></button>
+                                <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', null)"><i class="far fa-check-square"></i></button>
                             </div>
                         </div>
                         <div id="list-pintor-${sid}" class="d-flex flex-column gap-2"></div>
@@ -2208,7 +2209,7 @@
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() }];
             try {
                 await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
-                const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modal(oEl); if (modal) modal.hide();
+                const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
         }
@@ -2278,7 +2279,7 @@
             else if (areaKey === 'pintura') validOps = getPintoresList().map(o => o.name);
 
             list.forEach(o => {
-                if (!pasoPorArea, areaKey)) return;
+                if (!pasoPorArea(o, areaKey)) return;
                 const opName = (o.operator || '').trim();
                 if (!opName) return;
                 if (validOps && !validOps.includes(opName)) return;
