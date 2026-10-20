@@ -15,58 +15,23 @@
         
         /* ESTILO DE COLUMNA PLEGADA */
         .kanban-col.minimized {
-            min-width: 75px !important;
-            flex: 0 0 75px !important;
-            min-height: 250px !important;
-            padding: 10px 5px !important;
-            cursor: pointer;
-            background-color: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            min-width: 75px !important; flex: 0 0 75px !important; min-height: 250px !important;
+            padding: 10px 5px !important; cursor: pointer; background-color: #f1f5f9;
+            border: 1px solid #cbd5e1; display: flex; flex-direction: column; align-items: center;
         }
-        .kanban-col.minimized:hover {
-            background-color: #e2e8f0;
-            border-color: #94a3b8;
-        }
-        .kanban-col.minimized .kanban-dropzone,
-        .kanban-col.minimized .chapa-split-container,
-        .kanban-col.minimized .pintura-split-container,
-        .kanban-col.minimized #chapa-dynamic-wrapper,
-        .kanban-col.minimized #pintores-dynamic-wrapper,
-        .kanban-col.minimized .small {
-            display: none !important;
-        }
-        .kanban-col.minimized .d-flex.justify-content-between {
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-            margin-bottom: 0 !important;
-            width: 100%;
-        }
+        .kanban-col.minimized:hover { background-color: #e2e8f0; border-color: #94a3b8; }
+        .kanban-col.minimized .kanban-dropzone, .kanban-col.minimized .chapa-split-container,
+        .kanban-col.minimized .pintura-split-container, .kanban-col.minimized #chapa-dynamic-wrapper,
+        .kanban-col.minimized #pintores-dynamic-wrapper, .kanban-col.minimized .small { display: none !important; }
+        .kanban-col.minimized .d-flex.justify-content-between { flex-direction: column; align-items: center; height: 100%; margin-bottom: 0 !important; width: 100%; }
         .kanban-col.minimized h6 {
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            margin: auto 0 !important;
-            padding: 10px 0 !important;
-            font-size: 0.85rem !important;
-            text-align: center;
-            letter-spacing: 1px;
-            color: #475569;
+            writing-mode: vertical-rl; transform: rotate(180deg); margin: auto 0 !important;
+            padding: 10px 0 !important; font-size: 0.85rem !important; text-align: center;
+            letter-spacing: 1px; color: #475569;
         }
-        .kanban-col.minimized .badge {
-            display: inline-flex !important;
-            font-size: 0.8rem !important;
-            padding: 4px 8px !important;
-            margin-bottom: 8px !important;
-        }
-        .kanban-col.minimized .btn-close-col {
-            display: none !important;
-        }
-        .kanban-col.minimized .btn {
-            margin-top: auto !important;
-        }
+        .kanban-col.minimized .badge { display: inline-flex !important; font-size: 0.8rem !important; padding: 4px 8px !important; margin-bottom: 8px !important; }
+        .kanban-col.minimized .btn-close-col { display: none !important; }
+        .kanban-col.minimized .btn { margin-top: auto !important; }
 
         .kanban-dropzone { min-height: 60vh; border-radius: 8px; transition: background-color 0.2s; }
         .kanban-dropzone.drag-over { background-color: rgba(37, 99, 235, 0.15) !important; border: 2px dashed #2563eb; }
@@ -82,43 +47,37 @@
         .subcol-facturado.drag-over { background-color: #dcfce7 !important; }
 
         .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; align-items: flex-start; }
-
         .chapista-group-col {
             flex: 0 0 130px; width: 130px; min-width: 130px; max-width: 130px;
             background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;
             padding: 6px; display: flex; flex-direction: column;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: all 0.25s ease;
-            cursor: pointer; overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.25s ease; cursor: pointer; overflow: hidden;
         }
         .chapista-group-col:hover { border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
         .chapista-group-col.expanded {
             flex: 0 0 340px; width: 340px; min-width: 340px; max-width: 340px;
-            padding: 10px; cursor: default; border-color: #2563eb;
-            box-shadow: 0 6px 16px rgba(37,99,235,0.18);
+            padding: 10px; cursor: default; border-color: #2563eb; box-shadow: 0 6px 16px rgba(37,99,235,0.18);
         }
         .chapista-group-col.vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
         .chapista-group-col.baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
 
         .chapista-group-header {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 6px 4px; margin-bottom: 0; border-bottom: none;
-            font-size: 0.85rem; font-weight: 700; position: relative;
+            padding: 6px 4px; margin-bottom: 0; border-bottom: none; font-size: 0.85rem; font-weight: 700; position: relative;
         }
         .chapista-group-header .chapista-name { font-size: 1rem; font-weight: 800; letter-spacing: 0.3px; text-align: center; }
         .chapista-group-header .chapista-chevron { margin-top: 6px; font-size: 0.7rem; color: #64748b; transition: transform 0.2s; }
         .chapista-group-header .header-info { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .chapista-group-header .header-actions { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 6px; }
-
         .chapista-group-header .header-counts { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+        
         .mini-badge { font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; line-height: 1.1; }
         .mini-badge.mini-rep { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
         .mini-badge.mini-mon { background-color: #d1fae5; color: #047857; border: 1px solid #86efac; }
 
         .chapista-group-col.expanded .chapista-group-header {
             flex-direction: row; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; padding: 6px 8px;
-            border-bottom: 2px solid rgba(0,0,0,0.08); cursor: pointer;
+            margin-bottom: 8px; padding: 6px 8px; border-bottom: 2px solid rgba(0,0,0,0.08); cursor: pointer;
         }
         .chapista-group-col.expanded .chapista-group-header .header-info { flex-direction: row; gap: 8px; }
         .chapista-group-col.expanded .chapista-group-header .header-actions { margin-top: 0; }
@@ -129,7 +88,6 @@
 
         .chapista-group-inner { display: none; }
         .chapista-group-col.expanded .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
-
         .chapista-sub-box { flex: 1; min-width: 0; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
         .chapista-group-col.vacaciones .chapista-sub-box { background-color: #fdf4ff; }
         .chapista-group-col.baja .chapista-sub-box { background-color: #f1f5f9; }
@@ -149,18 +107,17 @@
         .badge-estado { font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
         .badge-estado.badge-vacaciones { background-color: #c084fc; color: #ffffff; }
         .badge-estado.badge-baja { background-color: #94a3b8; color: #ffffff; }
+        
         .task-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.75rem; }
         .task-card.urgent { background-color: #fff1f2 !important; border: 2px solid #e11d48 !important; box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important; }
         .task-card.checked-card { background-color: #d1fae5 !important; border: 2px solid #059669 !important; box-shadow: 0 0 10px rgba(5, 150, 105, 0.3) !important; }
-        .task-card.substatus-ampliacion { border-left: 6px solid #8b5cf6 !important; background-color: #faf5ff !important; }
-        .task-card.substatus-recambios { border-left: 6px solid #f59e0b !important; background-color: #fffbeb !important; }
-        .substatus-badge-ampliacion { background-color: #f3e8ff !important; color: #6b21a8 !important; border: 1px solid #d8b4fe !important; font-weight: 600; }
-        .substatus-badge-recambios { background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde047 !important; font-weight: 600; }
+        .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
+        
         @keyframes blink-animation { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         .urgent-banner { animation: blink-animation 1s infinite; }
-        .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
         @keyframes highlight-pulse-blue { 0% { transform: scale(1); box-shadow: 0 0 0 rgba(37, 99, 235, 0); } 50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(37, 99, 235, 0.9); background-color: #dbeafe !important; border-color: #2563eb !important; } 100% { transform: scale(1); box-shadow: 0 0 15px rgba(37, 99, 235, 0.6); background-color: #dbeafe !important; border-color: #2563eb !important; } }
         .resaltado-busqueda { animation: highlight-pulse-blue 1s infinite alternate; border: 2px solid #2563eb !important; z-index: 10; }
+        
         .badge-ch { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
         .badge-pun { background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
         .badge-none { background-color: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
@@ -276,13 +233,20 @@
         .piezas-area-block { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
         .piezas-area-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
-        /* ESTILOS PARA EL NUEVO DISEÑO DE AJUSTES DE DEPARTAMENTOS */
-        .dept-row { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
-        .dept-row input[type="text"] { flex: 1; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 8px; font-size: 0.85rem; font-weight: 600; color: #1e293b; }
-        .dept-row input[type="color"] { width: 32px; height: 32px; padding: 0; border: none; border-radius: 4px; cursor: pointer; background: none; }
-        .dept-row input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
-        .dept-row .btn-move { padding: 2px 6px; font-size: 0.7rem; }
+        /* ESTILOS DEL NUEVO PANEL DE AJUSTES */
+        .settings-section-title { font-weight: 800; color: #0f172a; margin-bottom: 4px; font-size: 0.95rem; }
+        .settings-section-desc { color: #64748b; font-size: 0.75rem; margin-bottom: 12px; }
         
+        .setting-row { display: flex; align-items: center; gap: 8px; background: #ffffff; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .setting-row input[type="text"] { flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 0.8rem; font-weight: 600; color: #1e293b; }
+        .setting-row input[type="text"]:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
+        .setting-row input[type="color"] { width: 28px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: none; }
+        .setting-row .form-check { margin: 0; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; color: #475569; cursor: pointer; }
+        .setting-row .form-check-input { width: 16px; height: 16px; margin: 0; cursor: pointer; }
+        .setting-row .btn-arrow { padding: 2px 8px; font-size: 0.7rem; border-radius: 4px; color: #64748b; background: #f8fafc; border: 1px solid #cbd5e1; }
+        .setting-row .btn-arrow:hover:not(:disabled) { background: #e2e8f0; color: #0f172a; }
+        .setting-row .btn-arrow:disabled { opacity: 0.4; cursor: not-allowed; }
+
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
             .chapista-group-col { flex: 0 0 110px; width: 110px; min-width: 110px; max-width: 110px; padding: 6px; }
@@ -351,10 +315,7 @@
                 <span id="sync-status" class="badge bg-warning text-dark"><i class="fas fa-sync fa-spin me-1"></i> Conectando...</span>
                 <span id="user-display" class="text-secondary small d-none d-md-inline"><i class="fas fa-user-circle me-1"></i> Usuario</span>
                 <button class="btn btn-outline-dark btn-sm fw-bold" onclick="toggleBossDashboard()"><i class="fas fa-chart-bar me-1"></i> <span id="boss-btn-text">Ver Panel 360</span></button>
-                <button class="btn btn-outline-primary btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#operatorsModal"><i class="fas fa-users-cog me-1"></i> Operarios</button>
-                
                 <button class="btn btn-outline-dark btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#settingsModal"><i class="fas fa-sliders-h me-1"></i> Ajustes</button>
-                
                 <button class="btn btn-outline-secondary btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-1"></i> Salir</button>
             </div>
         </nav>
@@ -590,111 +551,11 @@
         </div>
 
         <div class="kanban-container" id="main-kanban-container">
-            <div id="col-cargachapa-wrapper" class="kanban-col p-3 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0" id="title-col-cargachapa"><i class="fas fa-tasks me-1 text-primary"></i> Carga Chapa</h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-cargachapa" class="badge bg-primary rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargachapa-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargachapa-wrapper"></i></button>
-                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('cargachapa', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div id="list-cargachapa" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargachapa')"></div>
-            </div>
-            <div id="col-cargapintura-wrapper" class="kanban-col p-3 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0" id="title-col-cargapintura"><i class="fas fa-tasks me-1 text-warning"></i> Carga Pintura</h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-cargapintura" class="badge bg-warning text-dark rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargapintura-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargapintura-wrapper"></i></button>
-                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('cargapintura', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div id="list-cargapintura" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargapintura')"></div>
-            </div>
-            <div id="col-lunas-wrapper" class="kanban-col p-3 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0" id="title-col-lunas"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-lunas-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-lunas-wrapper"></i></button>
-                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('lunas', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
-            </div>
-            <div class="kanban-col p-3 shadow-sm" id="kanban-col-chapistas">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0" id="title-kanban-col-chapistas"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha en uno para expandir)</span></h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('kanban-col-chapistas')"><i class="fas fa-compress-alt" id="min-icon-kanban-col-chapistas"></i></button>
-                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('chapistas', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div id="chapa-dynamic-wrapper"></div>
-            </div>
-            <div id="col-paragolpes-wrapper" class="kanban-col p-3 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0" id="title-col-paragolpes"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes</h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-paragolpes-wrapper"></i></button>
-                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('paragolpes', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
-            </div>
-            <div id="col-destajos-wrapper" class="kanban-col p-3 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0" id="title-col-destajos"><i class="fas fa-file-invoice-dollar me-1 text-info"></i> Destajos</h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-destajos" class="badge bg-info text-dark rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-destajos-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-destajos-wrapper"></i></button>
-                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('destajos', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div id="list-destajos" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'destajos')"></div>
-            </div>
-            <div id="col-pintores-wrapper" class="kanban-col p-3 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0" id="title-col-pintores"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Operario)</span></h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-pintores-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pintores-wrapper"></i></button>
-                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('pintores', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div id="pintores-dynamic-wrapper" class="pintura-split-container"></div>
-            </div>
-            <div id="col-terminados-wrapper" class="kanban-col p-3 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0" id="title-col-terminados"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
-                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button>
-                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('terminados', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div class="chapa-split-container" style="min-height: 60vh;">
-                    <div class="chapa-subcol subcol-pendiente-factura" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_pendiente')">
-                        <div class="text-center fw-bold text-warning small mb-2 border-bottom pb-1">
-                            ⏳ Pendiente facturar <span id="count-terminados-pendiente" class="badge bg-warning text-dark rounded-pill">0</span>
-                        </div>
-                        <div id="list-terminados-pendiente" class="d-flex flex-column gap-2"></div>
-                    </div>
-                    <div class="chapa-subcol subcol-facturado" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_facturado')">
-                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1">
-                            ✓ Facturados <span id="count-terminados-facturado" class="badge bg-success rounded-pill">0</span>
-                        </div>
-                        <div id="list-terminados-facturado" class="d-flex flex-column gap-2"></div>
-                    </div>
-                </div>
-            </div>
+            <!-- Las columnas se inyectan aquí dinámicamente con JS -->
         </div>
     </div>
 
-    <!-- MODAL DE AJUSTES -->
+    <!-- MODAL DE AJUSTES (REDISEÑADO) -->
     <div class="modal fade" id="settingsModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content shadow">
@@ -704,72 +565,97 @@
                 </div>
                 <div class="modal-body p-4">
                     
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <!-- DEPARTAMENTOS (COLUMNAS) -->
+                    <div class="d-flex justify-content-between align-items-end mb-3">
                         <div>
-                            <h6 class="fw-bold text-dark mb-1">Departamentos <span class="text-muted fw-normal small">(Columnas del tablero)</span></h6>
-                            <p class="text-muted small mb-0">Cambia el nombre, color u orden de las columnas.</p>
+                            <div class="settings-section-title">Departamentos <span class="text-muted fw-normal small">(Columnas del tablero)</span></div>
+                            <div class="settings-section-desc">Configura el nombre, color, orden y visibilidad de cada fase.</div>
                         </div>
-                        <button class="btn btn-sm btn-outline-danger fw-bold" onclick="resetLayout()" title="Restablece el diseño original (columnas desplegadas y en su orden)">
-                            <i class="fas fa-undo me-1"></i> Restablecer diseño
+                        <button class="btn btn-sm btn-outline-danger fw-bold" onclick="resetLayout()" title="Restablece el diseño original">
+                            <i class="fas fa-undo me-1"></i> Restablecer
                         </button>
                     </div>
-                    
                     <div id="columns-settings-list" class="mb-4"></div>
 
-                    <h6 class="fw-bold text-dark mb-1 mt-4">Subestados <span class="text-muted fw-normal small">(Avisos en las tarjetas)</span></h6>
-                    <p class="text-muted small mb-2">Añade avisos como "Pendiente de recambios" o "Pieza reparándose fuera".</p>
+                    <!-- TIPOS DE HOJA (COLORES DE ÁREA) -->
+                    <div class="settings-section-title mt-4">Tipos de hoja <span class="text-muted fw-normal small">(Colores de las tarjetas)</span></div>
+                    <div class="settings-section-desc">Cada tipo tiene su color para reconocer la tarjeta de un vistazo.</div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Chapa / Reparación</span>
+                                <input type="color" value="#2563eb" onchange="updateAreaColor('chapa', this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Pintura</span>
+                                <input type="color" value="#f59e0b" onchange="updateAreaColor('pintura', this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Paragolpes</span>
+                                <input type="color" value="#1e293b" onchange="updateAreaColor('paragolpes', this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Destajos</span>
+                                <input type="color" value="#0891b2" onchange="updateAreaColor('destajos', this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Lunas</span>
+                                <input type="color" value="#64748b" onchange="updateAreaColor('lunas', this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUBESTADOS -->
+                    <div class="settings-section-title mt-4">Subestados <span class="text-muted fw-normal small">(Avisos en las tarjetas)</span></div>
+                    <div class="settings-section-desc">Añade avisos como "Pendiente de recambios" o "Pieza reparándose fuera".</div>
                     <form onsubmit="handleAddSubstatus(event)" class="input-group input-group-sm mb-3">
                         <input type="text" id="new-substatus-name" class="form-control" placeholder="Nuevo subestado..." required autocomplete="off">
+                        <input type="color" id="new-substatus-color" class="form-control form-control-color" value="#ef4444" title="Color del subestado" style="max-width: 40px;">
                         <button class="btn btn-primary fw-bold" type="submit">Añadir</button>
                     </form>
-                    <div id="substatuses-list" class="d-flex flex-column gap-2 mb-2" style="max-height: 250px; overflow-y: auto;"></div>
+                    <div id="substatuses-list" class="d-flex flex-column gap-2 mb-4" style="max-height: 250px; overflow-y: auto;"></div>
 
-                    <h6 class="fw-bold text-dark mb-1 mt-4">Piezas del vehículo <span class="text-muted fw-normal small">(Checklist)</span></h6>
-                    <p class="text-muted small mb-2">Configura las zonas (ej. Mecánica) y las piezas que aparecen en la ficha.</p>
+                    <!-- OPERARIOS -->
+                    <div class="settings-section-title mt-4">Operarios <span class="text-muted fw-normal small">(Indica si alguien está de vacaciones o de baja)</span></div>
+                    <form onsubmit="handleAddOperator(event)" class="mb-3 p-2 bg-light border rounded">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4"><label class="form-label small fw-bold mb-1">Nombre</label><input type="text" id="new-operator-name" class="form-control form-control-sm" required placeholder="Ej. AE, Rubén..."></div>
+                            <div class="col-md-3"><label class="form-label small fw-bold mb-1">Tipo</label><select id="new-operator-type" class="form-select form-select-sm" required><option value="chapa">Chapa</option><option value="pintura">Pintura</option></select></div>
+                            <div class="col-md-3"><label class="form-label small fw-bold mb-1">Estado</label><select id="new-operator-state" class="form-select form-select-sm"><option value="activo">Activo</option><option value="vacaciones">Vacaciones</option><option value="baja">Baja</option></select></div>
+                            <div class="col-md-2"><button type="submit" class="btn btn-sm btn-primary fw-bold w-100">Añadir</button></div>
+                        </div>
+                    </form>
+                    <div id="operators-list" class="d-flex flex-column gap-2 mb-4" style="max-height: 300px; overflow-y: auto;"></div>
+
+                    <!-- PIEZAS -->
+                    <div class="settings-section-title mt-4">Piezas del vehículo <span class="text-muted fw-normal small">(Checklist)</span></div>
+                    <div class="settings-section-desc">Configura las zonas (ej. Mecánica) y las piezas que aparecen en la ficha.</div>
                     
                     <div class="row mb-3 g-2">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold mb-1">Añadir nueva Zona</label>
                             <div class="input-group input-group-sm">
-                                <input type="text" id="new-zone-name" class="form-control" placeholder="Ej. Mecánica">
+                                <input type="text" id="new-zone-name" class="form-control" placeholder="Nueva zona (Ej. Mecánica)">
                                 <button class="btn btn-secondary fw-bold" type="button" onclick="handleAddZone()">Zona</button>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold mb-1">Añadir nueva Pieza</label>
                             <div class="input-group input-group-sm">
-                                <select id="piece-zone-select" class="form-select" style="max-width: 120px;"></select>
-                                <input type="text" id="new-piece-name" class="form-control" placeholder="Ej. Filtro de aceite">
+                                <select id="piece-zone-select" class="form-select" style="max-width: 100px;"></select>
+                                <input type="text" id="new-piece-name" class="form-control" placeholder="Ej. Filtro">
                                 <button class="btn btn-secondary fw-bold" type="button" onclick="handleAddPiece()">Pieza</button>
                             </div>
                         </div>
                     </div>
+                    <div id="pieces-management-list" class="mb-2" style="max-height: 250px; overflow-y:auto;"></div>
 
-                    <div id="pieces-management-list" class="mb-2" style="max-height: 300px; overflow-y:auto;"></div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="operatorsModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content shadow">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-users-cog me-2"></i> Administrar Operarios</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form onsubmit="handleAddOperator(event)" class="mb-4 p-3 bg-light border rounded">
-                        <div class="row g-2 align-items-end">
-                            <div class="col-md-5"><label class="form-label small fw-bold">Nombre</label><input type="text" id="new-operator-name" class="form-control" required placeholder="Ej. AE, Rubén, PO..."></div>
-                            <div class="col-md-3"><label class="form-label small fw-bold">Tipo</label><select id="new-operator-type" class="form-select" required><option value="chapa">Chapa</option><option value="pintura">Pintura</option></select></div>
-                            <div class="col-md-2"><label class="form-label small fw-bold">Estado</label><select id="new-operator-state" class="form-select"><option value="activo">Activo</option><option value="vacaciones">Vacaciones</option><option value="baja">Baja</option></select></div>
-                            <div class="col-md-2"><button type="submit" class="btn btn-primary fw-bold w-100">Añadir</button></div>
-                        </div>
-                    </form>
-                    <h6 class="fw-bold text-secondary mb-2">Listado de operarios</h6>
-                    <div id="operators-list" class="d-flex flex-column gap-2" style="max-height: 400px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
@@ -917,8 +803,11 @@
             { id: 'terminados', name: 'Terminados', color: '#10b981', visible: true }
         ];
 
-        // Usamos la clave v2 para forzar la actualización en los navegadores que ya tenían la config vieja
-        let columnConfig = JSON.parse(localStorage.getItem('planning360_columns_v2')) || JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
+        let columnConfig = JSON.parse(localStorage.getItem('planning360_columns_v3')) || JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
+
+        // COLORES DE ÁREAS (TIPOS DE HOJA)
+        const DEFAULT_AREA_COLORS = { chapa: '#2563eb', pintura: '#f59e0b', paragolpes: '#1e293b', destajos: '#0891b2', lunas: '#64748b' };
+        let areaColors = JSON.parse(localStorage.getItem('planning360_areaColors')) || JSON.parse(JSON.stringify(DEFAULT_AREA_COLORS));
 
         const DEFAULT_PIECES_ZONES = [
             { title: "Parte Delantera", cls: "", pieces: ["Paragolpes delantero","Spoiler delantero","Molduras negras","Capó","Luna delantera","Faro izquierdo","Faro derecho"] },
@@ -945,10 +834,17 @@
             "Direct Seguros", "Winthertur", "Particular"
         ];
 
-        let substatusesList = JSON.parse(localStorage.getItem('planning360_substatuses')) || [
-            "Ampliación", "Pendiente recambios", "Paragolpes fuera", 
-            "Faro izquierdo / piloto reparándose", "Faro derecho / piloto reparándose", 
-            "Luna aquí", "Luna pendiente", "Golpe taller", "Llanta reparándose fuera"
+        // SUBESTADOS AHORA TIENEN COLOR
+        let substatusesList = JSON.parse(localStorage.getItem('planning360_substatuses_v2')) || [
+            { name: "Ampliación", color: "#8b5cf6" },
+            { name: "Pendiente recambios", color: "#f59e0b" },
+            { name: "Paragolpes fuera", color: "#3b82f6" },
+            { name: "Faro izquierdo / piloto reparándose", color: "#ec4899" },
+            { name: "Faro derecho / piloto reparándose", color: "#ec4899" },
+            { name: "Luna aquí", color: "#10b981" },
+            { name: "Luna pendiente", color: "#f59e0b" },
+            { name: "Golpe taller", color: "#ef4444" },
+            { name: "Llanta reparándose fuera", color: "#14b8a6" }
         ];
 
         function normalizeText(str) {
@@ -1014,13 +910,7 @@
 
         const COLOR_PALETTE = ['#2563eb','#059669','#f59e0b','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c','#4338ca','#0d9488','#9333ea','#ca8a04','#e11d48','#0284c7','#a16207','#0f766e','#c026d3','#64748b','#db2777'];
 
-        const AREA_DEFS = {
-            chapa: { label: 'Chapa', color: '#2563eb', statuses: ['cargachapa','reparacion','montaje'] },
-            pintura: { label: 'Pintura', color: '#f59e0b', statuses: ['cargapintura','pintura'] },
-            paragolpes: { label: 'Paragolpes', color: '#1e293b', statuses: ['paragolpes'] },
-            destajos: { label: 'Destajos', color: '#0891b2', statuses: ['destajos'] },
-            lunas: { label: 'Lunas', color: '#64748b', statuses: ['lunas'] }
-        };
+        let AREA_DEFS = {}; // Se inicializa en applyAreaColors()
 
         const STATUS_LABELS = {
             cargachapa: 'Carga Chapa',
@@ -1051,11 +941,38 @@
         }
 
         // ============================================
-        // GESTIÓN DINÁMICA DE COLUMNAS
+        // GESTIÓN DINÁMICA DE CONFIGURACIÓN
         // ============================================
         
+        function applyAreaColors() {
+            AREA_DEFS = {
+                chapa: { label: 'Chapa', color: areaColors.chapa, statuses: ['cargachapa','reparacion','montaje'] },
+                pintura: { label: 'Pintura', color: areaColors.pintura, statuses: ['cargapintura','pintura'] },
+                paragolpes: { label: 'Paragolpes', color: areaColors.paragolpes, statuses: ['paragolpes'] },
+                destajos: { label: 'Destajos', color: areaColors.destajos, statuses: ['destajos'] },
+                lunas: { label: 'Lunas', color: areaColors.lunas, statuses: ['lunas'] }
+            };
+            // Actualizar inputs de color
+            document.querySelectorAll('input[type="color"]').forEach(inp => {
+                if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('chapa'")) inp.value = areaColors.chapa;
+                if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('pintura'")) inp.value = areaColors.pintura;
+                if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('paragolpes'")) inp.value = areaColors.paragolpes;
+                if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('destajos'")) inp.value = areaColors.destajos;
+                if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('lunas'")) inp.value = areaColors.lunas;
+            });
+        }
+
+        window.updateAreaColor = (areaKey, color) => {
+            areaColors[areaKey] = color;
+            localStorage.setItem('planning360_areaColors', JSON.stringify(areaColors));
+            applyAreaColors();
+            applyColumnConfig();
+            renderOrders();
+            if (bossDashboardActive) renderBossDashboardStats();
+        };
+
         function saveColumnConfig() {
-            localStorage.setItem('planning360_columns_v2', JSON.stringify(columnConfig));
+            localStorage.setItem('planning360_columns_v3', JSON.stringify(columnConfig));
             applyColumnConfig();
         }
 
@@ -1069,7 +986,10 @@
                 wrapper.style.display = col.visible ? 'block' : 'none';
                 
                 // Color del borde superior
-                wrapper.style.borderTopColor = col.color;
+                let baseColor = col.color;
+                if (col.id === 'chapistas') baseColor = areaColors.chapa;
+                if (col.id === 'pintores') baseColor = areaColors.pintura;
+                wrapper.style.borderTopColor = baseColor;
 
                 // Nombre (solo actualizamos el texto, no el icono)
                 const titleEl = document.getElementById(`title-${col.id === 'chapistas' ? 'kanban-col-chapistas' : 'col-' + col.id + '-wrapper'}`);
@@ -1078,8 +998,7 @@
                     const iconHtml = icon ? icon.outerHTML : '';
                     titleEl.innerHTML = `${iconHtml} ${col.name}`;
                     
-                    // Si es Chapistas o Pintores, volvemos a añadir el texto pequeñito
-                    if (col.id === 'chapistas') titleEl.innerHTML += ` <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha en uno para expandir)</span>`;
+                    if (col.id === 'chapistas') titleEl.innerHTML += ` <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha para expandir)</span>`;
                     if (col.id === 'pintores') titleEl.innerHTML += ` <span class="small text-muted fw-normal">(Por Operario)</span>`;
                 }
             });
@@ -1089,17 +1008,18 @@
             if (container) {
                 columnConfig.forEach(col => {
                     const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
-                    if (wrapper) container.appendChild(wrapper); // Mover al final en orden de array
+                    if (wrapper) container.appendChild(wrapper);
                 });
             }
         }
 
         window.resetLayout = () => {
-            if (!confirm('Esto restablecerá las columnas a su estado original (desplegadas y en su orden por defecto) y borrará las piezas y subestados personalizados. ¿Continuar?')) return;
-            localStorage.removeItem('planning360_columns_v2');
+            if (!confirm('Esto restablecerá las columnas, colores y subestados a su estado original. ¿Continuar?')) return;
+            localStorage.removeItem('planning360_columns_v3');
             localStorage.removeItem('planning360_colStates_v2');
+            localStorage.removeItem('planning360_areaColors');
             localStorage.removeItem('planning360_pieces');
-            localStorage.removeItem('planning360_substatuses');
+            localStorage.removeItem('planning360_substatuses_v2');
             location.reload();
         };
 
@@ -1108,14 +1028,14 @@
             if (!list) return;
             
             list.innerHTML = columnConfig.map((col, index) => `
-                <div class="dept-row">
+                <div class="setting-row">
                     <input type="text" value="${col.name}" onchange="updateColName('${col.id}', this.value)" title="Nombre de la columna">
                     <input type="color" value="${col.color}" onchange="updateColColor('${col.id}', this.value)" title="Color de la columna">
-                    <label class="d-flex align-items-center gap-1 m-0" style="font-size:0.75rem; cursor:pointer;" title="Mostrar/Ocultar">
-                        <input type="checkbox" ${col.visible ? 'checked' : ''} onchange="updateColVisible('${col.id}', this.checked)"> visible
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" ${col.visible ? 'checked' : ''} onchange="updateColVisible('${col.id}', this.checked)"> visible
                     </label>
-                    <button class="btn btn-sm btn-light border btn-move" onclick="moveCol(${index}, -1)" ${index === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
-                    <button class="btn btn-sm btn-light border btn-move" onclick="moveCol(${index}, 1)" ${index === columnConfig.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                    <button class="btn btn-arrow" onclick="moveCol(${index}, -1)" ${index === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
+                    <button class="btn btn-arrow" onclick="moveCol(${index}, 1)" ${index === columnConfig.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
                 </div>
             `).join('');
         }
@@ -1145,16 +1065,11 @@
             renderColumnsSettings();
         };
 
-        // Redefinimos toggleColumnVisibility para que use la nueva configuración
         window.toggleColumnVisibility = (colName, forceState = null) => {
             const col = columnConfig.find(c => c.id === colName);
             if (!col) return;
             col.visible = forceState !== null ? forceState : !col.visible;
             saveColumnConfig();
-            
-            // Sincronizar checkbox antiguo si existe
-            const chk = document.getElementById(`chk-col-${colName}`);
-            if (chk) chk.checked = col.visible;
         };
         // ============================================
 
@@ -1412,33 +1327,37 @@
         // GESTIÓN DE SUBESTADOS
         window.handleAddSubstatus = (e) => {
             e.preventDefault();
-            const inp = document.getElementById('new-substatus-name');
-            const val = inp.value.trim();
-            if (!val) return;
-            if (substatusesList.includes(val)) { alert('Ya existe'); return; }
+            const inpName = document.getElementById('new-substatus-name');
+            const inpColor = document.getElementById('new-substatus-color');
+            const name = inpName.value.trim();
+            const color = inpColor.value;
+            if (!name) return;
+            if (substatusesList.some(s => s.name === name)) { alert('Ya existe'); return; }
             
-            substatusesList.push(val);
-            localStorage.setItem('planning360_substatuses', JSON.stringify(substatusesList));
-            inp.value = '';
+            substatusesList.push({ name, color });
+            localStorage.setItem('planning360_substatuses_v2', JSON.stringify(substatusesList));
+            inpName.value = '';
             renderSubstatusesList();
             updateSubstatusDropdowns();
+            renderOrders(); // Re-renderizar para aplicar nuevos colores
         };
 
         window.deleteSubstatus = (name) => {
             if (!confirm('¿Eliminar subestado?')) return;
-            substatusesList = substatusesList.filter(s => s !== name);
-            localStorage.setItem('planning360_substatuses', JSON.stringify(substatusesList));
+            substatusesList = substatusesList.filter(s => s.name !== name);
+            localStorage.setItem('planning360_substatuses_v2', JSON.stringify(substatusesList));
             renderSubstatusesList();
             updateSubstatusDropdowns();
+            renderOrders();
         };
 
         function renderSubstatusesList() {
             const list = document.getElementById('substatuses-list');
             if (!list) return;
             list.innerHTML = substatusesList.map(s => `
-                <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border">
-                    <span class="fw-bold small"><i class="fas fa-tag text-warning me-2"></i>${s}</span>
-                    <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteSubstatus('${s}')"><i class="fas fa-times"></i></button>
+                <div class="setting-row mb-1">
+                    <span class="flex-grow-1 fw-bold small" style="color: ${s.color};"><i class="fas fa-tag me-1"></i> ${s.name}</span>
+                    <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteSubstatus('${s.name}')"><i class="fas fa-times"></i></button>
                 </div>
             `).join('');
         }
@@ -1448,7 +1367,7 @@
             if (selNew) {
                 const current = selNew.value;
                 selNew.innerHTML = '<option value="">Ninguno / Normal</option>' + 
-                    substatusesList.map(s => `<option value="${s}">${s}</option>`).join('');
+                    substatusesList.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
                 if (current) selNew.value = current;
             }
         }
@@ -1692,6 +1611,7 @@
                 document.getElementById('user-display').innerHTML = `<i class="fas fa-user-circle me-1"></i> ${email}`;
                 initRealtimeSync();
                 renderColumnsSettings();
+                applyAreaColors();
                 applyColumnConfig();
             } else { alert('Correo o contraseña incorrectos.'); }
         }
@@ -1735,16 +1655,15 @@
                 else if (state === 'baja') stateBadge = '<span class="badge badge-estado badge-baja">⛔ Baja</span>';
                 else stateBadge = '<span class="badge bg-success" style="font-size:0.6rem;">Activo</span>';
                 listContainer.innerHTML += `
-                    <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border flex-wrap gap-2">
-                        <div class="d-flex align-items-center gap-2"><span class="fw-bold">${op.name}</span>${typeBadge}${stateBadge}</div>
-                        <div class="d-flex gap-1 align-items-center">
-                            <select class="form-select form-select-sm" style="width:auto; font-size:0.8rem;" onchange="changeOperatorState('${op.id}', this.value)">
-                                <option value="activo" ${state === 'activo' ? 'selected' : ''}>Activo</option>
-                                <option value="vacaciones" ${state === 'vacaciones' ? 'selected' : ''}>Vacaciones</option>
-                                <option value="baja" ${state === 'baja' ? 'selected' : ''}>Baja</option>
-                            </select>
-                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button>
-                        </div>
+                    <div class="setting-row">
+                        <span class="flex-grow-1 fw-bold small">${op.name}</span>
+                        ${typeBadge}${stateBadge}
+                        <select class="form-select form-select-sm ms-2" style="width:auto; font-size:0.75rem; padding: 2px 20px 2px 5px;" onchange="changeOperatorState('${op.id}', this.value)">
+                            <option value="activo" ${state === 'activo' ? 'selected' : ''}>Activo</option>
+                            <option value="vacaciones" ${state === 'vacaciones' ? 'selected' : ''}>Vacaciones</option>
+                            <option value="baja" ${state === 'baja' ? 'selected' : ''}>Baja</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteOperator('${op.id}')"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
             });
@@ -1768,7 +1687,7 @@
             }
             html += `<li><hr class="dropdown-divider"></li><li><h6 class="dropdown-header text-dark fw-bold">--- Subestados ---</h6></li>`;
             substatusesList.forEach(s => {
-                html += `<li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:${s}', '${s}')"><div class="badge bg-light text-dark border small">${s}</div></a></li>`;
+                html += `<li><a class="dropdown-item" href="#" onclick="handleSmartFilterSelect('sub:${s.name}', '${s.name}')"><div class="badge bg-light text-dark border small" style="border-left: 3px solid ${s.color} !important;">${s.name}</div></a></li>`;
             });
             dropdownMenu.innerHTML = html;
         }
@@ -1888,12 +1807,10 @@
                 return (order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal);
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
 
-            // Auto-desplegar columnas de operarios si hay búsqueda o filtro activo
             if (filterVal !== '' || activeQuickFilter !== 'all') {
                 filteredOrders.forEach(order => {
                     let status = order.status || 'reparacion';
                     let orderOp = (order.operator || '').trim();
-                    
                     if ((status === 'reparacion' || status === 'montaje') && orderOp) {
                         if (getChapistasList().some(o => o.name === orderOp)) {
                             expandedChapistas.add(orderOp);
@@ -1930,13 +1847,18 @@
                 if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
                 let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
                 let cardClass = order.isChecked ? 'checked-card' : (order.urgent ? 'urgent' : (isOverdue ? 'overdue' : ''));
-                if (order.substatus === 'Ampliación') cardClass += ' substatus-ampliacion';
-                else if (order.substatus === 'Pendiente recambios') cardClass += ' substatus-recambios';
                 let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
+                
+                // SUBESTADO DINÁMICO CON COLOR
                 let substatusBadge = '';
-                if (order.substatus === 'Ampliación') substatusBadge = `<div class="badge substatus-badge-ampliacion mb-1 small">${order.substatus}</div>`;
-                else if (order.substatus === 'Pendiente recambios') substatusBadge = `<div class="badge substatus-badge-recambios mb-1 small">${order.substatus}</div>`;
-                else if (order.substatus) substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
+                const subObj = substatusesList.find(s => s.name === order.substatus);
+                if (subObj) {
+                    substatusBadge = `<div class="badge mb-1 small" style="background-color: ${subObj.color}22; color: ${subObj.color}; border: 1px solid ${subObj.color}66; font-weight: 600;">${subObj.name}</div>`;
+                    cardClass += ` substatus-${safeId(subObj.name).toLowerCase()}`;
+                } else if (order.substatus) {
+                    substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
+                }
+
                 let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;">Destajo</span>` : '';
                 const hasVarillero = (order.pieces && order.pieces.includes('Varillero'));
                 const varilleroBadge = hasVarillero ? `<span class="badge bg-info text-dark ms-1" style="font-size:0.7rem;">Varillero</span>` : '';
@@ -2052,10 +1974,10 @@
             const subtitle = document.getElementById('chapistas-subtitle');
             if (!wrapper) return;
             const chOpsList = getChapistasList();
-            if (chOpsList.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; if (subtitle) subtitle.innerText = '(Sin operarios)'; return; }
-            if (subtitle) subtitle.innerText = '(Pincha en uno para expandir)';
-            let html = `<div class="chapa-four-columns-container">`;
-            chOpsList.forEach(op => {
+            if (chOpsList.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; if (subtitle=") subtitle.innerText = '(Sin operarios)'; return; }
+            ifbad (subtitle) subtitle.innerText = '(Pincha en unoge para expandir)';
+            let html =-count `<div class="chapa-four-columns-check-container">`;
+ed            chOpsList.forEach(op => {
                 const sid = safeId(op.name);
                 const state = op.state || 'activo';
                 const isExpanded = expandedChapistas.has(op.name);
@@ -2088,7 +2010,7 @@
                                 <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
                                     <span class="fw-bold text-primary">Rep.</span>
                                     <div class="d-flex align-items-center gap-1">
-                                        <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;"><span id="count-rep-${sid}">0</span><span class="badge-count-checked" id="count-rep-checked-${sid}">0✓</span></span>
+                                        <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;"><span id="count-rep-${sid}">0</span><span class" id="count-rep-checked-${sid}">0✓</span></span>
                                         <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', 'reparacion')"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
@@ -2179,18 +2101,18 @@
         window.openDetailModal = (orderId) => {
             const order = orders.find(o => o.id === orderId); if (!order) return;
             let historyHtml = '';
-            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
-            else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
+            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op });
+
+: ${h.operator}</div><div class="text-muted" style="           font-size: 0.75rem;"> body${h.date}</div></div>`; });.innerHTML }
+            else historyHtml = '<p class="text-m =uted small">Sin registro de movimientos previos.</p>';
+ `
             const piecesChecklistHtml = buildPiecesChecklistHtml(order.pieces || (order.cocheCompleto ? ['COCHE COMPLETO'] : []), 'edit');
             const body = document.getElementById('detail-modal-body');
             
             let subStatusOptions = '<option value="">Ninguno / Normal</option>';
             substatusesList.forEach(s => {
-                subStatusOptions += `<option value="${s}" ${order.substatus === s ? 'selected' : ''}>${s}</option>`;
-            });
-
-            body.innerHTML = `
-                <form onsubmit="handleUpdateOrder(event, '${order.id}')">
+                subStatusOptions += `<option value="${s.name}" ${order.substatus === s.name ? 'selected' : ''}>${s.name}</option>`;
+                           <form onsubmit="handleUpdateOrder(event, '${order.id}')">
                     <div class="row mb-3">
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Matrícula</label><input type="text" id="edit-plate" class="form-control text-uppercase" value="${order.plate || ''}" required></div>
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Modelo / Descripción</label><input type="text" id="edit-model" class="form-control" value="${order.model || ''}" required></div>
@@ -2619,9 +2541,9 @@
                 }
                 const ultima = h[h.length - 1];
                 if (ultima.status !== 'terminados' && o.status !== 'terminados') {
-                    const dias = ( (Date.now() - ultima.tsp) / (1000ct * 60 * 60 * 24AT);
-                    if (!tiempos[ultima.status]) tiemposiem[ultima.status] = [];
-                    tiempospo[ultima.status].push(dias);
+                    const dias = (Date.now() - ultima.ts) / (1000 * 60 * 60 * 24);
+                    if (!tiempos[ultima.status]) tiempos[ultima.status] = [];
+                    tiempos[ultima.status].push(dias);
                 }
             });
 
@@ -2695,7 +2617,7 @@
             document.getElementById('kpi-activas').innerText = activas;
             document.getElementById('kpi-activas-sub').innerText = `${pctA}% del total`;
             document.getElementById('kpi-terminados').innerText = terminados;
-            if === null) {
+            if (pctATiempo === null) {
                 document.getElementById('kpi-porcentaje-terminados').innerText = `Sin datos exactos (${terminados} sin hora)`;
             } else {
                 document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConTs.length})`;
@@ -2827,6 +2749,7 @@
                 updatePieceZoneSelect();
                 loadColumnStates();
                 renderColumnsSettings();
+                applyAreaColors();
                 applyColumnConfig();
             });
         } else {
@@ -2837,6 +2760,7 @@
             updatePieceZoneSelect();
             loadColumnStates();
             renderColumnsSettings();
+            applyAreaColors();
             applyColumnConfig();
         }
     </script>
