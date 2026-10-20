@@ -11,7 +11,7 @@
         body { background-color: var(--bg-light); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .navbar { background-color: #ffffff; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .kanban-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
-        .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; }
+        .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; border-top-width: 4px; border-top-style: solid; }
         
         /* ESTILO DE COLUMNA PLEGADA */
         .kanban-col.minimized {
@@ -276,6 +276,13 @@
         .piezas-area-block { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
         .piezas-area-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
+        /* ESTILOS PARA EL NUEVO DISEÑO DE AJUSTES DE DEPARTAMENTOS */
+        .dept-row { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
+        .dept-row input[type="text"] { flex: 1; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 8px; font-size: 0.85rem; font-weight: 600; color: #1e293b; }
+        .dept-row input[type="color"] { width: 32px; height: 32px; padding: 0; border: none; border-radius: 4px; cursor: pointer; background: none; }
+        .dept-row input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+        .dept-row .btn-move { padding: 2px 6px; font-size: 0.7rem; }
+        
         @media (max-width: 1100px) {
             body { font-size: 0.9rem; }
             .chapista-group-col { flex: 0 0 110px; width: 110px; min-width: 110px; max-width: 110px; padding: 6px; }
@@ -583,9 +590,9 @@
         </div>
 
         <div class="kanban-container" id="main-kanban-container">
-            <div id="col-cargachapa-wrapper" class="kanban-col p-3 border-top border-primary border-4 shadow-sm" style="display: none;">
+            <div id="col-cargachapa-wrapper" class="kanban-col p-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-primary"></i> Carga Chapa</h6>
+                    <h6 class="text-dark fw-bold m-0" id="title-col-cargachapa"><i class="fas fa-tasks me-1 text-primary"></i> Carga Chapa</h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-cargachapa" class="badge bg-primary rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargachapa-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargachapa-wrapper"></i></button>
@@ -594,9 +601,9 @@
                 </div>
                 <div id="list-cargachapa" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargachapa')"></div>
             </div>
-            <div id="col-cargapintura-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm" style="display: none;">
+            <div id="col-cargapintura-wrapper" class="kanban-col p-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-tasks me-1 text-warning"></i> Carga Pintura</h6>
+                    <h6 class="text-dark fw-bold m-0" id="title-col-cargapintura"><i class="fas fa-tasks me-1 text-warning"></i> Carga Pintura</h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-cargapintura" class="badge bg-warning text-dark rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargapintura-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargapintura-wrapper"></i></button>
@@ -605,9 +612,9 @@
                 </div>
                 <div id="list-cargapintura" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargapintura')"></div>
             </div>
-            <div id="col-lunas-wrapper" class="kanban-col p-3 border-top border-secondary border-4 shadow-sm" style="display: none;">
+            <div id="col-lunas-wrapper" class="kanban-col p-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
+                    <h6 class="text-dark fw-bold m-0" id="title-col-lunas"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-lunas-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-lunas-wrapper"></i></button>
@@ -616,9 +623,9 @@
                 </div>
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
-            <div class="kanban-col p-3 border-top border-primary border-4 shadow-sm" id="kanban-col-chapistas">
+            <div class="kanban-col p-3 shadow-sm" id="kanban-col-chapistas">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha en uno para expandir)</span></h6>
+                    <h6 class="text-dark fw-bold m-0" id="title-kanban-col-chapistas"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha en uno para expandir)</span></h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('kanban-col-chapistas')"><i class="fas fa-compress-alt" id="min-icon-kanban-col-chapistas"></i></button>
@@ -627,9 +634,9 @@
                 </div>
                 <div id="chapa-dynamic-wrapper"></div>
             </div>
-            <div id="col-paragolpes-wrapper" class="kanban-col p-3 border-top border-dark border-4 shadow-sm" style="display: block;">
+            <div id="col-paragolpes-wrapper" class="kanban-col p-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes</h6>
+                    <h6 class="text-dark fw-bold m-0" id="title-col-paragolpes"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes</h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-paragolpes-wrapper"></i></button>
@@ -638,9 +645,9 @@
                 </div>
                 <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
             </div>
-            <div id="col-destajos-wrapper" class="kanban-col p-3 border-top border-info border-4 shadow-sm" style="display: none;">
+            <div id="col-destajos-wrapper" class="kanban-col p-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-file-invoice-dollar me-1 text-info"></i> Destajos</h6>
+                    <h6 class="text-dark fw-bold m-0" id="title-col-destajos"><i class="fas fa-file-invoice-dollar me-1 text-info"></i> Destajos</h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-destajos" class="badge bg-info text-dark rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-destajos-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-destajos-wrapper"></i></button>
@@ -649,9 +656,9 @@
                 </div>
                 <div id="list-destajos" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'destajos')"></div>
             </div>
-            <div id="col-pintores-wrapper" class="kanban-col p-3 border-top border-warning border-4 shadow-sm">
+            <div id="col-pintores-wrapper" class="kanban-col p-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Operario)</span></h6>
+                    <h6 class="text-dark fw-bold m-0" id="title-col-pintores"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Operario)</span></h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-pintores-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pintores-wrapper"></i></button>
@@ -660,9 +667,9 @@
                 </div>
                 <div id="pintores-dynamic-wrapper" class="pintura-split-container"></div>
             </div>
-            <div id="col-terminados-wrapper" class="kanban-col p-3 border-top border-success border-4 shadow-sm" style="display: none;">
+            <div id="col-terminados-wrapper" class="kanban-col p-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
+                    <h6 class="text-dark fw-bold m-0" id="title-col-terminados"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
                     <div class="d-flex align-items-center gap-2">
                         <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
                         <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button>
@@ -698,41 +705,8 @@
                 <div class="modal-body p-4">
                     
                     <h6 class="fw-bold text-dark mb-1">Departamentos <span class="text-muted fw-normal small">(Columnas del tablero)</span></h6>
-                    <p class="text-muted small mb-3">Marca o desmarca para mostrar/ocultar columnas en el tablero principal.</p>
-                    <div class="d-flex flex-column gap-2 mb-4">
-                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
-                            <input class="form-check-input" type="checkbox" id="chk-col-cargachapa" checked onchange="toggleColumnVisibility('cargachapa', this.checked)">
-                            <label class="form-check-label fw-bold" for="chk-col-cargachapa">Carga Chapa</label>
-                        </div>
-                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
-                            <input class="form-check-input" type="checkbox" id="chk-col-cargapintura" checked onchange="toggleColumnVisibility('cargapintura', this.checked)">
-                            <label class="form-check-label fw-bold" for="chk-col-cargapintura">Carga Pintura</label>
-                        </div>
-                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
-                            <input class="form-check-input" type="checkbox" id="chk-col-lunas" checked onchange="toggleColumnVisibility('lunas', this.checked)">
-                            <label class="form-check-label fw-bold" for="chk-col-lunas">Lunas</label>
-                        </div>
-                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
-                            <input class="form-check-input" type="checkbox" id="chk-col-chapistas" checked onchange="toggleColumnVisibility('chapistas', this.checked)">
-                            <label class="form-check-label fw-bold" for="chk-col-chapistas">Chapistas</label>
-                        </div>
-                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
-                            <input class="form-check-input" type="checkbox" id="chk-col-paragolpes" checked onchange="toggleColumnVisibility('paragolpes', this.checked)">
-                            <label class="form-check-label fw-bold" for="chk-col-paragolpes">Paragolpes</label>
-                        </div>
-                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
-                            <input class="form-check-input" type="checkbox" id="chk-col-destajos" checked onchange="toggleColumnVisibility('destajos', this.checked)">
-                            <label class="form-check-label fw-bold" for="chk-col-destajos">Destajos</label>
-                        </div>
-                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
-                            <input class="form-check-input" type="checkbox" id="chk-col-pintores" checked onchange="toggleColumnVisibility('pintores', this.checked)">
-                            <label class="form-check-label fw-bold" for="chk-col-pintores">Pintores</label>
-                        </div>
-                        <div class="form-check form-switch bg-light p-2 rounded border ps-5">
-                            <input class="form-check-input" type="checkbox" id="chk-col-terminados" checked onchange="toggleColumnVisibility('terminados', this.checked)">
-                            <label class="form-check-label fw-bold" for="chk-col-terminados">Terminados</label>
-                        </div>
-                    </div>
+                    <p class="text-muted small mb-3">Cambia el nombre, el color, o el orden de las columnas. Marca la casilla para ocultarlas o mostrarlas.</p>
+                    <div id="columns-settings-list" class="mb-4"></div>
 
                     <h6 class="fw-bold text-dark mb-1 mt-4">Subestados <span class="text-muted fw-normal small">(Avisos en las tarjetas)</span></h6>
                     <p class="text-muted small mb-2">Añade avisos como "Pendiente de recambios" o "Pieza reparándose fuera".</p>
@@ -923,6 +897,20 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // CONFIGURACIÓN DE COLUMNAS POR DEFECTO
+        const DEFAULT_COLUMNS = [
+            { id: 'cargachapa', name: 'Carga Chapa', color: '#2563eb', visible: false },
+            { id: 'cargapintura', name: 'Carga Pintura', color: '#f59e0b', visible: false },
+            { id: 'lunas', name: 'Lunas', color: '#64748b', visible: false },
+            { id: 'chapistas', name: 'Chapistas', color: '#2563eb', visible: true },
+            { id: 'paragolpes', name: 'Paragolpes', color: '#1e293b', visible: true },
+            { id: 'destajos', name: 'Destajos', color: '#0891b2', visible: false },
+            { id: 'pintores', name: 'Pintores', color: '#f59e0b', visible: true },
+            { id: 'terminados', name: 'Terminados', color: '#10b981', visible: false }
+        ];
+
+        let columnConfig = JSON.parse(localStorage.getItem('planning360_columns')) || JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
+
         const DEFAULT_PIECES_ZONES = [
             { title: "Parte Delantera", cls: "", pieces: ["Paragolpes delantero","Spoiler delantero","Molduras negras","Capó","Luna delantera","Faro izquierdo","Faro derecho"] },
             { title: "Parte Trasera", cls: "zone-trasera", pieces: ["Paragolpes trasero","Spoiler trasero","Moldura negra","Portón","Luna trasera","Piloto izquierdo","Piloto derecho"] },
@@ -1009,14 +997,6 @@
         let operators = [];
         let privacyModeActive = true;
         let activeQuickFilter = 'all';
-        let showCargaChapaCol = false;
-        let showCargaPinturaCol = false;
-        let showLunasCol = false;
-        let showChapistasCol = true;
-        let showParagolpesCol = true;
-        let showDestajosCol = false;
-        let showPintoresCol = true;
-        let showTerminadosCol = false;
         let bossDashboardActive = false;
         let bossPeriod = 'month';
         let bossWorkType = 'all';
@@ -1060,6 +1040,105 @@
             if (areaKey === 'destajos' && order.isDestajo === true) return true;
             return false;
         }
+
+        // ============================================
+        // GESTIÓN DINÁMICA DE COLUMNAS
+        // ============================================
+        
+        function saveColumnConfig() {
+            localStorage.setItem('planning360_columns', JSON.stringify(columnConfig));
+            applyColumnConfig();
+        }
+
+        function applyColumnConfig() {
+            // 1. Aplicar visibilidad, color y nombre
+            columnConfig.forEach(col => {
+                const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
+                if (!wrapper) return;
+                
+                // Visibilidad
+                wrapper.style.display = col.visible ? 'block' : 'none';
+                
+                // Color del borde superior
+                wrapper.style.borderTopColor = col.color;
+
+                // Nombre (solo actualizamos el texto, no el icono)
+                const titleEl = document.getElementById(`title-${col.id === 'chapistas' ? 'kanban-col-chapistas' : 'col-' + col.id + '-wrapper'}`);
+                if (titleEl) {
+                    const icon = titleEl.querySelector('i');
+                    const iconHtml = icon ? icon.outerHTML : '';
+                    titleEl.innerHTML = `${iconHtml} ${col.name}`;
+                    
+                    // Si es Chapistas o Pintores, volvemos a añadir el texto pequeñito
+                    if (col.id === 'chapistas') titleEl.innerHTML += ` <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha en uno para expandir)</span>`;
+                    if (col.id === 'pintores') titleEl.innerHTML += ` <span class="small text-muted fw-normal">(Por Operario)</span>`;
+                }
+            });
+
+            // 2. Aplicar orden de las columnas en el DOM
+            const container = document.getElementById('main-kanban-container');
+            if (container) {
+                columnConfig.forEach(col => {
+                    const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
+                    if (wrapper) container.appendChild(wrapper); // Mover al final en orden de array
+                });
+            }
+        }
+
+        function renderColumnsSettings() {
+            const list = document.getElementById('columns-settings-list');
+            if (!list) return;
+            
+            list.innerHTML = columnConfig.map((col, index) => `
+                <div class="dept-row">
+                    <input type="text" value="${col.name}" onchange="updateColName('${col.id}', this.value)" title="Nombre de la columna">
+                    <input type="color" value="${col.color}" onchange="updateColColor('${col.id}', this.value)" title="Color de la columna">
+                    <label class="d-flex align-items-center gap-1 m-0" style="font-size:0.75rem; cursor:pointer;" title="Mostrar/Ocultar">
+                        <input type="checkbox" ${col.visible ? 'checked' : ''} onchange="updateColVisible('${col.id}', this.checked)"> visible
+                    </label>
+                    <button class="btn btn-sm btn-light border btn-move" onclick="moveCol(${index}, -1)" ${index === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
+                    <button class="btn btn-sm btn-light border btn-move" onclick="moveCol(${index}, 1)" ${index === columnConfig.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                </div>
+            `).join('');
+        }
+
+        window.updateColName = (id, newName) => {
+            const col = columnConfig.find(c => c.id === id);
+            if (col) { col.name = newName; saveColumnConfig(); }
+        };
+
+        window.updateColColor = (id, newColor) => {
+            const col = columnConfig.find(c => c.id === id);
+            if (col) { col.color = newColor; saveColumnConfig(); }
+        };
+
+        window.updateColVisible = (id, isVisible) => {
+            const col = columnConfig.find(c => c.id === id);
+            if (col) { col.visible = isVisible; saveColumnConfig(); }
+        };
+
+        window.moveCol = (index, direction) => {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= columnConfig.length) return;
+            const temp = columnConfig[index];
+            columnConfig[index] = columnConfig[newIndex];
+            columnConfig[newIndex] = temp;
+            saveColumnConfig();
+            renderColumnsSettings();
+        };
+
+        // Redefinimos toggleColumnVisibility para que use la nueva configuración
+        window.toggleColumnVisibility = (colName, forceState = null) => {
+            const col = columnConfig.find(c => c.id === colName);
+            if (!col) return;
+            col.visible = forceState !== null ? forceState : !col.visible;
+            saveColumnConfig();
+            
+            // Sincronizar checkbox antiguo si existe
+            const chk = document.getElementById(`chk-col-${colName}`);
+            if (chk) chk.checked = col.visible;
+        };
+        // ============================================
 
         function buildPiecesChecklistHtml(checkedPieces, prefixId) {
             let html = '';
@@ -1443,31 +1522,6 @@
                 piecesZonesData.map((z, i) => `<option value="${i}">${z.title}</option>`).join('');
         }
 
-        window.toggleColumnVisibility = (colName, forceState = null) => {
-            if (colName === 'cargachapa') { showCargaChapaCol = forceState !== null ? forceState : !showCargaChapaCol; const w = document.getElementById('col-cargachapa-wrapper'); if (w) w.style.display = showCargaChapaCol ? 'block' : 'none'; }
-            else if (colName === 'cargapintura') { showCargaPinturaCol = forceState !== null ? forceState : !showCargaPinturaCol; const w = document.getElementById('col-cargapintura-wrapper'); if (w) w.style.display = showCargaPinturaCol ? 'block' : 'none'; }
-            else if (colName === 'lunas') { showLunasCol = forceState !== null ? forceState : !showLunasCol; const w = document.getElementById('col-lunas-wrapper'); if (w) w.style.display = showLunasCol ? 'block' : 'none'; }
-            else if (colName === 'chapistas') { showChapistasCol = forceState !== null ? forceState : !showChapistasCol; const w = document.getElementById('kanban-col-chapistas'); if (w) w.style.display = showChapistasCol ? 'block' : 'none'; }
-            else if (colName === 'paragolpes') { showParagolpesCol = forceState !== null ? forceState : !showParagolpesCol; const w = document.getElementById('col-paragolpes-wrapper'); if (w) w.style.display = showParagolpesCol ? 'block' : 'none'; }
-            else if (colName === 'destajos') { showDestajosCol = forceState !== null ? forceState : !showDestajosCol; const w = document.getElementById('col-destajos-wrapper'); if (w) w.style.display = showDestajosCol ? 'block' : 'none'; }
-            else if (colName === 'pintores') { showPintoresCol = forceState !== null ? forceState : !showPintoresCol; const w = document.getElementById('col-pintores-wrapper'); if (w) w.style.display = showPintoresCol ? 'block' : 'none'; }
-            else if (colName === 'terminados') { showTerminadosCol = forceState !== null ? forceState : !showTerminadosCol; const w = document.getElementById('col-terminados-wrapper'); if (w) w.style.display = showTerminadosCol ? 'block' : 'none'; }
-            
-            const chk = document.getElementById(`chk-col-${colName}`);
-            if (chk) {
-                let isVisible = false;
-                if (colName === 'cargachapa') isVisible = showCargaChapaCol;
-                else if (colName === 'cargapintura') isVisible = showCargaPinturaCol;
-                else if (colName === 'lunas') isVisible = showLunasCol;
-                else if (colName === 'chapistas') isVisible = showChapistasCol;
-                else if (colName === 'paragolpes') isVisible = showParagolpesCol;
-                else if (colName === 'destajos') isVisible = showDestajosCol;
-                else if (colName === 'pintores') isVisible = showPintoresCol;
-                else if (colName === 'terminados') isVisible = showTerminadosCol;
-                chk.checked = isVisible;
-            }
-        };
-
         window.toggleChapistaExpand = (opName) => {
             const sid = safeId(opName);
             const col = document.getElementById(`chapista-col-${sid}`);
@@ -1619,6 +1673,8 @@
                 document.getElementById('app-screen').style.display = 'block';
                 document.getElementById('user-display').innerHTML = `<i class="fas fa-user-circle me-1"></i> ${email}`;
                 initRealtimeSync();
+                renderColumnsSettings();
+                applyColumnConfig();
             } else { alert('Correo o contraseña incorrectos.'); }
         }
 
@@ -1793,12 +1849,12 @@
             const todayStr = new Date().toISOString().split('T')[0];
             
             if (filterVal !== '') {
-                if (filterVal.includes('carga chapa') || filterVal === 'cargachapa') { if (!showCargaChapaCol) toggleColumnVisibility('cargachapa', true); }
-                if (filterVal.includes('carga pintura') || filterVal === 'cargapintura') { if (!showCargaPinturaCol) toggleColumnVisibility('cargapintura', true); }
-                if (filterVal.includes('luna') || filterVal === 'lunas') { if (!showLunasCol) toggleColumnVisibility('lunas', true); }
-                if (filterVal.includes('paragolpe') || filterVal === 'paragolpes') { if (!showParagolpesCol) toggleColumnVisibility('paragolpes', true); }
-                if (filterVal.includes('destajo') || filterVal === 'destajos') { if (!showDestajosCol) toggleColumnVisibility('destajos', true); }
-                if (filterVal.includes('terminado') || filterVal === 'terminados') { if (!showTerminadosCol) toggleColumnVisibility('terminados', true); }
+                if (filterVal.includes('carga chapa') || filterVal === 'cargachapa') { toggleColumnVisibility('cargachapa', true); }
+                if (filterVal.includes('carga pintura') || filterVal === 'cargapintura') { toggleColumnVisibility('cargapintura', true); }
+                if (filterVal.includes('luna') || filterVal === 'lunas') { toggleColumnVisibility('lunas', true); }
+                if (filterVal.includes('paragolpe') || filterVal === 'paragolpes') { toggleColumnVisibility('paragolpes', true); }
+                if (filterVal.includes('destajo') || filterVal === 'destajos') { toggleColumnVisibility('destajos', true); }
+                if (filterVal.includes('terminado') || filterVal === 'terminados') { toggleColumnVisibility('terminados', true); }
             }
 
             let filteredOrders = orders.filter(order => {
@@ -1814,7 +1870,7 @@
                 return (order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal);
             }).sort((a, b) => (a.dateOut || '9999-12-31').localeCompare(b.dateOut || '9999-12-31'));
 
-            // ¡AQUÍ ESTÁ LA MAGIA! Auto-desplegar columnas de operarios si hay búsqueda o filtro activo
+            // Auto-desplegar columnas de operarios si hay búsqueda o filtro activo
             if (filterVal !== '' || activeQuickFilter !== 'all') {
                 filteredOrders.forEach(order => {
                     let status = order.status || 'reparacion';
@@ -2752,6 +2808,8 @@
                 renderPiecesSettingsList();
                 updatePieceZoneSelect();
                 loadColumnStates();
+                renderColumnsSettings();
+                applyColumnConfig();
             });
         } else {
             initNewOrderChecklist();
@@ -2760,6 +2818,8 @@
             renderPiecesSettingsList();
             updatePieceZoneSelect();
             loadColumnStates();
+            renderColumnsSettings();
+            applyColumnConfig();
         }
     </script>
 </body>
