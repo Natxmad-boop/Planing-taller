@@ -704,8 +704,16 @@
                 </div>
                 <div class="modal-body p-4">
                     
-                    <h6 class="fw-bold text-dark mb-1">Departamentos <span class="text-muted fw-normal small">(Columnas del tablero)</span></h6>
-                    <p class="text-muted small mb-3">Cambia el nombre, el color, o el orden de las columnas. Marca la casilla para ocultarlas o mostrarlas.</p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Departamentos <span class="text-muted fw-normal small">(Columnas del tablero)</span></h6>
+                            <p class="text-muted small mb-0">Cambia el nombre, color u orden de las columnas.</p>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger fw-bold" onclick="resetLayout()" title="Restablece el diseño original (columnas desplegadas y en su orden)">
+                            <i class="fas fa-undo me-1"></i> Restablecer diseño
+                        </button>
+                    </div>
+                    
                     <div id="columns-settings-list" class="mb-4"></div>
 
                     <h6 class="fw-bold text-dark mb-1 mt-4">Subestados <span class="text-muted fw-normal small">(Avisos en las tarjetas)</span></h6>
@@ -1086,6 +1094,15 @@
             }
         }
 
+        window.resetLayout = () => {
+            if (!confirm('Esto restablecerá las columnas a su estado original (desplegadas y en su orden por defecto) y borrará las piezas y subestados personalizados. ¿Continuar?')) return;
+            localStorage.removeItem('planning360_columns_v2');
+            localStorage.removeItem('planning360_colStates_v2');
+            localStorage.removeItem('planning360_pieces');
+            localStorage.removeItem('planning360_substatuses');
+            location.reload();
+        };
+
         function renderColumnsSettings() {
             const list = document.getElementById('columns-settings-list');
             if (!list) return;
@@ -1372,13 +1389,13 @@
                 document.querySelectorAll('.kanban-col').forEach(col => {
                     if (col.id) states[col.id] = col.classList.contains('minimized');
                 });
-                localStorage.setItem('planning360_colStates', JSON.stringify(states));
+                localStorage.setItem('planning360_colStates_v2', JSON.stringify(states));
             } catch(e) {}
         }
 
         function loadColumnStates() {
             try {
-                const raw = localStorage.getItem('planning360_colStates');
+                const raw = localStorage.getItem('planning360_colStates_v2');
                 if (!raw) return;
                 const states = JSON.parse(raw);
                 Object.keys(states).forEach(id => {
@@ -2602,9 +2619,9 @@
                 }
                 const ultima = h[h.length - 1];
                 if (ultima.status !== 'terminados' && o.status !== 'terminados') {
-                    const dias = (Date.now() - ultima.ts) / (1000 * 60 * 60 * 24);
-                    if (!tiempos[ultima.status]) tiempos[ultima.status] = [];
-                    tiempos[ultima.status].push(dias);
+                    const dias = ( (Date.now() - ultima.tsp) / (1000ct * 60 * 60 * 24AT);
+                    if (!tiempos[ultima.status]) tiemposiem[ultima.status] = [];
+                    tiempospo[ultima.status].push(dias);
                 }
             });
 
@@ -2678,7 +2695,7 @@
             document.getElementById('kpi-activas').innerText = activas;
             document.getElementById('kpi-activas-sub').innerText = `${pctA}% del total`;
             document.getElementById('kpi-terminados').innerText = terminados;
-            if (pctATiempo === null) {
+            if === null) {
                 document.getElementById('kpi-porcentaje-terminados').innerText = `Sin datos exactos (${terminados} sin hora)`;
             } else {
                 document.getElementById('kpi-porcentaje-terminados').innerText = `${pctATiempo}% a tiempo (${terminadosATiempo.length} de ${terminadosConTs.length})`;
