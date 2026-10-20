@@ -11,7 +11,7 @@
         body { background-color: var(--bg-light); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .navbar { background-color: #ffffff; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .kanban-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
-        .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; border-top-width: 4px; border-top-style: solid; }
+        .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; border-top-width: 6px; border-top-style: solid; }
         
         /* ESTILO DE COLUMNA PLEGADA */
         .kanban-col.minimized {
@@ -108,9 +108,9 @@
         .badge-estado.badge-vacaciones { background-color: #c084fc; color: #ffffff; }
         .badge-estado.badge-baja { background-color: #94a3b8; color: #ffffff; }
         
-        .task-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.75rem; }
-        .task-card.urgent { background-color: #fff1f2 !important; border: 2px solid #e11d48 !important; box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important; }
-        .task-card.checked-card { background-color: #d1fae5 !important; border: 2px solid #059669 !important; box-shadow: 0 0 10px rgba(5, 150, 105, 0.3) !important; }
+        .task-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.75rem; border-left-width: 5px; border-left-style: solid; }
+        .task-card.urgent { background-color: #fff1f2 !important; border: 2px solid #e11d48 !important; border-left-width: 5px !important; box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important; }
+        .task-card.checked-card { background-color: #d1fae5 !important; border: 2px solid #059669 !important; border-left-width: 5px !important; box-shadow: 0 0 10px rgba(5, 150, 105, 0.3) !important; }
         .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
         
         @keyframes blink-animation { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
@@ -952,7 +952,7 @@
                 destajos: { label: 'Destajos', color: areaColors.destajos, statuses: ['destajos'] },
                 lunas: { label: 'Lunas', color: areaColors.lunas, statuses: ['lunas'] }
             };
-            // Actualizar inputs de color
+            // Actualizar inputs de color visualmente
             document.querySelectorAll('input[type="color"]').forEach(inp => {
                 if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('chapa'")) inp.value = areaColors.chapa;
                 if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('pintura'")) inp.value = areaColors.pintura;
@@ -1339,7 +1339,7 @@
             inpName.value = '';
             renderSubstatusesList();
             updateSubstatusDropdowns();
-            renderOrders(); // Re-renderizar para aplicar nuevos colores
+            renderOrders();
         };
 
         window.deleteSubstatus = (name) => {
@@ -1849,12 +1849,18 @@
                 let cardClass = order.isChecked ? 'checked-card' : (order.urgent ? 'urgent' : (isOverdue ? 'overdue' : ''));
                 let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
                 
+                // DETERMINAR COLOR DE LA TARJETA SEGÚN ÁREA
+                let areaColor = areaColors.chapa;
+                if (status === 'pintura' || status === 'cargapintura') areaColor = areaColors.pintura;
+                else if (status === 'paragolpes') areaColor = areaColors.paragolpes;
+                else if (status === 'destajos') areaColor = areaColors.destajos;
+                else if (status === 'lunas') areaColor = areaColors.lunas;
+
                 // SUBESTADO DINÁMICO CON COLOR
                 let substatusBadge = '';
                 const subObj = substatusesList.find(s => s.name === order.substatus);
                 if (subObj) {
-                    substatusBadge = `<div class="badge mb-1 small" style="background-color: ${subObj.color}22; color: ${subObj.color}; border: 1px solid ${subObj.color}66; font-weight: 600;">${subObj.name}</div>`;
-                    cardClass += ` substatus-${safeId(subObj.name).toLowerCase()}`;
+                    substatusBadge = `<div class="badge mb-1 small" style="background-color: ${subObj.color}; color: white; font-weight: 600;">${subObj.name}</div>`;
                 } else if (order.substatus) {
                     substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
                 }
@@ -1881,7 +1887,7 @@
                 let checkBtnColor = order.isChecked ? 'btn-success' : 'btn-outline-secondary';
                 let checkIconClass = order.isChecked ? 'fas fa-check-square' : 'far fa-square';
                 let cardHtml = `
-                    <div class="task-card p-2 ${cardClass}" id="card-${order.id}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
+                    <div class="task-card p-2 ${cardClass}" style="border-left-color: ${areaColor};" id="card-${order.id}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
                         ${urgentBanner}
                         <div class="d-flex justify-content-between align-items-start mb-1">
                             <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">${displayPlate} - ${order.model}</h6>
@@ -1974,10 +1980,10 @@
             const subtitle = document.getElementById('chapistas-subtitle');
             if (!wrapper) return;
             const chOpsList = getChapistasList();
-            if (chOpsList.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; if (subtitle=") subtitle.innerText = '(Sin operarios)'; return; }
-            ifbad (subtitle) subtitle.innerText = '(Pincha en unoge para expandir)';
-            let html =-count `<div class="chapa-four-columns-check-container">`;
-ed            chOpsList.forEach(op => {
+            if (chOpsList.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; if (subtitle) subtitle.innerText = '(Sin operarios)'; return; }
+            if (subtitle) subtitle.innerText = '(Pincha en uno para expandir)';
+            let html = `<div class="chapa-four-columns-container">`;
+            chOpsList.forEach(op => {
                 const sid = safeId(op.name);
                 const state = op.state || 'activo';
                 const isExpanded = expandedChapistas.has(op.name);
@@ -2010,7 +2016,7 @@ ed            chOpsList.forEach(op => {
                                 <div class="d-flex justify-content-between align-items-center px-1 mb-1" style="font-size:0.75rem;">
                                     <span class="fw-bold text-primary">Rep.</span>
                                     <div class="d-flex align-items-center gap-1">
-                                        <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;"><span id="count-rep-${sid}">0</span><span class" id="count-rep-checked-${sid}">0✓</span></span>
+                                        <span class="badge bg-primary rounded-pill" style="font-size:0.65rem;"><span id="count-rep-${sid}">0</span><span class="badge-count-checked" id="count-rep-checked-${sid}">0✓</span></span>
                                         <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.55rem;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', 'reparacion')"><i class="far fa-check-square"></i></button>
                                     </div>
                                 </div>
@@ -2101,18 +2107,18 @@ ed            chOpsList.forEach(op => {
         window.openDetailModal = (orderId) => {
             const order = orders.find(o => o.id === orderId); if (!order) return;
             let historyHtml = '';
-            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op });
-
-: ${h.operator}</div><div class="text-muted" style="           font-size: 0.75rem;"> body${h.date}</div></div>`; });.innerHTML }
-            else historyHtml = '<p class="text-m =uted small">Sin registro de movimientos previos.</p>';
- `
+            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
+            else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
             const piecesChecklistHtml = buildPiecesChecklistHtml(order.pieces || (order.cocheCompleto ? ['COCHE COMPLETO'] : []), 'edit');
             const body = document.getElementById('detail-modal-body');
             
             let subStatusOptions = '<option value="">Ninguno / Normal</option>';
             substatusesList.forEach(s => {
                 subStatusOptions += `<option value="${s.name}" ${order.substatus === s.name ? 'selected' : ''}>${s.name}</option>`;
-                           <form onsubmit="handleUpdateOrder(event, '${order.id}')">
+            });
+
+            body.innerHTML = `
+                <form onsubmit="handleUpdateOrder(event, '${order.id}')">
                     <div class="row mb-3">
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Matrícula</label><input type="text" id="edit-plate" class="form-control text-uppercase" value="${order.plate || ''}" required></div>
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Modelo / Descripción</label><input type="text" id="edit-model" class="form-control" value="${order.model || ''}" required></div>
