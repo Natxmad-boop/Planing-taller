@@ -897,19 +897,20 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // CONFIGURACIÓN DE COLUMNAS POR DEFECTO
+        // CONFIGURACIÓN DE COLUMNAS POR DEFECTO (TODAS VISIBLES)
         const DEFAULT_COLUMNS = [
-            { id: 'cargachapa', name: 'Carga Chapa', color: '#2563eb', visible: false },
-            { id: 'cargapintura', name: 'Carga Pintura', color: '#f59e0b', visible: false },
-            { id: 'lunas', name: 'Lunas', color: '#64748b', visible: false },
+            { id: 'cargachapa', name: 'Carga Chapa', color: '#2563eb', visible: true },
+            { id: 'cargapintura', name: 'Carga Pintura', color: '#f59e0b', visible: true },
+            { id: 'lunas', name: 'Lunas', color: '#64748b', visible: true },
             { id: 'chapistas', name: 'Chapistas', color: '#2563eb', visible: true },
             { id: 'paragolpes', name: 'Paragolpes', color: '#1e293b', visible: true },
-            { id: 'destajos', name: 'Destajos', color: '#0891b2', visible: false },
+            { id: 'destajos', name: 'Destajos', color: '#0891b2', visible: true },
             { id: 'pintores', name: 'Pintores', color: '#f59e0b', visible: true },
-            { id: 'terminados', name: 'Terminados', color: '#10b981', visible: false }
+            { id: 'terminados', name: 'Terminados', color: '#10b981', visible: true }
         ];
 
-        let columnConfig = JSON.parse(localStorage.getItem('planning360_columns')) || JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
+        // Usamos la clave v2 para forzar la actualización en los navegadores que ya tenían la config vieja
+        let columnConfig = JSON.parse(localStorage.getItem('planning360_columns_v2')) || JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
 
         const DEFAULT_PIECES_ZONES = [
             { title: "Parte Delantera", cls: "", pieces: ["Paragolpes delantero","Spoiler delantero","Molduras negras","Capó","Luna delantera","Faro izquierdo","Faro derecho"] },
@@ -1046,7 +1047,7 @@
         // ============================================
         
         function saveColumnConfig() {
-            localStorage.setItem('planning360_columns', JSON.stringify(columnConfig));
+            localStorage.setItem('planning360_columns_v2', JSON.stringify(columnConfig));
             applyColumnConfig();
         }
 
