@@ -777,6 +777,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // ⚠️ IMPORTANTE: AQUÍ DEBES PONER TUS CLAVES REALES DE FIREBASE
         const firebaseConfig = {
             apiKey: "TU_API_KEY_REAL",
             authDomain: "planning-taller-23a87.firebaseapp.com",
@@ -1546,10 +1547,10 @@
                     html += `<span class="text-muted small italic">Sin piezas</span>`;
                 } else {
                     zone.pieces.forEach((piece, pIdx) => {
-                        const safePiece = String(piece).replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                        html += `<span class="badge bg-white text-dark border shadow-sm p-2">
-                            ${safePiece} 
-                            <i class="fas fa-times ms-1 text-danger" style="cursor:pointer" onclick="deletePiece(${zIdx}, ${pIdx})"></i>
+                        const safePiece = String(piece).replace(/</g, '&lt;').="replace(/>/g, '&gt;cursor');
+                        html += `<span class="bad:ge bg-white text-dark border shadowpointer-sm p-2">
+                            ${"safePiece} 
+                            <i onclick class="fas fa-times ms-1 text-danger" style="deletePiece(${zIdx}, ${pIdx})"></i>
                         </span>`;
                     });
                 }
@@ -1912,6 +1913,22 @@
         }
 
         window.renderOrders = () => {
+            // SAFETY NET: Recuperar columnas "huérfanas" si se borraron de la memoria local pero hay coches en la base de datos con ese estado
+            let configChanged = false;
+            orders.forEach(order => {
+                let status = order.status || 'reparacion';
+                if (['reparacion', 'montaje', 'pintura', 'terminados'].includes(status)) return;
+                if (!columnConfig.some(c => c.id === status)) {
+                    columnConfig.push({ id: status, name: status, color: '#64748b', visible: true, type: 'standard' });
+                    configChanged = true;
+                }
+            });
+            if (configChanged) {
+                localStorage.setItem('planning360_columns_v3', JSON.stringify(columnConfig));
+                renderColumnsSettings();
+                applyColumnConfig();
+            }
+
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
@@ -2123,8 +2140,9 @@
             const subtitle = document.getElementById('chapistas-subtitle');
             if (!wrapper) return;
             const chOpsList = getChapistasList();
-            if (chOpsList.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay chapistas. Añádelos en "Operarios".</p>'; if (subtitle) subtitle.innerText = '(Sin operarios)'; return; }
-            if (subtitle) subtitle.innerText = '(Pincha para expandir)';
+            
+            if (subtitle) subtitle.innerText = chOpsList.length === 0 ? '(Sin operarios)' : '(Pincha para expandir)';
+            
             let html = `<div class="chapa-four-columns-container">`;
             chOpsList.forEach(op => {
                 const sid = safeId(op.name);
@@ -2180,6 +2198,7 @@
                 `;
             });
             html += `</div>`;
+            // Importante: Las columnas de "Sin asignar" siempre se renderizan, incluso si chOpsList está vacío
             html += `
                 <div class="chapa-split-container mt-3">
                     <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')">
@@ -2199,7 +2218,6 @@
             const wrapper = document.getElementById('pintores-dynamic-wrapper');
             if (!wrapper) return;
             const pintores = getPintoresList();
-            if (pintores.length === 0) { wrapper.innerHTML = '<p class="text-muted small text-center py-3">No hay pintores. Añádelos en "Operarios".</p>'; return; }
             let html = '';
             pintores.forEach(op => {
                 const sid = safeId(op.name);
@@ -2223,6 +2241,7 @@
                     </div>
                 `;
             });
+            // Importante: La columna de "Sin asignar" siempre se renderiza
             html += `
                 <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintura')">
                     <div class="text-center fw-bold text-secondary small mb-2 border-bottom pb-1">Sin asignar</div>
