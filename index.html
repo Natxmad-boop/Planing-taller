@@ -653,8 +653,8 @@
                 </div>
             </div>
             
-            <!-- CONTENEDOR DINÁMICO PARA TALLERES EXTERNOS -->
-            <div id="external-columns-container" class="kanban-container" style="display: contents;"></div>
+            <!-- CONTENEDOR DINÁMICO PARA NUEVOS DEPARTAMENTOS -->
+            <div id="custom-columns-container" class="kanban-container" style="display: contents;"></div>
         </div>
     </div>
 
@@ -678,6 +678,13 @@
                             <i class="fas fa-undo me-1"></i> Restablecer
                         </button>
                     </div>
+                    
+                    <!-- NUEVO: CREAR DEPARTAMENTO -->
+                    <div class="input-group input-group-sm mb-3 shadow-sm">
+                        <input type="text" id="new-column-name" class="form-control" placeholder="Escribir nombre del nuevo departamento (Ej. Faros Alcalá)">
+                        <button class="btn btn-primary fw-bold" type="button" onclick="handleAddCustomColumn()"><i class="fas fa-plus me-1"></i> Crear</button>
+                    </div>
+                    
                     <div id="columns-settings-list" class="mb-4"></div>
 
                     <!-- TIPOS DE HOJA (COLORES DE ÁREA) -->
@@ -835,11 +842,7 @@
                                 <select id="car-substatus" class="form-select"></select>
                             </div>
                         </div>
-                        <!-- NUEVO CAMPO TALLER EXTERNO -->
-                        <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded">
-                            <label class="form-label small text-info fw-bold"><i class="fas fa-truck-moving me-1"></i> Enviar a Taller Externo (Opcional)</label>
-                            <input type="text" id="car-external-location" class="form-control" placeholder="Ej. Faros Alcalá. Déjalo vacío si está en el taller principal.">
-                        </div>
+                        
                         <div class="mb-3">
                             <label class="form-label small text-secondary fw-bold">Estado Inicial</label>
                             <select id="car-status" class="form-select">
@@ -855,6 +858,12 @@
                                 <option value="terminados">6. Terminados</option>
                             </select>
                         </div>
+
+                        <!-- NUEVO: DUPLICAR EN DEPARTAMENTOS -->
+                        <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded" id="new-order-duplicates-container">
+                            <!-- Se rellena desde JS -->
+                        </div>
+
                         <div class="mb-3 p-3 bg-light border rounded">
                             <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos</label>
                             <div class="row g-2" id="checklist-new-container"></div>
@@ -942,7 +951,6 @@
             "Direct Seguros", "Winthertur", "Particular"
         ];
 
-        // SUBESTADOS AHORA TIENEN COLOR
         let substatusesList = JSON.parse(localStorage.getItem('planning360_substatuses_v2')) || [
             { name: "Ampliación", color: "#8b5cf6" },
             { name: "Pendiente recambios", color: "#f59e0b" },
@@ -1060,7 +1068,6 @@
                 destajos: { label: 'Destajos', color: areaColors.destajos, statuses: ['destajos'] },
                 lunas: { label: 'Lunas', color: areaColors.lunas, statuses: ['lunas'] }
             };
-            // Actualizar inputs de color visualmente
             document.querySelectorAll('input[type="color"]').forEach(inp => {
                 if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('chapa'")) inp.value = areaColors.chapa;
                 if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('pintura'")) inp.value = areaColors.pintura;
@@ -1084,22 +1091,33 @@
             applyColumnConfig();
         }
 
+        // FUNCIÓN PARA CREAR NUEVO DEPARTAMENTO
+        window.handleAddCustomColumn = () => {
+            const nameInput = document.getElementById('new-column-name');
+            const name = nameInput.value.trim();
+            if (!name) return;
+            const id = 'custom_' + Date.now();
+            const color = COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+            
+            columnConfig.push({ id: id, name: name, color: color, visible: true, isCustom: true });
+            saveColumnConfig();
+            renderColumnsSettings();
+            nameInput.value = '';
+        };
+
         function applyColumnConfig() {
-            // 1. Aplicar visibilidad, color y nombre
-            columnConfig.forEach(col => {
+            // 1. Aplicar visibilidad, color y nombre de columnas estándar
+            columnConfig.filter(c => !c.isCustom).forEach(col => {
                 const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
                 if (!wrapper) return;
                 
-                // Visibilidad
                 wrapper.style.display = col.visible ? 'block' : 'none';
                 
-                // Color del borde superior
                 let baseColor = col.color;
                 if (col.id === 'chapistas') baseColor = areaColors.chapa;
                 if (col.id === 'pintores') baseColor = areaColors.pintura;
                 wrapper.style.borderTopColor = baseColor;
 
-                // Nombre (solo actualizamos el texto, no el icono)
                 const titleEl = document.getElementById(`title-${col.id === 'chapistas' ? 'kanban-col-chapistas' : 'col-' + col.id + '-wrapper'}`);
                 if (titleEl) {
                     const icon = titleEl.querySelector('i');
@@ -1111,12 +1129,32 @@
                 }
             });
 
-            // 2. Aplicar orden de las columnas en el DOM
+            // 2. Renderizar columnas personalizadas
+            const customContainer = document.getElementById('custom-columns-container');
+            if (customContainer) {
+                customContainer.innerHTML = '';
+                columnConfig.filter(c => c.isCustom && c.visible).forEach(col => {
+                    customContainer.innerHTML += `
+                        <div id="col-${col.id}-wrapper" class="kanban-col p-3 shadow-sm" style="border-top-color: ${col.color};">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span id="count-${col.id}" class="badge bg-secondary rounded-pill">0</span>
+                                    <button class="btn btn-sm btn-light py-0 px-1 border text-danger" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div id="list-${col.id}" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${col.id}')"></div>
+                        </div>
+                    `;
+                });
+            }
+
+            // 3. Reordenar en el DOM (solo para estándar, las custom van al final por simplicidad)
             const container = document.getElementById('main-kanban-container');
             if (container) {
-                columnConfig.forEach(col => {
+                columnConfig.filter(c => !c.isCustom).forEach(col => {
                     const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
-                    if (wrapper) container.insertBefore(wrapper, document.getElementById('external-columns-container'));
+                    if (wrapper) container.insertBefore(wrapper, document.getElementById('custom-columns-container'));
                 });
             }
         }
@@ -1149,23 +1187,23 @@
             `).join('');
         }
 
-        // NUEVA FUNCIÓN: BORRAR COLUMNA
         window.deleteColumn = (id) => {
-            if (confirm('¿Estás seguro de que quieres eliminar este departamento del tablero? (Las órdenes que estén en él pasarán a "Sin asignar")')) {
+            if (confirm('¿Estás seguro de que quieres eliminar este departamento del tablero?')) {
                 columnConfig = columnConfig.filter(c => c.id !== id);
                 saveColumnConfig();
                 renderColumnsSettings();
+                renderOrders();
             }
         };
 
         window.updateColName = (id, newName) => {
             const col = columnConfig.find(c => c.id === id);
-            if (col) { col.name = newName; saveColumnConfig(); }
+            if (col) { col.name = newName; saveColumnConfig(); renderOrders(); }
         };
 
         window.updateColColor = (id, newColor) => {
             const col = columnConfig.find(c => c.id === id);
-            if (col) { col.color = newColor; saveColumnConfig(); }
+            if (col) { col.color = newColor; saveColumnConfig(); renderOrders(); }
         };
 
         window.updateColVisible = (id, isVisible) => {
@@ -1188,6 +1226,8 @@
             if (!col) return;
             col.visible = forceState !== null ? forceState : !col.visible;
             saveColumnConfig();
+            renderColumnsSettings();
+            renderOrders();
         };
         // ============================================
 
@@ -1211,6 +1251,25 @@
                 </div>
                 <div class="text-muted small text-center mt-2">Marca si es el coche entero (cuenta como ${COCHE_COMPLETO_PIEZAS} piezas).</div>
             </div></div>`;
+            return html;
+        }
+
+        // NUEVO: CONSTRUIR CHECKBOXES DE DUPLICADOS
+        function buildDuplicatesCheckboxesHtml(selectedIds = [], prefix = 'new') {
+            const customCols = columnConfig.filter(c => c.isCustom && c.visible);
+            if (customCols.length === 0) return `<div class="text-muted small fst-italic">No hay departamentos personalizados creados. Ve a Ajustes para crear uno.</div>`;
+            
+            let html = `<label class="form-label small text-info fw-bold mb-2"><i class="fas fa-clone me-1"></i> Duplicar hoja en otros departamentos:</label><div class="d-flex flex-wrap gap-3">`;
+            customCols.forEach(col => {
+                const isChecked = selectedIds.includes(col.id);
+                html += `
+                    <div class="form-check form-check-inline m-0 bg-white border rounded px-3 py-2 shadow-sm">
+                        <input class="form-check-input dup-check" type="checkbox" value="${col.id}" id="${prefix}-dup-${col.id}" ${isChecked ? 'checked' : ''}>
+                        <label class="form-check-label fw-bold small" for="${prefix}-dup-${col.id}" style="color:${col.color};">${col.name}</label>
+                    </div>
+                `;
+            });
+            html += `</div>`;
             return html;
         }
 
@@ -1388,7 +1447,8 @@
             document.getElementById('car-insurance-custom').value = '';
             document.getElementById('car-status').value = '';
             document.getElementById('operator-select').value = '';
-            document.getElementById('car-external-location').value = ''; // Limpiar campo externo
+            // Renderizar los checkboxes de departamentos personalizados
+            document.getElementById('new-order-duplicates-container').innerHTML = buildDuplicatesCheckboxesHtml([], 'new');
         }
 
         window.checkCustomInsurance = (selectEl) => {
@@ -1687,7 +1747,6 @@
             let allChecked = affectedOrders.every(o => o.isChecked);
             let newState = !allChecked;
             
-            // OPTIMISTIC UI: Actualizar localmente de inmediato
             affectedOrders.forEach(o => o.isChecked = newState);
             renderOrders();
 
@@ -1697,13 +1756,18 @@
                 }
             } catch (err) { 
                 console.error("Error al actualizar en bloque:", err); 
-                // Revertir si hay error
                 affectedOrders.forEach(o => o.isChecked = !newState);
                 renderOrders();
             }
         }
 
         function buildStatusSelectOptions(currentStatus) {
+            // Añadir estados personalizados si los hay
+            let customOptions = '';
+            columnConfig.filter(c => c.isCustom).forEach(c => {
+                customOptions += `<option value="${c.id}" ${currentStatus === c.id ? 'selected' : ''}>${c.name}</option>`;
+            });
+
             return `
                 <option value="cargachapa" ${currentStatus === 'cargachapa' ? 'selected' : ''}>Carga Chapa</option>
                 <option value="cargapintura" ${currentStatus === 'cargapintura' ? 'selected' : ''}>Carga Pintura</option>
@@ -1714,6 +1778,7 @@
                 <option value="destajos" ${currentStatus === 'destajos' ? 'selected' : ''}>Destajos</option>
                 <option value="pintura" ${currentStatus === 'pintura' ? 'selected' : ''}>5. Pintura</option>
                 <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>6. Terminados</option>
+                ${customOptions}
             `;
         }
 
@@ -1774,7 +1839,6 @@
                 }
             }, (error) => {
                 console.error("Error órdenes:", error);
-                // PATCH: Avisar visualmente al usuario si falla Firebase
                 if (syncEl) {
                     syncEl.className = "badge bg-danger text-white";
                     syncEl.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Error de conexión';
@@ -1934,7 +1998,6 @@
             
             const newCheckedState = !order.isChecked;
             
-            // OPTIMISTIC UI: Actualizamos el estado localmente y renderizamos de inmediato
             order.isChecked = newCheckedState;
             renderOrders();
 
@@ -1943,24 +2006,26 @@
             }
             catch (err) { 
                 console.error(err);
-                // En caso de error, revertimos el cambio visual
                 order.isChecked = !newCheckedState;
                 renderOrders();
             }
         }
 
-        // ===== NUEVA FUNCIÓN: UNIFICAR ORDEN EXTERNA =====
-        window.unifyOrder = async (orderId) => {
+        // ===== NUEVA FUNCIÓN: UNIFICAR DUPLICADO =====
+        window.removeDuplicate = async (orderId, colId) => {
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
-            if (!confirm(`¿Marcar como recibido de ${order.externalLocation} y unificar la hoja?`)) return;
+            if (!confirm('¿Marcar como recibido en el taller principal y quitar de esta columna?')) return;
             
-            const historyEntry = { status: order.status, operator: order.operator, date: new Date().toLocaleString(), ts: Date.now(), note: `Recibido de ${order.externalLocation}` };
+            const newDupList = (order.duplicatedIn || []).filter(id => id !== colId);
+            const colName = columnConfig.find(c => c.id === colId)?.name || 'Externo';
+            
+            const historyEntry = { status: order.status, operator: order.operator, date: new Date().toLocaleString(), ts: Date.now(), note: `Unificado desde ${colName}` };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
             
             try {
                 await updateDoc(doc(db, "orders", orderId), {
-                    externalLocation: "",
+                    duplicatedIn: newDupList,
                     history: updatedHistory
                 });
             } catch (err) {
@@ -2015,27 +2080,11 @@
             let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminadosPendiente: document.getElementById('list-terminados-pendiente'), terminadosFacturado: document.getElementById('list-terminados-facturado') };
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
 
+            // Limpiar contenedores de columnas personalizadas
+            document.querySelectorAll('[id^="list-custom_"]').forEach(el => el.innerHTML = '');
+
             let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, terminadosPendiente: 0, terminadosFacturado: 0, chapaTotal: 0 };
 
-            // 1. PREPARAR COLUMNAS EXTERNAS
-            const extContainer = document.getElementById('external-columns-container');
-            if (extContainer) extContainer.innerHTML = '';
-            const externalLocations = [...new Set(filteredOrders.map(o => o.externalLocation).filter(Boolean))].sort();
-            
-            externalLocations.forEach(loc => {
-                const safeLocId = safeId(loc);
-                extContainer.innerHTML += `
-                    <div id="col-ext-${safeLocId}-wrapper" class="kanban-col p-3 shadow-sm" style="border-top-color: #8b5cf6; background-color: #f8fafc; min-width: 320px;">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="text-dark fw-bold m-0"><i class="fas fa-truck-moving me-1 text-purple" style="color:#8b5cf6;"></i> ${loc}</h6>
-                            <span id="count-ext-${safeLocId}" class="badge bg-secondary rounded-pill">0</span>
-                        </div>
-                        <div id="list-ext-${safeLocId}" class="kanban-dropzone d-flex flex-column gap-3" style="border: 1px dashed #cbd5e1; background: #ffffff;"></div>
-                    </div>
-                `;
-            });
-
-            // 2. PINTAR TARJETAS
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
@@ -2115,7 +2164,7 @@
                     </div>
                 `;
 
-                // Insertar en columna normal
+                // Insertar en columna principal
                 if (status === 'reparacion' || status === 'montaje') {
                     let subId;
                     if (orderOp && getChapistasList().some(o => o.name === orderOp)) subId = status === 'reparacion' ? `subcol-rep-${safeId(orderOp)}` : `subcol-mon-${safeId(orderOp)}`;
@@ -2134,28 +2183,37 @@
                     }
                 } else if (containers[status]) {
                     containers[status].innerHTML += cardHtml;
+                } else {
+                    // Es un estado personalizado (columna custom)
+                    const customTarget = document.getElementById(`list-${status}`);
+                    if (customTarget) {
+                        customTarget.innerHTML += cardHtml;
+                        const countEl = document.getElementById(`count-${status}`);
+                        if (countEl) countEl.innerText = parseInt(countEl.innerText || 0) + 1;
+                    }
                 }
 
-                // INSERTAR EN COLUMNA EXTERNA SI APLICA
-                if (order.externalLocation) {
-                    const safeLocId = safeId(order.externalLocation);
-                    const extTarget = document.getElementById(`list-ext-${safeLocId}`);
-                    if (extTarget) {
-                        // Añadir botón de unificar a la tarjeta clonada
-                        let extCardHtml = cardHtml.replace('</select>', `</select>
-                            <div class="mt-2 text-center">
-                                <button class="btn btn-sm btn-success w-100 fw-bold" onclick="event.stopPropagation(); unifyOrder('${order.id}')"><i class="fas fa-check-double me-1"></i> Recibido / Unificar</button>
-                            </div>`);
-                        extTarget.innerHTML += extCardHtml;
-                        
-                        // Actualizar contador externo
-                        const extCountEl = document.getElementById(`count-ext-${safeLocId}`);
-                        if(extCountEl) extCountEl.innerText = parseInt(extCountEl.innerText) + 1;
-                    }
+                // INSERTAR DUPLICADOS EN COLUMNAS CUSTOM
+                if (order.duplicatedIn && order.duplicatedIn.length > 0) {
+                    order.duplicatedIn.forEach(dupColId => {
+                        const extTarget = document.getElementById(`list-${dupColId}`);
+                        if (extTarget) {
+                            // Clonar tarjeta, cambiar ID y añadir botón unificar
+                            let dupCardHtml = cardHtml.replace(`id="card-${order.id}"`, `id="card-${order.id}-${dupColId}"`);
+                            dupCardHtml = dupCardHtml.replace('</select>', `</select>
+                                <div class="mt-2 text-center">
+                                    <button class="btn btn-sm btn-success w-100 fw-bold" onclick="event.stopPropagation(); removeDuplicate('${order.id}', '${dupColId}')"><i class="fas fa-check-double me-1"></i> Recibido / Unificar</button>
+                                </div>`);
+                            extTarget.innerHTML += dupCardHtml;
+                            
+                            // Actualizar contador
+                            const extCountEl = document.getElementById(`count-${dupColId}`);
+                            if(extCountEl) extCountEl.innerText = parseInt(extCountEl.innerText || 0) + 1;
+                        }
+                    });
                 }
             });
 
-            // Actualizar contadores de chapistas y pintores
             getChapistasList().forEach(op => {
                 const opName = op.name;
                 const sid = safeId(opName);
@@ -2369,11 +2427,12 @@
                         </div>
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Estado Actual</label><select id="edit-status" class="form-select">${buildStatusSelectOptions(order.status)}</select></div>
                     </div>
-                    <!-- NUEVO CAMPO TALLER EXTERNO EN EDICIÓN -->
-                    <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded">
-                        <label class="form-label small text-info fw-bold"><i class="fas fa-truck-moving me-1"></i> Enviar a Taller Externo (Opcional)</label>
-                        <input type="text" id="edit-external-location" class="form-control" value="${order.externalLocation || ''}" placeholder="Ej. Faros Alcalá">
+
+                    <!-- DUPLICADOS EN EDICIÓN -->
+                    <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded" id="edit-order-duplicates-container">
+                        ${buildDuplicatesCheckboxesHtml(order.duplicatedIn || [], 'edit')}
                     </div>
+
                     <div class="mb-3 p-3 bg-light border rounded">
                         <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Modificar Piezas</label>
                         <div class="row g-2" id="edit-pieces-container">${piecesChecklistHtml}</div>
@@ -2401,22 +2460,26 @@
             const newOperator = document.getElementById('edit-operator').value;
             const newSubstatus = document.getElementById('edit-substatus').value;
             const newStatus = document.getElementById('edit-status').value;
-            const newExternalLocation = document.getElementById('edit-external-location').value.trim();
             const newNotes = document.getElementById('edit-notes').value;
             const newUrgent = document.getElementById('edit-urgent').checked;
+            
+            // Recoger duplicados
+            const duplicatedIn = [];
+            document.querySelectorAll('#edit-order-duplicates-container .dup-check:checked').forEach(chk => duplicatedIn.push(chk.value));
+
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos') || (newStatus === 'destajos');
             let selectedPieces = []; let cocheCompleto = false;
             document.querySelectorAll('#edit-pieces-container .piece-check').forEach(chk => {
                 if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
             });
             if (cocheCompleto) selectedPieces = [];
-            let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator || order.externalLocation !== newExternalLocation;
+            let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator;
             let updatedHistory = order.history ? [...order.history] : [];
-            if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now(), note: newExternalLocation ? `Enviado a ${newExternalLocation}` : '' });
+            if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() });
             let newIsFacturado = order.isFacturado === true;
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             try {
-                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, externalLocation: newExternalLocation, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
+                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, duplicatedIn: duplicatedIn, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
                 const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
             } catch (err) { console.error("Error:", err); }
         }
@@ -2432,10 +2495,14 @@
             const dateOut = document.getElementById('date-out').value;
             const operator = document.getElementById('operator-select').value;
             const substatus = document.getElementById('car-substatus').value;
-            const externalLocation = document.getElementById('car-external-location').value.trim();
             let status = document.getElementById('car-status').value;
             const notes = document.getElementById('car-notes').value;
             const urgent = document.getElementById('car-urgent').checked;
+            
+            // Recoger duplicados
+            const duplicatedIn = [];
+            document.querySelectorAll('#new-order-duplicates-container .dup-check:checked').forEach(chk => duplicatedIn.push(chk.value));
+
             if (!status && operator) { const op = operators.find(o => o.name === operator); if (op) { if (op.type === 'chapa') status = 'reparacion'; else if (op.type === 'pintura') status = 'pintura'; } }
             if (!status) status = 'cargachapa';
             let isDestajoFlag = (status === 'destajos');
@@ -2444,9 +2511,9 @@
                 if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
             });
             if (cocheCompleto) selectedPieces = [];
-            const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now(), note: externalLocation ? `Enviado a ${externalLocation}` : '' }];
+            const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() }];
             try {
-                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, externalLocation, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
+                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, duplicatedIn, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
                 const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
