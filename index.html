@@ -11,27 +11,24 @@
         body { background-color: var(--bg-light); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .navbar { background-color: #ffffff; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .kanban-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
-        .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; border-top-width: 6px; border-top-style: solid; }
+        .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; border-top-width: 6px; border-top-style: solid; position: relative; }
         
         /* ESTILO DE COLUMNA PLEGADA */
         .kanban-col.minimized {
             min-width: 75px !important; flex: 0 0 75px !important; min-height: 250px !important;
-            padding: 10px 5px !important; cursor: pointer; background-color: #f1f5f9;
-            border: 1px solid #cbd5e1; display: flex; flex-direction: column; align-items: center;
+            padding: 0 !important; cursor: pointer; background-color: #f1f5f9;
+            border: 2px solid #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .kanban-col.minimized:hover { background-color: #e2e8f0; border-color: #94a3b8; }
-        .kanban-col.minimized .kanban-dropzone, .kanban-col.minimized .chapa-split-container,
-        .kanban-col.minimized .pintura-split-container, .kanban-col.minimized #chapa-dynamic-wrapper,
-        .kanban-col.minimized #pintores-dynamic-wrapper, .kanban-col.minimized .small { display: none !important; }
-        .kanban-col.minimized .d-flex.justify-content-between { flex-direction: column; align-items: center; height: 100%; margin-bottom: 0 !important; width: 100%; }
-        .kanban-col.minimized h6 {
-            writing-mode: vertical-rl; transform: rotate(180deg); margin: auto 0 !important;
-            padding: 10px 0 !important; font-size: 0.85rem !important; text-align: center;
-            letter-spacing: 1px; color: #475569;
-        }
-        .kanban-col.minimized .badge { display: inline-flex !important; font-size: 0.8rem !important; padding: 4px 8px !important; margin-bottom: 8px !important; }
-        .kanban-col.minimized .btn-close-col { display: none !important; }
-        .kanban-col.minimized .btn { margin-top: auto !important; }
+        
+        /* Ocultar todo el contenido original cuando está minimizado */
+        .kanban-col.minimized > *:not(.btn-restore-col) { display: none !important; }
+        
+        /* Botón especial que aparece al minimizar */
+        .btn-restore-col { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; border: none; cursor: pointer; z-index: 10; flex-direction: column; align-items: center; justify-content: center; }
+        .btn-restore-col i { font-size: 1.5rem; color: #64748b; margin-bottom: 10px; }
+        .btn-restore-col .text-vertical { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 800; color: #475569; letter-spacing: 1px; margin-top: 10px; font-size: 0.8rem; }
+        .kanban-col.minimized .btn-restore-col { display: flex; }
 
         .kanban-dropzone { min-height: 60vh; border-radius: 8px; transition: background-color 0.2s; }
         .kanban-dropzone.drag-over { background-color: rgba(37, 99, 235, 0.15) !important; border: 2px dashed #2563eb; }
@@ -552,6 +549,7 @@
 
         <div class="kanban-container" id="main-kanban-container">
             <div id="col-cargachapa-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-cargachapa-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">CARGA CHAPA</span></button>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0" id="title-col-cargachapa"><i class="fas fa-tasks me-1 text-primary"></i> Carga Chapa</h6>
                     <div class="d-flex align-items-center gap-2">
@@ -563,6 +561,7 @@
                 <div id="list-cargachapa" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargachapa')"></div>
             </div>
             <div id="col-cargapintura-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-cargapintura-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">CARGA PINTURA</span></button>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0" id="title-col-cargapintura"><i class="fas fa-tasks me-1 text-warning"></i> Carga Pintura</h6>
                     <div class="d-flex align-items-center gap-2">
@@ -574,6 +573,7 @@
                 <div id="list-cargapintura" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargapintura')"></div>
             </div>
             <div id="col-lunas-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-lunas-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">LUNAS</span></button>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0" id="title-col-lunas"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
                     <div class="d-flex align-items-center gap-2">
@@ -585,6 +585,7 @@
                 <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
             </div>
             <div class="kanban-col p-3 shadow-sm" id="kanban-col-chapistas">
+                <button class="btn-restore-col" onclick="toggleMinimizeColumn('kanban-col-chapistas')"><i class="fas fa-expand-alt"></i><span class="text-vertical">CHAPISTAS</span></button>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0" id="title-kanban-col-chapistas"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha para expandir)</span></h6>
                     <div class="d-flex align-items-center gap-2">
@@ -596,6 +597,7 @@
                 <div id="chapa-dynamic-wrapper"></div>
             </div>
             <div id="col-paragolpes-wrapper" class="kanban-col p-3 shadow-sm" style="display: block;">
+                <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">PARAGOLPES</span></button>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0" id="title-col-paragolpes"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes</h6>
                     <div class="d-flex align-items-center gap-2">
@@ -607,6 +609,7 @@
                 <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
             </div>
             <div id="col-destajos-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-destajos-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">DESTAJOS</span></button>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0" id="title-col-destajos"><i class="fas fa-file-invoice-dollar me-1 text-info"></i> Destajos</h6>
                     <div class="d-flex align-items-center gap-2">
@@ -618,6 +621,7 @@
                 <div id="list-destajos" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'destajos')"></div>
             </div>
             <div id="col-pintores-wrapper" class="kanban-col p-3 shadow-sm">
+                <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-pintores-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">PINTORES</span></button>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0" id="title-col-pintores"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Operario)</span></h6>
                     <div class="d-flex align-items-center gap-2">
@@ -629,6 +633,7 @@
                 <div id="pintores-dynamic-wrapper" class="pintura-split-container"></div>
             </div>
             <div id="col-terminados-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">TERMINADOS</span></button>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="text-dark fw-bold m-0" id="title-col-terminados"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
                     <div class="d-flex align-items-center gap-2">
@@ -652,10 +657,13 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- CONTENEDOR DINÁMICO PARA NUEVOS DEPARTAMENTOS -->
+            <div id="custom-columns-container" class="kanban-container" style="display: contents;"></div>
         </div>
     </div>
 
-    <!-- MODAL DE AJUSTES -->
+    <!-- MODAL DE AJUSTES (REDISEÑADO) -->
     <div class="modal fade" id="settingsModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content shadow">
@@ -675,6 +683,13 @@
                             <i class="fas fa-undo me-1"></i> Restablecer
                         </button>
                     </div>
+                    
+                    <!-- NUEVO: CREAR DEPARTAMENTO -->
+                    <div class="input-group input-group-sm mb-3 shadow-sm">
+                        <input type="text" id="new-column-name" class="form-control" placeholder="Escribir nombre del nuevo departamento (Ej. Faros Alcalá)">
+                        <button class="btn btn-primary fw-bold" type="button" onclick="handleAddCustomColumn()"><i class="fas fa-plus me-1"></i> Crear</button>
+                    </div>
+                    
                     <div id="columns-settings-list" class="mb-4"></div>
 
                     <!-- TIPOS DE HOJA (COLORES DE ÁREA) -->
@@ -832,6 +847,7 @@
                                 <select id="car-substatus" class="form-select"></select>
                             </div>
                         </div>
+                        
                         <div class="mb-3">
                             <label class="form-label small text-secondary fw-bold">Estado Inicial</label>
                             <select id="car-status" class="form-select">
@@ -847,6 +863,12 @@
                                 <option value="terminados">6. Terminados</option>
                             </select>
                         </div>
+
+                        <!-- NUEVO: DUPLICAR EN DEPARTAMENTOS -->
+                        <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded" id="new-order-duplicates-container">
+                            <!-- Se rellena desde JS -->
+                        </div>
+
                         <div class="mb-3 p-3 bg-light border rounded">
                             <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos</label>
                             <div class="row g-2" id="checklist-new-container"></div>
@@ -879,12 +901,12 @@
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "TU_API_KEY_REAL",
+            apiKey: "TU_API_KEY_REAL", // ⚠️ RECUERDA PONER TU CLAVE REAL AQUÍ
             authDomain: "planning-taller-23a87.firebaseapp.com",
             projectId: "planning-taller-23a87",
             storageBucket: "planning-taller-23a87.appspot.com",
             messagingSenderId: "1094366720962",
-            appId: "TU_APP_ID_REAL",
+            appId: "TU_APP_ID_REAL", // ⚠️ RECUERDA PONER TU ID REAL AQUÍ
             measurementId: "G-8B760E9RBP"
         };
 
@@ -934,7 +956,6 @@
             "Direct Seguros", "Winthertur", "Particular"
         ];
 
-        // SUBESTADOS AHORA TIENEN COLOR
         let substatusesList = JSON.parse(localStorage.getItem('planning360_substatuses_v2')) || [
             { name: "Ampliación", color: "#8b5cf6" },
             { name: "Pendiente recambios", color: "#f59e0b" },
@@ -966,7 +987,7 @@
                 const lowerOfficial = normalizeText(official);
                 let score = 0;
                 if (lowerOfficial.includes(lowerOriginal)) score = lowerOriginal.length;
-                else if (lowerOriginal.includes(lowerOfficial)) score = lowerOriginal.length;
+                else if (lowerOriginal.includes(lowerOfficial)) score = lowerOfficial.length;
                 if (score > bestScore) { bestScore = score; bestMatch = official; }
             }
             if (bestMatch && bestScore >= 3) return bestMatch;
@@ -1052,7 +1073,6 @@
                 destajos: { label: 'Destajos', color: areaColors.destajos, statuses: ['destajos'] },
                 lunas: { label: 'Lunas', color: areaColors.lunas, statuses: ['lunas'] }
             };
-            // Actualizar inputs de color visualmente
             document.querySelectorAll('input[type="color"]').forEach(inp => {
                 if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('chapa'")) inp.value = areaColors.chapa;
                 if (inp.getAttribute('onchange') && inp.getAttribute('onchange').includes("updateAreaColor('pintura'")) inp.value = areaColors.pintura;
@@ -1076,22 +1096,34 @@
             applyColumnConfig();
         }
 
-        function applyColumnConfig() {
-            // 1. Aplicar visibilidad, color y nombre
-            columnConfig.forEach(col => {
+        // FUNCIÓN PARA CREAR NUEVO DEPARTAMENTO
+        window.handleAddCustomColumn = () => {
+            const nameInput = document.getElementById('new-column-name');
+            const name = nameInput.value.trim();
+            if (!name) return;
+            const id = 'custom_' + Date.now();
+            const color = COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+            
+            columnConfig.push({ id: id, name: name, color: color, visible: true, isCustom: true });
+            saveColumnConfig();
+            renderColumnsSettings();
+            nameInput.value = '';
+        };
+
+        // BLINDAJE: Esta función se encarga de crear las columnas ANTES de que renderOrders intente meter nada dentro.
+        window.applyColumnConfig = () => {
+            // 1. Aplicar visibilidad, color y nombre de columnas estándar
+            columnConfig.filter(c => !c.isCustom).forEach(col => {
                 const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
                 if (!wrapper) return;
                 
-                // Visibilidad
                 wrapper.style.display = col.visible ? 'block' : 'none';
                 
-                // Color del borde superior
                 let baseColor = col.color;
                 if (col.id === 'chapistas') baseColor = areaColors.chapa;
                 if (col.id === 'pintores') baseColor = areaColors.pintura;
                 wrapper.style.borderTopColor = baseColor;
 
-                // Nombre (solo actualizamos el texto, no el icono)
                 const titleEl = document.getElementById(`title-${col.id === 'chapistas' ? 'kanban-col-chapistas' : 'col-' + col.id + '-wrapper'}`);
                 if (titleEl) {
                     const icon = titleEl.querySelector('i');
@@ -1103,12 +1135,53 @@
                 }
             });
 
-            // 2. Aplicar orden de las columnas en el DOM
+            // 2. Renderizar columnas personalizadas
+            const customContainer = document.getElementById('custom-columns-container');
+            if (customContainer) {
+                // Eliminar columnas que ya no existen o están ocultas
+                Array.from(customContainer.children).forEach(child => {
+                    const id = child.id.replace('col-', '').replace('-wrapper', '');
+                    const col = columnConfig.find(c => c.id === id);
+                    if (!col || !col.visible) {
+                        child.remove();
+                    }
+                });
+
+                // Crear o actualizar columnas
+                columnConfig.filter(c => c.isCustom && c.visible).forEach(col => {
+                    let wrapper = document.getElementById(`col-${col.id}-wrapper`);
+                    if (!wrapper) {
+                        wrapper = document.createElement('div');
+                        wrapper.id = `col-${col.id}-wrapper`;
+                        wrapper.className = 'kanban-col p-3 shadow-sm';
+                        wrapper.innerHTML = `
+                            <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-${col.id}-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">MAXIMIZAR</span></button>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span id="count-${col.id}" class="badge bg-dark rounded-pill">0</span>
+                                    <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-${col.id}-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-${col.id}-wrapper"></i></button>
+                                    <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div id="list-${col.id}" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${col.id}')"></div>
+                        `;
+                        customContainer.appendChild(wrapper);
+                    } else {
+                        // Actualizar por si cambió el nombre o el color
+                        const titleEl = wrapper.querySelector('h6');
+                        if (titleEl) titleEl.innerHTML = `<i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}`;
+                        wrapper.style.borderTopColor = col.color;
+                    }
+                });
+            }
+
+            // 3. Reordenar en el DOM (solo para estándar, las custom van al final por simplicidad)
             const container = document.getElementById('main-kanban-container');
             if (container) {
-                columnConfig.forEach(col => {
+                columnConfig.filter(c => !c.isCustom).forEach(col => {
                     const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
-                    if (wrapper) container.appendChild(wrapper);
+                    if (wrapper) container.insertBefore(wrapper, document.getElementById('custom-columns-container'));
                 });
             }
         }
@@ -1136,18 +1209,28 @@
                     </label>
                     <button class="btn btn-arrow" onclick="moveCol(${index}, -1)" ${index === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
                     <button class="btn btn-arrow" onclick="moveCol(${index}, 1)" ${index === columnConfig.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteColumn('${col.id}')" title="Eliminar este departamento"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
         }
 
+        window.deleteColumn = (id) => {
+            if (confirm('¿Estás seguro de que quieres eliminar este departamento del tablero?')) {
+                columnConfig = columnConfig.filter(c => c.id !== id);
+                saveColumnConfig();
+                renderColumnsSettings();
+                renderOrders();
+            }
+        };
+
         window.updateColName = (id, newName) => {
             const col = columnConfig.find(c => c.id === id);
-            if (col) { col.name = newName; saveColumnConfig(); }
+            if (col) { col.name = newName; saveColumnConfig(); renderOrders(); }
         };
 
         window.updateColColor = (id, newColor) => {
             const col = columnConfig.find(c => c.id === id);
-            if (col) { col.color = newColor; saveColumnConfig(); }
+            if (col) { col.color = newColor; saveColumnConfig(); renderOrders(); }
         };
 
         window.updateColVisible = (id, isVisible) => {
@@ -1170,6 +1253,8 @@
             if (!col) return;
             col.visible = forceState !== null ? forceState : !col.visible;
             saveColumnConfig();
+            renderColumnsSettings();
+            renderOrders();
         };
         // ============================================
 
@@ -1193,6 +1278,25 @@
                 </div>
                 <div class="text-muted small text-center mt-2">Marca si es el coche entero (cuenta como ${COCHE_COMPLETO_PIEZAS} piezas).</div>
             </div></div>`;
+            return html;
+        }
+
+        // CONSTRUIR CHECKBOXES DE DUPLICADOS
+        function buildDuplicatesCheckboxesHtml(selectedIds = [], prefix = 'new') {
+            const customCols = columnConfig.filter(c => c.isCustom && c.visible);
+            if (customCols.length === 0) return `<div class="text-muted small fst-italic">No hay departamentos personalizados creados. Ve a Ajustes para crear uno.</div>`;
+            
+            let html = `<label class="form-label small text-info fw-bold mb-2"><i class="fas fa-clone me-1"></i> Duplicar hoja en otros departamentos:</label><div class="d-flex flex-wrap gap-3">`;
+            customCols.forEach(col => {
+                const isChecked = selectedIds.includes(col.id);
+                html += `
+                    <div class="form-check form-check-inline m-0 bg-white border rounded px-3 py-2 shadow-sm">
+                        <input class="form-check-input dup-check" type="checkbox" value="${col.id}" id="${prefix}-dup-${col.id}" ${isChecked ? 'checked' : ''}>
+                        <label class="form-check-label fw-bold small" for="${prefix}-dup-${col.id}" style="color:${col.color};">${col.name}</label>
+                    </div>
+                `;
+            });
+            html += `</div>`;
             return html;
         }
 
@@ -1370,6 +1474,8 @@
             document.getElementById('car-insurance-custom').value = '';
             document.getElementById('car-status').value = '';
             document.getElementById('operator-select').value = '';
+            // Renderizar los checkboxes de departamentos personalizados
+            document.getElementById('new-order-duplicates-container').innerHTML = buildDuplicatesCheckboxesHtml([], 'new');
         }
 
         window.checkCustomInsurance = (selectEl) => {
@@ -1393,8 +1499,19 @@
             const col = document.getElementById(columnId);
             const icon = document.getElementById(`min-icon-${columnId}`);
             if (!col) return;
+            
+            // Cambiamos la clase
             col.classList.toggle('minimized');
-            if (icon) icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
+            
+            // Actualizamos el icono original (por si acaso)
+            if (icon) {
+                if (col.classList.contains('minimized')) {
+                    icon.className = "fas fa-expand-alt";
+                } else {
+                    icon.className = "fas fa-compress-alt";
+                }
+            }
+            
             saveColumnStates();
         };
 
@@ -1668,7 +1785,6 @@
             let allChecked = affectedOrders.every(o => o.isChecked);
             let newState = !allChecked;
             
-            // OPTIMISTIC UI: Actualizar localmente de inmediato
             affectedOrders.forEach(o => o.isChecked = newState);
             renderOrders();
 
@@ -1678,13 +1794,17 @@
                 }
             } catch (err) { 
                 console.error("Error al actualizar en bloque:", err); 
-                // Revertir si hay error
                 affectedOrders.forEach(o => o.isChecked = !newState);
                 renderOrders();
             }
         }
 
         function buildStatusSelectOptions(currentStatus) {
+            let customOptions = '';
+            columnConfig.filter(c => c.isCustom).forEach(c => {
+                customOptions += `<option value="${c.id}" ${currentStatus === c.id ? 'selected' : ''}>${c.name}</option>`;
+            });
+
             return `
                 <option value="cargachapa" ${currentStatus === 'cargachapa' ? 'selected' : ''}>Carga Chapa</option>
                 <option value="cargapintura" ${currentStatus === 'cargapintura' ? 'selected' : ''}>Carga Pintura</option>
@@ -1695,6 +1815,7 @@
                 <option value="destajos" ${currentStatus === 'destajos' ? 'selected' : ''}>Destajos</option>
                 <option value="pintura" ${currentStatus === 'pintura' ? 'selected' : ''}>5. Pintura</option>
                 <option value="terminados" ${currentStatus === 'terminados' ? 'selected' : ''}>6. Terminados</option>
+                ${customOptions}
             `;
         }
 
@@ -1737,21 +1858,46 @@
             document.getElementById('login-screen').style.display = 'block';
         }
 
+        // ============================================
+        // INICIO DEL PARCHE DE CONEXIÓN
+        // ============================================
         function initRealtimeSync() {
+            const syncEl = document.getElementById('sync-status');
+
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 orders = [];
                 snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
+                
+                // BLINDAJE: Aseguramos que las columnas personalizadas existan en el DOM antes de renderizar
+                applyColumnConfig();
                 renderOrders();
+                
                 if (bossDashboardActive) renderBossDashboardStats();
-                const syncEl = document.getElementById('sync-status');
-                if (syncEl) { syncEl.className = "badge bg-success text-white"; syncEl.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado'; }
-            }, (error) => { console.error("Error órdenes:", error); });
+
+                if (syncEl) {
+                    syncEl.className = "badge bg-success text-white";
+                    syncEl.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado';
+                }
+            }, (error) => {
+                console.error("Error órdenes:", error);
+                if (syncEl) {
+                    syncEl.className = "badge bg-danger text-white";
+                    syncEl.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Error de conexión';
+                }
+                alert("Error crítico: No se puede conectar con la base de datos de Firebase. Revisa las claves de configuración (apiKey y appId) o tu conexión a internet.");
+            });
+
             onSnapshot(collection(db, "operators"), (snapshot) => {
                 operators = [];
                 snapshot.forEach(docSnap => operators.push({ id: docSnap.id, ...docSnap.data() }));
                 renderOperatorsUI();
-            }, (error) => { console.error("Error operarios:", error); });
+            }, (error) => {
+                console.error("Error operarios:", error);
+            });
         }
+        // ============================================
+        // FIN DEL PARCHE DE CONEXIÓN
+        // ============================================
 
         function renderOperatorsUI() {
             const listContainer = document.getElementById('operators-list');
@@ -1864,6 +2010,20 @@
             ev.preventDefault(); ev.currentTarget.classList.remove('drag-over');
             const orderId = ev.dataTransfer.getData("text/plain"); if (!orderId) return;
             const order = orders.find(o => o.id === orderId); if (!order) return;
+            
+            // COMPROBAR SI ES UNA COLUMNA PERSONALIZADA (DUPLICAR)
+            const isCustomCol = columnConfig.find(c => c.id === targetStatus && c.isCustom);
+            if (isCustomCol) {
+                const currentDup = order.duplicatedIn || [];
+                if (!currentDup.includes(targetStatus)) {
+                    currentDup.push(targetStatus);
+                    try {
+                        await updateDoc(doc(db, "orders", orderId), { duplicatedIn: currentDup });
+                    } catch (err) { console.error(err); }
+                }
+                return;
+            }
+
             let newOperator = order.operator || "";
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos');
             let newStatus = targetStatus;
@@ -1893,7 +2053,6 @@
             
             const newCheckedState = !order.isChecked;
             
-            // OPTIMISTIC UI: Actualizamos el estado localmente y renderizamos de inmediato
             order.isChecked = newCheckedState;
             renderOrders();
 
@@ -1902,13 +2061,130 @@
             }
             catch (err) { 
                 console.error(err);
-                // En caso de error, revertimos el cambio visual
                 order.isChecked = !newCheckedState;
                 renderOrders();
             }
         }
 
+        // ===== FUNCIÓN: UNIFICAR DUPLICADO =====
+        window.removeDuplicate = async (orderId, colId) => {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            const colName = columnConfig.find(c => c.id === colId)?.name || 'Externo';
+            
+            // Preguntar al usuario qué hacer
+            const quiereTerminar = confirm(`¿El coche ya ha terminado toda su reparación en el taller principal?\n\nAceptar = Sí, mover a Terminados.\nCancelar = No, dejarlo en su estado actual.`);
+
+            const newDupList = (order.duplicatedIn || []).filter(id => id !== colId);
+            
+            let newStatus = order.status;
+            let newIsFacturado = order.isFacturado === true;
+            if (quiereTerminar) {
+                newStatus = 'terminados';
+                newIsFacturado = false; // Lo ponemos como pendiente de facturar
+            }
+            
+            const historyEntry = { status: newStatus, operator: order.operator, date: new Date().toLocaleString(), ts: Date.now(), note: `Unificado desde ${colName}` };
+            const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
+            
+            try {
+                await updateDoc(doc(db, "orders", orderId), {
+                    duplicatedIn: newDupList,
+                    status: newStatus,
+                    isFacturado: newIsFacturado,
+                    history: updatedHistory
+                });
+            } catch (err) {
+                console.error(err);
+                alert("Error al unificar la orden.");
+            }
+        }
+
+        // FUNCIÓN AUXILIAR PARA CREAR EL HTML DE UNA TARJETA
+        function buildCardHtml(order, todayStr, isDuplicate = false, dupColId = null) {
+            let status = order.status || 'reparacion';
+            let orderOp = (order.operator || '').trim();
+            let displayPlate = (order.plate || '').toUpperCase();
+            if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
+            let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
+            let cardClass = order.isChecked ? 'checked-card' : (order.urgent ? 'urgent' : (isOverdue ? 'overdue' : ''));
+            let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
+            
+            let areaColor = areaColors.chapa;
+            if (status === 'pintura' || status === 'cargapintura') areaColor = areaColors.pintura;
+            else if (status === 'paragolpes') areaColor = areaColors.paragolpes;
+            else if (status === 'destajos') areaColor = areaColors.destajos;
+            else if (status === 'lunas') areaColor = areaColors.lunas;
+
+            let substatusBadge = '';
+            const subObj = substatusesList.find(s => s.name === order.substatus);
+            if (subObj) {
+                substatusBadge = `<div class="badge mb-1 small" style="background-color: ${subObj.color}; color: white; font-weight: 600;">${subObj.name}</div>`;
+            } else if (order.substatus) {
+                substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
+            }
+
+            let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;">Destajo</span>` : '';
+            const hasVarillero = (order.pieces && order.pieces.includes('Varillero'));
+            const varilleroBadge = hasVarillero ? `<span class="badge bg-info text-dark ms-1" style="font-size:0.7rem;">Varillero</span>` : '';
+            let piecesHtml = '';
+            if (order.cocheCompleto) {
+                piecesHtml = `<div class="mb-1"><span class="badge bg-danger text-white" style="font-size:0.7rem;"><i class="fas fa-car-side me-1"></i> COCHE COMPLETO</span>${varilleroBadge}</div>`;
+            } else if (order.pieces && order.pieces.length > 0) {
+                let totalPieces = order.pieces.length;
+                let piecesListTooltip = order.pieces.join(', ').replace(/"/g, '&quot;');
+                piecesHtml = `<div class="mb-1"><span class="badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span>${varilleroBadge}</div>`;
+            }
+            let insuranceBadge = '';
+            const insVal = (order.insurance || '').trim();
+            if (insVal && insVal !== 'Sin asignar') insuranceBadge = `<span class="badge bg-info-subtle text-info-emphasis border border-info" style="font-size:0.65rem;"><i class="fas fa-building me-1"></i> ${insVal}</span>`;
+            else insuranceBadge = `<span class="badge badge-sin-asignar">Sin asignar</span>`;
+            let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
+            let opBadgeClass = getOperatorBadgeClass(order.operator);
+            let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted small">No asignado</span>';
+            let statusSelectOptions = buildStatusSelectOptions(status);
+            let checkBtnColor = order.isChecked ? 'btn-success' : 'btn-outline-secondary';
+            let checkIconClass = order.isChecked ? 'fas fa-check-square' : 'far fa-square';
+            
+            let cardId = isDuplicate ? `card-${order.id}-${dupColId}` : `card-${order.id}`;
+            
+            let html = `
+                <div class="task-card p-2 ${cardClass}" style="border-left-color: ${areaColor};" id="${cardId}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
+                    ${urgentBanner}
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">${displayPlate} - ${order.model}</h6>
+                        <div class="d-flex gap-1 align-items-center">
+                            <button class="btn btn-sm ${checkBtnColor} py-0 px-1" onclick="toggleCardCheck(event, '${order.id}')" ondragstart="event.stopPropagation();"><i class="${checkIconClass}"></i></button>
+                            <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')" ondragstart="event.stopPropagation();"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div>${substatusBadge}${destajoBadge}</div>
+                    <div class="mb-1">${insuranceBadge}</div>
+                    ${piecesHtml}
+                    <div class="small text-secondary mb-1">
+                        <div class="d-flex align-items-center gap-1"><strong>Op:</strong> ${operatorDisplay}</div>
+                        <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'}</div>
+                    </div>
+                    <select class="form-select form-select-sm mt-1" style="font-size: 0.75rem; padding: 2px 5px;" onclick="event.stopPropagation()" onchange="changeOrderStatusDirect('${order.id}', this.value)">${statusSelectOptions}</select>
+            `;
+
+            if (isDuplicate) {
+                html += `
+                    <div class="mt-2 text-center">
+                        <button class="btn btn-sm btn-success w-100 fw-bold" onclick="event.stopPropagation(); removeDuplicate('${order.id}', '${dupColId}')"><i class="fas fa-check-double me-1"></i> Recibido / Unificar</button>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            return html;
+        }
+
         window.renderOrders = () => {
+            // BLINDAJE: Asegurarnos de que las columnas personalizadas existen en el DOM antes de intentar meter tarjetas
+            applyColumnConfig();
+
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
@@ -1951,14 +2227,42 @@
             renderPintoresStructure();
             updateExpandAllButtonText();
 
-            let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminadosPendiente: document.getElementById('list-terminados-pendiente'), terminadosFacturado: document.getElementById('list-terminados-facturado') };
-            Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
+            // Diccionario para acumular todo el HTML antes de inyectarlo (Mejora de rendimiento BRUTAL)
+            let htmlBuckets = {};
+
+            // Inicializar contenedores estándar
+            let standardContainers = [
+                'list-cargachapa', 'list-cargapintura', 'list-lunas',
+                'list-paragolpes', 'list-destajos',
+                'list-terminados-pendiente', 'list-terminados-facturado',
+                'subcol-rep-general', 'subcol-mon-general', 'list-pintor-general'
+            ];
+
+            standardContainers.forEach(id => htmlBuckets[id] = '');
+
+            // Inicializar contenedores de operarios
+            getChapistasList().forEach(op => {
+                const sid = safeId(op.name);
+                htmlBuckets[`subcol-rep-${sid}`] = '';
+                htmlBuckets[`subcol-mon-${sid}`] = '';
+            });
+            getPintoresList().forEach(op => {
+                const sid = safeId(op.name);
+                htmlBuckets[`list-pintor-${sid}`] = '';
+            });
+            // Inicializar contenedores personalizados
+            columnConfig.filter(c => c.isCustom && c.visible).forEach(col => {
+                htmlBuckets[`list-${col.id}`] = '';
+            });
 
             let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, terminadosPendiente: 0, terminadosFacturado: 0, chapaTotal: 0 };
 
+            // 1. RENDERIZAR TARJETAS PRINCIPALES
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
+
+                // Actualizar contadores
                 if (status === 'cargachapa') counts.cargachapa++;
                 else if (status === 'cargapintura') counts.cargapintura++;
                 else if (status === 'lunas') counts.lunas++;
@@ -1971,88 +2275,89 @@
                     if (order.isFacturado === true) counts.terminadosFacturado++;
                     else counts.terminadosPendiente++;
                 }
-                let displayPlate = (order.plate || '').toUpperCase();
-                if (privacyModeActive && displayPlate.length > 4) displayPlate = "**** " + displayPlate.slice(-4);
-                let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
-                let cardClass = order.isChecked ? 'checked-card' : (order.urgent ? 'urgent' : (isOverdue ? 'overdue' : ''));
-                let dateOutStyle = isOverdue ? 'color: #dc2626; font-weight: bold;' : '';
-                
-                let areaColor = areaColors.chapa;
-                if (status === 'pintura' || status === 'cargapintura') areaColor = areaColors.pintura;
-                else if (status === 'paragolpes') areaColor = areaColors.paragolpes;
-                else if (status === 'destajos') areaColor = areaColors.destajos;
-                else if (status === 'lunas') areaColor = areaColors.lunas;
 
-                let substatusBadge = '';
-                const subObj = substatusesList.find(s => s.name === order.substatus);
-                if (subObj) {
-                    substatusBadge = `<div class="badge mb-1 small" style="background-color: ${subObj.color}; color: white; font-weight: 600;">${subObj.name}</div>`;
-                } else if (order.substatus) {
-                    substatusBadge = `<div class="badge bg-light text-dark border mb-1 small">${order.substatus}</div>`;
-                }
+                let cardHtml = buildCardHtml(order, todayStr, false);
 
-                let destajoBadge = order.isDestajo ? `<span class="badge bg-info text-dark mb-1 ms-1" style="font-size:0.65rem;">Destajo</span>` : '';
-                const hasVarillero = (order.pieces && order.pieces.includes('Varillero'));
-                const varilleroBadge = hasVarillero ? `<span class="badge bg-info text-dark ms-1" style="font-size:0.7rem;">Varillero</span>` : '';
-                let piecesHtml = '';
-                if (order.cocheCompleto) {
-                    piecesHtml = `<div class="mb-1"><span class="badge bg-danger text-white" style="font-size:0.7rem;"><i class="fas fa-car-side me-1"></i> COCHE COMPLETO</span>${varilleroBadge}</div>`;
-                } else if (order.pieces && order.pieces.length > 0) {
-                    let totalPieces = order.pieces.length;
-                    let piecesListTooltip = order.pieces.join(', ').replace(/"/g, '&quot;');
-                    piecesHtml = `<div class="mb-1"><span class="badge bg-light text-dark border" style="font-size:0.7rem;" title="${piecesListTooltip}"><i class="fas fa-cogs me-1 text-secondary"></i> ${totalPieces} ${totalPieces === 1 ? 'pieza' : 'piezas'}</span>${varilleroBadge}</div>`;
-                }
-                let insuranceBadge = '';
-                const insVal = (order.insurance || '').trim();
-                if (insVal && insVal !== 'Sin asignar') insuranceBadge = `<span class="badge bg-info-subtle text-info-emphasis border border-info" style="font-size:0.65rem;"><i class="fas fa-building me-1"></i> ${insVal}</span>`;
-                else insuranceBadge = `<span class="badge badge-sin-asignar">Sin asignar</span>`;
-                let urgentBanner = order.urgent ? `<div class="badge bg-danger text-white fw-bold mb-2 py-1 px-2 w-100 text-uppercase urgent-banner"><i class="fas fa-exclamation-triangle me-1"></i> ¡URGENTE!</div>` : '';
-                let opBadgeClass = getOperatorBadgeClass(order.operator);
-                let operatorDisplay = order.operator ? `<span class="badge ${opBadgeClass} px-2 py-1">${order.operator}</span>` : '<span class="text-muted small">No asignado</span>';
-                let statusSelectOptions = buildStatusSelectOptions(status);
-                let checkBtnColor = order.isChecked ? 'btn-success' : 'btn-outline-secondary';
-                let checkIconClass = order.isChecked ? 'fas fa-check-square' : 'far fa-square';
-                let cardHtml = `
-                    <div class="task-card p-2 ${cardClass}" style="border-left-color: ${areaColor};" id="card-${order.id}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
-                        ${urgentBanner}
-                        <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;">${displayPlate} - ${order.model}</h6>
-                            <div class="d-flex gap-1 align-items-center">
-                                <button class="btn btn-sm ${checkBtnColor} py-0 px-1" onclick="toggleCardCheck(event, '${order.id}')" ondragstart="event.stopPropagation();"><i class="${checkIconClass}"></i></button>
-                                <button class="btn btn-sm text-danger p-0" onclick="event.stopPropagation(); deleteOrder('${order.id}')" ondragstart="event.stopPropagation();"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div>${substatusBadge}${destajoBadge}</div>
-                        <div class="mb-1">${insuranceBadge}</div>
-                        ${piecesHtml}
-                        <div class="small text-secondary mb-1">
-                            <div class="d-flex align-items-center gap-1"><strong>Op:</strong> ${operatorDisplay}</div>
-                            <div class="mt-1" style="${dateOutStyle}"><strong>Salida:</strong> ${order.dateOut || '-'}</div>
-                        </div>
-                        <select class="form-select form-select-sm mt-1" style="font-size: 0.75rem; padding: 2px 5px;" onclick="event.stopPropagation()" onchange="changeOrderStatusDirect('${order.id}', this.value)">${statusSelectOptions}</select>
-                    </div>
-                `;
                 if (status === 'reparacion' || status === 'montaje') {
                     let subId;
                     if (orderOp && getChapistasList().some(o => o.name === orderOp)) subId = status === 'reparacion' ? `subcol-rep-${safeId(orderOp)}` : `subcol-mon-${safeId(orderOp)}`;
                     else subId = status === 'reparacion' ? 'subcol-rep-general' : 'subcol-mon-general';
-                    const target = document.getElementById(subId); if (target) target.innerHTML += cardHtml;
+                    if (htmlBuckets[subId] !== undefined) htmlBuckets[subId] += cardHtml;
                 } else if (status === 'pintura' || status.startsWith('pintor')) {
                     let targetId;
                     if (orderOp && getPintoresList().some(o => o.name === orderOp)) targetId = `list-pintor-${safeId(orderOp)}`;
                     else targetId = 'list-pintor-general';
-                    const target = document.getElementById(targetId); if (target) target.innerHTML += cardHtml;
+                    if (htmlBuckets[targetId] !== undefined) htmlBuckets[targetId] += cardHtml;
                 } else if (status === 'terminados') {
                     if (order.isFacturado === true) {
-                        if (containers.terminadosFacturado) containers.terminadosFacturado.innerHTML += cardHtml;
+                        htmlBuckets['list-terminados-facturado'] += cardHtml;
                     } else {
-                        if (containers.terminadosPendiente) containers.terminadosPendiente.innerHTML += cardHtml;
+                        htmlBuckets['list-terminados-pendiente'] += cardHtml;
                     }
-                } else if (containers[status]) {
-                    containers[status].innerHTML += cardHtml;
+                } else if (htmlBuckets[`list-${status}`] !== undefined) {
+                    htmlBuckets[`list-${status}`] += cardHtml;
                 }
             });
 
+            // 2. RENDERIZAR TARJETAS DUPLICADAS
+            orders.forEach(order => {
+                if (order.duplicatedIn && order.duplicatedIn.length > 0) {
+                    const uniqueDupCols = [...new Set(order.duplicatedIn)];
+                    
+                    let matchesSearch = true;
+                    let status = order.status || 'reparacion';
+                    let orderOp = (order.operator || '').trim();
+                    let orderSub = (order.substatus || '').trim();
+                    let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
+
+                    if (activeQuickFilter === 'urgent') { if (!order.urgent) matchesSearch = false; }
+                    else if (activeQuickFilter === 'overdue') { if (!isOverdue) matchesSearch = false; }
+
+                    if (filterVal === 'destajo:true') { if (order.isDestajo !== true) matchesSearch = false; }
+                    else if (filterVal.startsWith('sub:')) {
+                        let targetSub = filterVal.replace('sub:', '').trim();
+                        if (orderSub.toLowerCase() !== targetSub.toLowerCase()) matchesSearch = false;
+                    }
+                    else if (filterVal.startsWith('op:')) {
+                        let targetOp = filterVal.replace('op:', '').trim();
+                        if (targetOp.toLowerCase() === 'sin asignar') {
+                            if (orderOp !== "") matchesSearch = false;
+                        } else {
+                            if (orderOp === "" || orderOp.toLowerCase() !== targetOp.toLowerCase()) matchesSearch = false;
+                        }
+                    }
+                    else if (filterVal !== '') {
+                        if (!((order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal))) matchesSearch = false;
+                    }
+
+                    if (matchesSearch) {
+                        uniqueDupCols.forEach(dupColId => {
+                            if (order.status === dupColId) return;
+                            let dupCardHtml = buildCardHtml(order, todayStr, true, dupColId);
+                            if (htmlBuckets[`list-${dupColId}`] !== undefined) {
+                                htmlBuckets[`list-${dupColId}`] += dupCardHtml;
+                            }
+                        });
+                    }
+                }
+            });
+
+            // 3. INYECTAR HTML AL DOM DE GOLPE
+            Object.keys(htmlBuckets).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = htmlBuckets[id];
+            });
+
+            // 4. ACTUALIZAR CONTADORES DE DEPARTAMENTOS PERSONALIZADOS
+            columnConfig.filter(c => c.isCustom).forEach(col => {
+                const countEl = document.getElementById(`count-${col.id}`);
+                if (countEl) {
+                    const cardsInBucket = (htmlBuckets[`list-${col.id}`].match(/task-card/g) || []).length;
+                    countEl.textContent = cardsInBucket;
+                }
+            });
+
+            // 5. ACTUALIZAR CONTADORES DE OPERARIOS
             getChapistasList().forEach(op => {
                 const opName = op.name;
                 const sid = safeId(opName);
@@ -2233,7 +2538,7 @@
         window.openDetailModal = (orderId) => {
             const order = orders.find(o => o.id === orderId); if (!order) return;
             let historyHtml = '';
-            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
+            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator} ${h.note ? `<span class="text-info">(${h.note})</span>` : ''}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
             else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
             const piecesChecklistHtml = buildPiecesChecklistHtml(order.pieces || (order.cocheCompleto ? ['COCHE COMPLETO'] : []), 'edit');
             const body = document.getElementById('detail-modal-body');
@@ -2266,6 +2571,12 @@
                         </div>
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Estado Actual</label><select id="edit-status" class="form-select">${buildStatusSelectOptions(order.status)}</select></div>
                     </div>
+
+                    <!-- DUPLICADOS EN EDICIÓN -->
+                    <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded" id="edit-order-duplicates-container">
+                        ${buildDuplicatesCheckboxesHtml(order.duplicatedIn || [], 'edit')}
+                    </div>
+
                     <div class="mb-3 p-3 bg-light border rounded">
                         <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Modificar Piezas</label>
                         <div class="row g-2" id="edit-pieces-container">${piecesChecklistHtml}</div>
@@ -2295,6 +2606,11 @@
             const newStatus = document.getElementById('edit-status').value;
             const newNotes = document.getElementById('edit-notes').value;
             const newUrgent = document.getElementById('edit-urgent').checked;
+            
+            // Recoger duplicados
+            const duplicatedIn = [];
+            document.querySelectorAll('#edit-order-duplicates-container .dup-check:checked').forEach(chk => duplicatedIn.push(chk.value));
+
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos') || (newStatus === 'destajos');
             let selectedPieces = []; let cocheCompleto = false;
             document.querySelectorAll('#edit-pieces-container .piece-check').forEach(chk => {
@@ -2307,7 +2623,7 @@
             let newIsFacturado = order.isFacturado === true;
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             try {
-                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
+                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, duplicatedIn: duplicatedIn, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
                 const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
             } catch (err) { console.error("Error:", err); }
         }
@@ -2326,6 +2642,11 @@
             let status = document.getElementById('car-status').value;
             const notes = document.getElementById('car-notes').value;
             const urgent = document.getElementById('car-urgent').checked;
+            
+            // Recoger duplicados
+            const duplicatedIn = [];
+            document.querySelectorAll('#new-order-duplicates-container .dup-check:checked').forEach(chk => duplicatedIn.push(chk.value));
+
             if (!status && operator) { const op = operators.find(o => o.name === operator); if (op) { if (op.type === 'chapa') status = 'reparacion'; else if (op.type === 'pintura') status = 'pintura'; } }
             if (!status) status = 'cargachapa';
             let isDestajoFlag = (status === 'destajos');
@@ -2336,7 +2657,7 @@
             if (cocheCompleto) selectedPieces = [];
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() }];
             try {
-                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
+                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, duplicatedIn, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
                 const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
