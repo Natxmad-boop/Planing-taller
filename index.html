@@ -16,18 +16,18 @@
         /* ESTILO DE COLUMNA PLEGADA */
         .kanban-col.minimized {
             min-width: 75px !important; flex: 0 0 75px !important; min-height: 250px !important;
-            padding: 10px 5px !important; cursor: pointer; background-color: #f1f5f9;
-            border: 1px solid #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 0 !important; cursor: pointer; background-color: #f1f5f9;
+            border: 2px solid #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .kanban-col.minimized:hover { background-color: #e2e8f0; border-color: #94a3b8; }
         
-        /* Ocultar contenido interior cuando está minimizado */
+        /* Ocultar todo el contenido original cuando está minimizado */
         .kanban-col.minimized > *:not(.btn-restore-col) { display: none !important; }
         
         /* Botón especial que aparece al minimizar */
         .btn-restore-col { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; border: none; cursor: pointer; z-index: 10; flex-direction: column; align-items: center; justify-content: center; }
         .btn-restore-col i { font-size: 1.5rem; color: #64748b; margin-bottom: 10px; }
-        .btn-restore-col .text-vertical { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 800; color: #475569; letter-spacing: 1px; margin-top: 10px; }
+        .btn-restore-col .text-vertical { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 800; color: #475569; letter-spacing: 1px; margin-top: 10px; font-size: 0.8rem; }
         .kanban-col.minimized .btn-restore-col { display: flex; }
 
         .kanban-dropzone { min-height: 60vh; border-radius: 8px; transition: background-color 0.2s; }
@@ -1155,7 +1155,7 @@
                         wrapper.id = `col-${col.id}-wrapper`;
                         wrapper.className = 'kanban-col p-3 shadow-sm';
                         wrapper.innerHTML = `
-                            <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-${col.id}-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">${col.name.toUpperCase()}</span></button>
+                            <button class="btn-restore-col" onclick="toggleMinimizeColumn('col-${col.id}-wrapper')"><i class="fas fa-expand-alt"></i><span class="text-vertical">MAXIMIZAR</span></button>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
                                 <div class="d-flex align-items-center gap-2">
@@ -1172,9 +1172,6 @@
                         const titleEl = wrapper.querySelector('h6');
                         if (titleEl) titleEl.innerHTML = `<i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}`;
                         wrapper.style.borderTopColor = col.color;
-                        
-                        const restoreTxt = wrapper.querySelector('.text-vertical');
-                        if (restoreTxt) restoreTxt.textContent = col.name.toUpperCase();
                     }
                 });
             }
@@ -1502,21 +1499,17 @@
             const col = document.getElementById(columnId);
             const icon = document.getElementById(`min-icon-${columnId}`);
             if (!col) return;
+            
+            // Cambiamos la clase
             col.classList.toggle('minimized');
             
+            // Actualizamos el icono original (por si acaso)
             if (icon) {
                 if (col.classList.contains('minimized')) {
                     icon.className = "fas fa-expand-alt";
                 } else {
                     icon.className = "fas fa-compress-alt";
                 }
-            }
-            
-            // Si la columna se acaba de minimizar, añadimos un evento click al contenedor para que se maximice al hacer clic en cualquier parte
-            if (col.classList.contains('minimized')) {
-                col.setAttribute('onclick', `toggleMinimizeColumn('${columnId}')`);
-            } else {
-                col.removeAttribute('onclick');
             }
             
             saveColumnStates();
@@ -1543,7 +1536,6 @@
                     if (col && states[id]) {
                         col.classList.add('minimized');
                         if (icon) icon.className = 'fas fa-expand-alt';
-                        col.setAttribute('onclick', `toggleMinimizeColumn('${id}')`);
                     }
                 });
             } catch(e) {}
