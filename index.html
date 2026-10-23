@@ -1,4 +1,4 @@
-    <script type="module">
+        <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -89,7 +89,7 @@
                 const lowerOfficial = normalizeText(official);
                 let score = 0;
                 if (lowerOfficial.includes(lowerOriginal)) score = lowerOriginal.length;
-                else if (lowerOriginal.includes(lowerOfficial)) score = lowerOfficial.length;
+                else if (lowerOriginal.includes(lowerOfficial)) score = lowerOriginal.length;
                 if (score > bestScore) { bestScore = score; bestMatch = official; }
             }
             if (bestMatch && bestScore >= 3) return bestMatch;
@@ -234,19 +234,25 @@
             const customContainer = document.getElementById('custom-columns-container');
             if (customContainer) {
                 customContainer.innerHTML = '';
-                columnConfig.filter(c => c.isCustom && c.visible).forEach(col => {
-                    customContainer.innerHTML += `
-                        <div id="col-${col.id}-wrapper" class="kanban-col p-3 shadow-sm" style="border-top-color: ${col.color};">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span id="count-${col.id}" class="badge bg-dark rounded-pill">0</span>
-                                    <button class="btn btn-sm btn-light py-0 px-1 border text-danger" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                columnConfig.filter(c => c.isCustom).forEach(col => {
+                    // Forzar que si tiene tarjetas asignadas nunca aparezca oculta por fallo de guardado
+                    const hasCardsAssigned = orders.some(o => (o.duplicatedIn || []).includes(col.id));
+                    if (hasCardsAssigned && !col.visible) col.visible = true;
+
+                    if (col.visible) {
+                        customContainer.innerHTML += `
+                            <div id="col-${col.id}-wrapper" class="kanban-col p-3 shadow-sm" style="border-top-color: ${col.color};">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span id="count-${col.id}" class="badge bg-dark rounded-pill">0</span>
+                                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                                    </div>
                                 </div>
+                                <div id="list-${col.id}" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${col.id}')"></div>
                             </div>
-                            <div id="list-${col.id}" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${col.id}')"></div>
-                        </div>
-                    `;
+                        `;
+                    }
                 });
             }
 
@@ -922,6 +928,7 @@
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 orders = [];
                 snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
+                applyColumnConfig(); // Asegurar que las columnas con datos vuelven a mostrarse al recibir de Firebase
                 renderOrders();
                 if (bossDashboardActive) renderBossDashboardStats();
 
@@ -1066,6 +1073,8 @@
                     currentDup.push(targetStatus);
                     try {
                         await updateDoc(doc(db, "orders", orderId), { duplicatedIn: currentDup });
+                        applyColumnConfig();
+                        renderOrders();
                     } catch (err) { console.error(err); }
                 }
                 return;
@@ -1634,6 +1643,8 @@
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             try {
                 await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, duplicatedIn: duplicatedIn, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
+                applyColumnConfig();
+                renderOrders();
                 const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
             } catch (err) { console.error("Error:", err); }
         }
@@ -1667,6 +1678,8 @@
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() }];
             try {
                 await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, duplicatedIn, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
+                applyColumnConfig();
+                renderOrders();
                 const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
