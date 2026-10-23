@@ -1139,7 +1139,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span id="count-${col.id}" class="badge bg-secondary rounded-pill">0</span>
+                                    <span id="count-${col.id}" class="badge bg-dark rounded-pill">0</span>
                                     <button class="btn btn-sm btn-light py-0 px-1 border text-danger" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
@@ -2175,7 +2175,7 @@
 
             // Limpiar contenedores Y RESETEAR CONTADORES de columnas personalizadas
             document.querySelectorAll('[id^="list-custom_"]').forEach(el => el.innerHTML = '');
-            document.querySelectorAll('[id^="count-custom_"]').forEach(el => el.innerText = '0');
+            document.querySelectorAll('[id^="count-custom_"]').forEach(el => el.textContent = '0'); // Usar textContent para mayor compatibilidad
 
             let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, terminadosPendiente: 0, terminadosFacturado: 0, chapaTotal: 0 };
 
@@ -2222,7 +2222,7 @@
                     if (customTarget) {
                         customTarget.innerHTML += cardHtml;
                         const countEl = document.getElementById(`count-${status}`);
-                        if (countEl) countEl.innerText = parseInt(countEl.innerText || 0) + 1;
+                        if (countEl) countEl.textContent = parseInt(countEl.textContent || 0) + 1;
                     }
                 }
             });
@@ -2230,6 +2230,8 @@
             // 2. RENDERIZAR TARJETAS DUPLICADAS (SIEMPRE, INDEPENDIENTE DEL FILTRO PRINCIPAL)
             orders.forEach(order => {
                 if (order.duplicatedIn && order.duplicatedIn.length > 0) {
+                    // FILTRO DE SEGURIDAD: Eliminar cualquier ID duplicado en el array para evitar contar doble
+                    const uniqueDupCols = [...new Set(order.duplicatedIn)];
                     
                     // Aplicar el mismo filtro de búsqueda a la tarjeta duplicada para que no desaparezca si el usuario busca
                     let matchesSearch = true;
@@ -2242,14 +2244,24 @@
                         else if (activeQuickFilter === 'overdue') { if (!(order.dateOut && order.dateOut < todayStr && status !== 'terminados')) matchesSearch = false; }
                         if (filterVal === 'destajo:true') { if (order.isDestajo !== true) matchesSearch = false; }
                         if (filterVal.startsWith('sub:')) { let targetSub = filterVal.replace('sub:', '').trim(); if (orderSub.toLowerCase() !== targetSub.toLowerCase()) matchesSearch = false; }
-                        if (filterVal.startsWith('op:')) { let targetOp = filterVal.replace('op:', '').trim(); if (orderOp.toLowerCase() !== targetOp.toLowerCase()) matchesSearch = false; }
+                        if (filterVal.startsWith('op:')) { 
+                            let targetOp = filterVal.replace('op:', '').trim(); 
+                            if (targetOp.toLowerCase() === 'sin asignar') {
+                                if (orderOp !== "") matchesSearch = false;
+                            } else {
+                                if (orderOp === "" || orderOp.toLowerCase() !== targetOp.toLowerCase()) matchesSearch = false;
+                            }
+                        }
                         if (!filterVal.startsWith('sub:') && !filterVal.startsWith('op:') && filterVal !== 'destajo:true') {
                             if (!((order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal))) matchesSearch = false;
                         }
                     }
                     
                     if (matchesSearch) {
-                        order.duplicatedIn.forEach(dupColId => {
+                        uniqueDupCols.forEach(dupColId => {
+                            // Evitar renderizar si la tarjeta ya está en esa columna como estado principal
+                            if (order.status === dupColId) return;
+
                             const extTarget = document.getElementById(`list-${dupColId}`);
                             if (extTarget) {
                                 let dupCardHtml = buildCardHtml(order, todayStr, true, dupColId);
@@ -2257,7 +2269,7 @@
                                 
                                 // Actualizar contador
                                 const extCountEl = document.getElementById(`count-${dupColId}`);
-                                if(extCountEl) extCountEl.innerText = parseInt(extCountEl.innerText || 0) + 1;
+                                if(extCountEl) extCountEl.textContent = parseInt(extCountEl.textContent || 0) + 1;
                             }
                         });
                     }
