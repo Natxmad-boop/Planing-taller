@@ -31,6 +31,7 @@
         }
         .kanban-col.minimized .badge { display: inline-flex !important; font-size: 0.8rem !important; padding: 4px 8px !important; margin-bottom: 8px !important; }
         .kanban-col.minimized .btn-close-col { display: none !important; }
+        .kanban-col.minimized .btn-min-col { display: none !important; }
         .kanban-col.minimized .btn { margin-top: auto !important; }
 
         .kanban-dropzone { min-height: 60vh; border-radius: 8px; transition: background-color 0.2s; }
@@ -1154,7 +1155,7 @@
                                 <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
                                 <div class="d-flex align-items-center gap-2">
                                     <span id="count-${col.id}" class="badge bg-dark rounded-pill">0</span>
-                                    <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-${col.id}-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-${col.id}-wrapper"></i></button>
+                                    <button class="btn btn-sm btn-light py-0 px-1 border btn-min-col" onclick="toggleMinimizeColumn('col-${col.id}-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-${col.id}-wrapper"></i></button>
                                     <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
