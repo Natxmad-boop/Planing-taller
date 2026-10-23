@@ -3,630 +3,894 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning 360 - Taller</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Planning de Taller Pro - Vista 360</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --bg-main: #f1f5f9;
-            --surface: #ffffff;
-            --text-main: #0f172a;
-            --border-color: #e2e8f0;
+        :root { --bg-light: #f1f5f9; --card-bg: #ffffff; --border-color: #cbd5e1; --text-main: #1e293b; --accent-blue: #2563eb; }
+        body { background-color: var(--bg-light); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar { background-color: #ffffff; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .kanban-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
+        .kanban-col { background-color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 12px; min-width: 320px; flex: 1; min-height: 75vh; transition: all 0.3s ease; border-top-width: 6px; border-top-style: solid; }
+        
+        /* ESTILO DE COLUMNA PLEGADA */
+        .kanban-col.minimized {
+            min-width: 75px !important; flex: 0 0 75px !important; min-height: 250px !important;
+            padding: 10px 5px !important; cursor: pointer; background-color: #f1f5f9;
+            border: 1px solid #cbd5e1; display: flex; flex-direction: column; align-items: center;
         }
-        body { background-color: var(--bg-main); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .kanban-col.minimized:hover { background-color: #e2e8f0; border-color: #94a3b8; }
+        .kanban-col.minimized .kanban-dropzone, .kanban-col.minimized .chapa-split-container,
+        .kanban-col.minimized .pintura-split-container, .kanban-col.minimized #chapa-dynamic-wrapper,
+        .kanban-col.minimized #pintores-dynamic-wrapper, .kanban-col.minimized .small { display: none !important; }
+        .kanban-col.minimized .d-flex.justify-content-between { flex-direction: column; align-items: center; height: 100%; margin-bottom: 0 !important; width: 100%; }
+        .kanban-col.minimized h6 {
+            writing-mode: vertical-rl; transform: rotate(180deg); margin: auto 0 !important;
+            padding: 10px 0 !important; font-size: 0.85rem !important; text-align: center;
+            letter-spacing: 1px; color: #475569;
+        }
+        .kanban-col.minimized .badge { display: inline-flex !important; font-size: 0.8rem !important; padding: 4px 8px !important; margin-bottom: 8px !important; }
+        .kanban-col.minimized .btn-close-col { display: none !important; }
+        .kanban-col.minimized .btn { margin-top: auto !important; }
+
+        .kanban-dropzone { min-height: 60vh; border-radius: 8px; transition: background-color 0.2s; }
+        .kanban-dropzone.drag-over { background-color: rgba(37, 99, 235, 0.15) !important; border: 2px dashed #2563eb; }
+        .chapa-split-container { display: flex; gap: 0.5rem; min-height: 60vh; }
+        .chapa-subcol { flex: 1; border-radius: 8px; padding: 8px; min-height: 55vh; transition: background-color 0.2s; }
+        .subcol-reparacion { background-color: #eff6ff; border: 1px dashed #93c5fd; }
+        .subcol-montaje { background-color: #f0fdf4; border: 1px dashed #86efac; }
+        .subcol-reparacion.drag-over { background-color: #dbeafe !important; }
+        .subcol-montaje.drag-over { background-color: #dcfce7 !important; }
+        .subcol-pendiente-factura { background-color: #fffbeb; border: 1px dashed #fcd34d; }
+        .subcol-facturado { background-color: #f0fdf4; border: 1px dashed #86efac; }
+        .subcol-pendiente-factura.drag-over { background-color: #fef3c7 !important; }
+        .subcol-facturado.drag-over { background-color: #dcfce7 !important; }
+
+        .chapa-four-columns-container { display: flex; gap: 0.75rem; min-height: 68vh; overflow-x: auto; width: 100%; align-items: flex-start; }
+        .chapista-group-col {
+            flex: 0 0 130px; width: 130px; min-width: 130px; max-width: 130px;
+            background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;
+            padding: 6px; display: flex; flex-direction: column;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.25s ease; cursor: pointer; overflow: hidden;
+        }
+        .chapista-group-col:hover { border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
+        .chapista-group-col.expanded {
+            flex: 0 0 340px; width: 340px; min-width: 340px; max-width: 340px;
+            padding: 10px; cursor: default; border-color: #2563eb; box-shadow: 0 6px 16px rgba(37,99,235,0.18);
+        }
+        .chapista-group-col.vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
+        .chapista-group-col.baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
+
+        .chapista-group-header {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 6px 4px; margin-bottom: 0; border-bottom: none; font-size: 0.85rem; font-weight: 700; position: relative;
+        }
+        .chapista-group-header .chapista-name { font-size: 1rem; font-weight: 800; letter-spacing: 0.3px; text-align: center; }
+        .chapista-group-header .chapista-chevron { margin-top: 6px; font-size: 0.7rem; color: #64748b; transition: transform 0.2s; }
+        .chapista-group-header .header-info { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .chapista-group-header .header-actions { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 6px; }
+        .chapista-group-header .header-counts { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
         
-        /* LOGIN */
-        #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-        .login-card { background: var(--surface); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); width: 100%; max-width: 400px; }
+        .mini-badge { font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; line-height: 1.1; }
+        .mini-badge.mini-rep { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .mini-badge.mini-mon { background-color: #d1fae5; color: #047857; border: 1px solid #86efac; }
 
-        /* KANBAN LAYOUT */
-        .kanban-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 2rem; align-items: flex-start; }
-        .kanban-col { background: var(--surface); border-radius: 0.75rem; min-width: 280px; width: 280px; flex-shrink: 0; border-top: 4px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: all 0.2s; }
-        .kanban-col.minimized { min-width: 60px !important; width: 60px !important; overflow: hidden; }
-        .kanban-col.minimized .kanban-dropzone,
-        .kanban-col.minimized .d-flex.justify-content-between.align-items-center.mb-3 > *:not(h6),
-        .kanban-col.minimized h6 span { display: none !important; }
-        .kanban-col.minimized h6 { writing-mode: vertical-lr; transform: rotate(180deg); margin: 0 auto !important; padding: 1rem 0; white-space: nowrap; }
+        .chapista-group-col.expanded .chapista-group-header {
+            flex-direction: row; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; padding: 6px 8px; border-bottom: 2px solid rgba(0,0,0,0.08); cursor: pointer;
+        }
+        .chapista-group-col.expanded .chapista-group-header .header-info { flex-direction: row; gap: 8px; }
+        .chapista-group-col.expanded .chapista-group-header .header-actions { margin-top: 0; }
+        .chapista-group-col.expanded .chapista-group-header .header-counts { margin-top: 0; }
+        .chapista-group-col.expanded .chapista-group-header .chapista-name { font-size: 0.85rem; }
+        .chapista-group-col.expanded .chapista-group-header .chapista-chevron { margin-top: 0; margin-left: 6px; }
+        .chapista-group-col.expanded .chapista-group-header:hover { background-color: #f1f5f9; border-radius: 4px; }
 
-        .kanban-dropzone { min-height: 200px; border-radius: 0.5r em; transition: background-color 0.2s; }
-        .kanban-dropzone.drag-over { background-color: #f8fafc; border: 2px dashed #94a3b8; }
+        .chapista-group-inner { display: none; }
+        .chapista-group-col.expanded .chapista-group-inner { display: flex; gap: 6px; flex: 1; }
+        .chapista-sub-box { flex: 1; min-width: 0; background-color: #ffffff; border: 1px dashed #94a3b8; border-radius: 6px; padding: 6px; min-height: 55vh; transition: background-color 0.2s; }
+        .chapista-group-col.vacaciones .chapista-sub-box { background-color: #fdf4ff; }
+        .chapista-group-col.baja .chapista-sub-box { background-color: #f1f5f9; }
+        .chapista-sub-box.drag-over { background-color: #e2e8f0 !important; }
 
-        /* CARDS */
-        .task-card { background: var(--surface); border: 1px solid var(--border-color); border-left: 5px solid #cbd5e1; border-radius: 0.5rem; padding: 0.75rem; cursor: grab; transition: transform 0.15s, box-shadow 0.15s; position: relative; }
-        .task-card:active { cursor: grabbing; }
-        .task-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-        .task-card.urgent { border-top: 2px solid #dc2626; border-right: 2px solid #dc2626; border-bottom: 2px solid #dc2626; background-color: #fef2f2; }
-        .task-card.overdue { border-left-color: #dc2626 !important; }
-        .task-card.checked-card { opacity: 0.6; background-color: #f8fafc; text-decoration: line-through; }
-        .task-card.resaltado-busqueda { box-shadow: 0 0 0 3px #2563eb !important; background-color: #eff6ff !important; }
+        .chapa-four-columns-container.dragging-active .chapista-group-col {
+            flex: 0 0 340px; width: 340px; min-width: 340px; max-width: 340px; padding: 10px;
+        }
+        .chapa-four-columns-container.dragging-active .chapista-group-col .chapista-group-inner { display: flex !important; }
 
-        /* CHAPISTAS & PINTORES SUB-COLUMNS */
-        .chapa-four-columns-container { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; }
-        .chapista-group-col { background: var(--surface); border-radius: 0.75rem; min-width: 260px; width: 260px; flex-shrink: 0; border: 1px solid var(--border-color); border-top: 4px solid #2563eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: all 0.2s; }
-        .chapista-group-col.vacaciones { opacity: 0.6; border-top-color: #f59e0b !important; }
-        .chapista-group-col.baja { opacity: 0.5; border-top-color: #dc2626 !important; }
-        .chapista-group-header { padding: 0.75rem; background: #f8fafc; border-bottom: 1px solid var(--border-color); border-radius: 0.75rem 0.75rem 0 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
-        .chapista-group-inner { display: none; padding: 0.75rem; gap: 0.75rem; }
-        .chapista-group-col.expanded .chapista-group-inner { display: flex; flex-direction: column; }
-        .chapista-sub-box { background: #f8fafc; border: 1px dashed var(--border-color); border-radius: 0.5rem; padding: 0.5rem; min-height: 120px; }
+        .pintura-split-container { display: flex; gap: 0.5rem; min-height: 60vh; overflow-x: auto; }
+        .pintor-subcol { flex: 1; min-width: 180px; background-color: #fffbeb; border: 1px dashed #fcd34d; border-radius: 8px; padding: 8px; min-height: 55vh; transition: all 0.2s; }
+        .pintor-subcol.pintor-vacaciones { background-color: #f3e8ff; border: 2px solid #c084fc; }
+        .pintor-subcol.pintor-baja { background-color: #e2e8f0; border: 2px solid #94a3b8; opacity: 0.9; }
+        .pintor-subcol.drag-over { background-color: #fef3c7 !important; }
+        .pintor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 4px 6px; border-bottom: 2px solid rgba(0,0,0,0.08); font-size: 0.8rem; font-weight: 700; }
+        .badge-estado { font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
+        .badge-estado.badge-vacaciones { background-color: #c084fc; color: #ffffff; }
+        .badge-estado.badge-baja { background-color: #94a3b8; color: #ffffff; }
         
-        .pintor-subcol { background: var(--surface); border: 1px solid var(--border-color); border-top: 4px solid #f59e0b; border-radius: 0.75rem; min-width: 240px; width: 240px; flex-shrink: 0; padding: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .pintor-header { font-weight: bold; font-size: 0.85rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 0.5rem; border-radius: 0.35rem; }
+        .task-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.75rem; border-left-width: 5px; border-left-style: solid; }
+        .task-card.urgent { background-color: #fff1f2 !important; border: 2px solid #e11d48 !important; border-left-width: 5px !important; box-shadow: 0 0 15px rgba(225, 29, 72, 0.4) !important; }
+        .task-card.checked-card { background-color: #d1fae5 !important; border: 2px solid #059669 !important; border-left-width: 5px !important; box-shadow: 0 0 10px rgba(5, 150, 105, 0.3) !important; }
+        .task-card.overdue { border-color: #dc2626 !important; background-color: #fef2f2 !important; }
+        
+        @keyframes blink-animation { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .urgent-banner { animation: blink-animation 1s infinite; }
+        @keyframes highlight-pulse-blue { 0% { transform: scale(1); box-shadow: 0 0 0 rgba(37, 99, 235, 0); } 50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(37, 99, 235, 0.9); background-color: #dbeafe !important; border-color: #2563eb !important; } 100% { transform: scale(1); box-shadow: 0 0 15px rgba(37, 99, 235, 0.6); background-color: #dbeafe !important; border-color: #2563eb !important; } }
+        .resaltado-busqueda { animation: highlight-pulse-blue 1s infinite alternate; border: 2px solid #2563eb !important; z-index: 10; }
+        
+        .badge-ch { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .badge-pun { background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .badge-none { background-color: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+        .badge-sin-asignar { background-color: #f1f5f9; color: #64748b; border: 1px dashed #cbd5e1; font-style: italic; font-size: 0.65rem; }
+        .login-card { background-color: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .privacy-active { color: #2563eb !important; }
+        .history-timeline { border-left: 2px solid #cbd5e1; padding-left: 1rem; margin-left: 0.5rem; }
+        .history-item { position: relative; margin-bottom: 1rem; }
+        .history-item::before { content: ''; position: absolute; left: -1.35rem; top: 0.25rem; width: 10px; height: 10px; border-radius: 50%; background-color: #2563eb; }
+        .legend-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 15px; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .btn-quick-filter.active-filter { background-color: #1e293b !important; color: #ffffff !important; border-color: #1e293b !important; box-shadow: 0 0 10px rgba(30, 41, 59, 0.4); }
+        
+        .boss-dashboard-container { background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 40%, #f0f9ff 100%); border: 1px solid #c7d2fe; border-radius: 18px; padding: 24px; box-shadow: 0 20px 40px -20px rgba(37, 99, 235, 0.15), 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 2rem; }
+        .boss-dashboard-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 18px; margin-bottom: 22px; border-bottom: 1px solid #e2e8f0; }
+        .boss-dashboard-title { display: flex; align-items: center; gap: 12px; }
+        .boss-dashboard-title .boss-icon-circle { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.5); }
+        .boss-dashboard-title h3 { margin: 0; font-weight: 800; color: #0f172a; font-size: 1.4rem; letter-spacing: -0.3px; }
+        .boss-dashboard-title .subtitle { margin: 0; color: #64748b; font-size: 0.85rem; font-weight: 500; }
+        .boss-period-label { display: inline-block; margin-top: 4px; font-size: 0.75rem; color: #2563eb; font-weight: 700; background: #eff6ff; padding: 3px 10px; border-radius: 999px; }
+        .stat-card-boss { background: #ffffff; border: 1px solid #e8edf3; border-radius: 14px; padding: 20px; box-shadow: 0 4px 16px -8px rgba(0,0,0,0.06); height: 100%; transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card-boss:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1); }
+        .stat-card-boss h6 { font-weight: 700; color: #0f172a; margin-bottom: 16px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+        .stat-card-boss h6 .stat-title-icon { width: 28px; height: 28px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+        .stat-card-note { font-size: 0.7rem; color: #94a3b8; font-style: italic; margin-top: 4px; text-align: center; }
+        .kpi-card { background: #ffffff; border-radius: 16px; padding: 18px 20px; box-shadow: 0 4px 20px -10px rgba(0,0,0,0.08); border: 1px solid #e8edf3; height: 100%; display: flex; align-items: center; gap: 14px; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; cursor: pointer; }
+        .kpi-card::after { content: ''; position: absolute; right: -20px; top: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.08; }
+        .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -14px rgba(0,0,0,0.12); }
+        .kpi-card.active-tab { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        .kpi-card .kpi-icon-circle { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        .kpi-card.kpi-blue .kpi-icon-circle { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
+        .kpi-card.kpi-green .kpi-icon-circle { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #047857; }
+        .kpi-card.kpi-amber .kpi-icon-circle { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
+        .kpi-card.kpi-red .kpi-icon-circle { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #b91c1c; }
+        .kpi-card.kpi-purple .kpi-icon-circle { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #6d28d9; }
+        .kpi-card.kpi-teal .kpi-icon-circle { background: linear-gradient(135deg, #ccfbf1, #99f6e4); color: #0f766e; }
+        .kpi-card.kpi-blue::after { background: #2563eb; }
+        .kpi-card.kpi-green::after { background: #059669; }
+        .kpi-card.kpi-amber::after { background: #f59e0b; }
+        .kpi-card.kpi-red::after { background: #dc2626; }
+        .kpi-card.kpi-purple::after { background: #7c3aed; }
+        .kpi-card.kpi-teal::after { background: #0d9488; }
+        .kpi-card .kpi-body { flex: 1; min-width: 0; }
+        .kpi-card .kpi-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 800; color: #64748b; margin-bottom: 4px; }
+        .kpi-card .kpi-value { font-size: 1.9rem; font-weight: 800; color: #0f172a; line-height: 1; letter-spacing: -0.5px; }
+        .kpi-card .kpi-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 4px; font-weight: 500; }
+        .period-selector { background: #ffffff; border-radius: 12px; padding: 5px; border: 1px solid #e2e8f0; display: inline-flex; gap: 3px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+        .period-selector button { border: none; background: transparent; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; color: #64748b; transition: all 0.15s; }
+        .period-selector button.active { background: linear-gradient(135deg, #2563eb, #4f46e5); color: #ffffff; box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.4); }
+        .period-selector button:hover:not(.active) { background: #f1f5f9; }
+        .kpi-detail-panel { background: #ffffff; border-radius: 16px; border: 1px solid #e8edf3; box-shadow: 0 4px 20px -10px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: hidden; }
+        .kpi-detail-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+        .kpi-detail-header h6 { margin: 0; font-weight: 800; color: #0f172a; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
+        .kpi-detail-header .badge-count { background: #2563eb; color: #fff; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+        .kpi-detail-close { background: transparent; border: none; color: #64748b; font-size: 1rem; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; }
+        .kpi-detail-close:hover { background: #fee2e2; color: #dc2626; }
+        .kpi-detail-table { margin: 0; font-size: 0.85rem; }
+        .kpi-detail-table thead th { background: #f8fafc; color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+        .kpi-detail-table tbody tr { border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.15s; }
+        .kpi-detail-table tbody tr:hover { background: #eff6ff; }
+        .kpi-detail-table tbody td { padding: 10px 14px; vertical-align: middle; }
+        .kpi-detail-table .plate-cell { font-family: 'Courier New', monospace; font-weight: 800; color: #0f172a; }
+        .kpi-detail-table .date-cell.overdue { color: #dc2626; font-weight: 700; }
+        .kpi-detail-empty { padding: 30px 20px; text-align: center; color: #94a3b8; font-style: italic; font-size: 0.85rem; }
+        .pieces-zone-card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; height: 100%; }
+        .pieces-zone-title { font-size: 0.78rem; font-weight: 700; color: #1e40af; text-transform: uppercase; border-bottom: 2px solid #dbeafe; padding-bottom: 4px; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .pieces-zone-title.zone-trasera { color: #b45309; border-bottom-color: #fef3c7; }
+        .pieces-zone-title.zone-lat-izq { color: #047857; border-bottom-color: #d1fae5; }
+        .pieces-zone-title.zone-lat-der { color: #047857; border-bottom-color: #d1fae5; }
+        .pieces-zone-title.zone-molduras { color: #6b21a8; border-bottom-color: #f3e8ff; }
+        .pieces-zone-title.zone-techo { color: #475569; border-bottom-color: #e2e8f0; }
+        .piece-check-label { font-size: 0.78rem; }
+        .coche-completo-box { background-color: #fff1f2; border: 2px dashed #fda4af; border-radius: 8px; padding: 12px; text-align: center; }
+        .coche-completo-box .form-check-label { font-weight: 700; color: #be123c; font-size: 0.95rem; }
+        .btn-fix-insurances { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; box-shadow: 0 4px 12px -2px rgba(124, 58, 237, 0.4); transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-fix-insurances:hover { background: linear-gradient(135deg, #6d28d9, #5b21b6); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px -2px rgba(124, 58, 237, 0.5); }
+        .btn-fix-insurances:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .badge-count-checked { background-color: #059669; color: #ffffff; font-size: 0.55rem; padding: 1px 4px; border-radius: 999px; margin-left: 3px; font-weight: 700; }
+        .badge-total-op { background-color: #2563eb; color: #ffffff; font-size: 0.7rem; padding: 3px 8px; border-radius: 999px; font-weight: 700; }
+        .worktype-selector { background: #ffffff; border-radius: 12px; padding: 5px; border: 1px solid #e2e8f0; display: inline-flex; gap: 3px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+        .worktype-selector button { border: none; background: transparent; padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; color: #64748b; transition: all 0.15s; }
+        .worktype-selector button.active { background: linear-gradient(135deg, #0d9488, #0f766e); color: #ffffff; box-shadow: 0 4px 10px -2px rgba(13, 148, 136, 0.4); }
+        .worktype-selector button:hover:not(.active) { background: #f1f5f9; }
 
-        /* BADGES */
-        .badge-ch { background-color: #dbeafe; color: #1e40af; font-weight: 600; font-size: 0.7rem; }
-        .badge-pun { background-color: #fef3c7; color: #92400e; font-weight: 600; font-size: 0.7rem; }
-        .badge-sin-asignar { background-color: #f1f5f9; color: #64748b; border: 1px dashed #cbd5e1; font-size: 0.65rem; }
-        .badge-total-op { background: #0f172a; color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
-        .badge-count-checked { font-size: 0.6rem; color: #059669; font-weight: bold; margin-left: 2px; }
+        .hbar-container { display: flex; flex-direction: column; gap: 5px; padding: 4px 2px; }
+        .hbar-row { display: grid; grid-template-columns: 120px 1fr 110px; align-items: center; gap: 8px; }
+        .hbar-label { font-size: 0.72rem; font-weight: 600; color: #1e293b; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .hbar-track { background: #f1f5f9; border-radius: 4px; overflow: hidden; height: 14px; position: relative; }
+        .hbar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; color: #fff; font-size: 0.62rem; font-weight: 700; min-width: 6px; }
+        .hbar-value { font-size: 0.7rem; font-weight: 700; color: #334155; text-align: right; white-space: nowrap; }
+        .hbar-value .pct { color: #64748b; font-weight: 600; }
+        .hbar-empty { padding: 40px 20px; text-align: center; color: #94a3b8; font-style: italic; font-size: 0.85rem; }
+        .hbar-operators { margin: 4px 0 10px 122px; padding: 6px 10px; background: #f8fafc; border-left: 3px solid #cbd5e1; border-radius: 6px; }
+        .hbar-operators-title { font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .hbar-op-row { display: flex; justify-content: space-between; font-size: 0.72rem; padding: 4px 6px; color: #334155; border-radius: 4px; transition: background 0.15s; }
+        .hbar-op-row.clickable { cursor: pointer; }
+        .hbar-op-row.clickable:hover { background: #eff6ff; }
+        .hbar-op-row .op-name { font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .hbar-op-row .op-name .arrow { font-size: 0.6rem; color: #64748b; }
+        .hbar-op-row .op-counts { color: #64748b; font-weight: 600; }
+        .hbar-op-row .op-counts .c { color: #2563eb; }
+        .hbar-op-row .op-counts .p { color: #0d9488; }
+        .hbar-op-empty { font-size: 0.68rem; color: #94a3b8; font-style: italic; }
+        .op-drilldown { margin: 2px 0 6px 0; padding: 6px 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.7rem; }
+        .op-drilldown-row { display: flex; justify-content: space-between; padding: 3px 4px; border-radius: 4px; cursor: pointer; }
+        .op-drilldown-row:hover { background: #eff6ff; }
+        .op-drilldown-row .plate { font-family: 'Courier New', monospace; font-weight: 700; color: #0f172a; }
+        .op-drilldown-row .estado { color: #64748b; font-size: 0.68rem; }
+        .op-drilldown-empty { color: #94a3b8; font-style: italic; text-align: center; padding: 4px; }
 
-        /* HBARS (GRÁFICOS DE BARRAS) */
-        .hbar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.8rem; }
-        .hbar-label { width: 110px; flex-shrink: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .hbar-track { flex-grow: 1; background: #f1f5f9; height: 16px; border-radius: 8px; overflow: hidden; position: relative; }
-        .hbar-fill { height: 100%; border-radius: 8px; transition: width 0.4s ease; }
-        .hbar-value { width: 60px; text-align: right; font-weight: bold; font-size: 0.75rem; color: #334155; }
-        .hbar-value .pct { font-size: 0.65rem; color: #64748b; font-weight: normal; }
-        .hbar-empty { font-size: 0.8rem; color: #94a3b8; text-align: center; padding: 1rem 0; font-style: italic; }
+        .donut-container { position: relative; height: 200px; margin-bottom: 10px; }
+        .donut-title { font-size: 0.78rem; font-weight: 700; color: #1e293b; margin-bottom: 6px; text-align: left; }
+        .donut-empty { font-size: 0.75rem; color: #94a3b8; font-style: italic; text-align: center; padding: 30px 0; }
+        .piezas-area-block { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
+        .piezas-area-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
-        .setting-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-bottom: 1px solid var(--border-color); background: #fff; border-radius: 0.35rem; margin-bottom: 0.35rem; }
-        .setting-row input[type="text"] { font-size: 0.85rem; padding: 2px 8px; border: 1px solid var(--border-color); border-radius: 4px; }
-        .setting-row input[type="color"] { width: 35px; height: 28px; border: none; background: none; cursor: pointer; }
+        /* ESTILOS DEL NUEVO PANEL DE AJUSTES */
+        .settings-section-title { font-weight: 800; color: #0f172a; margin-bottom: 4px; font-size: 0.95rem; }
+        .settings-section-desc { color: #64748b; font-size: 0.75rem; margin-bottom: 12px; }
+        
+        .setting-row { display: flex; align-items: center; gap: 8px; background: #ffffff; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .setting-row input[type="text"] { flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 0.8rem; font-weight: 600; color: #1e293b; }
+        .setting-row input[type="text"]:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
+        .setting-row input[type="color"] { width: 28px; height: 28px; padding: 0; border: none; border-radius: 6px; cursor: pointer; background: none; }
+        .setting-row .form-check { margin: 0; display: flex; align-items: center; gap: 4px; font-size: 0.75rem; color: #475569; cursor: pointer; }
+        .setting-row .form-check-input { width: 16px; height: 16px; margin: 0; cursor: pointer; }
+        .setting-row .btn-arrow { padding: 2px 8px; font-size: 0.7rem; border-radius: 4px; color: #64748b; background: #f8fafc; border: 1px solid #cbd5e1; }
+        .setting-row .btn-arrow:hover:not(:disabled) { background: #e2e8f0; color: #0f172a; }
+        .setting-row .btn-arrow:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        @media (max-width: 1100px) {
+            body { font-size: 0.9rem; }
+            .chapista-group-col { flex: 0 0 110px; width: 110px; min-width: 110px; max-width: 110px; padding: 6px; }
+            .chapista-group-col.expanded { flex: 0 0 300px; width: 300px; min-width: 300px; max-width: 300px; padding: 8px; }
+            .chapista-group-header { font-size: 0.78rem; padding: 4px 6px; }
+            .pintor-subcol { min-width: 140px; padding: 6px; }
+            .pintor-header { font-size: 0.72rem; }
+            .task-card h6 { font-size: 0.82rem !important; }
+            .task-card .small { font-size: 0.72rem; }
+            .kpi-card { padding: 14px 16px; gap: 12px; }
+            .kpi-card .kpi-value { font-size: 1.5rem; }
+            .kpi-card .kpi-label { font-size: 0.62rem; }
+            .kpi-card .kpi-icon-circle { width: 44px; height: 44px; font-size: 1.2rem; }
+            .boss-dashboard-container { padding: 16px; }
+            .stat-card-boss { padding: 14px; }
+            .stat-card-boss h6 { font-size: 0.85rem; }
+            .period-selector button { padding: 5px 10px; font-size: 0.75rem; }
+            .worktype-selector button { padding: 5px 10px; font-size: 0.75rem; }
+            .boss-dashboard-title h3 { font-size: 1.15rem; }
+            .boss-dashboard-title .boss-icon-circle { width: 40px; height: 40px; font-size: 1.15rem; }
+            .hbar-row { grid-template-columns: 95px 1fr 90px; gap: 6px; }
+            .hbar-label { font-size: 0.68rem; }
+            .hbar-value { font-size: 0.66rem; }
+            .hbar-operators { margin-left: 100px; }
+            .donut-container { height: 180px; }
+        }
+        @media (max-width: 900px) {
+            .chapista-group-col { flex: 0 0 100px; width: 100px; min-width: 100px; max-width: 100px; }
+            .chapista-group-col.expanded { flex: 0 0 270px; width: 270px; min-width: 270px; max-width: 270px; }
+            .pintor-subcol { min-width: 120px; }
+            .task-card { padding: 0.5rem !important; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen">
-        <div class="login-card">
-            <div class="text-center mb-4">
-                <h3 class="fw-bold text-dark"><i class="fas fa-car text-primary me-2"></i>Planning 360</h3>
-                <p class="text-muted small">Inicia sesión para acceder al gestor del taller</p>
+    <div id="login-screen" class="container mt-5" style="max-width: 420px;">
+        <div class="login-card mt-5 p-4">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-tools mb-2 text-primary" style="font-size: 2.5rem;"></i>
+                    <h3 class="fw-bold text-dark">Taller Mecánico</h3>
+                    <p class="text-muted small">Acceso Exclusivo</p>
+                </div>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <label class="form-label small text-uppercase fw-bold text-secondary">Correo electrónico</label>
+                        <input type="email" id="login-email" class="form-control" autocomplete="off" required placeholder="Introduce tu correo">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small text-uppercase fw-bold text-secondary">Contraseña</label>
+                        <input type="password" id="login-password" class="form-control" autocomplete="new-password" required placeholder="Introduce tu contraseña">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">Entrar al Sistema</button>
+                </form>
             </div>
-            <form onsubmit="handleLogin(event)">
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Correo electrónico</label>
-                    <input type="email" id="login-email" class="form-control" placeholder="taller@taller.com" required value="taller@taller.com">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Contraseña</label>
-                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required value="taller123">
-                </div>
-                <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Entrar al Taller</button>
-            </form>
         </div>
     </div>
 
-    <!-- MAIN APP SCREEN -->
-    <div id="app-screen" style="display:none;">
-        
-        <!-- NAVBAR -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 shadow-sm">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold" href="#"><i class="fas fa-car me-2 text-primary"></i>Planning 360</a>
-                <div class="d-flex align-items-center gap-3">
-                    <span id="sync-status" class="badge bg-secondary"><i class="fas fa-sync fa-spin me-1"></i> Conectando...</span>
-                    <span id="user-display" class="text-light small fw-bold"></span>
-                    <button class="btn btn-outline-light btn-sm" onclick="toggleBossDashboard()" id="boss-btn-toggle"><i class="fas fa-chart-line me-1"></i> <span id="boss-btn-text">Ver Panel 360</span></button>
-                    <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#settingsModal"><i class="fas fa-cog me-1"></i> Ajustes</button>
-                    <button class="btn btn-danger btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i></button>
-                </div>
+    <div id="app-screen" class="container-fluid py-4 px-3" style="display: none;">
+        <nav class="navbar navbar-expand px-4 rounded mb-4">
+            <span class="navbar-brand mb-0 h1 fw-bold" style="cursor:pointer;" onclick="togglePrivacyMode()">
+                <i class="fas fa-car me-2 text-primary"></i> Planning Taller <span id="pro-label" class="privacy-active">Pro 360</span>
+            </span>
+            <div class="ms-auto d-flex align-items-center flex-wrap gap-2">
+                <span id="sync-status" class="badge bg-warning text-dark"><i class="fas fa-sync fa-spin me-1"></i> Conectando...</span>
+                <span id="user-display" class="text-secondary small d-none d-md-inline"><i class="fas fa-user-circle me-1"></i> Usuario</span>
+                <button class="btn btn-outline-dark btn-sm fw-bold" onclick="toggleBossDashboard()"><i class="fas fa-chart-bar me-1"></i> <span id="boss-btn-text">Ver Panel 360</span></button>
+                <button class="btn btn-outline-dark btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#settingsModal"><i class="fas fa-sliders-h me-1"></i> Ajustes</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-1"></i> Salir</button>
             </div>
         </nav>
 
-        <!-- BOSS DASHBOARD PANEL -->
-        <div id="boss-dashboard-section" class="container-fluid py-3 bg-white border-bottom shadow-sm mb-3" style="display:none;">
-            <div class="row align-items-center mb-3">
-                <div class="col-md-4">
-                    <h5 class="fw-bold m-0"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Panel de Control Integral</h5>
-                    <span class="text-muted small" id="boss-period-range">Cargando fechas...</span>
+        <div id="boss-dashboard-section" class="boss-dashboard-container" style="display: none;">
+            <div class="boss-dashboard-header">
+                <div class="boss-dashboard-title">
+                    <div class="boss-icon-circle"><i class="fas fa-chart-bar"></i></div>
+                    <div>
+                        <h3>Panel 360 · Taller</h3>
+                        <p class="subtitle">Visión ejecutiva del taller por periodo</p>
+                        <p class="subtitle" id="boss-period-range" style="font-size:0.78rem; color:#94a3b8; margin-top:2px;"></p>
+                        <span class="boss-period-label" id="boss-period-label">Este Mes</span>
+                    </div>
                 </div>
-                <div class="col-md-8 d-flex justify-content-end align-items-center gap-2 flex-wrap">
-                    <div class="btn-group btn-group-sm" id="period-selector">
-                        <button class="btn btn-outline-secondary" data-period="day" onclick="setBossPeriod('day')">Hoy</button>
-                        <button class="btn btn-outline-secondary active" data-period="month" onclick="setBossPeriod('month')">Este mes</button>
-                        <button class="btn btn-outline-secondary" data-period="lastMonth" onclick="setBossPeriod('lastMonth')">Mes ant.</button>
-                        <button class="btn btn-outline-secondary" data-period="year" onclick="setBossPeriod('year')">Este año</button>
-                        <button class="btn btn-outline-secondary" data-period="all" onclick="setBossPeriod('all')">Todo</button>
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <div class="period-selector" id="period-selector">
+                        <button data-period="day" onclick="setBossPeriod('day')">Hoy</button>
+                        <button data-period="month" class="active" onclick="setBossPeriod('month')">Este Mes</button>
+                        <button data-period="lastMonth" onclick="setBossPeriod('lastMonth')">Mes Anterior</button>
+                        <button data-period="year" onclick="setBossPeriod('year')">Este Año</button>
+                        <button data-period="all" onclick="setBossPeriod('all')">Todo</button>
                     </div>
-                    <div class="btn-group btn-group-sm" id="worktype-selector">
-                        <button class="btn btn-outline-dark active" data-worktype="all" onclick="setBossWorkType('all')">Todos</button>
-                        <button class="btn btn-outline-dark" data-worktype="activos" onclick="setBossWorkType('activos')">Activos</button>
-                        <button class="btn btn-outline-dark" data-worktype="terminados" onclick="setBossWorkType('terminados')">Terminados</button>
+                    <div class="worktype-selector" id="worktype-selector">
+                        <button data-worktype="all" class="active" onclick="setBossWorkType('all')">Todos</button>
+                        <button data-worktype="activos" onclick="setBossWorkType('activos')">Activos</button>
+                        <button data-worktype="terminados" onclick="setBossWorkType('terminados')">Terminados</button>
                     </div>
+                    <button class="btn-fix-insurances" onclick="fixAllInsurances()" id="btn-fix-insurances" title="Corrige y unifica los nombres de las compañías aseguradoras">
+                        <i class="fas fa-wrench"></i> Corregir compañías
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="toggleBossDashboard()"><i class="fas fa-times me-1"></i> Cerrar</button>
                 </div>
             </div>
 
-            <!-- KPI CARDS -->
             <div class="row g-3 mb-4">
-                <div class="col-md-2 col-6">
-                    <div class="p-3 border rounded bg-light kpi-card" data-kpi="activas" onclick="toggleKpiDetail('activas')" style="cursor:pointer;">
-                        <span class="text-muted small fw-bold">ACTIVAS</span>
-                        <h3 class="fw-bold text-primary mt-1 mb-0" id="kpi-activas">0</h3>
-                        <span class="text-muted" style="font-size:0.7rem;" id="kpi-activas-sub">-</span>
+                <div class="col">
+                    <div class="kpi-card kpi-blue" data-kpi="activas" onclick="toggleKpiDetail('activas')">
+                        <div class="kpi-icon-circle"><i class="fas fa-play-circle"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Activas</div>
+                            <div class="kpi-value" id="kpi-activas">0</div>
+                            <div class="kpi-sub" id="kpi-activas-sub">En proceso</div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-2 col-6">
-                    <div class="p-3 border rounded bg-light kpi-card" data-kpi="terminados" onclick="toggleKpiDetail('terminados')" style="cursor:pointer;">
-                        <span class="text-muted small fw-bold">TERMINADOS</span>
-                        <h3 class="fw-bold text-success mt-1 mb-0" id="kpi-terminados">0</h3>
-                        <span class="text-muted" style="font-size:0.7rem;" id="kpi-porcentaje-terminados">-</span>
+                <div class="col">
+                    <div class="kpi-card kpi-green" data-kpi="terminados" onclick="toggleKpiDetail('terminados')">
+                        <div class="kpi-icon-circle"><i class="fas fa-check-circle"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Terminadas</div>
+                            <div class="kpi-value text-success" id="kpi-terminados">0</div>
+                            <div class="kpi-sub" id="kpi-porcentaje-terminados">0% del total</div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-2 col-6">
-                    <div class="p-3 border rounded bg-light kpi-card" data-kpi="recambios" onclick="toggleKpiDetail('recambios')" style="cursor:pointer;">
-                        <span class="text-muted small fw-bold">RECAMBIOS</span>
-                        <h3 class="fw-bold text-warning mt-1 mb-0" id="kpi-retrasos">0%</h3>
-                        <span class="text-muted" style="font-size:0.7rem;" id="kpi-retrasos-count">-</span>
+                <div class="col">
+                    <div class="kpi-card kpi-amber" data-kpi="recambios" onclick="toggleKpiDetail('recambios')">
+                        <div class="kpi-icon-circle"><i class="fas fa-clock"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Recambios</div>
+                            <div class="kpi-value text-warning" id="kpi-retrasos">0%</div>
+                            <div class="kpi-sub" id="kpi-retrasos-count">0 afectados</div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-2 col-6">
-                    <div class="p-3 border rounded bg-light kpi-card" data-kpi="externas" onclick="toggleKpiDetail('externas')" style="cursor:pointer;">
-                        <span class="text-muted small fw-bold">EXTERNAS</span>
-                        <h3 class="fw-bold text-info mt-1 mb-0" id="kpi-externas">0%</h3>
-                        <span class="text-muted" style="font-size:0.7rem;" id="kpi-externas-count">-</span>
+                <div class="col">
+                    <div class="kpi-card kpi-red" data-kpi="externas" onclick="toggleKpiDetail('externas')">
+                        <div class="kpi-icon-circle"><i class="fas fa-external-link-alt"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Externas</div>
+                            <div class="kpi-value text-danger" id="kpi-externas">0%</div>
+                            <div class="kpi-sub" id="kpi-externas-count">0 afectados</div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-2 col-6">
-                    <div class="p-3 border rounded bg-light kpi-card" data-kpi="pasados" onclick="toggleKpiDetail('pasados')" style="cursor:pointer;">
-                        <span class="text-muted small fw-bold">PASADOS FECHA</span>
-                        <h3 class="fw-bold text-danger mt-1 mb-0" id="kpi-pasados">0</h3>
-                        <span class="text-muted" style="font-size:0.7rem;" id="kpi-pasados-sub">-</span>
+                <div class="col">
+                    <div class="kpi-card kpi-purple" data-kpi="pasados" onclick="toggleKpiDetail('pasados')">
+                        <div class="kpi-icon-circle"><i class="fas fa-hourglass-end"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Pasados</div>
+                            <div class="kpi-value" style="color:#7c3aed;" id="kpi-pasados">0</div>
+                            <div class="kpi-sub" id="kpi-pasados-sub">Fuera de fecha</div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-2 col-6">
-                    <div class="p-3 border rounded bg-light">
-                        <span class="text-muted small fw-bold">TOTAL PIEZAS</span>
-                        <h3 class="fw-bold text-dark mt-1 mb-0" id="kpi-piezas">0</h3>
-                        <span class="text-muted" style="font-size:0.7rem;" id="kpi-piezas-sub">-</span>
+                <div class="col">
+                    <div class="kpi-card kpi-teal">
+                        <div class="kpi-icon-circle"><i class="fas fa-boxes"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-label">Piezas</div>
+                            <div class="kpi-value" style="color:#0f766e;" id="kpi-piezas">0</div>
+                            <div class="kpi-sub" id="kpi-piezas-sub">Este mes</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- KPI DETAIL PANEL -->
-            <div id="kpi-detail-panel" class="card shadow-sm mb-4 border-primary" style="display:none;">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 fw-bold"><i class="fas fa-list me-2"></i><span id="kpi-detail-title">Detalle</span> (<span id="kpi-detail-count">0</span>)</h6>
-                    <button class="btn btn-sm btn-light text-dark py-0 px-2 fw-bold" onclick="closeKpiDetail()">✕</button>
+            <div id="kpi-detail-panel" class="kpi-detail-panel" style="display:none;">
+                <div class="kpi-detail-header">
+                    <h6><i class="fas fa-list-ul"></i> <span id="kpi-detail-title">Detalle</span> <span class="badge-count" id="kpi-detail-count">0</span></h6>
+                    <button class="kpi-detail-close" onclick="closeKpiDetail()"><i class="fas fa-times"></i></button>
                 </div>
-                <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
-                    <table class="table table-striped table-hover m-0 small">
-                        <thead class="table-light sticky-top">
-                            <tr><th>Matrícula</th><th>Modelo</th><th>Operario</th><th>Entrada</th><th>Salida</th><th>Estado / Subestado</th></tr>
+                <div class="table-responsive">
+                    <table class="table kpi-detail-table">
+                        <thead>
+                            <tr>
+                                <th>Matrícula</th>
+                                <th>Modelo</th>
+                                <th>Operario</th>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Estado</th>
+                            </tr>
                         </thead>
                         <tbody id="kpi-detail-body"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- CHARTS SECTION -->
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="card p-3 h-100 shadow-sm border">
-                        <h6 class="fw-bold text-secondary mb-3"><i class="fas fa-car me-1 text-primary"></i> Coches por Área</h6>
-                        <div id="chart-coches-area-container"></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-3 h-100 shadow-sm border">
-                        <h6 class="fw-bold text-secondary mb-3"><i class="fas fa-cogs me-1 text-warning"></i> Piezas en Chapa</h6>
-                        <div id="chart-piezas-chapa-donut" style="height: 200px; position:relative;"></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-3 h-100 shadow-sm border">
-                        <h6 class="fw-bold text-secondary mb-3"><i class="fas fa-paint-brush me-1 text-warning"></i> Piezas en Pintura</h6>
-                        <div id="chart-piezas-pintura-donut" style="height: 200px; position:relative;"></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-3 h-100 shadow-sm border">
-                        <h6 class="fw-bold text-secondary mb-3"><i class="fas fa-shield-alt me-1 text-info"></i> Paragolpes y Lunas</h6>
-                        <div id="chart-piezas-paragolpes-bar" class="mb-3"></div>
-                        <div id="chart-lunas-container"></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-3 h-100 shadow-sm border">
-                        <h6 class="fw-bold text-secondary mb-3"><i class="fas fa-wrench me-1 text-dark"></i> Destajos</h6>
-                        <div id="chart-destajos-container"></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-3 h-100 shadow-sm border">
-                        <h6 class="fw-bold text-secondary mb-3"><i class="fas fa-clock me-1 text-danger"></i> Días Medios por Fase</h6>
-                        <div id="chart-dias-fase-container"></div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-car"></i></span> Coches por Área</h6>
+                        <div id="chart-coches-area-container" class="hbar-container"></div>
+                        <div class="stat-card-note">Cada orden cuenta 1 vez por área. Un coche puede contar en varias áreas.</div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card p-3 h-100 shadow-sm border">
-                        <h6 class="fw-bold text-secondary mb-3"><i class="fas fa-building me-1 text-primary"></i> Compañías Aseguradoras (<span id="boss-period-label">Este mes</span>)</h6>
-                        <div id="chart-insurance-container"></div>
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-boxes"></i></span> Piezas por Área</h6>
+                        <div class="piezas-area-block">
+                            <div class="donut-title">Chapa</div>
+                            <div id="chart-piezas-chapa-donut" class="donut-container"></div>
+                        </div>
+                        <div class="piezas-area-block">
+                            <div class="donut-title">Pintura</div>
+                            <div id="chart-piezas-pintura-donut" class="donut-container"></div>
+                        </div>
+                        <div class="piezas-area-block">
+                            <div class="donut-title">Paragolpes</div>
+                            <div id="chart-piezas-paragolpes-bar" class="hbar-container"></div>
+                        </div>
+                        <div class="stat-card-note">Piezas totales. Un coche puede contar en varias áreas.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-file-invoice-dollar"></i></span> Destajos</h6>
+                        <div id="chart-destajos-container" class="hbar-container"></div>
+                        <div class="stat-card-note">Órdenes marcadas como destajo. Se cuentan 1 vez por orden.</div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card p-3 h-100 shadow-sm border">
-                        <h6 class="fw-bold text-secondary mb-3"><i class="fas fa-tasks me-1 text-success"></i> Distribución por Fases</h6>
-                        <div id="chart-fases-container"></div>
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-car-crash"></i></span> Lunas</h6>
+                        <div id="chart-lunas-container" class="hbar-container"></div>
+                        <div class="stat-card-note">Órdenes en fase de lunas. Se cuentan 1 vez por orden.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-shield-alt"></i></span> Reparto por Compañía Aseguradora</h6>
+                        <div id="chart-insurance-container" class="hbar-container"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-stream"></i></span> Distribución por Estado Actual</h6>
+                        <div id="chart-fases-container" class="hbar-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-12">
+                    <div class="stat-card-boss">
+                        <h6><span class="stat-title-icon"><i class="fas fa-hourglass-half"></i></span> Días medios en cada fase</h6>
+                        <div id="chart-dias-fase-container" class="hbar-container"></div>
+                        <div class="stat-card-note">Cuenta solo los movimientos con hora registrada. Los registros antiguos sin hora no se cuentan.</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- CONTROLS BAR -->
-        <div class="container-fluid px-4 py-3">
-            <div class="row align-items-center g-2">
-                <div class="col-md-4 d-flex gap-2">
-                    <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#newOrderModal" onclick="setDefaultDates()"><i class="fas fa-plus me-1"></i> Nueva Orden</button>
-                    <button class="btn btn-outline-secondary fw-bold" onclick="resetLayout()"><i class="fas fa-undo me-1"></i> Resetear Vista</button>
-                </div>
-                <div class="col-md-8 d-flex justify-content-end align-items-center gap-2 flex-wrap">
-                    <!-- FILTROS RÁPIDOS -->
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-dark active-filter btn-quick-filter" id="filter-btn-all" onclick="setQuickFilter('all')">Todos</button>
-                        <button class="btn btn-outline-danger btn-quick-filter" id="filter-btn-urgent" onclick="setQuickFilter('urgent')">🔥 Urgentes</button>
-                        <button class="btn btn-outline-warning btn-quick-filter" id="filter-btn-overdue" onclick="setQuickFilter('overdue')">⏳ Retrasados</button>
-                    </div>
-                    <!-- SMART FILTER DROPDOWN -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-md-5 mb-2 mb-md-0" id="search-bar-wrapper">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-secondary text-muted"><i class="fas fa-search"></i></span>
+                    <input type="text" id="search-input" class="form-control border-secondary" placeholder="Buscar matrícula..." onkeydown="handleSearchKeydown(event)" oninput="renderOrders()">
                     <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="smart-filter-label">🔍 Filtrar...</button>
-                        <ul class="dropdown-menu shadow" id="smart-filter-dropdown" style="max-height: 350px; overflow-y: auto;"></ul>
-                    </div>
-                    <div class="input-group input-group-sm" style="width: 220px;">
-                        <input type="text" id="search-input" class="form-control" placeholder="Buscar matrícula / modelo..." onkeydown="handleSearchKeydown(event)">
-                        <button class="btn btn-outline-secondary" type="button" onclick="renderOrders()"><i class="fas fa-search"></i></button>
+                        <button class="btn btn-outline-secondary bg-white border-secondary text-secondary fw-semibold dropdown-toggle rounded-0 rounded-end" type="button" data-bs-toggle="dropdown" style="border-left: 0;">
+                            <span id="smart-filter-label">🔍 Filtrar...</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" id="smart-filter-dropdown" style="max-height: 350px; overflow-y: auto; min-width: 280px;"></ul>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- KANBAN BOARD -->
-        <div class="container-fluid px-4 pb-5">
-            <div class="kanban-container" id="main-kanban-container">
+            <div class="col-md-7 text-md-end d-flex gap-1 justify-content-md-end align-items-center flex-wrap">
+                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm bg-white" id="expand-all-chapistas-btn" onclick="toggleExpandAllChapistas()">
+                    <i class="fas fa-expand-alt me-1"></i> <span id="expand-all-btn-text">Expandir todos</span>
+                </button>
                 
-                <!-- 1. CARGA CHAPA -->
-                <div id="col-cargachapa-wrapper" class="kanban-col p-3 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 id="title-col-cargachapa-wrapper" class="text-dark fw-bold m-0"><i class="fas fa-inbox me-1 text-primary"></i> Carga Chapa</h6>
-                        <div class="d-flex align-items-center gap-2">
-                            <span id="count-cargachapa" class="badge bg-dark rounded-pill">0</span>
-                            <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargachapa-wrapper')" title="Minimizar"><i class="fas fa-compress-alt" id="min-icon-col-cargachapa-wrapper"></i></button>
-                        </div>
-                    </div>
-                    <div id="list-cargachapa" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargachapa')"></div>
+                <div class="btn-group shadow-sm" role="group" id="quick-filters-group">
+                    <button type="button" class="btn btn-outline-danger btn-sm fw-bold bg-white btn-quick-filter" id="filter-btn-urgent" onclick="setQuickFilter('urgent')"><i class="fas fa-fire me-1"></i> Urgentes</button>
+                    <button type="button" class="btn btn-outline-warning btn-sm fw-bold text-dark bg-white btn-quick-filter" id="filter-btn-overdue" onclick="setQuickFilter('overdue')"><i class="fas fa-exclamation-triangle me-1"></i> Vencidos</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold bg-white btn-quick-filter active-filter" id="filter-btn-all" onclick="setQuickFilter('all')"><i class="fas fa-list me-1"></i> Todo</button>
                 </div>
-
-                <!-- 2. CARGA PINTURA -->
-                <div id="col-cargapintura-wrapper" class="kanban-col p-3 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 id="title-col-cargapintura-wrapper" class="text-dark fw-bold m-0"><i class="fas fa-inbox me-1 text-warning"></i> Carga Pintura</h6>
-                        <div class="d-flex align-items-center gap-2">
-                            <span id="count-cargapintura" class="badge bg-dark rounded-pill">0</span>
-                            <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargapintura-wrapper')" title="Minimizar"><i class="fas fa-compress-alt" id="min-icon-col-cargapintura-wrapper"></i></button>
-                        </div>
-                    </div>
-                    <div id="list-cargapintura" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargapintura')"></div>
-                </div>
-
-                <!-- 3. LUNAS -->
-                <div id="col-lunas-wrapper" class="kanban-col p-3 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 id="title-col-lunas-wrapper" class="text-dark fw-bold m-0"><i class="fas fa-window-maximize me-1 text-secondary"></i> Lunas</h6>
-                        <div class="d-flex align-items-center gap-2">
-                            <span id="count-lunas" class="badge bg-dark rounded-pill">0</span>
-                            <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-lunas-wrapper')" title="Minimizar"><i class="fas fa-compress-alt" id="min-icon-col-lunas-wrapper"></i></button>
-                        </div>
-                    </div>
-                    <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
-                </div>
-
-                <!-- 4. CHAPISTAS (DINÁMICO POR OPERARIO) -->
-                <div id="kanban-col-chapistas" class="kanban-col p-3 shadow-sm" style="min-width: auto; width: auto; flex-grow: 1;">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 id="title-kanban-col-chapistas" class="text-dark fw-bold m-0"><i class="fas fa-users me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha para expandir)</span></h6>
-                        <div class="d-flex align-items-center gap-2">
-                            <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="toggleExpandAllChapistas()"><i class="fas fa-expand me-1"></i> <span id="expand-all-btn-text">Expandir todos</span></button>
-                            <span id="count-chapa" class="badge bg-dark rounded-pill">0</span>
-                            <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('kanban-col-chapistas')" title="Minimizar"><i class="fas fa-compress-alt" id="min-icon-kanban-col-chapistas"></i></button>
-                        </div>
-                    </div>
-                    <div id="chapa-dynamic-wrapper"></div>
-                </div>
-
-                <!-- 5. PARAGOLPES -->
-                <div id="col-paragolpes-wrapper" class="kanban-col p-3 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 id="title-col-paragolpes-wrapper" class="text-dark fw-bold m-0"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes</h6>
-                        <div class="d-flex align-items-center gap-2">
-                            <span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span>
-                            <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')" title="Minimizar"><i class="fas fa-compress-alt" id="min-icon-col-paragolpes-wrapper"></i></button>
-                        </div>
-                    </div>
-                    <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
-                </div>
-
-                <!-- 6. DESTAJOS -->
-                <div id="col-destajos-wrapper" class="kanban-col p-3 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 id="title-col-destajos-wrapper" class="text-dark fw-bold m-0"><i class="fas fa-bolt me-1 text-info"></i> Destajos</h6>
-                        <div class="d-flex align-items-center gap-2">
-                            <span id="count-destajos" class="badge bg-dark rounded-pill">0</span>
-                            <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-destajos-wrapper')" title="Minimizar"><i class="fas fa-compress-alt" id="min-icon-col-destajos-wrapper"></i></button>
-                        </div>
-                    </div>
-                    <div id="list-destajos" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'destajos')"></div>
-                </div>
-
-                <!-- 7. PINTORES (DINÁMICO POR OPERARIO) -->
-                <div id="kanban-col-pintores" class="kanban-col p-3 shadow-sm" style="min-width: auto; width: auto; flex-grow: 1;">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 id="title-kanban-col-pintores" class="text-dark fw-bold m-0"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Operario)</span></h6>
-                        <div class="d-flex align-items-center gap-2">
-                            <span id="count-pintado" class="badge bg-dark rounded-pill">0</span>
-                            <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('kanban-col-pintores')" title="Minimizar"><i class="fas fa-compress-alt" id="min-icon-kanban-col-pintores"></i></button>
-                        </div>
-                    </div>
-                    <div id="pintores-dynamic-wrapper" class="d-flex gap-2 overflow-x-auto pb-2"></div>
-                </div>
-
-                <!-- 8. TERMINADOS -->
-                <div id="col-terminados-wrapper" class="kanban-col p-3 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 id="title-col-terminados-wrapper" class="text-dark fw-bold m-0"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
-                        <div class="d-flex align-items-center gap-2">
-                            <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
-                            <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-terminados-wrapper')" title="Minimizar"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button>
-                        </div>
-                    </div>
-                    <div class="d-flex flex-column gap-3">
-                        <div class="bg-light p-2 rounded border">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold small text-secondary">Pendientes (<span id="count-terminados-pendiente">0</span>)</span>
-                            </div>
-                            <div id="list-terminados-pendiente" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_pendiente')"></div>
-                        </div>
-                        <div class="bg-light p-2 rounded border">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold small text-success">Facturados (<span id="count-terminados-facturado">0</span>)</span>
-                            </div>
-                            <div id="list-terminados-facturado" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_facturado')"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CONTENEDOR DE COLUMNAS PERSONALIZADAS (EJ: FAROS ALCALÁ) -->
-                <div id="custom-columns-container" class="d-flex gap-3"></div>
-
+                <button class="btn btn-primary fw-bold px-3 shadow-sm btn-sm py-2" data-bs-toggle="modal" data-bs-target="#newOrderModal" onclick="setDefaultDates()">
+                    <i class="fas fa-plus me-1"></i> Nueva Orden
+                </button>
             </div>
         </div>
 
+        <div class="legend-card mb-4 d-flex align-items-center justify-content-around flex-wrap gap-3" id="legend-card-wrapper">
+            <span class="fw-bold text-secondary"><i class="fas fa-info-circle me-1"></i> Leyenda:</span>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-ch px-2 py-1">CH / Chapa</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-pun px-2 py-1">PIN / Pintura</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #eff6ff; color:#1e40af; border:1px solid #93c5fd;">Mitad Izq: Reparación</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge" style="background-color: #f0fdf4; color:#166534; border:1px solid #86efac;">Mitad Der: Montaje</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge substatus-badge-ampliacion px-2 py-1">Ampliación</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge substatus-badge-recambios px-2 py-1">Recambios</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-estado badge-vacaciones px-2 py-1">🌴 Vacaciones</span></div>
+            <div class="d-flex align-items-center gap-1"><span class="badge badge-estado badge-baja px-2 py-1">⛔ Baja</span></div>
+            <div class="vr mx-2"></div>
+            <div class="d-flex align-items-center gap-1 text-danger fw-bold"><i class="fas fa-fire"></i> Urgente</div>
+        </div>
+
+        <div class="kanban-container" id="main-kanban-container">
+            <div id="col-cargachapa-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0" id="title-col-cargachapa"><i class="fas fa-tasks me-1 text-primary"></i> Carga Chapa</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-cargachapa" class="badge bg-primary rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargachapa-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargachapa-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('cargachapa', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div id="list-cargachapa" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargachapa')"></div>
+            </div>
+            <div id="col-cargapintura-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0" id="title-col-cargapintura"><i class="fas fa-tasks me-1 text-warning"></i> Carga Pintura</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-cargapintura" class="badge bg-warning text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-cargapintura-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-cargapintura-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('cargapintura', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div id="list-cargapintura" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'cargapintura')"></div>
+            </div>
+            <div id="col-lunas-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0" id="title-col-lunas"><i class="fas fa-car-crash me-1 text-secondary"></i> Lunas</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-lunas" class="badge bg-secondary rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-lunas-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-lunas-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('lunas', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div id="list-lunas" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'lunas')"></div>
+            </div>
+            <div class="kanban-col p-3 shadow-sm" id="kanban-col-chapistas">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0" id="title-kanban-col-chapistas"><i class="fas fa-wrench me-1 text-primary"></i> Chapistas <span class="small text-muted fw-normal" id="chapistas-subtitle">(Pincha para expandir)</span></h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-chapa" class="badge bg-primary rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('kanban-col-chapistas')"><i class="fas fa-compress-alt" id="min-icon-kanban-col-chapistas"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('chapistas', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div id="chapa-dynamic-wrapper"></div>
+            </div>
+            <div id="col-paragolpes-wrapper" class="kanban-col p-3 shadow-sm" style="display: block;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0" id="title-col-paragolpes"><i class="fas fa-shield-alt me-1 text-dark"></i> Paragolpes</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-paragolpes" class="badge bg-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-paragolpes-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-paragolpes-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('paragolpes', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div id="list-paragolpes" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'paragolpes')"></div>
+            </div>
+            <div id="col-destajos-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0" id="title-col-destajos"><i class="fas fa-file-invoice-dollar me-1 text-info"></i> Destajos</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-destajos" class="badge bg-info text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-destajos-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-destajos-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('destajos', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div id="list-destajos" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'destajos')"></div>
+            </div>
+            <div id="col-pintores-wrapper" class="kanban-col p-3 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0" id="title-col-pintores"><i class="fas fa-paint-brush me-1 text-warning"></i> Pintores <span class="small text-muted fw-normal">(Por Operario)</span></h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-pintado" class="badge bg-warning text-dark rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-pintores-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-pintores-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('pintores', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div id="pintores-dynamic-wrapper" class="pintura-split-container"></div>
+            </div>
+            <div id="col-terminados-wrapper" class="kanban-col p-3 shadow-sm" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-dark fw-bold m-0" id="title-col-terminados"><i class="fas fa-check-circle me-1 text-success"></i> Terminados</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="count-terminados" class="badge bg-success rounded-pill">0</span>
+                        <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-terminados-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-terminados-wrapper"></i></button>
+                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('terminados', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="chapa-split-container" style="min-height: 60vh;">
+                    <div class="chapa-subcol subcol-pendiente-factura" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_pendiente')">
+                        <div class="text-center fw-bold text-warning small mb-2 border-bottom pb-1">
+                            ⏳ Pendiente facturar <span id="count-terminados-pendiente" class="badge bg-warning text-dark rounded-pill">0</span>
+                        </div>
+                        <div id="list-terminados-pendiente" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="chapa-subcol subcol-facturado" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'terminados_facturado')">
+                        <div class="text-center fw-bold text-success small mb-2 border-bottom pb-1">
+                            ✓ Facturados <span id="count-terminados-facturado" class="badge bg-success rounded-pill">0</span>
+                        </div>
+                        <div id="list-terminados-facturado" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CONTENEDOR DINÁMICO PARA NUEVOS DEPARTAMENTOS -->
+            <div id="custom-columns-container" class="kanban-container" style="display: contents;"></div>
+        </div>
     </div>
 
-    <!-- MODAL NUEVA ORDEN -->
-    <div class="modal fade" id="newOrderModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+    <!-- MODAL DE AJUSTES (REDISEÑADO) -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content shadow">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold"><i class="fas fa-car me-2"></i>Nueva Orden de Taller</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-sliders-h me-2 text-primary"></i> Ajustes del taller</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
+                    
+                    <!-- DEPARTAMENTOS (COLUMNAS) -->
+                    <div class="d-flex justify-content-between align-items-end mb-3">
+                        <div>
+                            <div class="settings-section-title">Departamentos <span class="text-muted fw-normal small">(Columnas del tablero)</span></div>
+                            <div class="settings-section-desc">Configura el nombre, color, orden y visibilidad de cada fase.</div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger fw-bold" onclick="resetLayout()" title="Restablece el diseño original">
+                            <i class="fas fa-undo me-1"></i> Restablecer
+                        </button>
+                    </div>
+                    
+                    <!-- NUEVO: CREAR DEPARTAMENTO -->
+                    <div class="input-group input-group-sm mb-3 shadow-sm">
+                        <input type="text" id="new-column-name" class="form-control" placeholder="Escribir nombre del nuevo departamento (Ej. Faros Alcalá)">
+                        <button class="btn btn-primary fw-bold" type="button" onclick="handleAddCustomColumn()"><i class="fas fa-plus me-1"></i> Crear</button>
+                    </div>
+                    
+                    <div id="columns-settings-list" class="mb-4"></div>
+
+                    <!-- TIPOS DE HOJA (COLORES DE ÁREA) -->
+                    <div class="settings-section-title mt-4">Tipos de hoja <span class="text-muted fw-normal small">(Colores de las tarjetas)</span></div>
+                    <div class="settings-section-desc">Cada tipo tiene su color para reconocer la tarjeta de un vistazo.</div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Chapa / Reparación</span>
+                                <input type="color" value="#2563eb" onchange="updateAreaColor('chapa', this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Pintura</span>
+                                <input type="color" value="#f59e0b" onchange="updateAreaColor('pintura', this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Paragolpes</span>
+                                <input type="color" value="#1e293b" onchange="updateAreaColor('paragolpes', this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Destajos</span>
+                                <input type="color" value="#0891b2" onchange="updateAreaColor('destajos', this.value)">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="setting-row">
+                                <span class="flex-grow-1 fw-bold small">Lunas</span>
+                                <input type="color" value="#64748b" onchange="updateAreaColor('lunas', this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUBESTADOS -->
+                    <div class="settings-section-title mt-4">Subestados <span class="text-muted fw-normal small">(Avisos en las tarjetas)</span></div>
+                    <div class="settings-section-desc">Añade avisos como "Pendiente de recambios" o "Pieza reparándose fuera".</div>
+                    <form onsubmit="handleAddSubstatus(event)" class="input-group input-group-sm mb-3">
+                        <input type="text" id="new-substatus-name" class="form-control" placeholder="Nuevo subestado..." required autocomplete="off">
+                        <input type="color" id="new-substatus-color" class="form-control form-control-color" value="#ef4444" title="Color del subestado" style="max-width: 40px;">
+                        <button class="btn btn-primary fw-bold" type="submit">Añadir</button>
+                    </form>
+                    <div id="substatuses-list" class="d-flex flex-column gap-2 mb-4" style="max-height: 250px; overflow-y: auto;"></div>
+
+                    <!-- OPERARIOS -->
+                    <div class="settings-section-title mt-4">Operarios <span class="text-muted fw-normal small">(Indica si alguien está de vacaciones o de baja)</span></div>
+                    <form onsubmit="handleAddOperator(event)" class="mb-3 p-2 bg-light border rounded">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4"><label class="form-label small fw-bold mb-1">Nombre</label><input type="text" id="new-operator-name" class="form-control form-control-sm" required placeholder="Ej. AE, Rubén..."></div>
+                            <div class="col-md-3"><label class="form-label small fw-bold mb-1">Tipo</label><select id="new-operator-type" class="form-select form-select-sm" required><option value="chapa">Chapa</option><option value="pintura">Pintura</option></select></div>
+                            <div class="col-md-3"><label class="form-label small fw-bold mb-1">Estado</label><select id="new-operator-state" class="form-select form-select-sm"><option value="activo">Activo</option><option value="vacaciones">Vacaciones</option><option value="baja">Baja</option></select></div>
+                            <div class="col-md-2"><button type="submit" class="btn btn-sm btn-primary fw-bold w-100">Añadir</button></div>
+                        </div>
+                    </form>
+                    <div id="operators-list" class="d-flex flex-column gap-2 mb-4" style="max-height: 300px; overflow-y: auto;"></div>
+
+                    <!-- PIEZAS -->
+                    <div class="settings-section-title mt-4">Piezas del vehículo <span class="text-muted fw-normal small">(Checklist)</span></div>
+                    <div class="settings-section-desc">Configura las zonas (ej. Mecánica) y las piezas que aparecen en la ficha.</div>
+                    
+                    <div class="row mb-3 g-2">
+                        <div class="col-md-6">
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="new-zone-name" class="form-control" placeholder="Nueva zona (Ej. Mecánica)">
+                                <button class="btn btn-secondary fw-bold" type="button" onclick="handleAddZone()">Zona</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group input-group-sm">
+                                <select id="piece-zone-select" class="form-select" style="max-width: 100px;"></select>
+                                <input type="text" id="new-piece-name" class="form-control" placeholder="Ej. Filtro">
+                                <button class="btn btn-secondary fw-bold" type="button" onclick="handleAddPiece()">Pieza</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="pieces-management-list" class="mb-2" style="max-height: 250px; overflow-y:auto;"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="newOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark">Registrar Nuevo Vehículo / Pieza</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
                     <form id="order-form" onsubmit="handleAddOrder(event)">
                         <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Matrícula *</label>
-                                <input type="text" id="car-plate" class="form-control text-uppercase" placeholder="1234 ABC" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Modelo / Descripción *</label>
-                                <input type="text" id="car-model" class="form-control" placeholder="Seat León" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Compañía Aseguradora</label>
+                            <div class="col-md-4"><label class="form-label small text-secondary fw-bold">Matrícula</label><input type="text" id="car-plate" class="form-control text-uppercase" required placeholder="Ej. 4523XYZ"></div>
+                            <div class="col-md-4"><label class="form-label small text-secondary fw-bold">Modelo / Descripción</label><input type="text" id="car-model" class="form-control" required placeholder="Ej. Seat León"></div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-secondary fw-bold"><i class="fas fa-shield-alt text-primary me-1"></i> Compañía Aseguradora</label>
                                 <select id="car-insurance" class="form-select" onchange="checkCustomInsurance(this)">
-                                    <option value="">Sin asignar / Particular</option>
+                                    <option value="" selected>— Sin asignar —</option>
                                     <option value="Mapfre">Mapfre</option>
+                                    <option value="Allianz">Allianz</option>
                                     <option value="Mutua Madrileña">Mutua Madrileña</option>
                                     <option value="AXA">AXA</option>
-                                    <option value="Allianz">Allianz</option>
+                                    <option value="Pelayo">Pelayo</option>
                                     <option value="Generali">Generali</option>
-                                    <option value="Zurich">Zurich</option>
                                     <option value="Reale">Reale</option>
+                                    <option value="Zurich">Zurich</option>
                                     <option value="Línea Directa">Línea Directa</option>
+                                    <option value="Catalana Occidente">Catalana Occidente</option>
+                                    <option value="Sanitas">Sanitas</option>
+                                    <option value="Caser">Caser</option>
+                                    <option value="Liberty">Liberty</option>
+                                    <option value="Occident">Occident</option>
+                                    <option value="SegurCaixa Adeslas">SegurCaixa Adeslas</option>
+                                    <option value="Óptima">Óptima</option>
+                                    <option value="MGC Mutua">MGC Mutua</option>
+                                    <option value="Soliss">Soliss</option>
+                                    <option value="Divina Pastora">Divina Pastora</option>
+                                    <option value="Santa Lucía">Santa Lucía</option>
+                                    <option value="Asisa">Asisa</option>
+                                    <option value="DKV">DKV</option>
+                                    <option value="FIATC">FIATC</option>
+                                    <option value="Nortehispana">Nortehispana</option>
+                                    <option value="Previsión Mallorquina">Previsión Mallorquina</option>
+                                    <option value="Vivaz">Vivaz</option>
+                                    <option value="ARAG">ARAG</option>
+                                    <option value="Helvetia">Helvetia</option>
+                                    <option value="Génesis">Génesis</option>
+                                    <option value="MMT Seguros">MMT Seguros</option>
+                                    <option value="Fénix Directo">Fénix Directo</option>
+                                    <option value="Qualitas Auto">Qualitas Auto</option>
+                                    <option value="Admiral">Admiral</option>
+                                    <option value="Verti">Verti</option>
+                                    <option value="Balumba">Balumba</option>
+                                    <option value="Regal">Regal</option>
+                                    <option value="Direct Seguros">Direct Seguros</option>
+                                    <option value="Winthertur">Winthertur</option>
                                     <option value="Particular">Particular</option>
-                                    <option value="OTRA">Otra compañía...</option>
+                                    <option value="OTRA">Otra (escribir manual...)</option>
                                 </select>
-                                <input type="text" id="car-insurance-custom" class="form-control mt-2" placeholder="Escribe el nombre de la aseguradora..." style="display:none;">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Operario Asignado</label>
-                                <select id="operator-select" class="form-select" onchange="autoSuggestStatusFromOperator()"></select>
+                                <input type="text" id="car-insurance-custom" class="form-control mt-2" style="display:none;" placeholder="Escribe el nombre...">
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Fecha Entrada *</label>
-                                <input type="date" id="date-in" class="form-control" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Fecha Salida Prevista *</label>
-                                <input type="date" id="date-out" class="form-control" required>
-                            </div>
+                            <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Entrada</label><input type="date" id="date-in" class="form-control" required></div>
+                            <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Salida Prevista</label><input type="date" id="date-out" class="form-control" required></div>
                         </div>
                         <div class="row mb-3">
+                            <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Operario</label><select id="operator-select" class="form-select" onchange="autoSuggestStatusFromOperator()"><option value="">Sin asignar (Libre)</option></select></div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Subestado</label>
-                                <select id="car-substatus" class="form-select">
-                                    <option value="">Ninguno / Normal</option>
-                                </select>
+                                <label class="form-label small text-secondary fw-bold">Subestado</label>
+                                <select id="car-substatus" class="form-select"></select>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Fase Inicial</label>
-                                <select id="car-status" class="form-select">
-                                    <option value="">Automática según operario</option>
-                                    <option value="cargachapa">Carga Chapa</option>
-                                    <option value="cargapintura">Carga Pintura</option>
-                                    <option value="lunas">1. Lunas</option>
-                                    <option value="reparacion">2. Reparación</option>
-                                    <option value="montaje">3. Montaje</option>
-                                    <option value="paragolpes">4. Paragolpes</option>
-                                    <option value="destajos">Destajos</option>
-                                    <option value="pintura">5. Pintura</option>
-                                    <option value="terminados">6. Terminados</option>
-                                </select>
-                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary fw-bold">Estado Inicial</label>
+                            <select id="car-status" class="form-select">
+                                <option value="" selected>— Selecciona estado —</option>
+                                <option value="cargachapa">Carga Chapa</option>
+                                <option value="cargapintura">Carga Pintura</option>
+                                <option value="lunas">1. Lunas</option>
+                                <option value="reparacion">2. Reparación</option>
+                                <option value="montaje">3. Montaje</option>
+                                <option value="paragolpes">4. Paragolpes</option>
+                                <option value="destajos">Destajos</option>
+                                <option value="pintura">5. Pintura</option>
+                                <option value="terminados">6. Terminados</option>
+                            </select>
                         </div>
 
-                        <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded" id="new-order-duplicates-container"></div>
+                        <!-- NUEVO: DUPLICAR EN DEPARTAMENTOS -->
+                        <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded" id="new-order-duplicates-container">
+                            <!-- Se rellena desde JS -->
+                        </div>
 
                         <div class="mb-3 p-3 bg-light border rounded">
-                            <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Selección de Piezas</label>
+                            <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Checklist de Piezas / Elementos</label>
                             <div class="row g-2" id="checklist-new-container"></div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Notas / Observaciones</label>
-                            <textarea id="car-notes" class="form-control" rows="2" placeholder="Detalles adicionales..."></textarea>
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="car-urgent">
-                            <label class="form-check-label text-danger fw-bold" for="car-urgent">Marcar como VEHÍCULO URGENTE</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Nueva Orden</button>
+                        <div class="mb-3"><label class="form-label small text-secondary fw-bold">Notas</label><textarea id="car-notes" class="form-control" rows="2"></textarea></div>
+                        <div class="mb-3 form-check"><input type="checkbox" class="form-check-input" id="car-urgent"><label class="form-check-label text-danger fw-bold" for="car-urgent">Urgente</label></div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Guardar Orden</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DETALLE / EDICIÓN -->
     <div class="modal fade" id="detailModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content shadow">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2"></i>Detalle y Gestión de Orden</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-edit me-2 text-primary"></i> Ficha, Edición y Trazabilidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4" id="detail-modal-body"></div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL AJUSTES -->
-    <div class="modal fade" id="settingsModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content shadow">
-                <div class="modal-header bg-secondary text-white">
-                    <h5 class="modal-title fw-bold"><i class="fas fa-cog me-2"></i>Ajustes Generales del Taller</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <ul class="nav nav-tabs mb-3" id="settingsTabs" role="tablist">
-                        <li class="nav-item" role="presentation"><button class="nav-link active fw-bold" id="cols-tab" data-bs-toggle="tab" data-bs-target="#cols-pane" type="button">Departamentos / Columnas</button></li>
-                        <li class="nav-item" role="presentation"><button class="nav-link fw-bold" id="ops-tab" data-bs-toggle="tab" data-bs-target="#ops-pane" type="button">Operarios</button></li>
-                        <li class="nav-item" role="presentation"><button class="nav-link fw-bold" id="colors-tab" data-bs-toggle="tab" data-bs-target="#colors-pane" type="button">Colores de Áreas</button></li>
-                        <li class="nav-item" role="presentation"><button class="nav-link fw-bold" id="sub-tab" data-bs-toggle="tab" data-bs-target="#sub-pane" type="button">Subestados</button></li>
-                        <li class="nav-item" role="presentation"><button class="nav-link fw-bold" id="pieces-tab" data-bs-toggle="tab" data-bs-target="#pieces-pane" type="button">Zonas y Piezas</button></li>
-                        <li class="nav-item" role="presentation"><button class="nav-link fw-bold text-success" id="data-tab" data-bs-toggle="tab" data-bs-target="#data-pane" type="button">Mantenimiento Datos</button></li>
-                    </ul>
-                    <div class="tab-content" id="settingsTabsContent">
-                        <!-- COLUMNAS -->
-                        <div class="tab-pane fade show active" id="cols-pane">
-                            <h6 class="fw-bold mb-3">Departamentos Personalizados (ej. Faros Alcalá)</h6>
-                            <div class="input-group mb-3" style="max-width: 400px;">
-                                <input type="text" id="new-column-name" class="form-control" placeholder="Nombre del nuevo departamento...">
-                                <button class="btn btn-primary" type="button" onclick="handleAddCustomColumn()"><i class="fas fa-plus me-1"></i> Añadir</button>
-                            </div>
-                            <div id="columns-settings-list" class="d-flex flex-column gap-2 mb-3"></div>
-                        </div>
-                        <!-- OPERARIOS -->
-                        <div class="tab-pane fade" id="ops-pane">
-                            <h6 class="fw-bold mb-3">Gestión de Operarios</h6>
-                            <form onsubmit="handleAddOperator(event)" class="row g-2 mb-3 align-items-center">
-                                <div class="col-md-4"><input type="text" id="new-operator-name" class="form-control" placeholder="Nombre del operario..." required></div>
-                                <div class="col-md-3">
-                                    <select id="new-operator-type" class="form-select">
-                                        <option value="chapa">Chapa / Montaje</option>
-                                        <option value="pintura">Pintura</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <select id="new-operator-state" class="form-select">
-                                        <option value="activo">Activo</option>
-                                        <option value="vacaciones">Vacaciones</option>
-                                        <option value="baja">Baja</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Añadir</button></div>
-                            </form>
-                            <div id="operators-list" class="d-flex flex-column gap-2"></div>
-                        </div>
-                        <!-- COLORES DE ÁREAS -->
-                        <div class="tab-pane fade" id="colors-pane">
-                            <h6 class="fw-bold mb-3">Personalizar Colores de Áreas</h6>
-                            <div class="row g-3">
-                                <div class="col-md-4"><label class="form-label small fw-bold">Chapa</label><input type="color" class="form-control form-control-color w-100" onchange="updateAreaColor('chapa', this.value)"></div>
-                                <div class="col-md-4"><label class="form-label small fw-bold">Pintura</label><input type="color" class="form-control form-control-color w-100" onchange="updateAreaColor('pintura', this.value)"></div>
-                                <div class="col-md-4"><label class="form-label small fw-bold">Paragolpes</label><input type="color" class="form-control form-control-color w-100" onchange="updateAreaColor('paragolpes', this.value)"></div>
-                                <div class="col-md-4"><label class="form-label small fw-bold">Destajos</label><input type="color" class="form-control form-control-color w-100" onchange="updateAreaColor('destajos', this.value)"></div>
-                                <div class="col-md-4"><label class="form-label small fw-bold">Lunas</label><input type="color" class="form-control form-control-color w-100" onchange="updateAreaColor('lunas', this.value)"></div>
-                            </div>
-                        </div>
-                        <!-- SUBESTADOS -->
-                        <div class="tab-pane fade" id="sub-pane">
-                            <h6 class="fw-bold mb-3">Subestados Personalizados</h6>
-                            <form onsubmit="handleAddSubstatus(event)" class="row g-2 mb-3">
-                                <div class="col-md-5"><input type="text" id="new-substatus-name" class="form-control" placeholder="Nombre subestado (ej. Falta luna)..." required></div>
-                                <div class="col-md-3"><input type="color" id="new-substatus-color" class="form-control form-control-color w-100" value="#8b5cf6"></div>
-                                <div class="col-md-4"><button type="submit" class="btn btn-primary w-100">Crear Subestado</button></div>
-                            </form>
-                            <div id="substatuses-list" class="d-flex flex-column gap-2"></div>
-                        </div>
-                        <!-- ZONAS Y PIEZAS -->
-                        <div class="tab-pane fade" id="pieces-pane">
-                            <h6 class="fw-bold mb-3">Gestión de Zonas y Piezas del Checklist</h6>
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6 border p-3 rounded bg-light">
-                                    <span class="fw-bold small text-primary d-block mb-2">Añadir Nueva Zona</span>
-                                    <div class="input-group">
-                                        <input type="text" id="new-zone-name" class="form-control" placeholder="Nombre de la zona...">
-                                        <button class="btn btn-primary" type="button" onclick="handleAddZone()">Añadir Zona</button>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 border p-3 rounded bg-light">
-                                    <span class="fw-bold small text-success d-block mb-2">Añadir Pieza a Zona</span>
-                                    <div class="d-flex gap-2 mb-2">
-                                        <select id="piece-zone-select" class="form-select"></select>
-                                    </div>
-                                    <div class="input-group">
-                                        <input type="text" id="new-piece-name" class="form-control" placeholder="Nombre de la pieza...">
-                                        <button class="btn btn-success" type="button" onclick="handleAddPiece()">Añadir Pieza</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="pieces-management-list"></div>
-                        </div>
-                        <!-- MANTENIMIENTO DATOS -->
-                        <div class="tab-pane fade" id="data-pane">
-                            <h6 class="fw-bold mb-3 text-success"><i class="fas fa-tools me-2"></i>Herramientas de Limpieza y Corrección</h6>
-                            <p class="text-muted small">Usa esta herramienta si tienes nombres de aseguradoras escritos de distintas formas (ej. "Mapfre S.A.", "MAPFRE", "mapfre") para unificarlas automáticamente según el listado oficial.</p>
-                            <button id="btn-fix-insurances" class="btn btn-success fw-bold" onclick="fixAllInsurances()"><i class="fas fa-magic me-1"></i> Estandarizar Compañías Aseguradoras</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- FIREBASE & LOGIC SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -644,7 +908,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // CONFIGURACIÓN DE COLUMNAS POR DEFECTO
+        // CONFIGURACIÓN DE COLUMNAS POR DEFECTO (TODAS VISIBLES)
         const DEFAULT_COLUMNS = [
             { id: 'cargachapa', name: 'Carga Chapa', color: '#2563eb', visible: true },
             { id: 'cargapintura', name: 'Carga Pintura', color: '#f59e0b', visible: true },
@@ -658,7 +922,7 @@
 
         let columnConfig = JSON.parse(localStorage.getItem('planning360_columns_v3')) || JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
 
-        // COLORES DE ÁREAS
+        // COLORES DE ÁREAS (TIPOS DE HOJA)
         const DEFAULT_AREA_COLORS = { chapa: '#2563eb', pintura: '#f59e0b', paragolpes: '#1e293b', destajos: '#0891b2', lunas: '#64748b' };
         let areaColors = JSON.parse(localStorage.getItem('planning360_areaColors')) || JSON.parse(JSON.stringify(DEFAULT_AREA_COLORS));
 
@@ -718,7 +982,7 @@
                 const lowerOfficial = normalizeText(official);
                 let score = 0;
                 if (lowerOfficial.includes(lowerOriginal)) score = lowerOriginal.length;
-                else if (lowerOriginal.includes(lowerOfficial)) score = lowerOriginal.length;
+                else if (lowerOriginal.includes(lowerOfficial)) score = lowerOfficial.length;
                 if (score > bestScore) { bestScore = score; bestMatch = official; }
             }
             if (bestMatch && bestScore >= 3) return bestMatch;
@@ -762,7 +1026,7 @@
 
         const COLOR_PALETTE = ['#2563eb','#059669','#f59e0b','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c','#4338ca','#0d9488','#9333ea','#ca8a04','#e11d48','#0284c7','#a16207','#0f766e','#c026d3','#64748b','#db2777'];
 
-        let AREA_DEFS = {};
+        let AREA_DEFS = {}; // Se inicializa en applyAreaColors()
 
         const STATUS_LABELS = {
             cargachapa: 'Carga Chapa',
@@ -792,6 +1056,10 @@
             return false;
         }
 
+        // ============================================
+        // GESTIÓN DINÁMICA DE CONFIGURACIÓN
+        // ============================================
+        
         function applyAreaColors() {
             AREA_DEFS = {
                 chapa: { label: 'Chapa', color: areaColors.chapa, statuses: ['cargachapa','reparacion','montaje'] },
@@ -821,9 +1089,9 @@
         function saveColumnConfig() {
             localStorage.setItem('planning360_columns_v3', JSON.stringify(columnConfig));
             applyColumnConfig();
-            renderOrders();
         }
 
+        // FUNCIÓN PARA CREAR NUEVO DEPARTAMENTO
         window.handleAddCustomColumn = () => {
             const nameInput = document.getElementById('new-column-name');
             const name = nameInput.value.trim();
@@ -838,6 +1106,7 @@
         };
 
         function applyColumnConfig() {
+            // 1. Aplicar visibilidad, color y nombre de columnas estándar
             columnConfig.filter(c => !c.isCustom).forEach(col => {
                 const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
                 if (!wrapper) return;
@@ -860,31 +1129,27 @@
                 }
             });
 
+            // 2. Renderizar columnas personalizadas
             const customContainer = document.getElementById('custom-columns-container');
             if (customContainer) {
                 customContainer.innerHTML = '';
-                columnConfig.filter(c => c.isCustom).forEach(col => {
-                    // Forzar que si tiene tarjetas asignadas nunca aparezca oculta por fallo de guardado
-                    const hasCardsAssigned = orders.some(o => (o.duplicatedIn || []).includes(col.id));
-                    if (hasCardsAssigned && !col.visible) col.visible = true;
-
-                    if (col.visible) {
-                        customContainer.innerHTML += `
-                            <div id="col-${col.id}-wrapper" class="kanban-col p-3 shadow-sm" style="border-top-color: ${col.color};">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span id="count-${col.id}" class="badge bg-dark rounded-pill">0</span>
-                                        <button class="btn btn-sm btn-light py-0 px-1 border text-danger" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
-                                    </div>
+                columnConfig.filter(c => c.isCustom && c.visible).forEach(col => {
+                    customContainer.innerHTML += `
+                        <div id="col-${col.id}-wrapper" class="kanban-col p-3 shadow-sm" style="border-top-color: ${col.color};">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span id="count-${col.id}" class="badge bg-dark rounded-pill">0</span>
+                                    <button class="btn btn-sm btn-light py-0 px-1 border text-danger" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
                                 </div>
-                                <div id="list-${col.id}" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${col.id}')"></div>
                             </div>
-                        `;
-                    }
+                            <div id="list-${col.id}" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${col.id}')"></div>
+                        </div>
+                    `;
                 });
             }
 
+            // 3. Reordenar en el DOM (solo para estándar, las custom van al final por simplicidad)
             const container = document.getElementById('main-kanban-container');
             if (container) {
                 columnConfig.filter(c => !c.isCustom).forEach(col => {
@@ -964,6 +1229,7 @@
             renderColumnsSettings();
             renderOrders();
         };
+        // ============================================
 
         function buildPiecesChecklistHtml(checkedPieces, prefixId) {
             let html = '';
@@ -971,13 +1237,13 @@
                 html += `<div class="col-md-4"><div class="pieces-zone-card"><div class="pieces-zone-title ${zone.cls}">${zone.title}</div>`;
                 zone.pieces.forEach((piece, pIdx) => {
                     const id = `${prefixId}-chk-${zIdx}-${pIdx}`;
-                    const isChecked = Array.isArray(checkedPieces) && checkedPieces.includes(piece);
+                    const isChecked = checkedPieces.includes(piece);
                     const safePiece = String(piece).replace(/"/g, '&quot;');
                     html += `<div class="form-check mb-1"><input class="form-check-input piece-check" type="checkbox" value="${safePiece}" id="${id}" ${isChecked ? 'checked' : ''}><label class="form-check-label piece-check-label" for="${id}">${safePiece}</label></div>`;
                 });
                 html += `</div></div>`;
             });
-            const cocheCompletoChecked = Array.isArray(checkedPieces) && checkedPieces.includes("COCHE COMPLETO");
+            const cocheCompletoChecked = checkedPieces.includes("COCHE COMPLETO");
             html += `<div class="col-md-4"><div class="coche-completo-box h-100 d-flex flex-column justify-content-center">
                 <div class="form-check d-flex justify-content-center align-items-center">
                     <input class="form-check-input piece-check coche-completo-check" type="checkbox" value="COCHE COMPLETO" id="${prefixId}-chk-coche-completo" ${cocheCompletoChecked ? 'checked' : ''}>
@@ -988,13 +1254,14 @@
             return html;
         }
 
+        // CONSTRUIR CHECKBOXES DE DUPLICADOS
         function buildDuplicatesCheckboxesHtml(selectedIds = [], prefix = 'new') {
-            const customCols = columnConfig.filter(c => c.isCustom);
+            const customCols = columnConfig.filter(c => c.isCustom && c.visible);
             if (customCols.length === 0) return `<div class="text-muted small fst-italic">No hay departamentos personalizados creados. Ve a Ajustes para crear uno.</div>`;
             
             let html = `<label class="form-label small text-info fw-bold mb-2"><i class="fas fa-clone me-1"></i> Duplicar hoja en otros departamentos:</label><div class="d-flex flex-wrap gap-3">`;
             customCols.forEach(col => {
-                const isChecked = Array.isArray(selectedIds) && selectedIds.includes(col.id);
+                const isChecked = selectedIds.includes(col.id);
                 html += `
                     <div class="form-check form-check-inline m-0 bg-white border rounded px-3 py-2 shadow-sm">
                         <input class="form-check-input dup-check" type="checkbox" value="${col.id}" id="${prefix}-dup-${col.id}" ${isChecked ? 'checked' : ''}>
@@ -1180,6 +1447,7 @@
             document.getElementById('car-insurance-custom').value = '';
             document.getElementById('car-status').value = '';
             document.getElementById('operator-select').value = '';
+            // Renderizar los checkboxes de departamentos personalizados
             document.getElementById('new-order-duplicates-container').innerHTML = buildDuplicatesCheckboxesHtml([], 'new');
         }
 
@@ -1207,7 +1475,6 @@
             col.classList.toggle('minimized');
             if (icon) icon.className = col.classList.contains('minimized') ? "fas fa-expand-alt" : "fas fa-compress-alt";
             saveColumnStates();
-            renderOrders();
         };
 
         function saveColumnStates() {
@@ -1236,6 +1503,7 @@
             } catch(e) {}
         }
 
+        // GESTIÓN DE SUBESTADOS
         window.handleAddSubstatus = (e) => {
             e.preventDefault();
             const inpName = document.getElementById('new-substatus-name');
@@ -1283,6 +1551,7 @@
             }
         }
 
+        // GESTIÓN DE PIEZAS
         window.handleAddZone = () => {
             const inp = document.getElementById('new-zone-name');
             const val = inp.value.trim();
@@ -1551,13 +1820,15 @@
             document.getElementById('login-screen').style.display = 'block';
         }
 
+        // ============================================
+        // INICIO DEL PARCHE DE CONEXIÓN
+        // ============================================
         function initRealtimeSync() {
             const syncEl = document.getElementById('sync-status');
 
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 orders = [];
                 snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
-                applyColumnConfig(); // Asegurar que las columnas con datos vuelven a mostrarse al recibir de Firebase
                 renderOrders();
                 if (bossDashboardActive) renderBossDashboardStats();
 
@@ -1582,6 +1853,9 @@
                 console.error("Error operarios:", error);
             });
         }
+        // ============================================
+        // FIN DEL PARCHE DE CONEXIÓN
+        // ============================================
 
         function renderOperatorsUI() {
             const listContainer = document.getElementById('operators-list');
@@ -1695,6 +1969,7 @@
             const orderId = ev.dataTransfer.getData("text/plain"); if (!orderId) return;
             const order = orders.find(o => o.id === orderId); if (!order) return;
             
+            // COMPROBAR SI ES UNA COLUMNA PERSONALIZADA (DUPLICAR)
             const isCustomCol = columnConfig.find(c => c.id === targetStatus && c.isCustom);
             if (isCustomCol) {
                 const currentDup = order.duplicatedIn || [];
@@ -1702,8 +1977,6 @@
                     currentDup.push(targetStatus);
                     try {
                         await updateDoc(doc(db, "orders", orderId), { duplicatedIn: currentDup });
-                        applyColumnConfig();
-                        renderOrders();
                     } catch (err) { console.error(err); }
                 }
                 return;
@@ -1737,6 +2010,7 @@
             const order = orders.find(o => o.id === orderId); if (!order) return;
             
             const newCheckedState = !order.isChecked;
+            
             order.isChecked = newCheckedState;
             renderOrders();
 
@@ -1750,6 +2024,7 @@
             }
         }
 
+        // ===== FUNCIÓN: UNIFICAR DUPLICADO =====
         window.removeDuplicate = async (orderId, colId) => {
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
@@ -1772,6 +2047,7 @@
             }
         }
 
+        // FUNCIÓN AUXILIAR PARA CREAR EL HTML DE UNA TARJETA
         function buildCardHtml(order, todayStr, isDuplicate = false, dupColId = null) {
             let status = order.status || 'reparacion';
             let orderOp = (order.operator || '').trim();
@@ -1897,12 +2173,11 @@
             let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminadosPendiente: document.getElementById('list-terminados-pendiente'), terminadosFacturado: document.getElementById('list-terminados-facturado') };
             Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
 
+            // Limpiar contenedores Y RESETEAR CONTADORES de columnas personalizadas
             document.querySelectorAll('[id^="list-custom_"]').forEach(el => el.innerHTML = '');
-            document.querySelectorAll('[id^="count-custom_"]').forEach(el => el.textContent = '0');
+            document.querySelectorAll('[id^="count-custom_"]').forEach(el => el.textContent = '0'); // Usar textContent para mayor compatibilidad
 
             let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, terminadosPendiente: 0, terminadosFacturado: 0, chapaTotal: 0 };
-
-            const renderedCardIds = new Set();
 
             // 1. RENDERIZAR TARJETAS PRINCIPALES
             filteredOrders.forEach(order => {
@@ -1942,21 +2217,23 @@
                 } else if (containers[status]) {
                     containers[status].innerHTML += cardHtml;
                 } else {
+                    // Es un estado personalizado (columna custom principal)
                     const customTarget = document.getElementById(`list-${status}`);
                     if (customTarget) {
                         customTarget.innerHTML += cardHtml;
-                        renderedCardIds.add(`${order.id}-${status}`);
                         const countEl = document.getElementById(`count-${status}`);
                         if (countEl) countEl.textContent = parseInt(countEl.textContent || 0) + 1;
                     }
                 }
             });
 
-            // 2. RENDERIZAR TARJETAS DUPLICADAS / ENVIADAS A DEPARTAMENTOS PERSONALIZADOS
+            // 2. RENDERIZAR TARJETAS DUPLICADAS (SIEMPRE, INDEPENDIENTE DEL FILTRO PRINCIPAL)
             orders.forEach(order => {
                 if (order.duplicatedIn && order.duplicatedIn.length > 0) {
+                    // FILTRO DE SEGURIDAD: Eliminar cualquier ID duplicado en el array para evitar contar doble
                     const uniqueDupCols = [...new Set(order.duplicatedIn)];
                     
+                    // Aplicar el mismo filtro de búsqueda a la tarjeta duplicada para que no desaparezca si el usuario busca
                     let matchesSearch = true;
                     if (filterVal) {
                         let status = order.status || 'reparacion';
@@ -1978,28 +2255,21 @@
                         if (!filterVal.startsWith('sub:') && !filterVal.startsWith('op:') && filterVal !== 'destajo:true') {
                             if (!((order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal))) matchesSearch = false;
                         }
-                    } else {
-                        if (activeQuickFilter === 'urgent') { if (!order.urgent) matchesSearch = false; }
-                        else if (activeQuickFilter === 'overdue') { 
-                            let status = order.status || 'reparacion';
-                            if (!(order.dateOut && order.dateOut < todayStr && status !== 'terminados')) matchesSearch = false; 
-                        }
                     }
                     
                     if (matchesSearch) {
                         uniqueDupCols.forEach(dupColId => {
+                            // Evitar renderizar si la tarjeta ya está en esa columna como estado principal
                             if (order.status === dupColId) return;
-                            const cardKey = `${order.id}-${dupColId}`;
-                            if (renderedCardIds.has(cardKey)) return;
 
                             const extTarget = document.getElementById(`list-${dupColId}`);
                             if (extTarget) {
                                 let dupCardHtml = buildCardHtml(order, todayStr, true, dupColId);
                                 extTarget.innerHTML += dupCardHtml;
-                                renderedCardIds.add(cardKey);
                                 
+                                // Actualizar contador
                                 const extCountEl = document.getElementById(`count-${dupColId}`);
-                                if (extCountEl) extCountEl.textContent = parseInt(extCountEl.textContent || 0) + 1;
+                                if(extCountEl) extCountEl.textContent = parseInt(extCountEl.textContent || 0) + 1;
                             }
                         });
                     }
@@ -2189,7 +2459,6 @@
             let historyHtml = '';
             if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator} ${h.note ? `<span class="text-info">(${h.note})</span>` : ''}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
             else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
-            
             const piecesChecklistHtml = buildPiecesChecklistHtml(order.pieces || (order.cocheCompleto ? ['COCHE COMPLETO'] : []), 'edit');
             const body = document.getElementById('detail-modal-body');
             
@@ -2222,6 +2491,7 @@
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Estado Actual</label><select id="edit-status" class="form-select">${buildStatusSelectOptions(order.status)}</select></div>
                     </div>
 
+                    <!-- DUPLICADOS EN EDICIÓN -->
                     <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded" id="edit-order-duplicates-container">
                         ${buildDuplicatesCheckboxesHtml(order.duplicatedIn || [], 'edit')}
                     </div>
@@ -2256,6 +2526,7 @@
             const newNotes = document.getElementById('edit-notes').value;
             const newUrgent = document.getElementById('edit-urgent').checked;
             
+            // Recoger duplicados
             const duplicatedIn = [];
             document.querySelectorAll('#edit-order-duplicates-container .dup-check:checked').forEach(chk => duplicatedIn.push(chk.value));
 
@@ -2272,8 +2543,6 @@
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             try {
                 await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, duplicatedIn: duplicatedIn, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
-                applyColumnConfig();
-                renderOrders();
                 const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
             } catch (err) { console.error("Error:", err); }
         }
@@ -2293,6 +2562,7 @@
             const notes = document.getElementById('car-notes').value;
             const urgent = document.getElementById('car-urgent').checked;
             
+            // Recoger duplicados
             const duplicatedIn = [];
             document.querySelectorAll('#new-order-duplicates-container .dup-check:checked').forEach(chk => duplicatedIn.push(chk.value));
 
@@ -2307,14 +2577,12 @@
             const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() }];
             try {
                 await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, duplicatedIn, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
-                applyColumnConfig();
-                renderOrders();
                 const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
         }
 
-        // PANEL 360
+        // ===== PANEL 360 =====
         function getBossPeriodRange(period) {
             const now = new Date(); let start, end;
             if (period === 'day') { start = new Date(now.getFullYear(), now.getMonth(), now.getDate()); end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59); }
