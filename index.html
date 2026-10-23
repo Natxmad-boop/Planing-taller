@@ -777,7 +777,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ⚠️ IMPORTANTE: AQUÍ DEBES PONER TUS CLAVES REALES DE FIREBASE
+        // ⚠️⚠️⚠️ MUY IMPORTANTE ⚠️⚠️⚠️
+        // SI VES ESTE TEXTO, SIGNIFICA QUE NO HAS PUESTO TUS CLAVES REALES.
+        // BUSCA "TU_API_KEY_REAL" Y PON LA TUYA.
         const firebaseConfig = {
             apiKey: "TU_API_KEY_REAL",
             authDomain: "planning-taller-23a87.firebaseapp.com",
@@ -788,8 +790,16 @@
             measurementId: "G-8B760E9RBP"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        let db;
+        let app;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log("✅ Firebase inicializado correctamente.");
+        } catch (error) {
+            console.error("❌ Error al inicializar Firebase:", error);
+            alert("Error de conexión: Revisa que las claves de Firebase sean correctas en el código.");
+        }
 
         // CONFIGURACIÓN DE COLUMNAS POR DEFECTO
         const DEFAULT_COLUMNS = [
@@ -1547,10 +1557,10 @@
                     html += `<span class="text-muted small italic">Sin piezas</span>`;
                 } else {
                     zone.pieces.forEach((piece, pIdx) => {
-                        const safePiece = String(piece).replace(/</g, '&lt;').="replace(/>/g, '&gt;cursor');
-                        html += `<span class="bad:ge bg-white text-dark border shadowpointer-sm p-2">
-                            ${"safePiece} 
-                            <i onclick class="fas fa-times ms-1 text-danger" style="deletePiece(${zIdx}, ${pIdx})"></i>
+                        const safePiece = String(piece).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        html += `<span class="badge bg-white text-dark border shadow-sm p-2">
+                            ${safePiece} 
+                            <i class="fas fa-times ms-1 text-danger" style="cursor:pointer" onclick="deletePiece(${zIdx}, ${pIdx})"></i>
                         </span>`;
                     });
                 }
@@ -1729,10 +1739,15 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-screen').style.display = 'block';
                 document.getElementById('user-display').innerHTML = `<i class="fas fa-user-circle me-1"></i> ${email}`;
-                initRealtimeSync();
-                renderColumnsSettings();
-                applyAreaColors();
-                applyColumnConfig();
+                try {
+                    initRealtimeSync();
+                    renderColumnsSettings();
+                    applyAreaColors();
+                    applyColumnConfig();
+                } catch (error) {
+                    console.error("Error al cargar la app:", error);
+                    alert("Error interno. Revisa la consola (F12).");
+                }
             } else { alert('Correo o contraseña incorrectos.'); }
         }
 
@@ -1744,6 +1759,10 @@
         }
 
         function initRealtimeSync() {
+            if(!db) {
+                console.error("No hay conexión a Firebase.");
+                return;
+            }
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 orders = [];
                 snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
@@ -1751,7 +1770,11 @@
                 if (bossDashboardActive) renderBossDashboardStats();
                 const syncEl = document.getElementById('sync-status');
                 if (syncEl) { syncEl.className = "badge bg-success text-white"; syncEl.innerHTML = '<i class="fas fa-check-circle me-1"></i> Sincronizado'; }
-            }, (error) => { console.error("Error órdenes:", error); });
+            }, (error) => { 
+                console.error("Error órdenes:", error); 
+                const syncEl = document.getElementById('sync-status');
+                if (syncEl) { syncEl.className = "badge bg-danger text-white"; syncEl.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Error Firebase'; }
+            });
             onSnapshot(collection(db, "operators"), (snapshot) => {
                 operators = [];
                 snapshot.forEach(docSnap => operators.push({ id: docSnap.id, ...docSnap.data() }));
@@ -1913,7 +1936,7 @@
         }
 
         window.renderOrders = () => {
-            // SAFETY NET: Recuperar columnas "huérfanas" si se borraron de la memoria local pero hay coches en la base de datos con ese estado
+            // SAFETY NET
             let configChanged = false;
             orders.forEach(order => {
                 let status = order.status || 'reparacion';
@@ -2198,7 +2221,7 @@
                 `;
             });
             html += `</div>`;
-            // Importante: Las columnas de "Sin asignar" siempre se renderizan, incluso si chOpsList está vacío
+            // Las columnas de "Sin asignar" siempre se renderizan
             html += `
                 <div class="chapa-split-container mt-3">
                     <div class="chapa-subcol subcol-reparacion" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'reparacion')">
@@ -2241,7 +2264,7 @@
                     </div>
                 `;
             });
-            // Importante: La columna de "Sin asignar" siempre se renderiza
+            // La columna de "Sin asignar" siempre se renderiza
             html += `
                 <div class="pintor-subcol" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, 'pintura')">
                     <div class="text-center fw-bold text-secondary small mb-2 border-bottom pb-1">Sin asignar</div>
