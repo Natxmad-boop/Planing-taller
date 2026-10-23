@@ -652,6 +652,9 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- CONTENEDOR DINÁMICO PARA TALLERES EXTERNOS -->
+            <div id="external-columns-container" class="kanban-container" style="display: contents;"></div>
         </div>
     </div>
 
@@ -831,6 +834,11 @@
                                 <label class="form-label small text-secondary fw-bold">Subestado</label>
                                 <select id="car-substatus" class="form-select"></select>
                             </div>
+                        </div>
+                        <!-- NUEVO CAMPO TALLER EXTERNO -->
+                        <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded">
+                            <label class="form-label small text-info fw-bold"><i class="fas fa-truck-moving me-1"></i> Enviar a Taller Externo (Opcional)</label>
+                            <input type="text" id="car-external-location" class="form-control" placeholder="Ej. Faros Alcalá. Déjalo vacío si está en el taller principal.">
                         </div>
                         <div class="mb-3">
                             <label class="form-label small text-secondary fw-bold">Estado Inicial</label>
@@ -1108,7 +1116,7 @@
             if (container) {
                 columnConfig.forEach(col => {
                     const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
-                    if (wrapper) container.appendChild(wrapper);
+                    if (wrapper) container.insertBefore(wrapper, document.getElementById('external-columns-container'));
                 });
             }
         }
@@ -1136,9 +1144,19 @@
                     </label>
                     <button class="btn btn-arrow" onclick="moveCol(${index}, -1)" ${index === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
                     <button class="btn btn-arrow" onclick="moveCol(${index}, 1)" ${index === columnConfig.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteColumn('${col.id}')" title="Eliminar este departamento"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
         }
+
+        // NUEVA FUNCIÓN: BORRAR COLUMNA
+        window.deleteColumn = (id) => {
+            if (confirm('¿Estás seguro de que quieres eliminar este departamento del tablero? (Las órdenes que estén en él pasarán a "Sin asignar")')) {
+                columnConfig = columnConfig.filter(c => c.id !== id);
+                saveColumnConfig();
+                renderColumnsSettings();
+            }
+        };
 
         window.updateColName = (id, newName) => {
             const col = columnConfig.find(c => c.id === id);
@@ -1370,6 +1388,7 @@
             document.getElementById('car-insurance-custom').value = '';
             document.getElementById('car-status').value = '';
             document.getElementById('operator-select').value = '';
+            document.getElementById('car-external-location').value = ''; // Limpiar campo externo
         }
 
         window.checkCustomInsurance = (selectEl) => {
@@ -1930,6 +1949,26 @@
             }
         }
 
+        // ===== NUEVA FUNCIÓN: UNIFICAR ORDEN EXTERNA =====
+        window.unifyOrder = async (orderId) => {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            if (!confirm(`¿Marcar como recibido de ${order.externalLocation} y unificar la hoja?`)) return;
+            
+            const historyEntry = { status: order.status, operator: order.operator, date: new Date().toLocaleString(), ts: Date.now(), note: `Recibido de ${order.externalLocation}` };
+            const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
+            
+            try {
+                await updateDoc(doc(db, "orders", orderId), {
+                    externalLocation: "",
+                    history: updatedHistory
+                });
+            } catch (err) {
+                console.error(err);
+                alert("Error al unificar la orden.");
+            }
+        }
+
         window.renderOrders = () => {
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -1978,6 +2017,25 @@
 
             let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, terminadosPendiente: 0, terminadosFacturado: 0, chapaTotal: 0 };
 
+            // 1. PREPARAR COLUMNAS EXTERNAS
+            const extContainer = document.getElementById('external-columns-container');
+            if (extContainer) extContainer.innerHTML = '';
+            const externalLocations = [...new Set(filteredOrders.map(o => o.externalLocation).filter(Boolean))].sort();
+            
+            externalLocations.forEach(loc => {
+                const safeLocId = safeId(loc);
+                extContainer.innerHTML += `
+                    <div id="col-ext-${safeLocId}-wrapper" class="kanban-col p-3 shadow-sm" style="border-top-color: #8b5cf6; background-color: #f8fafc; min-width: 320px;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-dark fw-bold m-0"><i class="fas fa-truck-moving me-1 text-purple" style="color:#8b5cf6;"></i> ${loc}</h6>
+                            <span id="count-ext-${safeLocId}" class="badge bg-secondary rounded-pill">0</span>
+                        </div>
+                        <div id="list-ext-${safeLocId}" class="kanban-dropzone d-flex flex-column gap-3" style="border: 1px dashed #cbd5e1; background: #ffffff;"></div>
+                    </div>
+                `;
+            });
+
+            // 2. PINTAR TARJETAS
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
@@ -2034,6 +2092,8 @@
                 let statusSelectOptions = buildStatusSelectOptions(status);
                 let checkBtnColor = order.isChecked ? 'btn-success' : 'btn-outline-secondary';
                 let checkIconClass = order.isChecked ? 'fas fa-check-square' : 'far fa-square';
+                
+                // HTML base de la tarjeta
                 let cardHtml = `
                     <div class="task-card p-2 ${cardClass}" style="border-left-color: ${areaColor};" id="card-${order.id}" draggable="true" ondragstart="drag(event, '${order.id}')" onclick="openDetailModal('${order.id}')">
                         ${urgentBanner}
@@ -2054,6 +2114,8 @@
                         <select class="form-select form-select-sm mt-1" style="font-size: 0.75rem; padding: 2px 5px;" onclick="event.stopPropagation()" onchange="changeOrderStatusDirect('${order.id}', this.value)">${statusSelectOptions}</select>
                     </div>
                 `;
+
+                // Insertar en columna normal
                 if (status === 'reparacion' || status === 'montaje') {
                     let subId;
                     if (orderOp && getChapistasList().some(o => o.name === orderOp)) subId = status === 'reparacion' ? `subcol-rep-${safeId(orderOp)}` : `subcol-mon-${safeId(orderOp)}`;
@@ -2073,8 +2135,27 @@
                 } else if (containers[status]) {
                     containers[status].innerHTML += cardHtml;
                 }
+
+                // INSERTAR EN COLUMNA EXTERNA SI APLICA
+                if (order.externalLocation) {
+                    const safeLocId = safeId(order.externalLocation);
+                    const extTarget = document.getElementById(`list-ext-${safeLocId}`);
+                    if (extTarget) {
+                        // Añadir botón de unificar a la tarjeta clonada
+                        let extCardHtml = cardHtml.replace('</select>', `</select>
+                            <div class="mt-2 text-center">
+                                <button class="btn btn-sm btn-success w-100 fw-bold" onclick="event.stopPropagation(); unifyOrder('${order.id}')"><i class="fas fa-check-double me-1"></i> Recibido / Unificar</button>
+                            </div>`);
+                        extTarget.innerHTML += extCardHtml;
+                        
+                        // Actualizar contador externo
+                        const extCountEl = document.getElementById(`count-ext-${safeLocId}`);
+                        if(extCountEl) extCountEl.innerText = parseInt(extCountEl.innerText) + 1;
+                    }
+                }
             });
 
+            // Actualizar contadores de chapistas y pintores
             getChapistasList().forEach(op => {
                 const opName = op.name;
                 const sid = safeId(opName);
@@ -2148,13 +2229,13 @@
                             <div class="header-info">
                                 <span class="chapista-name">${op.name}</span>
                                 ${badgeEstado}
-                           ge </div>
-                            <div class-t="header-countsotal" title="Repar-opaciones y Montajes">
-                                <span" class="mini-badge mini-rep" title id="En Reparación">R <span id="head-rep-${sid}">0</span></span>
+                            </div>
+                            <div class="header-counts" title="Reparaciones y Montajes">
+                                <span class="mini-badge mini-rep" title="En Reparación">R <span id="head-rep-${sid}">0</span></span>
                                 <span class="mini-badge mini-mon" title="En Montaje">M <span id="head-mon-${sid}">0</span></span>
                             </div>
                             <div class="header-actions">
-                                <span class="bad="count-total-${sid}">0</span>
+                                <span class="badge-total-op" id="count-total-${sid}">0</span>
                                 <button class="btn btn-sm btn-light py-0 px-1 border" style="font-size:0.6rem;" onclick="event.stopPropagation(); toggleAllByOperator('${opEscaped}', null)"><i class="far fa-check-square"></i></button>
                             </div>
                             <i class="fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} chapista-chevron"></i>
@@ -2255,7 +2336,7 @@
         window.openDetailModal = (orderId) => {
             const order = orders.find(o => o.id === orderId); if (!order) return;
             let historyHtml = '';
-            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
+            if (order.history && order.history.length > 0) { order.history.slice().reverse().forEach(h => { historyHtml += `<div class="history-item"><div class="small fw-bold text-dark">Fase: <span class="text-primary">${h.status}</span> | Op: ${h.operator} ${h.note ? `<span class="text-info">(${h.note})</span>` : ''}</div><div class="text-muted" style="font-size: 0.75rem;">${h.date}</div></div>`; }); }
             else historyHtml = '<p class="text-muted small">Sin registro de movimientos previos.</p>';
             const piecesChecklistHtml = buildPiecesChecklistHtml(order.pieces || (order.cocheCompleto ? ['COCHE COMPLETO'] : []), 'edit');
             const body = document.getElementById('detail-modal-body');
@@ -2288,6 +2369,11 @@
                         </div>
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Estado Actual</label><select id="edit-status" class="form-select">${buildStatusSelectOptions(order.status)}</select></div>
                     </div>
+                    <!-- NUEVO CAMPO TALLER EXTERNO EN EDICIÓN -->
+                    <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded">
+                        <label class="form-label small text-info fw-bold"><i class="fas fa-truck-moving me-1"></i> Enviar a Taller Externo (Opcional)</label>
+                        <input type="text" id="edit-external-location" class="form-control" value="${order.externalLocation || ''}" placeholder="Ej. Faros Alcalá">
+                    </div>
                     <div class="mb-3 p-3 bg-light border rounded">
                         <label class="form-label small text-primary fw-bold mb-2 d-block"><i class="fas fa-list-check me-1"></i> Modificar Piezas</label>
                         <div class="row g-2" id="edit-pieces-container">${piecesChecklistHtml}</div>
@@ -2315,6 +2401,7 @@
             const newOperator = document.getElementById('edit-operator').value;
             const newSubstatus = document.getElementById('edit-substatus').value;
             const newStatus = document.getElementById('edit-status').value;
+            const newExternalLocation = document.getElementById('edit-external-location').value.trim();
             const newNotes = document.getElementById('edit-notes').value;
             const newUrgent = document.getElementById('edit-urgent').checked;
             let isDestajoFlag = order.isDestajo || (order.status === 'destajos') || (newStatus === 'destajos');
@@ -2323,13 +2410,13 @@
                 if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
             });
             if (cocheCompleto) selectedPieces = [];
-            let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator;
+            let statusChanged = order.status !== newStatus || (order.operator || "") !== newOperator || order.externalLocation !== newExternalLocation;
             let updatedHistory = order.history ? [...order.history] : [];
-            if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() });
+            if (statusChanged) updatedHistory.push({ status: newStatus, operator: newOperator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now(), note: newExternalLocation ? `Enviado a ${newExternalLocation}` : '' });
             let newIsFacturado = order.isFacturado === true;
             if (newStatus === 'terminados' && order.status !== 'terminados') newIsFacturado = false;
             try {
-                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
+                await updateDoc(doc(db, "orders", orderId), { plate: newPlate, model: newModel, insurance: newInsurance, dateIn: newDateIn, dateOut: newDateOut, operator: newOperator, substatus: newSubstatus, status: newStatus, externalLocation: newExternalLocation, notes: newNotes, urgent: newUrgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isDestajo: isDestajoFlag, isFacturado: newIsFacturado, history: updatedHistory });
                 const modalEl = document.getElementById('detailModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
             } catch (err) { console.error("Error:", err); }
         }
@@ -2345,6 +2432,7 @@
             const dateOut = document.getElementById('date-out').value;
             const operator = document.getElementById('operator-select').value;
             const substatus = document.getElementById('car-substatus').value;
+            const externalLocation = document.getElementById('car-external-location').value.trim();
             let status = document.getElementById('car-status').value;
             const notes = document.getElementById('car-notes').value;
             const urgent = document.getElementById('car-urgent').checked;
@@ -2356,9 +2444,9 @@
                 if (chk.checked) { if (chk.value === 'COCHE COMPLETO') cocheCompleto = true; else selectedPieces.push(chk.value); }
             });
             if (cocheCompleto) selectedPieces = [];
-            const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now() }];
+            const initialHistory = [{ status: status, operator: operator || "Sin asignar", date: new Date().toLocaleString(), ts: Date.now(), note: externalLocation ? `Enviado a ${externalLocation}` : '' }];
             try {
-                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
+                await addDoc(collection(db, "orders"), { plate, model, insurance, dateIn, dateOut, operator, substatus, status, externalLocation, notes, urgent, pieces: selectedPieces, cocheCompleto: cocheCompleto, isChecked: false, isDestajo: isDestajoFlag, isFacturado: false, history: initialHistory });
                 const modalEl = document.getElementById('newOrderModal'); const modal = bootstrap.Modal.getInstance(modalEl); if (modal) modal.hide();
                 document.getElementById('order-form').reset();
             } catch (err) { console.error("Error:", err); }
