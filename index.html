@@ -1105,7 +1105,8 @@
             nameInput.value = '';
         };
 
-        function applyColumnConfig() {
+        // BLINDAJE: Esta función se encarga de crear las columnas ANTES de que renderOrders intente meter nada dentro.
+        window.applyColumnConfig = () => {
             // 1. Aplicar visibilidad, color y nombre de columnas estándar
             columnConfig.filter(c => !c.isCustom).forEach(col => {
                 const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
@@ -1132,20 +1133,40 @@
             // 2. Renderizar columnas personalizadas
             const customContainer = document.getElementById('custom-columns-container');
             if (customContainer) {
-                customContainer.innerHTML = '';
+                // Eliminar columnas que ya no existen o están ocultas
+                Array.from(customContainer.children).forEach(child => {
+                    const id = child.id.replace('col-', '').replace('-wrapper', '');
+                    const col = columnConfig.find(c => c.id === id);
+                    if (!col || !col.visible) {
+                        child.remove();
+                    }
+                });
+
+                // Crear o actualizar columnas
                 columnConfig.filter(c => c.isCustom && c.visible).forEach(col => {
-                    customContainer.innerHTML += `
-                        <div id="col-${col.id}-wrapper" class="kanban-col p-3 shadow-sm" style="border-top-color: ${col.color};">
+                    let wrapper = document.getElementById(`col-${col.id}-wrapper`);
+                    if (!wrapper) {
+                        wrapper = document.createElement('div');
+                        wrapper.id = `col-${col.id}-wrapper`;
+                        wrapper.className = 'kanban-col p-3 shadow-sm';
+                        wrapper.innerHTML = `
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
                                 <div class="d-flex align-items-center gap-2">
                                     <span id="count-${col.id}" class="badge bg-dark rounded-pill">0</span>
-                                    <button class="btn btn-sm btn-light py-0 px-1 border text-danger" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
+                                    <button class="btn btn-sm btn-light py-0 px-1 border" onclick="toggleMinimizeColumn('col-${col.id}-wrapper')"><i class="fas fa-compress-alt" id="min-icon-col-${col.id}-wrapper"></i></button>
+                                    <button class="btn btn-sm btn-light py-0 px-1 border text-danger btn-close-col" onclick="toggleColumnVisibility('${col.id}', false)" title="Ocultar columna"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
                             <div id="list-${col.id}" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${col.id}')"></div>
-                        </div>
-                    `;
+                        `;
+                        customContainer.appendChild(wrapper);
+                    } else {
+                        // Actualizar por si cambió el nombre o el color
+                        const titleEl = wrapper.querySelector('h6');
+                        if (titleEl) titleEl.innerHTML = `<i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}`;
+                        wrapper.style.borderTopColor = col.color;
+                    }
                 });
             }
 
@@ -1829,7 +1850,11 @@
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 orders = [];
                 snapshot.forEach(docSnap => orders.push({ id: docSnap.id, ...docSnap.data() }));
+                
+                // BLINDAJE: Aseguramos que las columnas personalizadas existan en el DOM antes de renderizar
+                applyColumnConfig();
                 renderOrders();
+                
                 if (bossDashboardActive) renderBossDashboardStats();
 
                 if (syncEl) {
@@ -2028,17 +2053,29 @@
         window.removeDuplicate = async (orderId, colId) => {
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
-            if (!confirm('¿Marcar como recibido en el taller principal y quitar de esta columna?')) return;
             
-            const newDupList = (order.duplicatedIn || []).filter(id => id !== colId);
             const colName = columnConfig.find(c => c.id === colId)?.name || 'Externo';
             
-            const historyEntry = { status: order.status, operator: order.operator, date: new Date().toLocaleString(), ts: Date.now(), note: `Unificado desde ${colName}` };
+            // Preguntar al usuario qué hacer
+            const quiereTerminar = confirm(`¿El coche ya ha terminado toda su reparación en el taller principal?\n\nAceptar = Sí, mover a Terminados.\nCancelar = No, dejarlo en su estado actual.`);
+
+            const newDupList = (order.duplicatedIn || []).filter(id => id !== colId);
+            
+            let newStatus = order.status;
+            let newIsFacturado = order.isFacturado === true;
+            if (quiereTerminar) {
+                newStatus = 'terminados';
+                newIsFacturado = false; // Lo ponemos como pendiente de facturar
+            }
+            
+            const historyEntry = { status: newStatus, operator: order.operator, date: new Date().toLocaleString(), ts: Date.now(), note: `Unificado desde ${colName}` };
             const updatedHistory = order.history ? [...order.history, historyEntry] : [historyEntry];
             
             try {
                 await updateDoc(doc(db, "orders", orderId), {
                     duplicatedIn: newDupList,
+                    status: newStatus,
+                    isFacturado: newIsFacturado,
                     history: updatedHistory
                 });
             } catch (err) {
@@ -2128,6 +2165,9 @@
         }
 
         window.renderOrders = () => {
+            // BLINDAJE: Asegurarnos de que las columnas personalizadas existen en el DOM antes de intentar meter tarjetas
+            applyColumnConfig();
+
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
@@ -2170,12 +2210,33 @@
             renderPintoresStructure();
             updateExpandAllButtonText();
 
-            let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminadosPendiente: document.getElementById('list-terminados-pendiente'), terminadosFacturado: document.getElementById('list-terminados-facturado') };
-            Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
+            // Diccionario para acumular todo el HTML antes de inyectarlo (Mejora de rendimiento BRUTAL)
+            let htmlBuckets = {};
 
-            // Limpiar contenedores Y RESETEAR CONTADORES de columnas personalizadas
-            document.querySelectorAll('[id^="list-custom_"]').forEach(el => el.innerHTML = '');
-            document.querySelectorAll('[id^="count-custom_"]').forEach(el => el.textContent = '0'); // Usar textContent para mayor compatibilidad
+            // Inicializar contenedores estándar
+            let standardContainers = [
+                'list-cargachapa', 'list-cargapintura', 'list-lunas',
+                'list-paragolpes', 'list-destajos',
+                'list-terminados-pendiente', 'list-terminados-facturado',
+                'subcol-rep-general', 'subcol-mon-general', 'list-pintor-general'
+            ];
+
+            standardContainers.forEach(id => htmlBuckets[id] = '');
+
+            // Inicializar contenedores de operarios
+            getChapistasList().forEach(op => {
+                const sid = safeId(op.name);
+                htmlBuckets[`subcol-rep-${sid}`] = '';
+                htmlBuckets[`subcol-mon-${sid}`] = '';
+            });
+            getPintoresList().forEach(op => {
+                const sid = safeId(op.name);
+                htmlBuckets[`list-pintor-${sid}`] = '';
+            });
+            // Inicializar contenedores personalizados
+            columnConfig.filter(c => c.isCustom && c.visible).forEach(col => {
+                htmlBuckets[`list-${col.id}`] = '';
+            });
 
             let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, terminadosPendiente: 0, terminadosFacturado: 0, chapaTotal: 0 };
 
@@ -2183,6 +2244,8 @@
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
+
+                // Actualizar contadores
                 if (status === 'cargachapa') counts.cargachapa++;
                 else if (status === 'cargapintura') counts.cargapintura++;
                 else if (status === 'lunas') counts.lunas++;
@@ -2195,88 +2258,89 @@
                     if (order.isFacturado === true) counts.terminadosFacturado++;
                     else counts.terminadosPendiente++;
                 }
-                
+
                 let cardHtml = buildCardHtml(order, todayStr, false);
 
                 if (status === 'reparacion' || status === 'montaje') {
                     let subId;
                     if (orderOp && getChapistasList().some(o => o.name === orderOp)) subId = status === 'reparacion' ? `subcol-rep-${safeId(orderOp)}` : `subcol-mon-${safeId(orderOp)}`;
                     else subId = status === 'reparacion' ? 'subcol-rep-general' : 'subcol-mon-general';
-                    const target = document.getElementById(subId); if (target) target.innerHTML += cardHtml;
+                    if (htmlBuckets[subId] !== undefined) htmlBuckets[subId] += cardHtml;
                 } else if (status === 'pintura' || status.startsWith('pintor')) {
                     let targetId;
                     if (orderOp && getPintoresList().some(o => o.name === orderOp)) targetId = `list-pintor-${safeId(orderOp)}`;
                     else targetId = 'list-pintor-general';
-                    const target = document.getElementById(targetId); if (target) target.innerHTML += cardHtml;
+                    if (htmlBuckets[targetId] !== undefined) htmlBuckets[targetId] += cardHtml;
                 } else if (status === 'terminados') {
                     if (order.isFacturado === true) {
-                        if (containers.terminadosFacturado) containers.terminadosFacturado.innerHTML += cardHtml;
+                        htmlBuckets['list-terminados-facturado'] += cardHtml;
                     } else {
-                        if (containers.terminadosPendiente) containers.terminadosPendiente.innerHTML += cardHtml;
+                        htmlBuckets['list-terminados-pendiente'] += cardHtml;
                     }
-                } else if (containers[status]) {
-                    containers[status].innerHTML += cardHtml;
-                } else {
-                    // Es un estado personalizado (columna custom principal)
-                    const customTarget = document.getElementById(`list-${status}`);
-                    if (customTarget) {
-                        customTarget.innerHTML += cardHtml;
-                        const countEl = document.getElementById(`count-${status}`);
-                        if (countEl) countEl.textContent = parseInt(countEl.textContent || 0) + 1;
-                    }
+                } else if (htmlBuckets[`list-${status}`] !== undefined) {
+                    htmlBuckets[`list-${status}`] += cardHtml;
                 }
             });
 
-            // 2. RENDERIZAR TARJETAS DUPLICADAS (SIEMPRE, INDEPENDIENTE DEL FILTRO PRINCIPAL)
+            // 2. RENDERIZAR TARJETAS DUPLICADAS
             orders.forEach(order => {
                 if (order.duplicatedIn && order.duplicatedIn.length > 0) {
-                    // FILTRO DE SEGURIDAD: Eliminar cualquier ID duplicado en el array para evitar contar doble
                     const uniqueDupCols = [...new Set(order.duplicatedIn)];
                     
-                    // Aplicar el mismo filtro de búsqueda a la tarjeta duplicada para que no desaparezca si el usuario busca
                     let matchesSearch = true;
-                    if (filterVal) {
-                        let status = order.status || 'reparacion';
-                        let orderOp = (order.operator || '').trim();
-                        let orderSub = (order.substatus || '').trim();
-                        
-                        if (activeQuickFilter === 'urgent') { if (!order.urgent) matchesSearch = false; }
-                        else if (activeQuickFilter === 'overdue') { if (!(order.dateOut && order.dateOut < todayStr && status !== 'terminados')) matchesSearch = false; }
-                        if (filterVal === 'destajo:true') { if (order.isDestajo !== true) matchesSearch = false; }
-                        if (filterVal.startsWith('sub:')) { let targetSub = filterVal.replace('sub:', '').trim(); if (orderSub.toLowerCase() !== targetSub.toLowerCase()) matchesSearch = false; }
-                        if (filterVal.startsWith('op:')) { 
-                            let targetOp = filterVal.replace('op:', '').trim(); 
-                            if (targetOp.toLowerCase() === 'sin asignar') {
-                                if (orderOp !== "") matchesSearch = false;
-                            } else {
-                                if (orderOp === "" || orderOp.toLowerCase() !== targetOp.toLowerCase()) matchesSearch = false;
-                            }
-                        }
-                        if (!filterVal.startsWith('sub:') && !filterVal.startsWith('op:') && filterVal !== 'destajo:true') {
-                            if (!((order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal))) matchesSearch = false;
+                    let status = order.status || 'reparacion';
+                    let orderOp = (order.operator || '').trim();
+                    let orderSub = (order.substatus || '').trim();
+                    let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
+
+                    if (activeQuickFilter === 'urgent') { if (!order.urgent) matchesSearch = false; }
+                    else if (activeQuickFilter === 'overdue') { if (!isOverdue) matchesSearch = false; }
+
+                    if (filterVal === 'destajo:true') { if (order.isDestajo !== true) matchesSearch = false; }
+                    else if (filterVal.startsWith('sub:')) {
+                        let targetSub = filterVal.replace('sub:', '').trim();
+                        if (orderSub.toLowerCase() !== targetSub.toLowerCase()) matchesSearch = false;
+                    }
+                    else if (filterVal.startsWith('op:')) {
+                        let targetOp = filterVal.replace('op:', '').trim();
+                        if (targetOp.toLowerCase() === 'sin asignar') {
+                            if (orderOp !== "") matchesSearch = false;
+                        } else {
+                            if (orderOp === "" || orderOp.toLowerCase() !== targetOp.toLowerCase()) matchesSearch = false;
                         }
                     }
-                    
+                    else if (filterVal !== '') {
+                        if (!((order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal))) matchesSearch = false;
+                    }
+
                     if (matchesSearch) {
                         uniqueDupCols.forEach(dupColId => {
-                            // Evitar renderizar si la tarjeta ya está en esa columna como estado principal
                             if (order.status === dupColId) return;
-
-                            const extTarget = document.getElementById(`list-${dupColId}`);
-                            if (extTarget) {
-                                let dupCardHtml = buildCardHtml(order, todayStr, true, dupColId);
-                                extTarget.innerHTML += dupCardHtml;
-                                
-                                // Actualizar contador
-                                const extCountEl = document.getElementById(`count-${dupColId}`);
-                                if(extCountEl) extCountEl.textContent = parseInt(extCountEl.textContent || 0) + 1;
+                            let dupCardHtml = buildCardHtml(order, todayStr, true, dupColId);
+                            if (htmlBuckets[`list-${dupColId}`] !== undefined) {
+                                htmlBuckets[`list-${dupColId}`] += dupCardHtml;
                             }
                         });
                     }
                 }
             });
 
-            // 3. ACTUALIZAR CONTADORES DE OPERARIOS
+            // 3. INYECTAR HTML AL DOM DE GOLPE
+            Object.keys(htmlBuckets).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = htmlBuckets[id];
+            });
+
+            // 4. ACTUALIZAR CONTADORES DE DEPARTAMENTOS PERSONALIZADOS
+            columnConfig.filter(c => c.isCustom).forEach(col => {
+                const countEl = document.getElementById(`count-${col.id}`);
+                if (countEl) {
+                    const cardsInBucket = (htmlBuckets[`list-${col.id}`].match(/task-card/g) || []).length;
+                    countEl.textContent = cardsInBucket;
+                }
+            });
+
+            // 5. ACTUALIZAR CONTADORES DE OPERARIOS
             getChapistasList().forEach(op => {
                 const opName = op.name;
                 const sid = safeId(opName);
