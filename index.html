@@ -658,7 +658,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE AJUSTES (REDISEÑADO) -->
+    <!-- MODAL DE AJUSTES -->
     <div class="modal fade" id="settingsModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content shadow">
@@ -679,7 +679,7 @@
                         </button>
                     </div>
                     
-                    <!-- NUEVO: CREAR DEPARTAMENTO -->
+                    <!-- CREAR DEPARTAMENTO -->
                     <div class="input-group input-group-sm mb-3 shadow-sm">
                         <input type="text" id="new-column-name" class="form-control" placeholder="Escribir nombre del nuevo departamento (Ej. Faros Alcalá)">
                         <button class="btn btn-primary fw-bold" type="button" onclick="handleAddCustomColumn()"><i class="fas fa-plus me-1"></i> Crear</button>
@@ -859,9 +859,8 @@
                             </select>
                         </div>
 
-                        <!-- NUEVO: DUPLICAR EN DEPARTAMENTOS -->
+                        <!-- DUPLICAR EN DEPARTAMENTOS -->
                         <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded" id="new-order-duplicates-container">
-                            <!-- Se rellena desde JS -->
                         </div>
 
                         <div class="mb-3 p-3 bg-light border rounded">
@@ -908,7 +907,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // CONFIGURACIÓN DE COLUMNAS POR DEFECTO (TODAS VISIBLES)
+        // CONFIGURACIÓN DE COLUMNAS POR DEFECTO
         const DEFAULT_COLUMNS = [
             { id: 'cargachapa', name: 'Carga Chapa', color: '#2563eb', visible: true },
             { id: 'cargapintura', name: 'Carga Pintura', color: '#f59e0b', visible: true },
@@ -922,7 +921,7 @@
 
         let columnConfig = JSON.parse(localStorage.getItem('planning360_columns_v3')) || JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
 
-        // COLORES DE ÁREAS (TIPOS DE HOJA)
+        // COLORES DE ÁREAS
         const DEFAULT_AREA_COLORS = { chapa: '#2563eb', pintura: '#f59e0b', paragolpes: '#1e293b', destajos: '#0891b2', lunas: '#64748b' };
         let areaColors = JSON.parse(localStorage.getItem('planning360_areaColors')) || JSON.parse(JSON.stringify(DEFAULT_AREA_COLORS));
 
@@ -1026,7 +1025,7 @@
 
         const COLOR_PALETTE = ['#2563eb','#059669','#f59e0b','#dc2626','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c','#4338ca','#0d9488','#9333ea','#ca8a04','#e11d48','#0284c7','#a16207','#0f766e','#c026d3','#64748b','#db2777'];
 
-        let AREA_DEFS = {}; // Se inicializa en applyAreaColors()
+        let AREA_DEFS = {};
 
         const STATUS_LABELS = {
             cargachapa: 'Carga Chapa',
@@ -1056,10 +1055,6 @@
             return false;
         }
 
-        // ============================================
-        // GESTIÓN DINÁMICA DE CONFIGURACIÓN
-        // ============================================
-        
         function applyAreaColors() {
             AREA_DEFS = {
                 chapa: { label: 'Chapa', color: areaColors.chapa, statuses: ['cargachapa','reparacion','montaje'] },
@@ -1091,7 +1086,6 @@
             applyColumnConfig();
         }
 
-        // FUNCIÓN PARA CREAR NUEVO DEPARTAMENTO
         window.handleAddCustomColumn = () => {
             const nameInput = document.getElementById('new-column-name');
             const name = nameInput.value.trim();
@@ -1106,7 +1100,6 @@
         };
 
         function applyColumnConfig() {
-            // 1. Aplicar visibilidad, color y nombre de columnas estándar
             columnConfig.filter(c => !c.isCustom).forEach(col => {
                 const wrapper = document.getElementById(col.id === 'chapistas' ? 'kanban-col-chapistas' : `col-${col.id}-wrapper`);
                 if (!wrapper) return;
@@ -1129,26 +1122,12 @@
                 }
             });
 
-            // 2. Renderizar columnas personalizadas
             const customContainer = document.getElementById('custom-columns-container');
             if (customContainer) {
-                // Eliminar columnas que ya no existen o están ocultas
-                Array.from(customContainer.children).forEach(child => {
-                    const id = child.id.replace('col-', '').replace('-wrapper', '');
-                    const col = columnConfig.find(c => c.id === id);
-                    if (!col || !col.visible) {
-                        child.remove();
-                    }
-                });
-
-                // Crear o actualizar columnas
+                customContainer.innerHTML = '';
                 columnConfig.filter(c => c.isCustom && c.visible).forEach(col => {
-                    let wrapper = document.getElementById(`col-${col.id}-wrapper`);
-                    if (!wrapper) {
-                        wrapper = document.createElement('div');
-                        wrapper.id = `col-${col.id}-wrapper`;
-                        wrapper.className = 'kanban-col p-3 shadow-sm';
-                        wrapper.innerHTML = `
+                    customContainer.innerHTML += `
+                        <div id="col-${col.id}-wrapper" class="kanban-col p-3 shadow-sm" style="border-top-color: ${col.color};">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h6 class="text-dark fw-bold m-0"><i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}</h6>
                                 <div class="d-flex align-items-center gap-2">
@@ -1157,18 +1136,11 @@
                                 </div>
                             </div>
                             <div id="list-${col.id}" class="kanban-dropzone d-flex flex-column gap-3" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropOrder(event, '${col.id}')"></div>
-                        `;
-                        customContainer.appendChild(wrapper);
-                    } else {
-                        // Actualizar por si cambió el nombre o el color
-                        const titleEl = wrapper.querySelector('h6');
-                        if (titleEl) titleEl.innerHTML = `<i class="fas fa-folder me-1" style="color:${col.color};"></i> ${col.name}`;
-                        wrapper.style.borderTopColor = col.color;
-                    }
+                        </div>
+                    `;
                 });
             }
 
-            // 3. Reordenar en el DOM (solo para estándar, las custom van al final por simplicidad)
             const container = document.getElementById('main-kanban-container');
             if (container) {
                 columnConfig.filter(c => !c.isCustom).forEach(col => {
@@ -1248,7 +1220,6 @@
             renderColumnsSettings();
             renderOrders();
         };
-        // ============================================
 
         function buildPiecesChecklistHtml(checkedPieces, prefixId) {
             let html = '';
@@ -1273,7 +1244,6 @@
             return html;
         }
 
-        // CONSTRUIR CHECKBOXES DE DUPLICADOS
         function buildDuplicatesCheckboxesHtml(selectedIds = [], prefix = 'new') {
             const customCols = columnConfig.filter(c => c.isCustom && c.visible);
             if (customCols.length === 0) return `<div class="text-muted small fst-italic">No hay departamentos personalizados creados. Ve a Ajustes para crear uno.</div>`;
@@ -1466,7 +1436,6 @@
             document.getElementById('car-insurance-custom').value = '';
             document.getElementById('car-status').value = '';
             document.getElementById('operator-select').value = '';
-            // Renderizar los checkboxes de departamentos personalizados
             document.getElementById('new-order-duplicates-container').innerHTML = buildDuplicatesCheckboxesHtml([], 'new');
         }
 
@@ -1522,7 +1491,6 @@
             } catch(e) {}
         }
 
-        // GESTIÓN DE SUBESTADOS
         window.handleAddSubstatus = (e) => {
             e.preventDefault();
             const inpName = document.getElementById('new-substatus-name');
@@ -1570,7 +1538,6 @@
             }
         }
 
-        // GESTIÓN DE PIEZAS
         window.handleAddZone = () => {
             const inp = document.getElementById('new-zone-name');
             const val = inp.value.trim();
@@ -1839,9 +1806,6 @@
             document.getElementById('login-screen').style.display = 'block';
         }
 
-        // ============================================
-        // INICIO DEL PARCHE DE CONEXIÓN
-        // ============================================
         function initRealtimeSync() {
             const syncEl = document.getElementById('sync-status');
 
@@ -1872,9 +1836,6 @@
                 console.error("Error operarios:", error);
             });
         }
-        // ============================================
-        // FIN DEL PARCHE DE CONEXIÓN
-        // ============================================
 
         function renderOperatorsUI() {
             const listContainer = document.getElementById('operators-list');
@@ -1988,7 +1949,6 @@
             const orderId = ev.dataTransfer.getData("text/plain"); if (!orderId) return;
             const order = orders.find(o => o.id === orderId); if (!order) return;
             
-            // COMPROBAR SI ES UNA COLUMNA PERSONALIZADA (DUPLICAR)
             const isCustomCol = columnConfig.find(c => c.id === targetStatus && c.isCustom);
             if (isCustomCol) {
                 const currentDup = order.duplicatedIn || [];
@@ -2043,7 +2003,6 @@
             }
         }
 
-        // ===== FUNCIÓN: UNIFICAR DUPLICADO =====
         window.removeDuplicate = async (orderId, colId) => {
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
@@ -2066,7 +2025,6 @@
             }
         }
 
-        // FUNCIÓN AUXILIAR PARA CREAR EL HTML DE UNA TARJETA
         function buildCardHtml(order, todayStr, isDuplicate = false, dupColId = null) {
             let status = order.status || 'reparacion';
             let orderOp = (order.operator || '').trim();
@@ -2147,9 +2105,6 @@
         }
 
         window.renderOrders = () => {
-            // Forzar la creación de contenedores por si acaso
-            applyColumnConfig();
-
             const searchInput = document.getElementById('search-input');
             const filterVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const todayStr = new Date().toISOString().split('T')[0];
@@ -2192,42 +2147,21 @@
             renderPintoresStructure();
             updateExpandAllButtonText();
 
-            // Diccionario para acumular todo el HTML antes de inyectarlo (Mejora de rendimiento BRUTAL)
-            let htmlBuckets = {};
+            let containers = { cargachapa: document.getElementById('list-cargachapa'), cargapintura: document.getElementById('list-cargapintura'), lunas: document.getElementById('list-lunas'), paragolpes: document.getElementById('list-paragolpes'), destajos: document.getElementById('list-destajos'), terminadosPendiente: document.getElementById('list-terminados-pendiente'), terminadosFacturado: document.getElementById('list-terminados-facturado') };
+            Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
 
-            // Inicializar contenedores estándar
-            let standardContainers = [
-                'list-cargachapa', 'list-cargapintura', 'list-lunas',
-                'list-paragolpes', 'list-destajos',
-                'list-terminados-pendiente', 'list-terminados-facturado',
-                'subcol-rep-general', 'subcol-mon-general', 'list-pintor-general'
-            ];
-
-            standardContainers.forEach(id => htmlBuckets[id] = '');
-
-            // Inicializar contenedores de operarios
-            getChapistasList().forEach(op => {
-                const sid = safeId(op.name);
-                htmlBuckets[`subcol-rep-${sid}`] = '';
-                htmlBuckets[`subcol-mon-${sid}`] = '';
-            });
-            getPintoresList().forEach(op => {
-                const sid = safeId(op.name);
-                htmlBuckets[`list-pintor-${sid}`] = '';
-            });
-            // Inicializar contenedores personalizados
-            columnConfig.filter(c => c.isCustom && c.visible).forEach(col => {
-                htmlBuckets[`list-${col.id}`] = '';
-            });
+            // Limpiar contenedores Y RESETEAR CONTADORES de columnas personalizadas
+            document.querySelectorAll('[id^="list-custom_"]').forEach(el => el.innerHTML = '');
+            document.querySelectorAll('[id^="count-custom_"]').forEach(el => el.textContent = '0');
 
             let counts = { cargachapa: 0, cargapintura: 0, lunas: 0, paragolpes: 0, destajos: 0, pintado: 0, terminados: 0, terminadosPendiente: 0, terminadosFacturado: 0, chapaTotal: 0 };
+
+            const renderedCardIds = new Set();
 
             // 1. RENDERIZAR TARJETAS PRINCIPALES
             filteredOrders.forEach(order => {
                 let status = order.status || 'reparacion';
                 let orderOp = (order.operator || '').trim();
-
-                // Actualizar contadores
                 if (status === 'cargachapa') counts.cargachapa++;
                 else if (status === 'cargapintura') counts.cargapintura++;
                 else if (status === 'lunas') counts.lunas++;
@@ -2240,89 +2174,93 @@
                     if (order.isFacturado === true) counts.terminadosFacturado++;
                     else counts.terminadosPendiente++;
                 }
-
+                
                 let cardHtml = buildCardHtml(order, todayStr, false);
 
                 if (status === 'reparacion' || status === 'montaje') {
                     let subId;
                     if (orderOp && getChapistasList().some(o => o.name === orderOp)) subId = status === 'reparacion' ? `subcol-rep-${safeId(orderOp)}` : `subcol-mon-${safeId(orderOp)}`;
                     else subId = status === 'reparacion' ? 'subcol-rep-general' : 'subcol-mon-general';
-                    if (htmlBuckets[subId] !== undefined) htmlBuckets[subId] += cardHtml;
+                    const target = document.getElementById(subId); if (target) target.innerHTML += cardHtml;
                 } else if (status === 'pintura' || status.startsWith('pintor')) {
                     let targetId;
                     if (orderOp && getPintoresList().some(o => o.name === orderOp)) targetId = `list-pintor-${safeId(orderOp)}`;
                     else targetId = 'list-pintor-general';
-                    if (htmlBuckets[targetId] !== undefined) htmlBuckets[targetId] += cardHtml;
+                    const target = document.getElementById(targetId); if (target) target.innerHTML += cardHtml;
                 } else if (status === 'terminados') {
                     if (order.isFacturado === true) {
-                        htmlBuckets['list-terminados-facturado'] += cardHtml;
+                        if (containers.terminadosFacturado) containers.terminadosFacturado.innerHTML += cardHtml;
                     } else {
-                        htmlBuckets['list-terminados-pendiente'] += cardHtml;
+                        if (containers.terminadosPendiente) containers.terminadosPendiente.innerHTML += cardHtml;
                     }
-                } else if (htmlBuckets[`list-${status}`] !== undefined) {
-                    htmlBuckets[`list-${status}`] += cardHtml;
+                } else if (containers[status]) {
+                    containers[status].innerHTML += cardHtml;
+                } else {
+                    const customTarget = document.getElementById(`list-${status}`);
+                    if (customTarget) {
+                        customTarget.innerHTML += cardHtml;
+                        renderedCardIds.add(`${order.id}-${status}`);
+                        const countEl = document.getElementById(`count-${status}`);
+                        if (countEl) countEl.textContent = parseInt(countEl.textContent || 0) + 1;
+                    }
                 }
             });
 
-            // 2. RENDERIZAR TARJETAS DUPLICADAS
+            // 2. RENDERIZAR TARJETAS DUPLICADAS / ENVIADAS A DEPARTAMENTOS PERSONALIZADOS
             orders.forEach(order => {
                 if (order.duplicatedIn && order.duplicatedIn.length > 0) {
                     const uniqueDupCols = [...new Set(order.duplicatedIn)];
                     
                     let matchesSearch = true;
-                    let status = order.status || 'reparacion';
-                    let orderOp = (order.operator || '').trim();
-                    let orderSub = (order.substatus || '').trim();
-                    let isOverdue = order.dateOut && order.dateOut < todayStr && status !== 'terminados';
-
-                    if (activeQuickFilter === 'urgent') { if (!order.urgent) matchesSearch = false; }
-                    else if (activeQuickFilter === 'overdue') { if (!isOverdue) matchesSearch = false; }
-
-                    if (filterVal === 'destajo:true') { if (order.isDestajo !== true) matchesSearch = false; }
-                    else if (filterVal.startsWith('sub:')) {
-                        let targetSub = filterVal.replace('sub:', '').trim();
-                        if (orderSub.toLowerCase() !== targetSub.toLowerCase()) matchesSearch = false;
-                    }
-                    else if (filterVal.startsWith('op:')) {
-                        let targetOp = filterVal.replace('op:', '').trim();
-                        if (targetOp.toLowerCase() === 'sin asignar') {
-                            if (orderOp !== "") matchesSearch = false;
-                        } else {
-                            if (orderOp === "" || orderOp.toLowerCase() !== targetOp.toLowerCase()) matchesSearch = false;
+                    if (filterVal) {
+                        let status = order.status || 'reparacion';
+                        let orderOp = (order.operator || '').trim();
+                        let orderSub = (order.substatus || '').trim();
+                        
+                        if (activeQuickFilter === 'urgent') { if (!order.urgent) matchesSearch = false; }
+                        else if (activeQuickFilter === 'overdue') { if (!(order.dateOut && order.dateOut < todayStr && status !== 'terminados')) matchesSearch = false; }
+                        if (filterVal === 'destajo:true') { if (order.isDestajo !== true) matchesSearch = false; }
+                        if (filterVal.startsWith('sub:')) { let targetSub = filterVal.replace('sub:', '').trim(); if (orderSub.toLowerCase() !== targetSub.toLowerCase()) matchesSearch = false; }
+                        if (filterVal.startsWith('op:')) { 
+                            let targetOp = filterVal.replace('op:', '').trim(); 
+                            if (targetOp.toLowerCase() === 'sin asignar') {
+                                if (orderOp !== "") matchesSearch = false;
+                            } else {
+                                if (orderOp === "" || orderOp.toLowerCase() !== targetOp.toLowerCase()) matchesSearch = false;
+                            }
+                        }
+                        if (!filterVal.startsWith('sub:') && !filterVal.startsWith('op:') && filterVal !== 'destajo:true') {
+                            if (!((order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal))) matchesSearch = false;
+                        }
+                    } else {
+                        if (activeQuickFilter === 'urgent') { if (!order.urgent) matchesSearch = false; }
+                        else if (activeQuickFilter === 'overdue') { 
+                            let status = order.status || 'reparacion';
+                            if (!(order.dateOut && order.dateOut < todayStr && status !== 'terminados')) matchesSearch = false; 
                         }
                     }
-                    else if (filterVal !== '') {
-                        if (!((order.plate || '').toLowerCase().includes(filterVal) || (order.model || '').toLowerCase().includes(filterVal) || orderOp.toLowerCase().includes(filterVal) || orderSub.toLowerCase().includes(filterVal))) matchesSearch = false;
-                    }
-
+                    
                     if (matchesSearch) {
                         uniqueDupCols.forEach(dupColId => {
                             if (order.status === dupColId) return;
-                            let dupCardHtml = buildCardHtml(order, todayStr, true, dupColId);
-                            if (htmlBuckets[`list-${dupColId}`] !== undefined) {
-                                htmlBuckets[`list-${dupColId}`] += dupCardHtml;
+                            const cardKey = `${order.id}-${dupColId}`;
+                            if (renderedCardIds.has(cardKey)) return;
+
+                            const extTarget = document.getElementById(`list-${dupColId}`);
+                            if (extTarget) {
+                                let dupCardHtml = buildCardHtml(order, todayStr, true, dupColId);
+                                extTarget.innerHTML += dupCardHtml;
+                                renderedCardIds.add(cardKey);
+                                
+                                const extCountEl = document.getElementById(`count-${dupColId}`);
+                                if (extCountEl) extCountEl.textContent = parseInt(extCountEl.textContent || 0) + 1;
                             }
                         });
                     }
                 }
             });
 
-            // 3. INYECTAR HTML AL DOM DE GOLPE
-            Object.keys(htmlBuckets).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.innerHTML = htmlBuckets[id];
-            });
-
-            // 4. ACTUALIZAR CONTADORES DE DEPARTAMENTOS PERSONALIZADOS
-            columnConfig.filter(c => c.isCustom).forEach(col => {
-                const countEl = document.getElementById(`count-${col.id}`);
-                if (countEl) {
-                    const cardsInBucket = (htmlBuckets[`list-${col.id}`].match(/task-card/g) || []).length;
-                    countEl.textContent = cardsInBucket;
-                }
-            });
-
-            // 5. ACTUALIZAR CONTADORES DE OPERARIOS
+            // 3. ACTUALIZAR CONTADORES DE OPERARIOS
             getChapistasList().forEach(op => {
                 const opName = op.name;
                 const sid = safeId(opName);
@@ -2537,7 +2475,6 @@
                         <div class="col-md-6"><label class="form-label small text-secondary fw-bold">Estado Actual</label><select id="edit-status" class="form-select">${buildStatusSelectOptions(order.status)}</select></div>
                     </div>
 
-                    <!-- DUPLICADOS EN EDICIÓN -->
                     <div class="mb-3 p-3 bg-info bg-opacity-10 border border-info rounded" id="edit-order-duplicates-container">
                         ${buildDuplicatesCheckboxesHtml(order.duplicatedIn || [], 'edit')}
                     </div>
@@ -2572,7 +2509,6 @@
             const newNotes = document.getElementById('edit-notes').value;
             const newUrgent = document.getElementById('edit-urgent').checked;
             
-            // Recoger duplicados
             const duplicatedIn = [];
             document.querySelectorAll('#edit-order-duplicates-container .dup-check:checked').forEach(chk => duplicatedIn.push(chk.value));
 
@@ -2608,7 +2544,6 @@
             const notes = document.getElementById('car-notes').value;
             const urgent = document.getElementById('car-urgent').checked;
             
-            // Recoger duplicados
             const duplicatedIn = [];
             document.querySelectorAll('#new-order-duplicates-container .dup-check:checked').forEach(chk => duplicatedIn.push(chk.value));
 
@@ -2628,7 +2563,7 @@
             } catch (err) { console.error("Error:", err); }
         }
 
-        // ===== PANEL 360 =====
+        // PANEL 360
         function getBossPeriodRange(period) {
             const now = new Date(); let start, end;
             if (period === 'day') { start = new Date(now.getFullYear(), now.getMonth(), now.getDate()); end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59); }
